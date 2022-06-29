@@ -1,0 +1,14 @@
+#ifndef __G3_STACK_VERSION_H__
+#define __G3_STACK_VERSION_H__
+
+/**
+ * G3 stack version
+ **/
+#define G3_STACK_VERSION_MAJOR 2
+#define G3_STACK_VERSION_MINOR 0
+#define G3_STACK_VERSION_REVISION 0
+#define G3_STACK_VERSION_YEAR 21
+#define G3_STACK_VERSION_MONTH 2
+#define G3_STACK_VERSION_DAY 19
+
+#endif
