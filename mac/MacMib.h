@@ -16,8 +16,6 @@
 
 #include "MacDefs.h"
 
-#define MAC_KEY_TABLE_ENTRIES (2)
-
 // Mac layer Table Pointers and Sizes
 struct TMacTables {
   // Pointers
@@ -25,13 +23,6 @@ struct TMacTables {
   // Sizes
   uint16_t m_MacDeviceTableSize;
 };
-
-#pragma pack(push,1)
-struct TDeviceTableEntry {
-  TShortAddress m_nShortAddress;
-  uint32_t m_u32FrameCounter;
-};
-#pragma pack(pop)
 
 struct TMacMib {
   uint32_t m_u32TxDataPacketCount;
@@ -44,12 +35,6 @@ struct TMacMib {
   struct TDeviceTableEntry *m_aDeviceTable;
   uint16_t m_u16DeviceTableSize;
   bool m_bFreqNotching;
-  bool m_bCoordinator;
-  TPanId m_nPanId;
-  struct TExtendedAddress m_ExtendedAddress;
-  TShortAddress m_nShortAddress;
-  bool m_bPromiscuousMode;
-  struct TMacSecurityKey m_aKeyTable[MAC_KEY_TABLE_ENTRIES];
   uint32_t m_u32FrameCounter;
   TShortAddress m_nCoordShortAddress;
   enum EModulationScheme m_LastRxModScheme;
@@ -71,13 +56,9 @@ enum EMacPibAttribute {
   MAC_PIB_DSN = 0x0000004C,
   MAC_PIB_MAX_CSMA_BACKOFFS = 0x0000004E,
   MAC_PIB_MIN_BE = 0x0000004F,
-  MAC_PIB_PAN_ID = 0x00000050,
-  MAC_PIB_PROMISCUOUS_MODE = 0x00000051,
-  MAC_PIB_SHORT_ADDRESS = 0x00000053,
   MAC_PIB_MAX_FRAME_RETRIES = 0x00000059,
   MAC_PIB_TIMESTAMP_SUPPORTED = 0x0000005C,
   MAC_PIB_SECURITY_ENABLED = 0x0000005D,
-  MAC_PIB_KEY_TABLE = 0x00000071,
   MAC_PIB_FRAME_COUNTER = 0x00000077,
   MAC_PIB_DUPLICATE_DETECTION_TTL = 0x00000078,
   MAC_PIB_HIGH_PRIORITY_WINDOW_SIZE = 0x00000100,
@@ -94,8 +75,6 @@ enum EMacPibAttribute {
   MAC_PIB_FREQ_NOTCHING = 0x0000010B,
   MAC_PIB_CSMA_FAIRNESS_LIMIT = 0x0000010C,
   MAC_PIB_TMR_TTL = 0x0000010D,
-  MAC_PIB_POS_TABLE_ENTRY_TTL = 0x0000010E,
-  MAC_PIB_RC_COORD = 0x0000010F,
   MAC_PIB_TONE_MASK = 0x00000110,
   MAC_PIB_BEACON_RANDOMIZATION_WINDOW_LENGTH = 0x00000111,
   MAC_PIB_A = 0x00000112,
@@ -113,8 +92,6 @@ enum EMacPibAttribute {
   // manufacturer specific
   // provides access to device table
   MAC_PIB_MANUF_DEVICE_TABLE = 0x08000000,
-  // Extended address of this node.
-  MAC_PIB_MANUF_EXTENDED_ADDRESS = 0x08000001,
   // provides access to neighbour table by short address (transmitted as index)
   MAC_PIB_MANUF_NEIGHBOUR_TABLE_ELEMENT = 0x08000002,
   // returns the maximum number of tones used by the band
@@ -202,15 +179,8 @@ enum EMacPibAttribute {
   /* Best LQI found in neighbour table. 8 bits. */
   MAC_PIB_MANUF_BEST_LQI = 0x0800002A,
   // Gets or sets a parameter in Phy layer. Index will be used to contain PHY parameter ID.
-  // Check 'enum EPhyParam' in drv_g3_macrt_comm.h for available Phy parameter IDs
+  // Check 'enum EPhyParam' in MacRtMib.h for available Phy parameter IDs
   MAC_PIB_MANUF_PHY_PARAM = 0x08000020
-};
-
-#define MAC_PIB_MAX_VALUE_LENGTH (144)
-
-struct TMacPibValue {
-  uint8_t m_u8Length;
-  uint8_t m_au8Value[MAC_PIB_MAX_VALUE_LENGTH];
 };
 
 #endif
