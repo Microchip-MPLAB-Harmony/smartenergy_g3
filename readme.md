@@ -22,11 +22,10 @@ This repository contains the MPLAB® Harmony 3 Smart Energy G3 API and libraries
 
 | Folder     | Description                                               |
 | ---        | ---                                                       |
-| common     | Common files for G3 library                               |
 | config     | G3 module configuration file                              |
 | docs       | G3 library help documentation                             |
-| crypto     | Cryptographic API and files for G3 library                |
-| mac        | MAC API for G3 library                                    |
+| g3         | API and files for G3 library                              |
+| service    | Services for G3                                           |
 
 
 ____

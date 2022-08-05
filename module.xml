@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Module name="replaceme" id="c64c7a1d-e8d9-4d90-b430-8461b84354b4" version="1.0.0">
+<Module name="SmartEnergy" id="c64c7a1d-e8d9-4d90-b430-8461b84354b4" version="1.0.0">
     <ConfigRoot path="config/module.py"/>
 </Module>
