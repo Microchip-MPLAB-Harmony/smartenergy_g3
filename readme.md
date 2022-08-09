@@ -15,8 +15,8 @@ This repository contains the MPLAB® Harmony 3 Smart Energy G3 API and libraries
 
 - [Release Notes](./release_notes.md)
 - [MPLAB® Harmony License](mplab_harmony_license.md)
-- [MPLAB® Harmony 3 replaceme Wiki](https://github.com/Microchip-MPLAB-Harmony/replaceme/wiki)
-- [MPLAB® Harmony 3 replaceme API Help](https://microchip-mplab-harmony.github.io/replaceme)
+- [MPLAB® Harmony 3 G3 Wiki](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/wiki)
+- [MPLAB® Harmony 3 G3 API Help](https://microchip-mplab-harmony.github.io/smartenergy_g3)
 
 # Contents Summary
 
@@ -31,9 +31,9 @@ This repository contains the MPLAB® Harmony 3 Smart Energy G3 API and libraries
 ____
 
 [![License](https://img.shields.io/badge/license-Harmony%20license-orange.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/blob/master/mplab_harmony_license.md)
-[![Latest release](https://img.shields.io/github/release/Microchip-MPLAB-Harmony/replaceme.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/releases/latest)
-[![Latest release date](https://img.shields.io/github/release-date/Microchip-MPLAB-Harmony/replaceme.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/releases/latest)
-[![Commit activity](https://img.shields.io/github/commit-activity/y/Microchip-MPLAB-Harmony/replaceme.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/graphs/commit-activity)
+[![Latest release](https://img.shields.io/github/release/Microchip-MPLAB-Harmony/smartenergy_g3.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/releases/latest)
+[![Latest release date](https://img.shields.io/github/release-date/Microchip-MPLAB-Harmony/smartenergy_g3.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/releases/latest)
+[![Commit activity](https://img.shields.io/github/commit-activity/y/Microchip-MPLAB-Harmony/smartenergy_g3.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/graphs/commit-activity)
 [![Contributors](https://img.shields.io/github/contributors-anon/Microchip-MPLAB-Harmony/smartenergy_g3.svg)]()
 
 ____
