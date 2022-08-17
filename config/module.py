@@ -27,18 +27,18 @@ def loadModule():
 
     ###########  G3 Stack MAC Layer Configurations  ###########
     ## MAC Wrapper
-	g3MacWrpComponent = Module.CreateComponent("g3MacWrapper", "MAC Wrapper", "/SmartEnergy/Stacks/G3/MAC_Layer", "g3/config/g3_mac_wrapper.py")
+	g3MacWrpComponent = Module.CreateComponent("g3MacWrapper", "MAC Wrapper", "/SmartEnergy/Stack/G3/MAC_Layer", "g3/config/g3_mac_wrapper.py")
     g3MacWrpComponent.addCapability("libMacWrapper", "MAC Wrapper")	
 	g3MacWrpComponent.setDisplayType("MAC Layer")
     
     ## MAC Common
-	g3MacCommonComponent = Module.CreateComponent("g3MacCommon", "MAC Common", "/SmartEnergy/Stacks/G3/MAC_Layer", "g3/config/g3_mac_common.py")
+	g3MacCommonComponent = Module.CreateComponent("g3MacCommon", "MAC Common", "/SmartEnergy/Stack/G3/MAC_Layer", "g3/config/g3_mac_common.py")
 	g3MacCommonComponent.addCapability("libMacCommon", "MAC Common")	
     g3MacCommonComponent.addDependency("mac_wrp_mac_common_dependency", "MAC Wrapper", False, True)
 	g3MacCommonComponent.setDisplayType("MAC Layer")
     
     ## PLC MAC
-	g3PlcMacComponent = Module.CreateComponent("g3PlcMac", "PLC MAC", "/SmartEnergy/Stacks/G3/MAC_Layer", "g3/config/g3_mac_plc.py")
+	g3PlcMacComponent = Module.CreateComponent("g3PlcMac", "PLC MAC", "/SmartEnergy/Stack/G3/MAC_Layer", "g3/config/g3_mac_plc.py")
 	g3PlcMacComponent.addCapability("libPlcMac", "PLC MAC")	
 	g3PlcMacComponent.addDependency("plc_mac_common_dependency", "MAC Common", False, True)
     g3PlcMacComponent.addDependency("plc_mac_wrapper_dependency", "MAC Wrapper", False, True)
