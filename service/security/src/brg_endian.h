@@ -38,7 +38,7 @@ Issue Date: 20/12/2007
 #  endif
 #elif defined( __GNUC__ )
 #  if !defined( __MINGW32__ ) && !defined( _AIX ) && !defined( __CC_ARM )
-#  include <machine/endian.h>
+#  include <endian.h>
 //#    if !defined( __BEOS__ )
 //#      include <byteswap.h>
 //#    endif

@@ -11,8 +11,8 @@
     Interface definition of the wrapper between G3 and Crypto.
 
   Description:
-    This file defines the interface for the wrapper between G3 
-	and Crypto. It includes calls to handle CCM, CMAC and EAX.
+    This file defines the interface for the wrapper between G3 and Crypto. 
+    It includes calls to handle CCM, CMAC and EAX.
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
@@ -102,7 +102,8 @@ int CIPHER_Wrapper_CmacStart(const unsigned char *key, unsigned int keyLen);
 	This function feeds an input buffer into an ongoing CMAC computation.
 
   Precondition:
-	The computation must be started earlier with a call to CIPHER_Wrapper_CmaStart.
+	The computation must be started earlier with a call to 
+    CIPHER_Wrapper_CmaStart.
 	
   Parameters:
     input		- Buffer holding the input data.
@@ -140,7 +141,8 @@ int CIPHER_Wrapper_CmacUpdate(const unsigned char *input, unsigned int ilen);
 	output buffer.
 
   Precondition:
-	The computation must be started earlier with a call to CIPHER_Wrapper_CmacStart.
+	The computation must be started earlier with a call to 
+    CIPHER_Wrapper_CmacStart.
 	
   Parameters:
     output		- Buffer holding the output data.
@@ -204,10 +206,14 @@ int CIPHER_Wrapper_CcmSetkey(const unsigned char *key, unsigned int keyLen);
 
 //******************************************************************************
 /* Function:
-    int CIPHER_Wrapper_CcmAuthDecrypt(unsigned int length, const unsigned char *iv,
-		                              unsigned int ivLen, const unsigned char *add, 
-						              unsigned int addLen, const unsigned char *input,
-		                              unsigned char *output, const unsigned char *tag, 
+    int CIPHER_Wrapper_CcmAuthDecrypt(unsigned int length, 
+                                      const unsigned char *iv,
+		                              unsigned int ivLen, 
+                                      const unsigned char *add, 
+						              unsigned int addLen, 
+                                      const unsigned char *input,
+		                              unsigned char *output, 
+                                      const unsigned char *tag, 
 						        	  unsigned int tagLen)
 
   Summary:
@@ -256,17 +262,23 @@ int CIPHER_Wrapper_CcmSetkey(const unsigned char *key, unsigned int keyLen);
 
 int CIPHER_Wrapper_CcmAuthDecrypt(unsigned int length, const unsigned char *iv,
 		                          unsigned int ivLen, const unsigned char *add, 
-						          unsigned int addLen, const unsigned char *input,
-		                          unsigned char *output, const unsigned char *tag, 
+						          unsigned int addLen, 
+                                  const unsigned char *input,
+		                          unsigned char *output, 
+                                  const unsigned char *tag, 
 						    	  unsigned int tagLen);
 
 //******************************************************************************
 /* Function:
-    int CIPHER_Wrapper_CcmEncryptAndTag(unsigned int length, const unsigned char *iv,
-		                               unsigned int ivLen, const unsigned char *add, 
-		    						   unsigned int addLen, const unsigned char *input,
-		                               unsigned char *output, unsigned char *tag, 
-							     	   unsigned int tagLen);
+    int CIPHER_Wrapper_CcmEncryptAndTag(unsigned int length, 
+                                        const unsigned char *iv,
+		                                unsigned int ivLen, 
+                                        const unsigned char *add, 
+		    						    unsigned int addLen, 
+                                        const unsigned char *input,
+		                                unsigned char *output, 
+                                        unsigned char *tag, 
+                                        unsigned int tagLen)
 
   Summary:
 	Performs a CCM authenticated encryption of a buffer.
@@ -312,10 +324,14 @@ int CIPHER_Wrapper_CcmAuthDecrypt(unsigned int length, const unsigned char *iv,
 	None.
 */
 
-int CIPHER_Wrapper_CcmEncryptAndTag(unsigned int length, const unsigned char *iv,
-		                            unsigned int ivLen, const unsigned char *add, 
-									unsigned int addLen, const unsigned char *input,
-		                            unsigned char *output, unsigned char *tag, 
+int CIPHER_Wrapper_CcmEncryptAndTag(unsigned int length, 
+                                    const unsigned char *iv,
+		                            unsigned int ivLen, 
+                                    const unsigned char *add, 
+									unsigned int addLen, 
+                                    const unsigned char *input,
+		                            unsigned char *output, 
+                                    unsigned char *tag, 
 									unsigned int tagLen);
 
 //******************************************************************************
@@ -476,8 +492,8 @@ int CIPHER_Wrapper_EaxDecrypt(const unsigned char *iv, unsigned int ivLen,
     None.
 
   Returns:
-	- CIPHER_WRAPPER_RETURN_GOOD   - Successful initalization.
-	- Any other value	           - Error in the initialization.
+	- CIPHER_WRAPPER_RETURN_GOOD   - Successful termination.
+	- Any other value	           - Error in the termination.
 
   Example:
     <code>

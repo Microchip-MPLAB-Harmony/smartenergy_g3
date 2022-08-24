@@ -8,11 +8,10 @@
     aes_wrapper.c
 
   Summary:
-    Interface definition of the AES wrapper between G3 and AES.
+    Interface implementation of the AES wrapper between G3 and AES.
 
   Description:
-    This file defines the interface for the wrapper between G3
-	and AES.
+    This file implements the interface for the wrapper between G3 and AES.
 *******************************************************************************/
 
 /*******************************************************************************
@@ -47,8 +46,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "definitions.h"
 #include "aes_wrapper.h"
-//#include "crypto/crypto.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -63,41 +62,47 @@ static uint8_t sKey[256];
 static uint16_t sKeyLen;
 
 /* AES context used in this wrapper */
-//CRYPT_AES_CTX sAesCtx;
+CRYPT_AES_CTX sAesCtx;
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: File scope functions
+// *****************************************************************************
+// *****************************************************************************
 
 void AES_Wrapper_Encrypt(const unsigned char *in, unsigned char *out)
 {
-	/* Set the AES key */
-	//CRYPT_AES_KeySet(&sAesCtx, sKey, sKeyLen, NULL, CRYPT_AES_ENCRYPTION);
+    /* Set the AES key */
+    CRYPT_AES_KeySet(&sAesCtx, sKey, sKeyLen, NULL, CRYPT_AES_ENCRYPTION);
 	
-	/* Trigger the AES */
-	//CRYPT_AES_DIRECT_Encrypt(&sAesCtx, out, in);
+    /* Trigger the AES */
+    CRYPT_AES_DIRECT_Encrypt(&sAesCtx, out, in);
 }
 
-int AES_Wrapper_Decrypt(const unsigned char *in, unsigned char *out)
+void AES_Wrapper_Decrypt(const unsigned char *in, unsigned char *out)
 {
-	/* Set the AES key */
-	//CRYPT_AES_KeySet(&sAesCtx, sKey, sKeyLen, NULL, CRYPT_AES_DECRYPTION);
+    /* Set the AES key */
+    CRYPT_AES_KeySet(&sAesCtx, sKey, sKeyLen, NULL, CRYPT_AES_DECRYPTION);
 
-	/* Trigger the AES */
-	//CRYPT_AES_DIRECT_Decrypt(&sAesCtx, out, in);
+    /* Trigger the AES */
+    CRYPT_AES_DIRECT_Decrypt(&sAesCtx, out, in);
 }
 
 void AES_Wrapper_KeySet(const unsigned char *key, unsigned int keyLen)
 {
-	/* Store the key */
-	memcpy(sKey, key, keyLen);
+    /* Store the key */
+    memcpy(sKey, key, keyLen);
 
-	/* Store the key size */
-	sKeyLen = keyLen;
+    /* Store the key size */
+    sKeyLen = keyLen;
 }
 
-int AES_Wrapper_SetEncryptKey(const unsigned char *key, unsigned int Len)
+void AES_Wrapper_SetEncryptKey(const unsigned char *key, unsigned int keyLen)
 {
-	//CRYPT_AES_KeySet(&sAesCtx, key, keyLen, NULL, CRYPT_AES_ENCRYPTION);
+    CRYPT_AES_KeySet(&sAesCtx, key, keyLen, NULL, CRYPT_AES_ENCRYPTION);
 }
 
-int AES_Wrapper_EncryptEcb(const unsigned char *in, unsigned char *out)
+void AES_Wrapper_EncryptEcb(const unsigned char *in, unsigned char *out)
 {
-	//CRYPT_AES_DIRECT_Encrypt(&sAesCtx, out, in);
+    CRYPT_AES_DIRECT_Encrypt(&sAesCtx, out, in);
 }

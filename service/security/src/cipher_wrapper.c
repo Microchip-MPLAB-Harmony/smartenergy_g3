@@ -8,11 +8,11 @@
     cipher_wrapper.h
 
   Summary:
-    Interface definition of the wrapper between G3 and Crypto.
+    Interface implementation of the wrapper between G3 and Crypto.
 
   Description:
-    This file defines the interface for the wrapper between G3 
-	and Crypto. It includes calls to handle CCM, CMAC and EAX.
+    This file implements the interface for the wrapper between G3 and Crypto. 
+    It includes calls to handle CCM, CMAC and EAX.
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
@@ -49,10 +49,10 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "definitions.h"
 #include "cipher_wrapper.h"
 #include "eax.h"
 #include "wolfssl/wolfcrypt/cmac.h"
-#include "wolfssl/wolfcrypt/aes.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -69,70 +69,85 @@ Aes sCcmCtx;
 /* EAX context used in this wrapper */
 eax_ctx sEaxCtx;
 
+// *****************************************************************************
+// *****************************************************************************
+// Section: File scope functions
+// *****************************************************************************
+// *****************************************************************************
+
 int CIPHER_Wrapper_CmacStart(const unsigned char *key, unsigned int keyLen)
 {
-	return wc_InitCmac(&sCmacCtx, key, keyLen, AES_ENCRYPTION, NULL);
+    return wc_InitCmac(&sCmacCtx, key, keyLen, AES_ENCRYPTION, NULL);
 }
 
 int CIPHER_Wrapper_CmacUpdate(const unsigned char *input, unsigned int ilen)
 {
-	return wc_CmacUpdate(&sCmacCtx, input, ilen);
+    return wc_CmacUpdate(&sCmacCtx, input, ilen);
 }
 
 int CIPHER_Wrapper_CmacFinish(unsigned char *output)
 {
-	uint32_t outputLen = AES_BLOCK_SIZE; 
+    unsigned int outputLen = AES_BLOCK_SIZE; 
 
-	return wc_CmacFinal(&sCmacCtx, output, &outputLen);
+    return wc_CmacFinal(&sCmacCtx, output, &outputLen);
 }
 
 int CIPHER_Wrapper_CcmSetkey(const unsigned char *key, unsigned int keyLen)
 {
-	return wc_AesCcmSetKey(&sCcmCtx, key, keyLen);
+    return wc_AesCcmSetKey(&sCcmCtx, key, keyLen);
 }
 
 int CIPHER_Wrapper_CcmAuthDecrypt(unsigned int length, const unsigned char *iv,
-		                          unsigned int ivLen, const unsigned char *add, 
-						          unsigned int addLen, const unsigned char *input,
-		                          unsigned char *output, const unsigned char *tag, 
-						    	  unsigned int tagLen);
+		                  unsigned int ivLen, const unsigned char *add, 
+                                  unsigned int addLen, 
+                                  const unsigned char *input,
+		                  unsigned char *output, 
+                                  const unsigned char *tag, 
+                                  unsigned int tagLen)
 {
-	return wc_AesCcmDecrypt(&sCcmCtx, output, input, length, iv, ivLen, tag, tagLen, add, addLen);
+    return wc_AesCcmDecrypt(&sCcmCtx, output, input, length, iv, ivLen, tag, 
+                            tagLen, add, addLen);
 }
 
-int CIPHER_Wrapper_CcmEncryptAndTag(unsigned int length, const unsigned char *iv,
-		                            unsigned int ivLen, const unsigned char *add, 
-									unsigned int addLen, const unsigned char *input,
-		                            unsigned char *output, unsigned char *tag, 
-									unsigned int tagLen);
+int CIPHER_Wrapper_CcmEncryptAndTag(unsigned int length, 
+                                    const unsigned char *iv,
+		                    unsigned int ivLen, 
+                                    const unsigned char *add, 
+                                    unsigned int addLen, 
+                                    const unsigned char *input,
+		                    unsigned char *output, unsigned char *tag, 
+                                    unsigned int tagLen)
 {
-	return wc_AesCcmEncrypt(&sCcmCtx, output, input, length, iv, ivLen, tag, tagLen, add, addLen);
+    return wc_AesCcmEncrypt(&sCcmCtx, output, input, length, iv, ivLen, tag, 
+                            tagLen, add, addLen);
 }
 
 int CIPHER_Wrapper_EaxInitKey(const unsigned char *key, unsigned int keyLen)
 {
-	return eax_init_and_key(key, keyLen, &sEaxCtx);
+    return eax_init_and_key(key, keyLen, &sEaxCtx);
 }
 
 int CIPHER_Wrapper_EaxEncrypt(const unsigned char *iv, unsigned int ivLen,
-		                      const unsigned char *hdr, unsigned int hdrLen, 
-							  unsigned char *msg, unsigned int msgLen,
-		                      unsigned char *tag, unsigned int tagLen)
+		              const unsigned char *hdr, unsigned int hdrLen, 
+                              unsigned char *msg, unsigned int msgLen,
+		              unsigned char *tag, unsigned int tagLen)
 {
-	return eax_encrypt_message(iv, ivLen, hdr, hdrLen, msg, msgLen, tag, tagLen, &sEaxCtx);
+    return eax_encrypt_message(iv, ivLen, hdr, hdrLen, msg, msgLen, tag, 
+                               tagLen, &sEaxCtx);
 }
 
 int CIPHER_Wrapper_EaxDecrypt(const unsigned char *iv, unsigned int ivLen,
-		                      const unsigned char *hdr, unsigned int hdrLen, 
-							  unsigned char *msg, unsigned int msgLen,
-		                      const unsigned char *tag, unsigned int tagLen)
+		              const unsigned char *hdr, unsigned int hdrLen, 
+                              unsigned char *msg, unsigned int msgLen,
+		              const unsigned char *tag, unsigned int tagLen)
 {
-	return eax_decrypt_message(iv, ivLen, hdr, hdrLen, msg, msgLen, tag, tagLen, &sEaxCtx);
+    return eax_decrypt_message(iv, ivLen, hdr, hdrLen, msg, msgLen, tag, 
+                               tagLen, &sEaxCtx);
 }
 
 int CIPHER_Wrapper_EaxEnd(void) 
 {
-	return eax_end(&sEaxCtx);
+    return eax_end(&sEaxCtx);
 }
 
 #if defined(__cplusplus)

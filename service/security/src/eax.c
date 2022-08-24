@@ -55,10 +55,10 @@ extern "C"
         memset(ctx, 0, sizeof(eax_ctx));
 
         /* set the AES key                          */
-        aes_key(key, key_len);
+        AES_Wrapper_KeySet(key, key_len);
 
         /* compute E(0) (needed for the pad values) */
-        aes_encrypt(UI8_PTR(ctx->pad_xvv), UI8_PTR(ctx->pad_xvv));
+        AES_Wrapper_Encrypt(UI8_PTR(ctx->pad_xvv), UI8_PTR(ctx->pad_xvv));
 
         /* compute {02} * {E(0)} and {04} * {E(0)}  */
         /* GF(2^128) mod x^128 + x^7 + x^2 + x + 1  */
@@ -109,7 +109,7 @@ extern "C"
             {
                 if (n_pos == EAX_BLOCK_SIZE)
                 {
-                    aes_encrypt(UI8_PTR(ctx->nce_cbc), UI8_PTR(ctx->nce_cbc));
+                    AES_Wrapper_Encrypt(UI8_PTR(ctx->nce_cbc), UI8_PTR(ctx->nce_cbc));
                     n_pos = 0;
                 }
                 UI8_PTR(ctx->nce_cbc)[n_pos++] ^= iv[i++];
@@ -134,7 +134,7 @@ extern "C"
         }
 
         /* compute the OMAC*(nonce) value           */
-        aes_encrypt(UI8_PTR(ctx->nce_cbc), UI8_PTR(ctx->nce_cbc));
+        AES_Wrapper_Encrypt(UI8_PTR(ctx->nce_cbc), UI8_PTR(ctx->nce_cbc));
 
         /* copy value into counter for CTR          */
         memcpy(ctx->ctr_val, ctx->nce_cbc, EAX_BLOCK_SIZE);
@@ -172,7 +172,7 @@ extern "C"
 
             while (cnt + BLOCK_SIZE <= hdr_len)
             {
-                aes_encrypt(UI8_PTR(ctx->hdr_cbc), UI8_PTR(ctx->hdr_cbc));
+                AES_Wrapper_Encrypt(UI8_PTR(ctx->hdr_cbc), UI8_PTR(ctx->hdr_cbc));
                 xor_block_aligned(ctx->hdr_cbc, ctx->hdr_cbc, hdr + cnt);
                 cnt += BLOCK_SIZE;
             }
@@ -187,7 +187,7 @@ extern "C"
 
             while (cnt + BLOCK_SIZE <= hdr_len)
             {
-                aes_encrypt(UI8_PTR(ctx->hdr_cbc), UI8_PTR(ctx->hdr_cbc));
+                AES_Wrapper_Encrypt(UI8_PTR(ctx->hdr_cbc), UI8_PTR(ctx->hdr_cbc));
                 xor_block(ctx->hdr_cbc, ctx->hdr_cbc, hdr + cnt);
                 cnt += BLOCK_SIZE;
             }
@@ -197,7 +197,7 @@ extern "C"
         {
             if (b_pos == BLOCK_SIZE || !b_pos)
             {
-                aes_encrypt(UI8_PTR(ctx->hdr_cbc), UI8_PTR(ctx->hdr_cbc));
+                AES_Wrapper_Encrypt(UI8_PTR(ctx->hdr_cbc), UI8_PTR(ctx->hdr_cbc));
                 b_pos = 0;
             }
             UI8_PTR(ctx->hdr_cbc)[b_pos++] ^= hdr[cnt++];
@@ -238,7 +238,7 @@ extern "C"
 
             while (cnt + BLOCK_SIZE <= data_len)
             {
-                aes_encrypt(UI8_PTR(ctx->txt_cbc), UI8_PTR(ctx->txt_cbc));
+                AES_Wrapper_Encrypt(UI8_PTR(ctx->txt_cbc), UI8_PTR(ctx->txt_cbc));
                 xor_block_aligned(ctx->txt_cbc, ctx->txt_cbc, data + cnt);
                 cnt += BLOCK_SIZE;
             }
@@ -253,7 +253,7 @@ extern "C"
 
             while (cnt + BLOCK_SIZE <= data_len)
             {
-                aes_encrypt(UI8_PTR(ctx->txt_cbc), UI8_PTR(ctx->txt_cbc));
+                AES_Wrapper_Encrypt(UI8_PTR(ctx->txt_cbc), UI8_PTR(ctx->txt_cbc));
                 xor_block(ctx->txt_cbc, ctx->txt_cbc, data + cnt);
                 cnt += BLOCK_SIZE;
             }
@@ -263,7 +263,7 @@ extern "C"
         {
             if (b_pos == BLOCK_SIZE || !b_pos)
             {
-                aes_encrypt(UI8_PTR(ctx->txt_cbc), UI8_PTR(ctx->txt_cbc));
+                AES_Wrapper_Encrypt(UI8_PTR(ctx->txt_cbc), UI8_PTR(ctx->txt_cbc));
                 b_pos = 0;
             }
             UI8_PTR(ctx->txt_cbc)[b_pos++] ^= data[cnt++];
@@ -304,7 +304,7 @@ extern "C"
 
             while (cnt + BLOCK_SIZE <= data_len)
             {
-                aes_encrypt(UI8_PTR(ctx->ctr_val), UI8_PTR(ctx->enc_ctr));
+                AES_Wrapper_Encrypt(UI8_PTR(ctx->ctr_val), UI8_PTR(ctx->enc_ctr));
                 inc_ctr(ctx->ctr_val);
                 xor_block_aligned(data + cnt, data + cnt, ctx->enc_ctr);
                 cnt += BLOCK_SIZE;
@@ -320,7 +320,7 @@ extern "C"
 
             while (cnt + BLOCK_SIZE <= data_len)
             {
-                aes_encrypt(UI8_PTR(ctx->ctr_val), UI8_PTR(ctx->enc_ctr));
+                AES_Wrapper_Encrypt(UI8_PTR(ctx->ctr_val), UI8_PTR(ctx->enc_ctr));
                 inc_ctr(ctx->ctr_val);
                 xor_block(data + cnt, data + cnt, ctx->enc_ctr);
                 cnt += BLOCK_SIZE;
@@ -331,7 +331,7 @@ extern "C"
         {
             if (b_pos == BLOCK_SIZE || !b_pos)
             {
-                aes_encrypt(UI8_PTR(ctx->ctr_val), UI8_PTR(ctx->enc_ctr));
+                AES_Wrapper_Encrypt(UI8_PTR(ctx->ctr_val), UI8_PTR(ctx->enc_ctr));
                 b_pos = 0;
                 inc_ctr(ctx->ctr_val);
             }
@@ -365,7 +365,7 @@ extern "C"
         }
 
         xor_block_aligned(ctx->hdr_cbc, ctx->hdr_cbc, p);
-        aes_encrypt(UI8_PTR(ctx->hdr_cbc), UI8_PTR(ctx->hdr_cbc));
+        AES_Wrapper_Encrypt(UI8_PTR(ctx->hdr_cbc), UI8_PTR(ctx->hdr_cbc));
 
         /* complete OMAC* for ciphertext value  */
         p = UI8_PTR(ctx->pad_xvv);
@@ -377,7 +377,7 @@ extern "C"
         }
 
         xor_block_aligned(ctx->txt_cbc, ctx->txt_cbc, p);
-        aes_encrypt(UI8_PTR(ctx->txt_cbc), UI8_PTR(ctx->txt_cbc));
+        AES_Wrapper_Encrypt(UI8_PTR(ctx->txt_cbc), UI8_PTR(ctx->txt_cbc));
 
         /* compute final authentication tag     */
         for (i = 0; i < (unsigned int)tag_len; ++i)

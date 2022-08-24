@@ -22,6 +22,7 @@ Issue Date: 20/12/2007
 #define _EAX_H
 
 #include "brg_types.h"
+#include "wolfssl/wolfcrypt/aes.h"
 
 /*  This define sets the memory alignment that will be used for fast move
     and xor operations on buffers when the alignment matches this value.
@@ -61,9 +62,9 @@ extern "C"
 # define RETURN_ERROR    -1
 #endif
 
-#ifndef AES_BLOCK_SIZE
-# define AES_BLOCK_SIZE  16  /* the AES block size in bytes */
-#endif
+//#ifndef AES_BLOCK_SIZE
+//# define AES_BLOCK_SIZE  16  /* the AES block size in bytes */
+//#endif
 
 #ifndef RET_TYPE_DEFINED
     typedef int  ret_type;

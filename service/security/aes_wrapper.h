@@ -11,8 +11,7 @@
     Interface definition of the AES wrapper between G3 and AES.
 
   Description:
-    This file defines the interface for the wrapper between G3
-	and AES.
+    This file defines the interface for the wrapper between G3 and AES.
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
@@ -117,7 +116,7 @@ void AES_Wrapper_Encrypt(const unsigned char *in, unsigned char *out);
 	Input and output buffers must be equal in size (CRYPT_AES_BLOCK_SIZE).
 */
 
-int AES_Wrapper_Decrypt(const unsigned char *in, unsigned char *out);
+void AES_Wrapper_Decrypt(const unsigned char *in, unsigned char *out);
 
 //******************************************************************************
 /* Function:

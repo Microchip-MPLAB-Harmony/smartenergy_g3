@@ -27,54 +27,54 @@ def loadModule():
 
     ###########  G3 Stack MAC Layer Configurations  ###########
     ## MAC Wrapper
-    g3MacWrpComponent = Module.CreateComponent("g3MacWrapper", "MAC Wrapper", "/SmartEnergy/Stack/G3/MAC_Layer", "g3/config/g3_mac_wrapper.py")
+    g3MacWrpComponent = Module.CreateComponent("g3MacWrapper", "MAC Wrapper", "/SmartEnergy/Stack/G3/MAC Layer", "g3/config/g3_mac_wrapper.py")
     g3MacWrpComponent.addCapability("libMacWrapper", "MAC Wrapper") 
     g3MacWrpComponent.setDisplayType("MAC Layer")
     
     ## MAC Common
-    g3MacCommonComponent = Module.CreateComponent("g3MacCommon", "MAC Common", "/SmartEnergy/Stack/G3/MAC_Layer", "g3/config/g3_mac_common.py")
+    g3MacCommonComponent = Module.CreateComponent("g3MacCommon", "MAC Common", "/SmartEnergy/Stack/G3/MAC Layer", "g3/config/g3_mac_common.py")
     g3MacCommonComponent.addCapability("libMacCommon", "MAC Common")    
     g3MacCommonComponent.addDependency("mac_wrp_mac_common_dependency", "MAC Wrapper", False, True)
     g3MacCommonComponent.setDisplayType("MAC Layer")
     
     ## PLC MAC
-    g3PlcMacComponent = Module.CreateComponent("g3PlcMac", "PLC MAC", "/SmartEnergy/Stack/G3/MAC_Layer", "g3/config/g3_mac_plc.py")
+    g3PlcMacComponent = Module.CreateComponent("g3PlcMac", "PLC MAC", "/SmartEnergy/Stack/G3/MAC Layer", "g3/config/g3_mac_plc.py")
     g3PlcMacComponent.addCapability("libPlcMac", "PLC MAC") 
     g3PlcMacComponent.addDependency("plc_mac_common_dependency", "MAC Common", False, True)
     g3PlcMacComponent.addDependency("plc_mac_wrapper_dependency", "MAC Wrapper", False, True)
     g3PlcMacComponent.addDependency("plc_srv_random_dependency", "Random", False, True)
-    g3PlcMacComponent.addDependency("plc_srv_crypto_dependency", "Crypto", False, True)
+    g3PlcMacComponent.addDependency("plc_srv_security_dependency", "SRV_SECURITY", False, True)
     g3PlcMacComponent.addDependency("plc_srv_g3_macrt_dependency", "G3_MAC_RT", False, True)
     g3PlcMacComponent.setDisplayType("MAC Layer")
     
     ## RF MAC
-    g3RfMacComponent = Module.CreateComponent("g3RfMac", "RF MAC", "/SmartEnergy/Stack/G3/MAC_Layer", "g3/config/g3_mac_rf.py")
+    g3RfMacComponent = Module.CreateComponent("g3RfMac", "RF MAC", "/SmartEnergy/Stack/G3/MAC Layer", "g3/config/g3_mac_rf.py")
     g3RfMacComponent.addCapability("libRfMac", "RF MAC")    
     g3RfMacComponent.addDependency("rf_mac_common_dependency", "MAC Common", False, True)
     g3RfMacComponent.addDependency("rf_mac_wrapper_dependency", "MAC Wrapper", False, True)
     g3RfMacComponent.addDependency("rf_srv_random_dependency", "Random", False, True)
-    g3RfMacComponent.addDependency("rf_srv_crypto_dependency", "Crypto", False, True)
+    g3RfMacComponent.addDependency("rf_srv_security_dependency", "SRV_SECURITY", False, True)
     ##g3RfMacComponent.addDependency("rf_srv_g3_pal215_dependency", "G3_PAL_RF", False, True)   ## TBD
     g3RfMacComponent.setDisplayType("MAC Layer")
     
     ###########  G3 LIBRARY Adaptation Layer Configurations  ###########
     ## ADP
-    g3AdpComponent = Module.CreateComponent("g3ADP", "ADP", "/SmartEnergy/Stack/G3/Adaptation_Layer", "g3/config/g3_adp.py")
+    g3AdpComponent = Module.CreateComponent("g3ADP", "ADP", "/SmartEnergy/Stack/G3/Adaptation Layer", "g3/config/g3_adp.py")
     g3AdpComponent.addCapability("libADP", "ADP")   
     g3AdpComponent.addDependency("adp_loadng_dependency", "LOADng", False, True)
     g3AdpComponent.addDependency("adp_srv_random_dependency", "Random", False, True)
-    g3AdpComponent.addDependency("adp_srv_crypto_dependency", "Crypto", False, True)
+    g3AdpComponent.addDependency("adp_srv_security_dependency", "SRV_SECURITY", False, True)
     g3AdpComponent.setDisplayType("Adaptation Layer")
     
     ## LOADng
-    g3LOADngComponent = Module.CreateComponent("g3LOADng", "LOADng", "/SmartEnergy/Stack/G3/Adaptation_Layer", "g3/config/g3_loadng.py")
+    g3LOADngComponent = Module.CreateComponent("g3LOADng", "LOADng", "/SmartEnergy/Stack/G3/Adaptation Layer", "g3/config/g3_loadng.py")
     g3LOADngComponent.addCapability("libLOADng", "LOADNG")  
     g3LOADngComponent.addDependency("loadng_srv_random_dependency", "Random", False, True)
     g3LOADngComponent.addDependency("loadng_srv_queue_dependency", "Queue", False, True)
     g3LOADngComponent.setDisplayType("Adaptation Layer")
     
     ## Bootstrap
-    g3BootstrapComponent = Module.CreateComponent("g3Bootstrap", "Bootstrap", "/SmartEnergy/Stack/G3/Adaptation_Layer", "g3/config/srv_bootstrap.py")
+    g3BootstrapComponent = Module.CreateComponent("g3Bootstrap", "Bootstrap", "/SmartEnergy/Stack/G3/Adaptation Layer", "g3/config/srv_bootstrap.py")
     g3BootstrapComponent.addCapability("libBootstrap", "Bootstrap") 
     g3BootstrapComponent.addDependency("bootstrap_srv_random_dependency", "Random", False, True)
     g3BootstrapComponent.setDisplayType("Adaptation Layer")
@@ -85,22 +85,22 @@ def loadModule():
     g3CoordinatorComponent.setDisplayType("Coordinator")
     
     ###########  G3 Stack Services Configurations  ###########   
-    ## Crypto
-    srvCryptoComponent = Module.CreateComponent("srvCrypto", "Crypto", "/SmartEnergy/Stack/Services", "service/crypto/config/srv_crypto.py")
-    srvCryptoComponent.addCapability("libsrvCrypto", "SRV_CRYPTO")  
-    srvCryptoComponent.addDependency("lib_mac_crypto_dependency", "LIB_CRYPTO", False, True)
-    srvCryptoComponent.setDisplayType("Crypto Service")
+    ## Security
+    srvSecurityComponent = Module.CreateComponent("srvSecurity", "Security", "/SmartEnergy/Stack/Services", "service/security/config/srv_security.py")
+    srvSecurityComponent.addCapability("libsrvSecurity", "SRV_SECURITY", True)  
+    srvSecurityComponent.addDependency("security_crypto_dependency", "LIB_CRYPTO", True, True)
+    srvSecurityComponent.setDisplayType("Security Service")
     
     ############################### G3 STACK CONFIGURATOR #####################################
 
-    g3AutoConfigMacComponent = Module.CreateComponent("g3_mac_config", "G3 MAC Layer Configurator", "/SmartEnergy/Stack/G3/MAC_Layer/", "g3/config/g3_configurator_mac.py")
+    g3AutoConfigMacComponent = Module.CreateComponent("g3_mac_config", "G3 MAC Layer Configurator", "/SmartEnergy/Stack/G3/MAC Layer/", "g3/config/g3_configurator_mac.py")
     g3AutoConfigMacComponent.setDisplayType("MAC Configurator")
     
-    g3AutoConfigPlcComponent = Module.CreateComponent("g3_mac_plc_config", "G3 PLC MAC Configurator", "/SmartEnergy/Stack/G3/MAC_Layer/", "g3/config/g3_configurator_mac_plc.py")
+    g3AutoConfigPlcComponent = Module.CreateComponent("g3_mac_plc_config", "G3 PLC MAC Configurator", "/SmartEnergy/Stack/G3/MAC Layer/", "g3/config/g3_configurator_mac_plc.py")
     g3AutoConfigPlcComponent.setDisplayType("PLC MAC Configurator")
     
-    g3AutoConfigRfComponent = Module.CreateComponent("g3_mac_rf_config", "G3 RF MAC Configurator", "/SmartEnergy/Stack/G3/MAC_Layer/", "g3/config/g3_configurator_mac_rf.py")
+    g3AutoConfigRfComponent = Module.CreateComponent("g3_mac_rf_config", "G3 RF MAC Configurator", "/SmartEnergy/Stack/G3/MAC Layer/", "g3/config/g3_configurator_mac_rf.py")
     g3AutoConfigRfComponent.setDisplayType("RF MAC Configurator")
     
-    g3AutoConfigAdaptComponent = Module.CreateComponent("g3_adapt_config", "G3 Adaptation Layer Configurator", "/SmartEnergy/Stack/G3/MAC_Layer/", "g3/config/g3_configurator_adapt.py")
+    g3AutoConfigAdaptComponent = Module.CreateComponent("g3_adapt_config", "G3 Adaptation Layer Configurator", "/SmartEnergy/Stack/G3/Adaptation Layer/", "g3/config/g3_configurator_adapt.py")
     g3AutoConfigAdaptComponent.setDisplayType("Adaptation Configurator")   
