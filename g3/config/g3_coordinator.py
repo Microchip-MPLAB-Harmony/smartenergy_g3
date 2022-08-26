@@ -29,3 +29,18 @@ def instantiateComponent(g3CoordinatorComponent):
     #### Code Generation ####
     ############################################################################
     configName = Variables.get("__CONFIGURATION_NAME")
+    
+    # Coordinator Files
+    pCoordinatorSource = g3CoordinatorComponent.createFileSymbol("COORDINATOR_SOURCE", None)
+    pCoordinatorSource.setSourcePath("g3/src/coordinator/coordinator.c")
+    pCoordinatorSource.setOutputName("coordinator.c")
+    pCoordinatorSource.setDestPath("stack/g3/")
+    pCoordinatorSource.setProjectPath("config/" + configName + "/stack/g3/coordinator")
+    pCoordinatorSource.setType("SOURCE")
+    
+    pCoordinatorHeader = g3CoordinatorComponent.createFileSymbol("COORDINATOR_HEADER", None)
+    pCoordinatorHeader.setSourcePath("g3/src/coordinator/coordinator.h")
+    pCoordinatorHeader.setOutputName("coordinator.h")
+    pCoordinatorHeader.setDestPath("stack/g3")
+    pCoordinatorHeader.setProjectPath("config/" + configName + "/stack/g3/coordinator")
+    pCoordinatorHeader.setType("HEADER")

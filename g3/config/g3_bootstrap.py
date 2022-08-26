@@ -31,3 +31,16 @@ def instantiateComponent(g3BootstrapComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
     
     # Bootstrap Files
+    pBootstrapSource = g3BootstrapComponent.createFileSymbol("BOOTSTRAP_SOURCE", None)
+    pBootstrapSource.setSourcePath("g3/src/bootstrap/bootstrap.c")
+    pBootstrapSource.setOutputName("bootstrap.c")
+    pBootstrapSource.setDestPath("stack/g3/")
+    pBootstrapSource.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    pBootstrapSource.setType("SOURCE")
+    
+    pBootstrapHeader = g3BootstrapComponent.createFileSymbol("BOOTSTRAP_HEADER", None)
+    pBootstrapHeader.setSourcePath("g3/src/bootstrap/bootstrap.h")
+    pBootstrapHeader.setOutputName("bootstrap.h")
+    pBootstrapHeader.setDestPath("stack/g3")
+    pBootstrapHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    pBootstrapHeader.setType("HEADER")
