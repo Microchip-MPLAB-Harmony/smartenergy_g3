@@ -57,7 +57,7 @@ def loadModule():
     g3RfMacComponent.addDependency("rf_mac_wrapper_dependency", "MAC Wrapper", True, True)
     g3RfMacComponent.addDependency("rf_srv_random_dependency", "Random", True, True)
     g3RfMacComponent.addDependency("rf_srv_security_dependency", "Security", True, True)
-    ##g3RfMacComponent.addDependency("rf_srv_g3_pal215_dependency", "G3_PAL_RF", False, True)   ## TBD
+    # TBD g3RfMacComponent.addDependency("rf_srv_g3_pal215_dependency", "G3_PAL_RF", False, True)
     # TBD optional dependencies to logger and storage
     g3RfMacComponent.setDisplayType("MAC Layer")
     
@@ -71,6 +71,7 @@ def loadModule():
     g3AdpComponent.addDependency("adp_srv_random_dependency", "Random", True, True)
     g3AdpComponent.addDependency("adp_srv_queue_dependency", "Queue", True, True)
     g3AdpComponent.addDependency("adp_srv_security_dependency", "Security", True, True)
+    g3AdpComponent.addDependency("adp_sys_time_dependency", "SYS_TIME", True, True)
     # TBD optional dependencies to logger and serialization and storage
     g3AdpComponent.setDisplayType("Adaptation Layer")
     
@@ -80,6 +81,7 @@ def loadModule():
     g3LOADngComponent.addDependency("loadng_mac_wrapper_dependency", "MAC Wrapper", True, True)
     g3LOADngComponent.addDependency("loadng_srv_random_dependency", "Random", True, True)
     g3LOADngComponent.addDependency("loadng_srv_queue_dependency", "Queue", True, True)
+    g3LOADngComponent.addDependency("adp_sys_time_dependency", "SYS_TIME", True, True)
     # TBD optional dependencies to logger and serialization and storage
     g3LOADngComponent.setDisplayType("Adaptation Layer")
     
@@ -88,6 +90,7 @@ def loadModule():
     g3BootstrapComponent.addCapability("libBootstrap", "Bootstrap", True) 
     g3BootstrapComponent.addDependency("bootstrap_srv_random_dependency", "Random", True, True)
     g3BootstrapComponent.addDependency("bootstrap_srv_security_dependency", "Security", True, True)
+    g3BootstrapComponent.addDependency("adp_sys_time_dependency", "SYS_TIME", True, True)
     g3BootstrapComponent.setDisplayType("Adaptation Layer")
     
     ###########  G3 Coordinator Configurations  ###########
