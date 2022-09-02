@@ -21,96 +21,27 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
 
-def instantiateComponent(g3AutoConfigAdaptComponent):
-   
-    g3AutoConfigStackGroup = Database.findGroup("G3 STACK")
-    if (g3AutoConfigStackGroup == None):
-        g3AutoConfigStackGroup = Database.createGroup(None, "G3 STACK")
-        
-    g3AutoConfigAdaptGroup = Database.findGroup("ADAPTATION LAYER")
-    if (g3AutoConfigAdaptGroup == None):
-        g3AutoConfigAdaptGroup = Database.createGroup("G3 STACK", "ADAPTATION LAYER")   
+def instantiateComponent(g3ConfigAdaptComponent):
+    Log.writeInfoMessage("Loading Adaptation Layer Configurator for G3")
 
-    # Enable Adaptation Layer Configurator
-    g3AutoConfigAdaptEnable = g3AutoConfigAdaptComponent.createBooleanSymbol("G3_AUTOCONFIG_ADAPT_ENABLE", None)
-    g3AutoConfigAdaptEnable.setVisible(False)
-    g3AutoConfigAdaptEnable.setDefaultValue(True)
+    # Enable LOADng Configuration
+    g3ConfigLOADng = g3ConfigAdaptComponent.createBooleanSymbol("LOADNG_ENABLE", None)
+    g3ConfigLOADng.setLabel("Enable LOADng Routing")
+    g3ConfigLOADng.setVisible(True)
+    g3ConfigLOADng.setDescription("Enable LOADng Routing Protocol")
+    g3ConfigLOADng.setDependencies(g3LOADngEnable, ["LOADNG_ENABLE"])
+    g3ConfigLOADng.setDefaultValue(True)
 
-    # Enable ADP
-    g3AutoConfigADP = g3AutoConfigAdaptComponent.createBooleanSymbol("G3_AUTOCONFIG_ENABLE_ADP", None)
-    g3AutoConfigADP.setLabel("ADP")
-    g3AutoConfigADP.setVisible(True)
-    g3AutoConfigADP.setDescription("Enable ADP") 
-    g3AutoConfigADP.setDependencies(g3AutoConfigADPEnable, ["G3_AUTOCONFIG_ENABLE_ADP"])
 
-    # Enable LOADng
-    g3AutoConfigLOADng = g3AutoConfigAdaptComponent.createBooleanSymbol("G3_AUTOCONFIG_ENABLE_LOADNG", None)
-    g3AutoConfigLOADng.setLabel("LOADng")
-    g3AutoConfigLOADng.setVisible(True)
-    g3AutoConfigLOADng.setDescription("Enable LOADng") 
-    g3AutoConfigLOADng.setDependencies(g3AutoConfigLOADngEnable, ["G3_AUTOCONFIG_ENABLE_LOADNG"])
+#def finalizeComponent(g3ConfigAdaptComponent):
 
-    # Enable Bootstrap
-    g3AutoConfigBootstrap = g3AutoConfigAdaptComponent.createBooleanSymbol("G3_AUTOCONFIG_ENABLE_BOOTSTRAP", None)
-    g3AutoConfigBootstrap.setLabel("Bootstrap")
-    g3AutoConfigBootstrap.setVisible(True)
-    g3AutoConfigBootstrap.setDescription("Enable Bootstrap") 
-    g3AutoConfigBootstrap.setDependencies(g3AutoConfigBootstrapEnable, ["G3_AUTOCONFIG_ENABLE_BOOTSTRAP"])
-
-########################################################################################################
-def finalizeComponent(g3AutoConfigAdaptComponent):
-    g3AutoConfigAdaptGroup = Database.findGroup("ADAPTATION LAYER")
-    g3AutoConfigAdaptGroup.addComponent(g3AutoConfigAdaptComponent.getID())
-
-    if(Database.getSymbolValue("g3_mac_config", "G3_AUTOCONFIG_MAC_ENABLE") != True) and (Database.getSymbolValue("g3_coordinator_config", "G3_AUTOCONFIG_COORDINATOR_ENABLE") != True):
-        Database.setActiveGroup("ADAPTATION LAYER")  
-#######################################################################################################
-def enableG3AutoConfigAdapt(enable):
-
-    if(enable == True):
-        g3AutoConfigMacGroup = Database.findGroup("MAC LAYER")
-        if (g3AutoConfigMacGroup == None):
-            g3AutoConfigMacGroup = Database.createGroup("G3 STACK", "MAC LAYER")
-            
-        g3AutoConfigAdaptGroup = Database.findGroup("ADAPTATION LAYER")
-        if (g3AutoConfigAdaptGroup == None):
-            g3AutoConfigAdaptGroup = Database.createGroup("G3 STACK", "ADAPTATION LAYER")
-
-        if(Database.getComponentByID("g3_mac_config") == None):
-            res = g3AutoConfigMacGroup.addComponent("g3_mac_config")
-            res = Database.activateComponents(["g3_mac_config"], "MAC LAYER", False)
-
-################# Adaptation Layer #########################################  
-def g3AutoConfigADPEnable(symbol, event):
-    g3AutoConfigAdaptGroup = Database.findGroup("ADAPTATION LAYER")
-    enableG3AutoConfigAdapt(True)
+def g3LOADngEnable(symbol, event):
+    #g3AdaptGroup = Database.findGroup("ADAPTATION LAYER")
     if (event["value"] == True):
-        res = Database.activateComponents(["g3ADP"], "ADAPTATION LAYER")  
-        g3AutoConfigAdaptGroup.setAttachmentVisible("g3ADP", "libADP")
-        if(Database.getSymbolValue("g3_mac_config", "G3_AUTOCONFIG_ENABLE_MAC_WRAPPER") != True):
-            setVal("g3_mac_config", "G3_AUTOCONFIG_ENABLE_MAC_WRAPPER", True)
+        Database.activateComponents(["g3LOADng"], "ADAPTATION LAYER")
+        #g3AdaptGroup.setAttachmentVisible("g3LOADng", "libLOADng")
     else:
-        res = Database.deactivateComponents(["g3ADP"])
-
-def g3AutoConfigLOADngEnable(symbol, event):
-    g3AutoConfigAdaptGroup = Database.findGroup("ADAPTATION LAYER")
-    enableG3AutoConfigAdapt(True)
-    if (event["value"] == True):
-        res = Database.activateComponents(["g3LOADng"], "ADAPTATION LAYER")  
-        g3AutoConfigAdaptGroup.setAttachmentVisible("g3LOADng", "libLOADng")
-        if(Database.getSymbolValue("g3_mac_config", "G3_AUTOCONFIG_ENABLE_MAC_WRAPPER") != True):
-            setVal("g3_mac_config", "G3_AUTOCONFIG_ENABLE_MAC_WRAPPER", True)
-    else:
-        res = Database.deactivateComponents(["g3LOADng"])
-
-def g3AutoConfigBootstrapEnable(symbol, event):
-    g3AutoConfigAdaptGroup = Database.findGroup("ADAPTATION LAYER")
-    enableG3AutoConfigAdapt(True)
-    if (event["value"] == True):
-        res = Database.activateComponents(["g3Bootstrap"], "ADAPTATION LAYER")  
-        g3AutoConfigAdaptGroup.setAttachmentVisible("g3Bootstrap", "libBootstrap")
-    else:
-        res = Database.deactivateComponents(["g3Bootstrap"])
+        Database.deactivateComponents(["g3LOADng"])
 
 #Set symbols of other components
 def setVal(component, symbol, value):

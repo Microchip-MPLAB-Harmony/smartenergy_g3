@@ -30,6 +30,8 @@ def loadModule():
     g3MacWrpComponent = Module.CreateComponent("g3MacWrapper", "MAC Wrapper", "/SmartEnergy/Stack/G3/MAC Layer", "g3/config/g3_mac_wrapper.py")
     g3MacWrpComponent.addCapability("libMacWrapper", "MAC Wrapper", True) 
     g3MacWrpComponent.addDependency("macwrp_mac_common_dependency", "MAC Common", True, True)
+    g3MacWrpComponent.addDependency("macwrp_plc_mac_dependency", "PLC MAC", True, False)
+    g3MacWrpComponent.addDependency("macwrp_rf_mac_dependency", "RF MAC", True, False)
     # TBD optional dependencies to logger and serialization    
     g3MacWrpComponent.setDisplayType("MAC Layer")
     
@@ -93,15 +95,15 @@ def loadModule():
     g3BootstrapComponent.addDependency("adp_sys_time_dependency", "SYS_TIME", True, True)
     g3BootstrapComponent.setDisplayType("Adaptation Layer")
     
-    ###########  G3 Coordinator Configurations  ###########
-    g3CoordinatorComponent = Module.CreateComponent("g3Coordinator", "Coordinator", "/SmartEnergy/Stack/G3/Coordinator", "g3/config/g3_coordinator.py")
-    g3CoordinatorComponent.addCapability("libCoordinator", "Coordinator")  
-    g3CoordinatorComponent.addDependency("coordinator_adp_dependency", "ADP", True, True)  
-    g3CoordinatorComponent.addDependency("coordinator_bootstrap_dependency", "Bootstrap", True, True)  
-    # TBD optional dependencies to logger and serialization    
-    g3CoordinatorComponent.setDisplayType("Coordinator")
+    ###########  G3 EAP Server Configurations  ###########
+    g3EAPComponent = Module.CreateComponent("g3EAPServer", "EAP Server", "/SmartEnergy/Stack/G3/EAP Server", "g3/config/g3_eap_server.py")
+    g3EAPComponent.addCapability("libEAPServer", "EAP Server")
+    g3EAPComponent.addDependency("eap_adp_dependency", "ADP", True, True)
+    g3EAPComponent.addDependency("eap_bootstrap_dependency", "Bootstrap", True, True)
+    # TBD optional dependencies to logger and serialization
+    g3EAPComponent.setDisplayType("EAP Server")
     
-    ###########  G3 Stack Services Configurations  ###########   
+    ###########  G3 Stack Services Configurations  ###########
     ## Security
     srvSecurityComponent = Module.CreateComponent("srvSecurity", "Security", "/SmartEnergy/Stack/Services", "service/security/config/srv_security.py")
     srvSecurityComponent.addCapability("libsrvSecurity", "Security", True)  
@@ -110,11 +112,11 @@ def loadModule():
     
     ############################### G3 STACK CONFIGURATOR #####################################
 
-    g3AutoConfigMacComponent = Module.CreateComponent("g3_mac_config", "G3 MAC Layer Configurator", "/SmartEnergy/Stack/G3/", "g3/config/g3_configurator_mac.py")
-    g3AutoConfigMacComponent.setDisplayType("MAC Configurator")
+    g3ConfigComponent = Module.CreateComponent("g3_config", "G3 Stack Configurator", "/SmartEnergy/Stack", "g3/config/g3_configurator.py")
+    g3ConfigComponent.setDisplayType("G3 Stack Configurator")
     
-    g3AutoConfigAdaptComponent = Module.CreateComponent("g3_adapt_config", "G3 Adaptation Layer Configurator", "/SmartEnergy/Stack/G3/", "g3/config/g3_configurator_adapt.py")
-    g3AutoConfigAdaptComponent.setDisplayType("Adaptation Configurator")   
-    
-    g3AutoConfigCoordinatorComponent = Module.CreateComponent("g3_coordinator_config", "G3 Coordinator Configurator", "/SmartEnergy/Stack/G3/", "g3/config/g3_configurator_coordinator.py")
-    g3AutoConfigCoordinatorComponent.setDisplayType("Coordinator Configurator") 
+    g3ConfigAdaptComponent = Module.CreateComponent("g3_adapt_config", "G3 Adaptation Layer Configurator", "/SmartEnergy/Stack/G3/Adaptation Layer", "g3/config/g3_configurator_adapt.py")
+    g3ConfigAdaptComponent.setDisplayType("Adaptation Configurator")
+
+    g3ConfigMacComponent = Module.CreateComponent("g3_mac_config", "G3 MAC Layer Configurator", "/SmartEnergy/Stack/G3/MAC Layer", "g3/config/g3_configurator_mac.py")
+    g3ConfigMacComponent.setDisplayType("MAC Configurator")
