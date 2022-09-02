@@ -23,7 +23,14 @@
 
 ###################### G3 STACK  ######################
 def loadModule():
+
     print("Load Module: Harmony Smart Energy G3 Stack")
+
+    ## G3 PAL PLC
+    g3PalPlcComponent = Module.CreateComponent("g3PalPlc", "G3_PAL_PLC", "/SmartEnergy/G3 Stack/", "pal/plc/config/pal_plc.py")
+    g3PalPlcComponent.addCapability("g3PalPlc", "G3_PAL_PLC", True) 
+    g3PalPlcComponent.addDependency("g3PalPlc_G3MacRT_dependency", "DRV_G3_MAC_RT", True, True)
+    g3PalPlcComponent.setDisplayType("G3 PAL PLC")
 
     ###########  G3 Stack MAC Layer Configurations  ###########
     ## MAC Wrapper
