@@ -83,23 +83,23 @@ def addMACComponents(plc, rf):
         g3ConfigMacGroup = Database.createGroup("G3 STACK", "MAC LAYER")
     
     if (plc and rf):
-        Database.activateComponents(["g3_mac_config", "g3MacWrapper", "g3MacCommon", "g3PlcMac", "g3RfMac"], "MAC LAYER")
+        Database.activateComponents(["g3_mac_config", "g3MacWrapper", "g3MacCommon", "g3MacPlc", "g3MacRf"], "MAC LAYER")
         #g3ConfigMacGroup.setAttachmentVisible("g3MacWrapper", "libMacWrapper")
         #g3ConfigMacGroup.setAttachmentVisible("g3MacCommon", "libMacCommon")
-        #g3ConfigMacGroup.setAttachmentVisible("g3PlcMac", "libPlcMac")
-        #g3ConfigMacGroup.setAttachmentVisible("g3RfMac", "libRfMac")
+        #g3ConfigMacGroup.setAttachmentVisible("g3MacPlc", "libPlcMac")
+        #g3ConfigMacGroup.setAttachmentVisible("g3MacRf", "libRfMac")
     elif (plc):
-        Database.activateComponents(["g3_mac_config", "g3MacWrapper", "g3MacCommon", "g3PlcMac"], "MAC LAYER")
-        Database.deactivateComponents(["g3RfMac"])
+        Database.activateComponents(["g3_mac_config", "g3MacWrapper", "g3MacCommon", "g3MacPlc"], "MAC LAYER")
+        Database.deactivateComponents(["g3MacRf"])
         #g3ConfigMacGroup.setAttachmentVisible("g3MacWrapper", "libMacWrapper")
         #g3ConfigMacGroup.setAttachmentVisible("g3MacCommon", "libMacCommon")
-        #g3ConfigMacGroup.setAttachmentVisible("g3PlcMac", "libPlcMac")
+        #g3ConfigMacGroup.setAttachmentVisible("g3MacPlc", "libPlcMac")
     elif (rf):
-        Database.activateComponents(["g3_mac_config", "g3MacWrapper", "g3MacCommon", "g3RfMac"], "MAC LAYER")
-        Database.deactivateComponents(["g3PlcMac"])
+        Database.activateComponents(["g3_mac_config", "g3MacWrapper", "g3MacCommon", "g3MacRf"], "MAC LAYER")
+        Database.deactivateComponents(["g3MacPlc"])
         #g3ConfigMacGroup.setAttachmentVisible("g3MacWrapper", "libMacWrapper")
         #g3ConfigMacGroup.setAttachmentVisible("g3MacCommon", "libMacCommon")
-        #g3ConfigMacGroup.setAttachmentVisible("g3RfMac", "libRfMac")
+        #g3ConfigMacGroup.setAttachmentVisible("g3MacRf", "libRfMac")
 
 def enableEapConfig(symbol):
     component = symbol.getComponent()

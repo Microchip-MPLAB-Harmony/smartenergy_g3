@@ -30,8 +30,8 @@ def loadModule():
     g3MacWrpComponent = Module.CreateComponent("g3MacWrapper", "MAC Wrapper", "/SmartEnergy/Stack/G3/Layer 2 Sublayer 1 - MAC", "g3/config/g3_mac_wrapper.py")
     g3MacWrpComponent.addCapability("libMacWrapper", "MAC Wrapper", True) 
     g3MacWrpComponent.addDependency("macwrp_mac_common_dependency", "MAC Common", True, True)
-    g3MacWrpComponent.addDependency("macwrp_plc_mac_dependency", "PLC MAC", True, False)
-    g3MacWrpComponent.addDependency("macwrp_rf_mac_dependency", "RF MAC", True, False)
+    g3MacWrpComponent.addDependency("macwrp_mac_plc_dependency", "MAC PLC", True, False)
+    g3MacWrpComponent.addDependency("macwrp_mac_rf_dependency", "MAC RF", True, False)
     # TBD optional dependencies to logger and serialization    
     g3MacWrpComponent.setDisplayType("MAC Layer")
     
@@ -41,27 +41,27 @@ def loadModule():
     # TBD optional dependencies to logger    
     g3MacCommonComponent.setDisplayType("MAC Layer")
     
-    ## PLC MAC
-    g3PlcMacComponent = Module.CreateComponent("g3PlcMac", "PLC MAC", "/SmartEnergy/Stack/G3/Layer 2 Sublayer 1 - MAC", "g3/config/g3_mac_plc.py")
-    g3PlcMacComponent.addCapability("libPlcMac", "PLC MAC", True) 
-    g3PlcMacComponent.addDependency("plc_mac_common_dependency", "MAC Common", True, True)
-    g3PlcMacComponent.addDependency("plc_mac_wrapper_dependency", "MAC Wrapper", True, True)
-    g3PlcMacComponent.addDependency("plc_srv_random_dependency", "Random", True, True)
-    g3PlcMacComponent.addDependency("plc_srv_security_dependency", "Security", True, True)
-    g3PlcMacComponent.addDependency("plc_srv_g3_macrt_dependency", "G3_MAC_RT", True, True)
+    ## MAC PLC
+    g3MacPlcComponent = Module.CreateComponent("g3MacPlc", "MAC PLC", "/SmartEnergy/Stack/G3/Layer 2 Sublayer 1 - MAC", "g3/config/g3_mac_plc.py")
+    g3MacPlcComponent.addCapability("libPlcMac", "MAC PLC", True) 
+    g3MacPlcComponent.addDependency("mac_plc_common_dependency", "MAC Common", True, True)
+    g3MacPlcComponent.addDependency("mac_plc_wrapper_dependency", "MAC Wrapper", True, True)
+    g3MacPlcComponent.addDependency("plc_srv_random_dependency", "Random", True, True)
+    g3MacPlcComponent.addDependency("plc_srv_security_dependency", "Security", True, True)
+    g3MacPlcComponent.addDependency("plc_srv_g3_macrt_dependency", "G3_MAC_RT", True, True)
     # TBD optional dependencies to logger and storage
-    g3PlcMacComponent.setDisplayType("MAC Layer")
+    g3MacPlcComponent.setDisplayType("MAC Layer")
     
-    ## RF MAC
-    g3RfMacComponent = Module.CreateComponent("g3RfMac", "RF MAC", "/SmartEnergy/Stack/G3/Layer 2 Sublayer 1 - MAC", "g3/config/g3_mac_rf.py")
-    g3RfMacComponent.addCapability("libRfMac", "RF MAC", True)    
-    g3RfMacComponent.addDependency("rf_mac_common_dependency", "MAC Common", True, True)
-    g3RfMacComponent.addDependency("rf_mac_wrapper_dependency", "MAC Wrapper", True, True)
-    g3RfMacComponent.addDependency("rf_srv_random_dependency", "Random", True, True)
-    g3RfMacComponent.addDependency("rf_srv_security_dependency", "Security", True, True)
-    # TBD g3RfMacComponent.addDependency("rf_srv_g3_pal215_dependency", "G3_PAL_RF", False, True)
+    ## MAC RF
+    g3MacRfComponent = Module.CreateComponent("g3MacRf", "MAC RF", "/SmartEnergy/Stack/G3/Layer 2 Sublayer 1 - MAC", "g3/config/g3_mac_rf.py")
+    g3MacRfComponent.addCapability("libRfMac", "MAC RF", True)    
+    g3MacRfComponent.addDependency("mac_rf_common_dependency", "MAC Common", True, True)
+    g3MacRfComponent.addDependency("mac_rf_wrapper_dependency", "MAC Wrapper", True, True)
+    g3MacRfComponent.addDependency("rf_srv_random_dependency", "Random", True, True)
+    g3MacRfComponent.addDependency("rf_srv_security_dependency", "Security", True, True)
+    # TBD g3MacRfComponent.addDependency("rf_srv_g3_pal215_dependency", "G3_PAL_RF", False, True)
     # TBD optional dependencies to logger and storage
-    g3RfMacComponent.setDisplayType("MAC Layer")
+    g3MacRfComponent.setDisplayType("MAC Layer")
     
     ###########  G3 LIBRARY Adaptation Layer Configurations  ###########
     ## ADP

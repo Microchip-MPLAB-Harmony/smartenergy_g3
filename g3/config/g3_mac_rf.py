@@ -21,7 +21,7 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
 
-def instantiateComponent(g3RfMacComponent):
+def instantiateComponent(g3MacRfComponent):
     
     Log.writeInfoMessage("Loading PLC MAC for G3")
 
@@ -33,7 +33,7 @@ def instantiateComponent(g3RfMacComponent):
     #### Library Files ######################################################
 
     global macRfLibFile
-    macRfLibFile = g3RfMacComponent.createLibrarySymbol("G3_MAC_RF_LIBRARY", None)
+    macRfLibFile = g3MacRfComponent.createLibrarySymbol("G3_MAC_RF_LIBRARY", None)
     macRfLibFile.setSourcePath("g3/libs/g3_lib_rf_mac.a")
     macRfLibFile.setOutputName("g3_lib_rf_mac.a")
     macRfLibFile.setDestPath("stack/g3/mac")

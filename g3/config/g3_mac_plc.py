@@ -21,7 +21,7 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
 
-def instantiateComponent(g3PlcMacComponent):
+def instantiateComponent(g3MacPlcComponent):
     
     Log.writeInfoMessage("Loading PLC MAC for G3")
 
@@ -33,7 +33,7 @@ def instantiateComponent(g3PlcMacComponent):
     #### Library Files ######################################################
 
     global macPlcLibFile
-    macPlcLibFile = g3PlcMacComponent.createLibrarySymbol("G3_MAC_PLC_LIBRARY", None)
+    macPlcLibFile = g3MacPlcComponent.createLibrarySymbol("G3_MAC_PLC_LIBRARY", None)
     macPlcLibFile.setSourcePath("g3/libs/g3_lib_plc_mac.a")
     macPlcLibFile.setOutputName("g3_lib_plc_mac.a")
     macPlcLibFile.setDestPath("stack/g3/mac")
