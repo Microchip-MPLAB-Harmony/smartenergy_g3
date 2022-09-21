@@ -25,16 +25,4 @@ def instantiateComponent(g3MacRfComponent):
     
     Log.writeInfoMessage("Loading PLC MAC for G3")
 
-    ############################################################################
-    #### Code Generation ####
-    ############################################################################
-    configName = Variables.get("__CONFIGURATION_NAME")
     
-    #### Library Files ######################################################
-
-    global macRfLibFile
-    macRfLibFile = g3MacRfComponent.createLibrarySymbol("G3_MAC_RF_LIBRARY", None)
-    macRfLibFile.setSourcePath("g3/libs/g3_lib_rf_mac.a")
-    macRfLibFile.setOutputName("g3_lib_rf_mac.a")
-    macRfLibFile.setDestPath("stack/g3/mac")
-    macRfLibFile.setEnabled(True)

@@ -25,16 +25,4 @@ def instantiateComponent(g3MacPlcComponent):
     
     Log.writeInfoMessage("Loading PLC MAC for G3")
 
-    ############################################################################
-    #### Code Generation ####
-    ############################################################################
-    configName = Variables.get("__CONFIGURATION_NAME")
     
-    #### Library Files ######################################################
-
-    global macPlcLibFile
-    macPlcLibFile = g3MacPlcComponent.createLibrarySymbol("G3_MAC_PLC_LIBRARY", None)
-    macPlcLibFile.setSourcePath("g3/libs/g3_lib_plc_mac.a")
-    macPlcLibFile.setOutputName("g3_lib_plc_mac.a")
-    macPlcLibFile.setDestPath("stack/g3/mac")
-    macPlcLibFile.setEnabled(True)

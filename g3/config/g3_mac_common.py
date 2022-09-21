@@ -25,29 +25,3 @@ def instantiateComponent(g3MacCommonComponent):
     
     Log.writeInfoMessage("Loading MAC Common for G3")
 
-    ############################################################################
-    #### Code Generation ####
-    ############################################################################
-    configName = Variables.get("__CONFIGURATION_NAME")
-    
-    # MAC Common Files
-    pMacCommonSource = g3MacCommonComponent.createFileSymbol("MAC_COMMON_SOURCE", None)
-    pMacCommonSource.setSourcePath("g3/src/mac_common/MacCommon.c")
-    pMacCommonSource.setOutputName("MacCommon.c")
-    pMacCommonSource.setDestPath("stack/g3/mac")
-    pMacCommonSource.setProjectPath("config/" + configName + "/stack/g3/mac/")
-    pMacCommonSource.setType("SOURCE")
-    
-    pMacCommonHeader = g3MacCommonComponent.createFileSymbol("MAC_COMMON_HEADER", None)
-    pMacCommonHeader.setSourcePath("g3/src/mac_common/MacCommon.h")
-    pMacCommonHeader.setOutputName("MacCommon.h")
-    pMacCommonHeader.setDestPath("stack/g3/mac")
-    pMacCommonHeader.setProjectPath("config/" + configName + "/stack/g3/mac/")
-    pMacCommonHeader.setType("HEADER")
-    
-    pMacCommonDefsHeader = g3MacCommonComponent.createFileSymbol("MAC_COMMON_DEFS_HEADER", None)
-    pMacCommonDefsHeader.setSourcePath("g3/src/mac_common/MacCommonDefs.h")
-    pMacCommonDefsHeader.setOutputName("MacCommonDefs.h")
-    pMacCommonDefsHeader.setDestPath("stack/g3/mac")
-    pMacCommonDefsHeader.setProjectPath("config/" + configName + "/stack/g3/mac/")
-    pMacCommonDefsHeader.setType("HEADER")

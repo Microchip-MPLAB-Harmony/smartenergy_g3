@@ -39,7 +39,6 @@ def g3LOADngEnable(symbol, event):
     #g3AdaptGroup = Database.findGroup("ADAPTATION LAYER")
     if (event["value"] == True):
         Database.activateComponents(["g3LOADng"], "ADAPTATION LAYER")
-        #g3AdaptGroup.setAttachmentVisible("g3LOADng", "libLOADng")
     else:
         Database.deactivateComponents(["g3LOADng"])
 

@@ -28,7 +28,7 @@ def instantiateComponent(g3ConfigComponent):
     Database.setActiveGroup("G3 STACK")
 
     # Select G3 mode
-    g3Modes = ["G3 Stack (ADP + MAC) Hybrid PLC & RF", "G3 Stack (ADP + MAC) PLC", "G3 Stack (ADP + MAC) RF",
+    g3Modes = ["-- Select a G3 Stack Mode from list --", "G3 Stack (ADP + MAC) Hybrid PLC & RF", "G3 Stack (ADP + MAC) PLC", "G3 Stack (ADP + MAC) RF",
                "G3 MAC Layer Hybrid PLC & RF", "G3 PLC MAC Layer", "G3 RF MAC Layer"]
     g3ConfigMode = g3ConfigComponent.createComboSymbol("G3_MODE", None, g3Modes)
     g3ConfigMode.setLabel("G3 Mode of Operation")
@@ -53,9 +53,9 @@ def instantiateComponent(g3ConfigComponent):
     g3ConfigEAP.setDependencies(g3AddEAP, ["EAP_SERVER_ENABLE"])
     g3ConfigEAP.setDefaultValue(False)
 
-def finalizeComponent(g3ConfigComponent):
-    # Set Value to force components population
-    Database.setSymbolValue("g3_config", "G3_MODE", "G3 Stack (ADP + MAC) Hybrid PLC & RF")
+################################################################################
+#### Business Logic ####
+################################################################################
 
 def addADPComponents():
     g3ConfigAdaptGroup = Database.findGroup("ADAPTATION LAYER")
@@ -69,13 +69,13 @@ def addADPComponents():
     else:
         Database.activateComponents(["g3ADP", "g3Bootstrap"], "ADAPTATION LAYER")
 
-    #g3ConfigAdaptGroup.setAttachmentVisible("g3ADP", "libADP")
-    #g3ConfigAdaptGroup.setAttachmentVisible("g3LOADng", "libLOADng")
-    #g3ConfigAdaptGroup.setAttachmentVisible("g3Bootstrap", "libBootstrap")
-
 def removeADPComponents():
     Database.deactivateComponents(["g3_adapt_config", "g3ADP", "g3LOADng", "g3Bootstrap"])
     Database.disbandGroup("ADAPTATION LAYER")
+
+def removeMACComponents():
+    Database.deactivateComponents(["g3_mac_config", "g3MacWrapper", "g3MacCommon", "g3MacPlc", "g3MacRf", "srvSecurity"])
+    Database.disbandGroup("MAC LAYER")
 
 def addMACComponents(plc, rf):
     g3ConfigMacGroup = Database.findGroup("MAC LAYER")
@@ -84,22 +84,15 @@ def addMACComponents(plc, rf):
     
     if (plc and rf):
         Database.activateComponents(["g3_mac_config", "g3MacWrapper", "g3MacCommon", "g3MacPlc", "g3MacRf"], "MAC LAYER")
-        #g3ConfigMacGroup.setAttachmentVisible("g3MacWrapper", "libMacWrapper")
-        #g3ConfigMacGroup.setAttachmentVisible("g3MacCommon", "libMacCommon")
-        #g3ConfigMacGroup.setAttachmentVisible("g3MacPlc", "libPlcMac")
-        #g3ConfigMacGroup.setAttachmentVisible("g3MacRf", "libRfMac")
     elif (plc):
         Database.activateComponents(["g3_mac_config", "g3MacWrapper", "g3MacCommon", "g3MacPlc"], "MAC LAYER")
         Database.deactivateComponents(["g3MacRf"])
-        #g3ConfigMacGroup.setAttachmentVisible("g3MacWrapper", "libMacWrapper")
-        #g3ConfigMacGroup.setAttachmentVisible("g3MacCommon", "libMacCommon")
-        #g3ConfigMacGroup.setAttachmentVisible("g3MacPlc", "libPlcMac")
     elif (rf):
         Database.activateComponents(["g3_mac_config", "g3MacWrapper", "g3MacCommon", "g3MacRf"], "MAC LAYER")
         Database.deactivateComponents(["g3MacPlc"])
-        #g3ConfigMacGroup.setAttachmentVisible("g3MacWrapper", "libMacWrapper")
-        #g3ConfigMacGroup.setAttachmentVisible("g3MacCommon", "libMacCommon")
-        #g3ConfigMacGroup.setAttachmentVisible("g3MacRf", "libRfMac")
+        
+    # In every case, add security component
+    Database.activateComponents(["srvSecurity"], "G3 STACK")
 
 def enableEapConfig(symbol):
     component = symbol.getComponent()
@@ -124,39 +117,42 @@ def g3ConfigSelection(symbol, event):
         addADPComponents()
         addMACComponents(True, True)
         enableEapConfig(symbol)
+        setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Both PLC & RF MAC Layers")
     elif event["value"] == "G3 Stack (ADP + MAC) PLC":
         # Complete PLC stack, enable components
         addADPComponents()
         addMACComponents(True, False)
         enableEapConfig(symbol)
+        setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Only PLC MAC Layer")
     elif event["value"] == "G3 Stack (ADP + MAC) RF":
         # Complete RF stack, enable components
         addADPComponents()
         addMACComponents(False, True)
         enableEapConfig(symbol)
+        setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Only RF MAC Layer")
     elif event["value"] == "G3 MAC Layer Hybrid PLC & RF":
         # Hybrid MAC, disable and enable components
         removeADPComponents()
         addMACComponents(True, True)
         disableEapConfig(symbol)
+        setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Both PLC & RF MAC Layers")
     elif event["value"] == "G3 PLC MAC Layer":
         # PLC MAC, disable and enable components
         removeADPComponents()
         addMACComponents(True, False)
         disableEapConfig(symbol)
+        setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Only PLC MAC Layer")
     elif event["value"] == "G3 RF MAC Layer":
         # RF MAC, disable and enable components
         removeADPComponents()
         addMACComponents(False, True)
         disableEapConfig(symbol)
+        setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Only RF MAC Layer")
     else:
-        # Unknown option, behave as complete stack selected
-        addADPComponents()
-        addMACComponents(True, True)
-        enableEapConfig(symbol)
-    
-    # In every case, add security component
-    Database.activateComponents(["srvSecurity"], "G3 STACK")
+        # Remove all G3 components
+        removeADPComponents()
+        removeMACComponents()
+        disableEapConfig(symbol)
 
 def g3ConfigRoleChange(symbol, event):
     if event["value"] == "PAN Device":

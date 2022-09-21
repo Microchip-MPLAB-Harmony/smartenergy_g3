@@ -25,29 +25,3 @@ def instantiateComponent(g3MacWrpComponent):
     
     Log.writeInfoMessage("Loading MAC Wrapper for G3")
 
-    ############################################################################
-    #### Code Generation ####
-    ############################################################################
-    configName = Variables.get("__CONFIGURATION_NAME")
-    
-    # MAC Wrapper Files
-    pMacWrpSource = g3MacWrpComponent.createFileSymbol("MAC_WRAPPER_SOURCE", None)
-    pMacWrpSource.setSourcePath("g3/src/mac_wrapper/mac_wrapper.c")
-    pMacWrpSource.setOutputName("mac_wrapper.c")
-    pMacWrpSource.setDestPath("stack/g3/mac")
-    pMacWrpSource.setProjectPath("config/" + configName + "/stack/g3/mac/")
-    pMacWrpSource.setType("SOURCE")
-    
-    pMacWrpHeader = g3MacWrpComponent.createFileSymbol("MAC_WRAPPER_HEADER", None)
-    pMacWrpHeader.setSourcePath("g3/src/mac_wrapper/mac_wrapper.h")
-    pMacWrpHeader.setOutputName("mac_wrapper.h")
-    pMacWrpHeader.setDestPath("stack/g3/mac")
-    pMacWrpHeader.setProjectPath("config/" + configName + "/stack/g3/mac/")
-    pMacWrpHeader.setType("HEADER")
-    
-    pMacWrpDefsHeader = g3MacWrpComponent.createFileSymbol("MAC_WRAPPER_DEFS_HEADER", None)
-    pMacWrpDefsHeader.setSourcePath("g3/src/mac_wrapper/mac_wrapper_defs.h")
-    pMacWrpDefsHeader.setOutputName("mac_wrapper_defs.h")
-    pMacWrpDefsHeader.setDestPath("stack/g3/mac")
-    pMacWrpDefsHeader.setProjectPath("config/" + configName + "/stack/g3/mac/")
-    pMacWrpDefsHeader.setType("HEADER")
