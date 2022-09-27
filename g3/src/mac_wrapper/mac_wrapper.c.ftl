@@ -1134,15 +1134,7 @@ static void _Callback_MacRfMacSnifferIndication(MAC_SNIFFER_INDICATION_PARAMS *s
 
 SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_INIT * const init)
 {
-<#if MAC_PLC_PRESENT == true>
-    MAC_PLC_INIT plcInitData;
-</#if>
-<#if MAC_RF_PRESENT == true>
-    MAC_RF_INIT rfInitData;
-</#if>
     bool initError = false;
-
-    MAC_WRP_INIT *macWrpInit = (MAC_WRP_INIT *)init;
 
     /* Validate the request */
     if (index >= MAC_WRP_INSTANCES_NUMBER)
@@ -1157,9 +1149,66 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
 
     macWrpData.inUse = true;
     macWrpData.state = MAC_WRP_STATE_NOT_READY;
-    macWrpData.macWrpHandlers = macWrpInit->macWrpHandlers;
+
+    if (initError)
+    {
+        return SYS_MODULE_OBJ_INVALID;
+    }
+    else
+    {
+        return (SYS_MODULE_OBJ)0; 
+    }
+}
+
+MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index)
+{
+    // Single instance allowed
+    if (index >= MAC_WRP_INSTANCES_NUMBER)
+    {
+        return MAC_WRP_HANDLE_INVALID;
+    }
+    else
+    {
+        macWrpData.state = MAC_WRP_STATE_IDLE;
+        macWrpData.macWrpHandle = (MAC_WRP_HANDLE)0;
+        reuturn macWrpData.macWrpHandle;
+    }
+}
+
+void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
+{
+    if (object != (SYS_MODULE_OBJ)0)
+    {
+        // Invalid object
+        return;
+    }
 <#if MAC_PLC_PRESENT == true>
-    macWrpData.plcBand = macWrpInit->plcBand;
+    MAC_PLC_Tasks();
+</#if>
+<#if MAC_RF_PRESENT == true>
+    MAC_RF_Tasks();
+</#if>
+}
+
+void MAC_WRP_Init(MAC_WRP_HANDLE handle, MAC_WRP_INIT *init)
+{
+<#if MAC_PLC_PRESENT == true>
+    MAC_PLC_INIT plcInitData;
+</#if>
+<#if MAC_RF_PRESENT == true>
+    MAC_RF_INIT rfInitData;
+</#if>
+
+    /* Validate the request */
+    if (handle != macWrpData.macWrpHandle)
+    {
+        return;
+    }
+
+    /* Set init data */
+    macWrpData.macWrpHandlers = init->macWrpHandlers;
+<#if MAC_PLC_PRESENT == true>
+    macWrpData.plcBand = init->plcBand;
 </#if>
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
@@ -1168,7 +1217,7 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
 
 </#if>
 <#if MAC_PLC_PRESENT == true>
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Initialize: Initializing PLC MAC...");
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Init: Initializing PLC MAC...");
 
     plcInitData.macPlcHandlers.macPlcDataConfirm = _Callback_MacPlcDataConfirm;
     plcInitData.macPlcHandlers.macPlcDataIndication = _Callback_MacPlcDataIndication;
@@ -1185,17 +1234,13 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
     macPlcTables.macPlcDeviceTable = macPlcDeviceTable;
 
     plcInitData.macPlcTables = &macPlcTables;
-    plcInitData.plcBand = (MAC_PLC_BAND)macWrpInit->plcBand;
+    plcInitData.plcBand = (MAC_PLC_BAND)init->plcBand;
 
-    macWrpData.macPlcSysObject = MAC_PLC_Initialize(MAC_PLC_INDEX_0, &plcInitData);
-    if (macWrpData.macPlcSysObject == SYS_MODULE_OBJ_INVALID)
-    {
-        initError = true;
-    }
+    MAC_PLC_Init(&plcInitData);
 
 </#if>
 <#if MAC_RF_PRESENT == true>
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Initialize: Initializing RF MAC...");
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Init: Initializing RF MAC...");
 
     rfInitData.macRfHandlers.macRfDataConfirm = _Callback_MacRfDataConfirm;
     rfInitData.macRfHandlers.macRfDataIndication = _Callback_MacRfDataIndication;
@@ -1219,57 +1264,10 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
 
     rfInitData.macRfTables = &macRfTables;
 
-    macWrpData.macRfSysObject = MAC_RF_Initialize(MAC_RF_INDEX_0, &rfInitData);
-    if (macWrpData.macRfSysObject == SYS_MODULE_OBJ_INVALID)
-    {
-        initError = true;
-    }
+    MAC_RF_Init(&rfInitData);
 
 </#if>
-    macWrpData.macCommonSysObject = MAC_COMMON_Initialize(MAC_COMMON_INDEX_0, NULL);
-    if (macWrpData.macCommonSysObject == SYS_MODULE_OBJ_INVALID)
-    {
-        initError = true;
-    }
-
-    if (initError)
-    {
-        return SYS_MODULE_OBJ_INVALID;
-    }
-    else
-    {
-        return (SYS_MODULE_OBJ)0; 
-    }
-}
-
-MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_OBJ object)
-{
-    // Single instance allowed
-    if (object != (SYS_MODULE_OBJ)0)
-    {
-        return MAC_WRP_HANDLE_INVALID;
-    }
-    else
-    {
-        macWrpData.state = MAC_WRP_STATE_IDLE;
-        macWrpData.macWrpHandle = (MAC_WRP_HANDLE)0;
-        reuturn macWrpData.macWrpHandle;
-    }
-}
-
-void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
-{
-    if (object != (SYS_MODULE_OBJ)0)
-    {
-        // Invalid object
-        return;
-    }
-<#if MAC_PLC_PRESENT == true>
-    MAC_PLC_Tasks(macWrpData.macPlcSysObject);
-</#if>
-<#if MAC_RF_PRESENT == true>
-    MAC_RF_Tasks(macWrpData.macRfSysObject);
-</#if>
+    MAC_COMMON_Init();
 }
 
 void MAC_WRP_DataRequest(MAC_WRP_HANDLE handle, MAC_WRP_DATA_REQUEST_PARAMS *drParams)

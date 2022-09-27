@@ -61,35 +61,6 @@
 // *****************************************************************************
 
 // *****************************************************************************
-/* MAC RF Handle
-
-  Summary:
-    Identifies an instance of MAC RF module.
-
-  Description:
-    Handle is returned upon MAC RF Open routine and is used for every other
-    API function to identify module instance.
-
-  Remarks:
-    None.
-*/
-typedef uintptr_t MAC_RF_HANDLE;
-
-// *****************************************************************************
-/* Invalid MAC RF handle value to an instance
-
-  Summary:
-    Invalid handle value to a MAC RF instance.
-
-  Description:
-    Defines the invalid handle value to a MAC RF instance.
-
-  Remarks:
-    None.
-*/
-#define MAC_RF_HANDLE_INVALID   ((MAC_RF_HANDLE) (-1))
-
-// *****************************************************************************
 /* MAC RF Callback Handlers Structure
 
    Summary:
@@ -192,10 +163,9 @@ typedef struct
 
 // *****************************************************************************
 /* Function:
-    SYS_MODULE_OBJ MAC_RF_Initialize
+    void MAC_RF_Init
     (
-      const SYS_MODULE_INDEX index,
-      const SYS_MODULE_INIT * const init
+      MAC_RF_INIT *init
     )
 
   Summary:
@@ -223,9 +193,7 @@ typedef struct
     <code>
     // The following code snippet shows an example MAC Wrapper initialization.
 
-    SYS_MODULE_OBJ sysObjMacRf;
-
-    const MAC_RF_INIT macRfInit = {
+    MAC_RF_INIT macRfInit = {
         .macRfHandlers.macRfDataConfirm = appDataConfirm,
         .macRfHandlers.macRfDataIndication = appDataIndication,
         .macRfHandlers.macRfResetConfirm = appResetConfirm,
@@ -237,81 +205,19 @@ typedef struct
         .macRfTables = &tables, // Variable containing the MAC RF Tables
     };
 
-    sysObjMacRf = MAC_RF_Initialize(MAC_RF_INDEX_0, &macRfInit);
-    if (sysObjMacRf == SYS_MODULE_OBJ_INVALID)
-    {
-        // Handle error
-    }
+    MAC_RF_Init(&macRfInit);
     </code>
 
   Remarks:
     This routine must be called before any other MAC RF routine is called.
 */
-SYS_MODULE_OBJ MAC_RF_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_INIT * const init);
-
-// *****************************************************************************
-/* Function:
-    MAC_RF_HANDLE MAC_RF_Open
-    (
-      SYS_MODULE_OBJ object
-    )
-
-  Summary:
-    Opens the specified MAC RF instance and returns a handle to it.
-
-  Description:
-    This routine opens the specified MAC RF instance and provides a
-    handle that must be provided to all other client-level operations to
-    identify the caller and the instance of the module.
-
-  Precondition:
-    MAC_RF_Initialize routine must have been called before,
-    and its returned Object used when calling this function.
-
-  Parameters:
-    object - Identifier for the object instance to be opened
-
-  Returns:
-    If successful, the routine returns a valid open-instance handle (a number
-    identifying both the caller and the module instance).
-    If an error occurs, the return value is MAC_RF_HANDLE_INVALID.
-
-  Example:
-    <code>
-    MAC_RF_HANDLE handle;
-    SYS_MODULE_OBJ sysObjMacRf;
-
-    const MAC_RF_INIT macRfInit = {
-        .macRfHandlers.macRfDataConfirm = appDataConfirm,
-        .macRfHandlers.macRfDataIndication = appDataIndication,
-        .macRfHandlers.macRfResetConfirm = appResetConfirm,
-        .macRfHandlers.macRfBeaconNotifyIndication = appBeaconIndication,
-        .macRfHandlers.macRfScanConfirm = appScanConfirm,
-        .macRfHandlers.macRfStartConfirm = NULL, // Start primitive not used
-        .macRfHandlers.macRfCommStatusIndication = appCommStatus,
-        .macRfHandlers.macRfMacSnifferIndication = NULL, // MAC Sniffer not used
-        .macRfTables = &tables, // Variable containing the MAC RF Tables
-    };
-
-    sysObjMacRf = MAC_RF_Initialize(MAC_RF_INDEX_0, &macRfInit);
-
-    handle = MAC_RF_Open(sysObjMacRf);
-    if (handle == MAC_RF_HANDLE_INVALID)
-    {
-        // Handle error
-    }
-    </code>
-
-  Remarks:
-    None.
-*/
-MAC_RF_HANDLE MAC_RF_Open(SYS_MODULE_OBJ object);
+void MAC_RF_Init(MAC_RF_INIT *init);
 
 // *****************************************************************************
 /* Function:
     void MAC_RF_Tasks
     (
-      SYS_MODULE_OBJ object
+      void
     )
 
   Summary:
@@ -322,8 +228,7 @@ MAC_RF_HANDLE MAC_RF_Open(SYS_MODULE_OBJ object);
     receiving frames, managing RF medium access or ensure link reliability.
 
   Precondition:
-    MAC_RF_Initialize routine must have been called before,
-    and its returned Object used when calling this function.
+    MAC_RF_Init routine must have been called before.
 
   Parameters:
     object - Identifier for the object instance
@@ -334,13 +239,12 @@ MAC_RF_HANDLE MAC_RF_Open(SYS_MODULE_OBJ object);
   Example:
     <code>
     // ...
-    SYS_MODULE_OBJ sysObjMacRf;
-    sysObjMacRf = MAC_RF_Initialize(MAC_RF_INDEX_0, &macRfInit);
+    MAC_RF_Init(&macRfInit);
     // ...
 
     while (true)
     {
-        MAC_RF_Tasks(sysObjMacRf);
+        MAC_RF_Tasks();
     
         // Do other tasks
     }
@@ -349,13 +253,12 @@ MAC_RF_HANDLE MAC_RF_Open(SYS_MODULE_OBJ object);
   Remarks:
     None.
 */
-void MAC_RF_Tasks(SYS_MODULE_OBJ object);
+void MAC_RF_Tasks(void);
 
 // *****************************************************************************
 /* Function:
     void MAC_RF_DataRequest
     (
-      MAC_RF_HANDLE handle,
       MAC_DATA_REQUEST_PARAMS *drParams
     )
 
@@ -368,11 +271,9 @@ void MAC_RF_Tasks(SYS_MODULE_OBJ object);
     Network. Result is provided in the corresponding Confirm callback.
 
   Precondition:
-    A valid MAC RF Handle has to be obtained before.
+    MAC_RF_Init routine must have been called before.
 
   Parameters:
-    handle - A valid handle which identifies the Mac RF instance
-
     drParams - Pointer to structure containing required parameters for request
 
   Returns:
@@ -380,11 +281,6 @@ void MAC_RF_Tasks(SYS_MODULE_OBJ object);
 
   Example:
     <code>
-    // ...
-    MAC_RF_HANDLE handle;
-    handle = MAC_RF_Open(sysObjMacRf);
-    // ...
-
     MAC_DATA_REQUEST_PARAMS params = {
         .srcAddressMode = MAC_ADDRESS_MODE_SHORT,
         .destPanId = 0x1234,
@@ -398,20 +294,19 @@ void MAC_RF_Tasks(SYS_MODULE_OBJ object);
         .qualityOfService = MAC_QUALITY_OF_SERVICE_NORMAL_PRIORITY,
     };
 
-    MAC_RF_DataRequest(handle, &params);
+    MAC_RF_DataRequest(&params);
     // Wait for Data Confirm
     </code>
 
   Remarks:
     None.
 */
-void MAC_RF_DataRequest(MAC_RF_HANDLE handle, MAC_DATA_REQUEST_PARAMS *drParams);
+void MAC_RF_DataRequest(MAC_DATA_REQUEST_PARAMS *drParams);
 
 // *****************************************************************************
 /* Function:
     MAC_STATUS MAC_RF_GetRequestSync
     (
-      MAC_RF_HANDLE handle,
       MAC_RF_PIB_ATTRIBUTE attribute,
       uint16_t index,
       MAC_PIB_VALUE *pibValue
@@ -427,11 +322,9 @@ void MAC_RF_DataRequest(MAC_RF_HANDLE handle, MAC_DATA_REQUEST_PARAMS *drParams)
     in the pibValue parameter.
 
   Precondition:
-    A valid MAC RF Handle has to be obtained before.
+    MAC_RF_Init routine must have been called before.
 
   Parameters:
-    handle - A valid handle which identifies the Mac RF instance
-
     attribute - Identifier of the Attribute to retrieve value
 
     index - Index of element in case Attribute is a table
@@ -444,14 +337,9 @@ void MAC_RF_DataRequest(MAC_RF_HANDLE handle, MAC_DATA_REQUEST_PARAMS *drParams)
 
   Example:
     <code>
-    // ...
-    MAC_RF_HANDLE handle;
-    handle = MAC_RF_Open(sysObjMacRf);
-    // ...
-
     MAC_STATUS status;
     MAC_PIB_VALUE value;
-    status = MAC_RF_GetRequestSync(handle, MAC_PIB_MAX_FRAME_RETRIES_RF, 0, &value);
+    status = MAC_RF_GetRequestSync(MAC_PIB_MAX_FRAME_RETRIES_RF, 0, &value);
     if (status == MAC_STATUS_SUCCESS)
     {
         // Get value from 'value' parameter
@@ -461,14 +349,13 @@ void MAC_RF_DataRequest(MAC_RF_HANDLE handle, MAC_DATA_REQUEST_PARAMS *drParams)
   Remarks:
     None.
 */
-MAC_STATUS MAC_RF_GetRequestSync(MAC_RF_HANDLE handle,
-    MAC_RF_PIB_ATTRIBUTE attribute, uint16_t index, MAC_PIB_VALUE *pibValue);
+MAC_STATUS MAC_RF_GetRequestSync(MAC_RF_PIB_ATTRIBUTE attribute,
+    uint16_t index, MAC_PIB_VALUE *pibValue);
 
 // *****************************************************************************
 /* Function:
     MAC_STATUS MAC_RF_SetRequestSync
     (
-      MAC_RF_HANDLE handle,
       MAC_RF_PIB_ATTRIBUTE attribute,
       uint16_t index,
       const MAC_PIB_VALUE *pibValue
@@ -484,11 +371,9 @@ MAC_STATUS MAC_RF_GetRequestSync(MAC_RF_HANDLE handle,
     function call return, in the return status code.
 
   Precondition:
-    A valid MAC RF Handle has to be obtained before.
+    MAC_RF_Init routine must have been called before.
 
   Parameters:
-    handle - A valid handle which identifies the Mac RF instance
-
     attribute - Identifier of the Attribute to provide value
 
     index - Index of element in case Attribute is a table
@@ -501,18 +386,13 @@ MAC_STATUS MAC_RF_GetRequestSync(MAC_RF_HANDLE handle,
 
   Example:
     <code>
-    // ...
-    MAC_RF_HANDLE handle;
-    handle = MAC_RF_Open(sysObjMacRf);
-    // ...
-
     MAC_STATUS status;
     const MAC_PIB_VALUE value = {
         .length = 1,
         .value = 6
     };
 
-    status = MAC_RF_SetRequestSync(handle, MAC_PIB_MAX_FRAME_RETRIES_RF, 0, &value);
+    status = MAC_RF_SetRequestSync(MAC_PIB_MAX_FRAME_RETRIES_RF, 0, &value);
     if (status == MAC_STATUS_SUCCESS)
     {
         // PIB correctly set
@@ -522,14 +402,13 @@ MAC_STATUS MAC_RF_GetRequestSync(MAC_RF_HANDLE handle,
   Remarks:
     None.
 */
-MAC_STATUS MAC_RF_SetRequestSync(MAC_RF_HANDLE handle,
-    MAC_RF_PIB_ATTRIBUTE attribute, uint16_t index, const MAC_PIB_VALUE *pibValue);
+MAC_STATUS MAC_RF_SetRequestSync(MAC_RF_PIB_ATTRIBUTE attribute,
+    uint16_t index, const MAC_PIB_VALUE *pibValue);
 
 // *****************************************************************************
 /* Function:
     MAC_RF_ResetRequest
     (
-      MAC_RF_HANDLE handle,
       MAC_RESET_REQUEST_PARAMS *rstParams
     )
 
@@ -541,11 +420,9 @@ MAC_STATUS MAC_RF_SetRequestSync(MAC_RF_HANDLE handle,
     default values. Result is provided in the corresponding Confirm callback.
 
   Precondition:
-    A valid MAC RF Handle has to be obtained before.
+    MAC_RF_Init routine must have been called before.
 
   Parameters:
-    handle - A valid handle which identifies the Mac RF instance
-
     rstParams - Pointer to structure containing required parameters for request
 
   Returns:
@@ -553,16 +430,11 @@ MAC_STATUS MAC_RF_SetRequestSync(MAC_RF_HANDLE handle,
 
   Example:
     <code>
-    // ...
-    MAC_RF_HANDLE handle;
-    handle = MAC_RF_Open(sysObjMacRf);
-    // ...
-
     MAC_RESET_REQUEST_PARAMS params = {
         .setDefaultPib = true
     };
 
-    MAC_RF_ResetRequest(handle, &params);
+    MAC_RF_ResetRequest(&params);
 
     // Wait for Reset Confirm
     </code>
@@ -570,13 +442,12 @@ MAC_STATUS MAC_RF_SetRequestSync(MAC_RF_HANDLE handle,
   Remarks:
     None.
 */
-void MAC_RF_ResetRequest(MAC_RF_HANDLE handle, MAC_RESET_REQUEST_PARAMS *rstParams);
+void MAC_RF_ResetRequest(MAC_RESET_REQUEST_PARAMS *rstParams);
 
 // *****************************************************************************
 /* Function:
     MAC_RF_ScanRequest
     (
-      MAC_RF_HANDLE handle,
       MAC_SCAN_REQUEST_PARAMS *scanParams
     )
 
@@ -591,11 +462,9 @@ void MAC_RF_ResetRequest(MAC_RF_HANDLE handle, MAC_RESET_REQUEST_PARAMS *rstPara
     Result is provided in the corresponding Confirm callback.
 
   Precondition:
-    A valid MAC RF Handle has to be obtained before.
+    MAC_RF_Init routine must have been called before.
 
   Parameters:
-    handle - A valid handle which identifies the Mac RF instance
-
     scanParams - Pointer to structure containing required parameters for request
 
   Returns:
@@ -603,16 +472,11 @@ void MAC_RF_ResetRequest(MAC_RF_HANDLE handle, MAC_RESET_REQUEST_PARAMS *rstPara
 
   Example:
     <code>
-    // ...
-    MAC_RF_HANDLE handle;
-    handle = MAC_RF_Open(sysObjMacRf);
-    // ...
-
     MAC_SCAN_REQUEST_PARAMS params = {
         .scanDuration = 15
     };
 
-    MAC_RF_ScanRequest(handle, &params);
+    MAC_RF_ScanRequest(&params);
 
     // Wait for Scan Confirm
     </code>
@@ -620,13 +484,12 @@ void MAC_RF_ResetRequest(MAC_RF_HANDLE handle, MAC_RESET_REQUEST_PARAMS *rstPara
   Remarks:
     None.
 */
-void MAC_RF_ScanRequest(MAC_RF_HANDLE handle, MAC_SCAN_REQUEST_PARAMS *scanParams);
+void MAC_RF_ScanRequest(MAC_SCAN_REQUEST_PARAMS *scanParams);
 
 // *****************************************************************************
 /* Function:
     MAC_RF_StartRequest
     (
-      MAC_RF_HANDLE handle,
       MAC_START_REQUEST_PARAMS *startParams
     )
 
@@ -640,11 +503,9 @@ void MAC_RF_ScanRequest(MAC_RF_HANDLE handle, MAC_SCAN_REQUEST_PARAMS *scanParam
     Result is provided in the corresponding Confirm callback.
 
   Precondition:
-    A valid MAC Wrapper Handle has to be obtained before.
+    MAC_RF_Init routine must have been called before.
 
   Parameters:
-    handle - A valid handle which identifies the Mac Wrapper instance
-
     startParams - Pointer to structure containing required parameters for request
 
   Returns:
@@ -652,16 +513,11 @@ void MAC_RF_ScanRequest(MAC_RF_HANDLE handle, MAC_SCAN_REQUEST_PARAMS *scanParam
 
   Example:
     <code>
-    // ...
-    MAC_RF_HANDLE handle;
-    handle = MAC_RF_Open(sysObjMacRf);
-    // ...
-
     MAC_START_REQUEST_PARAMS params = {
         .panId = 0x1234
     };
 
-    MAC_RF_StartRequest(handle, &params);
+    MAC_RF_StartRequest(&params);
 
     // Wait for Start Confirm
     </code>
@@ -669,7 +525,7 @@ void MAC_RF_ScanRequest(MAC_RF_HANDLE handle, MAC_SCAN_REQUEST_PARAMS *scanParam
   Remarks:
     None.
 */
-void MAC_RF_StartRequest(MAC_RF_HANDLE handle, MAC_START_REQUEST_PARAMS *srParams);
+void MAC_RF_StartRequest(MAC_START_REQUEST_PARAMS *srParams);
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

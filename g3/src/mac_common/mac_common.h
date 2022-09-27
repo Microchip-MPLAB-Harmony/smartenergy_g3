@@ -125,10 +125,9 @@ typedef enum
 
 // *****************************************************************************
 /* Function:
-    SYS_MODULE_OBJ MAC_COMMON_Initialize
+    MAC_COMMON_Init
     (
-      const SYS_MODULE_INDEX index,
-      const SYS_MODULE_INIT * const init
+      void
     )
 
   Summary:
@@ -136,38 +135,31 @@ typedef enum
 
   Description:
     This routine initializes the MAC Common.
-    No data is nedded for this module initialization.
+    No data is needed for this module initialization.
 
   Precondition:
     None.
 
   Parameters:
-    index - Identifier for the instance to be initialized (single instance allowed)
-
-    init  - Pointer to the init data structure. As this module requires no
-            initialization data, this parameter can be set to NULL.
+    None.
 
   Returns:
-    If successful, returns a valid module instance object.
-    Otherwise, returns SYS_MODULE_OBJ_INVALID.
+    None.
 
   Example:
     <code>
     // The following code snippet shows an example MAC Common initialization.
 
-    SYS_MODULE_OBJ sysObjMacCommon;
+    MAC_COMMON_Init();
 
-    sysObjMacCommon = MAC_COMMON_Initialize(MAC_COMMON_INDEX_0, NULL);
-    if (sysObjMacCommon == SYS_MODULE_OBJ_INVALID)
-    {
-        // Handle error
-    }
+    // Initialize PLC MAC if needed
+    // Initialize RF MAC if needed
     </code>
 
   Remarks:
     This routine must be called before any other MAC Common routine is called.
 */
-SYS_MODULE_OBJ MAC_COMMON_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_INIT * const init);
+void MAC_COMMON_Init(void);
 
 // *****************************************************************************
 /* Function:
@@ -183,7 +175,7 @@ SYS_MODULE_OBJ MAC_COMMON_Initialize(const SYS_MODULE_INDEX index, const SYS_MOD
     Reset operation initializes MAC Common PIB to their default values.
 
   Precondition:
-    MAC_COMMON_Initialize primitive has to be called before.
+    MAC_COMMON_Init primitive has to be called before.
 
   Parameters:
     None.
@@ -229,7 +221,7 @@ void MAC_COMMON_Reset(void);
     in the pibValue parameter.
 
   Precondition:
-    MAC_COMMON_Initialize primitive has to be called before.
+    MAC_COMMON_Init primitive has to be called before.
 
   Parameters:
     attribute - Identifier of the Attribute to retrieve value
@@ -277,7 +269,7 @@ MAC_STATUS MAC_COMMON_GetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
     function call return, in the return status code.
 
   Precondition:
-    MAC_COMMON_Initialize primitive has to be called before.
+    MAC_COMMON_Init primitive has to be called before.
 
   Parameters:
     attribute - Identifier of the Attribute to provide value
@@ -327,7 +319,7 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
     This function returns the current value of such counter.
 
   Precondition:
-    MAC_COMMON_Initialize primitive has to be called before.
+    MAC_COMMON_Init primitive has to be called before.
 
   Parameters:
     None.

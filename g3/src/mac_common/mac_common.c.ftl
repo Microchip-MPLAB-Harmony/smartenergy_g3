@@ -70,7 +70,7 @@ static const MAC_COMMON_MIB macMibCommonDefaults = {
 
 static bool alreadyInitialized = false;
 
-void MacCommonInitialize(void)
+void MAC_COMMON_Init(void)
 {
     if (!alreadyInitialized)
     {
