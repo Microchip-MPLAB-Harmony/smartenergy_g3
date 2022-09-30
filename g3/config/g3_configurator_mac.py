@@ -79,7 +79,7 @@ def instantiateComponent(g3ConfigMacComponent):
     g3MacRFPOSTable.setDescription("Auxiliary Table where information from Neighbouring nodes is stored")
     g3MacRFPOSTable.setDefaultValue(100)
     g3MacRFPOSTable.setMin(16)
-    g3MacRFPOSTable.setMax(500)
+    g3MacRFPOSTable.setMax(512)
     
     g3MacRFDSNTable = g3ConfigMacComponent.createIntegerSymbol("MAC_RF_DSN_TABLE_SIZE", g3MacRFTables)
     g3MacRFDSNTable.setLabel("Sequence Number Table Size")
@@ -145,7 +145,7 @@ def instantiateComponent(g3ConfigMacComponent):
     # MAC PLC Files
     global macPlcLibFile
     macPlcLibFile = g3ConfigMacComponent.createLibrarySymbol("G3_MAC_PLC_LIBRARY", None)
-    macPlcLibFile.setSourcePath("g3/libs/g3_lib_plc_mac.a")
+    macPlcLibFile.setSourcePath("g3/libs/g3_lib_mac_plc.a")
     macPlcLibFile.setOutputName("g3_lib_plc_mac.a")
     macPlcLibFile.setDestPath("stack/g3/mac")
     macPlcLibFile.setEnabled(True)
@@ -174,7 +174,7 @@ def instantiateComponent(g3ConfigMacComponent):
     # MAC RF Files
     global macRfLibFile
     macRfLibFile = g3ConfigMacComponent.createLibrarySymbol("G3_MAC_RF_LIBRARY", None)
-    macRfLibFile.setSourcePath("g3/libs/g3_lib_rf_mac.a")
+    macRfLibFile.setSourcePath("g3/libs/g3_lib_mac_rf.a")
     macRfLibFile.setOutputName("g3_lib_rf_mac.a")
     macRfLibFile.setDestPath("stack/g3/mac")
     macRfLibFile.setEnabled(True)
