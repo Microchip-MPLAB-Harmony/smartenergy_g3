@@ -110,10 +110,10 @@ typedef uintptr_t MAC_WRP_HANDLE;
     Identifies the possible PLC band values.
 
    Description:
-    This enumeration identifies the possible PLC band values.
+    This enumeration identifies the possible PLC working band values.
 
    Remarks:
-    None.
+    It is only used when PLC MAC layer is present.
 */
 typedef enum
 {
@@ -135,7 +135,7 @@ typedef enum
     or one medium allowing the other as backup in case of failure.
 
    Remarks:
-    None.
+    It is only used when both PLC and RF MAC layers are present.
 */
 typedef enum
 {
@@ -159,7 +159,7 @@ typedef enum
     being requested on the other.
 
    Remarks:
-    None.
+    It is only used when both PLC and RF MAC layers are present.
 */
 typedef enum
 {
@@ -182,7 +182,7 @@ typedef enum
     on RF.
 
    Remarks:
-    None.
+    It is only used when both PLC and RF MAC layers are present.
 */
 typedef enum
 {
@@ -203,7 +203,7 @@ typedef enum
     the subband is not used.
 
    Remarks:
-    None.
+    It is only used when PLC MAC layer is present.
 */
 typedef struct
 {
@@ -223,7 +223,7 @@ typedef struct
     the carrier is not used.
 
    Remarks:
-    None.
+    It is only used when PLC MAC layer is present.
 */
 typedef struct
 {
@@ -241,7 +241,7 @@ typedef struct
     transmitting and receiving frames over PLC medium.
 
    Remarks:
-    None.
+    It is only used when PLC MAC layer is present.
 */
 typedef enum
 {
@@ -263,7 +263,7 @@ typedef enum
     transmitting and receiving frames over PLC medium.
 
    Remarks:
-    None.
+    It is only used when PLC MAC layer is present.
 */
 typedef enum
 {
@@ -282,7 +282,7 @@ typedef enum
     used in PLC communication.
 
    Remarks:
-    None.
+    It is only used when PLC MAC layer is present.
 */
 typedef struct
 {
@@ -658,6 +658,9 @@ typedef struct
 */
 typedef enum
 {
+    /*************************************************************************/
+    /* PLC IBs definition */
+    /*************************************************************************/
     MAC_WRP_PIB_MAX_BE = 0x00000047, /* 8 bits */
     MAC_WRP_PIB_BSN = 0x00000049, /* 8 bits */
     MAC_WRP_PIB_DSN = 0x0000004C, /* 8 bits */
@@ -796,7 +799,9 @@ typedef enum
     /* Gets or sets a parameter in Phy layer. Index will be used to contain PHY parameter ID. */
     /* See definitions below */
     MAC_WRP_PIB_MANUF_PHY_PARAM = 0x08000020,
+    /*************************************************************************/
     /* RF IBs definition */
+    /*************************************************************************/
     MAC_WRP_PIB_DSN_RF = 0x00000200, /* 8 bits */
     MAC_WRP_PIB_MAX_BE_RF = 0x00000201, /* 8 bits */
     MAC_WRP_PIB_MAX_CSMA_BACKOFFS_RF = 0x00000202, /* 8 bits */

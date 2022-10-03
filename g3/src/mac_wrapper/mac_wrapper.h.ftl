@@ -448,7 +448,7 @@ typedef struct
 /* MAC Wrapper Init Structure
 
    Summary:
-    Initialization Data for MAC Wrapper to be provided on Initialize routine.
+    Initialization Data for MAC Wrapper to be provided on Init routine.
 
    Description:
     Defines the set of callback functions that MAC Wrapper uses to generate
@@ -456,8 +456,7 @@ typedef struct
     band to use.
 
    Remarks:
-    In case an event is to be ignored, setting its corresponding callback
-    function to NULL will lead to the event not being generated.
+    None.
 */
 typedef struct
 {
@@ -473,7 +472,7 @@ typedef struct
 /* MAC Wrapper State Machine Definition
 
   Summary:
-    Defines the states of the MAC Wrapper State Machine.
+    Defines the possible states of the MAC Wrapper State Machine.
 
   Description:
     None.
@@ -543,7 +542,7 @@ typedef struct
         if (params->status == MAC_WRP_STATUS_SUCCESS)
         {
             txHandler = params->msduHandle;
-            // Dispatch accordin to handler
+            // Dispatch according to handler
         }
     }
     </code>
@@ -840,10 +839,11 @@ typedef void (*MAC_WRP_CommStatusIndication)(MAC_WRP_COMM_STATUS_INDICATION_PARA
     )
 
   Summary:
-    Initializes the MAC Wrapper module.
+    Initializes the MAC Wrapper module for the specified Index.
 
   Description:
-    This routine initializes the MAC Wrapper.
+    This routine initializes the MAC Wrappermodule making it ready for clients
+    to open and use.
 
   Precondition:
     None.
@@ -862,7 +862,10 @@ typedef void (*MAC_WRP_CommStatusIndication)(MAC_WRP_COMM_STATUS_INDICATION_PARA
     <code>
     // The following code snippet shows an example MAC Wrapper initialization.
 
+    SYS_MODULE_INIT initData;
     SYS_MODULE_OBJ sysObjMacWrp;
+
+    // Populate initData if needed
 
     sysObjMacWrp = MAC_WRP_Initialize(MAC_WRP_INDEX_0, &initData);
     if (sysObjMacWrp == SYS_MODULE_OBJ_INVALID)
@@ -892,11 +895,10 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
     identify the caller and the instance of the module.
 
   Precondition:
-    MAC_WRP_Initialize routine must have been called before,
-    and its returned Object used when calling this function.
+    MAC_WRP_Initialize routine must have been called before.
 
   Parameters:
-    object - Identifier for the object instance to be opened
+    index - Index for the instance to be opened
 
   Returns:
     If successful, the routine returns a valid open-instance handle (a number
@@ -905,22 +907,13 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
 
   Example:
     <code>
+    SYS_MODULE_INIT initData;
     MAC_WRP_HANDLE handle;
     SYS_MODULE_OBJ sysObjMacWrp;
+    
+    // Populate initData if needed
 
-    const MAC_WRP_INIT macWrpInit = {
-        .dataConfirmCallback = appDataConfirm,
-        .dataIndicationCallback = appDataIndication,
-        .resetConfirmCallback = appResetConfirm,
-        .beaconNotifyIndicationCallback = appBeaconIndication,
-        .scanConfirmCallback = appScanConfirm,
-        .startConfirmCallback = NULL, // Start primitive not used
-        .commStatusIndicationCallback = appCommStatus,
-        .snifferIndicationCallback = NULL, // MAC Sniffer not used
-        .plcBand = MAC_WRP_BAND_CENELEC_A,
-    };
-
-    sysObjMacWrp = MAC_WRP_Initialize(MAC_WRP_INDEX_0, &macWrpInit);
+    sysObjMacWrp = MAC_WRP_Initialize(MAC_WRP_INDEX_0, &initData);
 
     handle = MAC_WRP_Open(MAC_WRP_INDEX_0);
     if (handle == MAC_WRP_HANDLE_INVALID)
@@ -962,7 +955,7 @@ MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index);
     <code>
     // ...
     SYS_MODULE_OBJ sysObjMacWrp;
-    sysObjMacWrp = MAC_WRP_Initialize(MAC_WRP_INDEX_0, &macWrpInit);
+    sysObjMacWrp = MAC_WRP_Initialize(MAC_WRP_INDEX_0, &initData);
     // ...
 
     while (true)
@@ -1351,7 +1344,8 @@ void MAC_WRP_ScanRequest(MAC_WRP_HANDLE handle, MAC_WRP_SCAN_REQUEST_PARAMS *sca
     </code>
 
   Remarks:
-    None.
+    This primitive is only used by the PAN Coordinator node,
+    which is the one in charge of Starting the PAN.
 */
 void MAC_WRP_StartRequest(MAC_WRP_HANDLE handle, MAC_WRP_START_REQUEST_PARAMS *startParams);
 
