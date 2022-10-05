@@ -287,7 +287,7 @@ MAC_STATUS MAC_COMMON_GetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
     MAC_STATUS status;
     const MAC_PIB_VALUE value = {
         .length = 2,
-        .value = 0xFFFF
+        .value = {0xFF, 0xFF}
     };
 
     status = MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_RC_COORD, 0, &value);
