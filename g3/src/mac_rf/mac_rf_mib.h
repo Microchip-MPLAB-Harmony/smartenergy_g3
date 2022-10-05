@@ -106,8 +106,8 @@
 */
 typedef struct
 {
-    MAC_SHORT_ADDRESS shortAddress;
     uint16_t posValidTime;
+    MAC_SHORT_ADDRESS shortAddress;
     uint8_t forwardLqi;
     uint8_t reverseLqi;
     uint8_t dutyCycle;
