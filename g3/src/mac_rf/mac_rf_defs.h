@@ -51,6 +51,14 @@
 
 #include "../mac_common/mac_common.h"
 
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus  // Provide C++ Compatibility
+
+    extern "C" {
+
+#endif
+// DOM-IGNORE-END
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Macro Definitions
@@ -73,7 +81,7 @@
 
    Description:
     This structure contains the fields which define the Frame Control of a MAC
-    frame header, as defined in IEEE 802.15.4, post 2006 versions.
+    frame header, as defined in IEEE 802.15.4, 2015 version.
 
    Remarks:
     None.
