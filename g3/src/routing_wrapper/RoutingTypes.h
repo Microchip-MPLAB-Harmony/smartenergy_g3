@@ -15,7 +15,7 @@
 #define __ROUTING_TYPES_H__
 
 #include "RoutingApi.h"
-#include <QueueMng.h>
+#include "../../../../smartenergy/stack/service/queue/srv_queue.h"
 #include "../../core/system/time/sys_time.h"
 
 #define RERR_CODE_NO_AVAILABLE_ROUTE   0
