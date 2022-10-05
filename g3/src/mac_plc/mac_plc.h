@@ -103,14 +103,14 @@ typedef enum
 typedef struct
 {
     /* Callbacks */
-    MAC_COMMON_DataConfirm macPlcDataConfirm;
-    MAC_COMMON_DataIndication macPlcDataIndication;
-    MAC_COMMON_ResetConfirm macPlcResetConfirm;
-    MAC_COMMON_BeaconNotifyIndication macPlcBeaconNotifyIndication;
-    MAC_COMMON_ScanConfirm macPlcScanConfirm;
-    MAC_COMMON_StartConfirm macPlcStartConfirm;
-    MAC_COMMON_CommStatusIndication macPlcCommStatusIndication;
-    MAC_COMMON_SnifferIndication macPlcMacSnifferIndication;
+    MAC_DataConfirm macPlcDataConfirm;
+    MAC_DataIndication macPlcDataIndication;
+    MAC_ResetConfirm macPlcResetConfirm;
+    MAC_BeaconNotifyIndication macPlcBeaconNotifyIndication;
+    MAC_ScanConfirm macPlcScanConfirm;
+    MAC_StartConfirm macPlcStartConfirm;
+    MAC_CommStatusIndication macPlcCommStatusIndication;
+    MAC_SnifferIndication macPlcMacSnifferIndication;
 } MAC_PLC_HANDLERS;
 
 // *****************************************************************************
@@ -194,7 +194,7 @@ typedef struct
 
 // *****************************************************************************
 /* Function:
-    MAC_PLC_Init
+    void MAC_PLC_Init
     (
       MAC_PLC_INIT *init
     )
@@ -260,7 +260,7 @@ void MAC_PLC_Init(MAC_PLC_INIT *init);
     MAC_PLC_Init routine must have been called before.
 
   Parameters:
-    object - Identifier for the object instance
+    None.
 
   Returns:
     None.
@@ -310,6 +310,11 @@ void MAC_PLC_Tasks(void);
 
   Example:
     <code>
+    uint8_t txBuffer[MAC_PDU_SIZE];
+
+    // Fill txBuffer
+    // ...
+
     MAC_DATA_REQUEST_PARAMS params = {
         .srcAddressMode = MAC_ADDRESS_MODE_SHORT,
         .destPanId = 0x1234,
@@ -436,7 +441,7 @@ MAC_STATUS MAC_PLC_SetRequestSync(MAC_PLC_PIB_ATTRIBUTE attribute,
 
 // *****************************************************************************
 /* Function:
-    MAC_PLC_ResetRequest
+    void MAC_PLC_ResetRequest
     (
       MAC_RESET_REQUEST_PARAMS *rstParams
     )
@@ -475,7 +480,7 @@ void MAC_PLC_ResetRequest(MAC_RESET_REQUEST_PARAMS *rstParams);
 
 // *****************************************************************************
 /* Function:
-    MAC_PLC_ScanRequest
+    void MAC_PLC_ScanRequest
     (
       MAC_SCAN_REQUEST_PARAMS *scanParams
     )
@@ -487,7 +492,7 @@ void MAC_PLC_ResetRequest(MAC_RESET_REQUEST_PARAMS *rstParams);
     Scan operation asks MAC layer to send a Beacon Request frame and wait
     for incoming Beacon frames.
     During the Scan period, Beacons received will be notified by means of
-    MAC_COMMON_BeaconNotifyIndication callback.
+    MAC_BeaconNotifyIndication callback.
     Result is provided in the corresponding Confirm callback.
 
   Precondition:
@@ -517,7 +522,7 @@ void MAC_PLC_ScanRequest(MAC_SCAN_REQUEST_PARAMS *scanParams);
 
 // *****************************************************************************
 /* Function:
-    MAC_PLC_StartRequest
+    void MAC_PLC_StartRequest
     (
       MAC_START_REQUEST_PARAMS *startParams
     )
@@ -552,7 +557,8 @@ void MAC_PLC_ScanRequest(MAC_SCAN_REQUEST_PARAMS *scanParams);
     </code>
 
   Remarks:
-    None.
+    This primitive is only used by the PAN Coordinator node,
+    which is the one in charge of Starting the PAN.
 */
 void MAC_PLC_StartRequest(MAC_START_REQUEST_PARAMS *startParams);
 

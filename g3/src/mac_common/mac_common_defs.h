@@ -788,7 +788,7 @@ typedef struct
   Remarks:
     None.
 */
-typedef void (*MAC_COMMON_DataConfirm)(MAC_DATA_CONFIRM_PARAMS *dcParams);
+typedef void (*MAC_DataConfirm)(MAC_DATA_CONFIRM_PARAMS *dcParams);
 
 // *****************************************************************************
 /* MAC Data Indication Event Handler Function Pointer
@@ -832,7 +832,7 @@ typedef void (*MAC_COMMON_DataConfirm)(MAC_DATA_CONFIRM_PARAMS *dcParams);
   Remarks:
     None.
 */
-typedef void (*MAC_COMMON_DataIndication)(MAC_DATA_INDICATION_PARAMS *diParams);
+typedef void (*MAC_DataIndication)(MAC_DATA_INDICATION_PARAMS *diParams);
 
 // *****************************************************************************
 /* MAC Sniffer Indication Event Handler Function Pointer
@@ -862,7 +862,7 @@ typedef void (*MAC_COMMON_DataIndication)(MAC_DATA_INDICATION_PARAMS *diParams);
   Remarks:
     None.
 */
-typedef void (*MAC_COMMON_SnifferIndication)(MAC_SNIFFER_INDICATION_PARAMS *siParams);
+typedef void (*MAC_SnifferIndication)(MAC_SNIFFER_INDICATION_PARAMS *siParams);
 
 // *****************************************************************************
 /* MAC Reset Confirm Event Handler Function Pointer
@@ -900,7 +900,7 @@ typedef void (*MAC_COMMON_SnifferIndication)(MAC_SNIFFER_INDICATION_PARAMS *siPa
   Remarks:
     None.
 */
-typedef void (*MAC_COMMON_ResetConfirm)(MAC_RESET_CONFIRM_PARAMS *rcParams);
+typedef void (*MAC_ResetConfirm)(MAC_RESET_CONFIRM_PARAMS *rcParams);
 
 // *****************************************************************************
 /* MAC Beacon Notify Indication Event Handler Function Pointer
@@ -941,7 +941,7 @@ typedef void (*MAC_COMMON_ResetConfirm)(MAC_RESET_CONFIRM_PARAMS *rcParams);
   Remarks:
     None.
 */
-typedef void (*MAC_COMMON_BeaconNotifyIndication)(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bcnParams);
+typedef void (*MAC_BeaconNotifyIndication)(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bcnParams);
 
 // *****************************************************************************
 /* MAC Scan Confirm Event Handler Function Pointer
@@ -979,7 +979,7 @@ typedef void (*MAC_COMMON_BeaconNotifyIndication)(MAC_BEACON_NOTIFY_INDICATION_P
   Remarks:
     None.
 */
-typedef void (*MAC_COMMON_ScanConfirm)(MAC_SCAN_CONFIRM_PARAMS *scParams);
+typedef void (*MAC_ScanConfirm)(MAC_SCAN_CONFIRM_PARAMS *scParams);
 
 // *****************************************************************************
 /* MAC Start Confirm Event Handler Function Pointer
@@ -1016,7 +1016,7 @@ typedef void (*MAC_COMMON_ScanConfirm)(MAC_SCAN_CONFIRM_PARAMS *scParams);
   Remarks:
     None.
 */
-typedef void (*MAC_COMMON_StartConfirm)(MAC_START_CONFIRM_PARAMS *scParams);
+typedef void (*MAC_StartConfirm)(MAC_START_CONFIRM_PARAMS *scParams);
 
 // *****************************************************************************
 /* MAC Comm Status Indication Event Handler Function Pointer
@@ -1059,7 +1059,7 @@ typedef void (*MAC_COMMON_StartConfirm)(MAC_START_CONFIRM_PARAMS *scParams);
   Remarks:
     None.
 */
-typedef void (*MAC_COMMON_CommStatusIndication)(MAC_COMM_STATUS_INDICATION_PARAMS *csParams);
+typedef void (*MAC_CommStatusIndication)(MAC_COMM_STATUS_INDICATION_PARAMS *csParams);
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

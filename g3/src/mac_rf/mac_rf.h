@@ -77,21 +77,21 @@
 typedef struct
 {
     /* Callbacks */
-    MAC_COMMON_DataConfirm macRfDataConfirm;
-    MAC_COMMON_DataIndication macRfDataIndication;
-    MAC_COMMON_ResetConfirm macRfResetConfirm;
-    MAC_COMMON_BeaconNotifyIndication macRfBeaconNotifyIndication;
-    MAC_COMMON_ScanConfirm macRfScanConfirm;
-    MAC_COMMON_StartConfirm macRfStartConfirm;
-    MAC_COMMON_CommStatusIndication macRfCommStatusIndication;
-    MAC_COMMON_SnifferIndication macRfMacSnifferIndication;
+    MAC_DataConfirm macRfDataConfirm;
+    MAC_DataIndication macRfDataIndication;
+    MAC_ResetConfirm macRfResetConfirm;
+    MAC_BeaconNotifyIndication macRfBeaconNotifyIndication;
+    MAC_ScanConfirm macRfScanConfirm;
+    MAC_StartConfirm macRfStartConfirm;
+    MAC_CommStatusIndication macRfCommStatusIndication;
+    MAC_SnifferIndication macRfMacSnifferIndication;
 } MAC_RF_HANDLERS;
 
 // *****************************************************************************
 /* MAC RF Init Structure
 
    Summary:
-    Initialization Data for MAC RF to be provided on Initialize routine.
+    Initialization Data for MAC RF to be provided on Init routine.
 
    Description:
     Defines the set of callback functions that MAC RF uses to generate
@@ -180,8 +180,6 @@ typedef struct
     None.
 
   Parameters:
-    index - Identifier for the instance to be initialized (single instance allowed)
-
     init  - Pointer to the init data structure containing any data necessary to
             initialize the module.
 
@@ -281,6 +279,11 @@ void MAC_RF_Tasks(void);
 
   Example:
     <code>
+    uint8_t txBuffer[MAC_PDU_SIZE];
+
+    // Fill txBuffer
+    // ...
+
     MAC_DATA_REQUEST_PARAMS params = {
         .srcAddressMode = MAC_ADDRESS_MODE_SHORT,
         .destPanId = 0x1234,
@@ -407,7 +410,7 @@ MAC_STATUS MAC_RF_SetRequestSync(MAC_RF_PIB_ATTRIBUTE attribute,
 
 // *****************************************************************************
 /* Function:
-    MAC_RF_ResetRequest
+    void MAC_RF_ResetRequest
     (
       MAC_RESET_REQUEST_PARAMS *rstParams
     )
@@ -446,7 +449,7 @@ void MAC_RF_ResetRequest(MAC_RESET_REQUEST_PARAMS *rstParams);
 
 // *****************************************************************************
 /* Function:
-    MAC_RF_ScanRequest
+    void MAC_RF_ScanRequest
     (
       MAC_SCAN_REQUEST_PARAMS *scanParams
     )
@@ -458,7 +461,7 @@ void MAC_RF_ResetRequest(MAC_RESET_REQUEST_PARAMS *rstParams);
     Scan operation asks MAC layer to send a Beacon Request frame and wait
     for incoming Beacon frames.
     During the Scan period, Beacons received will be notified by means of
-    MAC_COMMON_BeaconNotifyIndication callback.
+    MAC_BeaconNotifyIndication callback.
     Result is provided in the corresponding Confirm callback.
 
   Precondition:
@@ -488,7 +491,7 @@ void MAC_RF_ScanRequest(MAC_SCAN_REQUEST_PARAMS *scanParams);
 
 // *****************************************************************************
 /* Function:
-    MAC_RF_StartRequest
+    void MAC_RF_StartRequest
     (
       MAC_START_REQUEST_PARAMS *startParams
     )
