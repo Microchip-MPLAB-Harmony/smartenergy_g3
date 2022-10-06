@@ -15,7 +15,7 @@
 #define __ADP_SHARED_TYPES_H__
 
 #include "AdpApiTypes.h"
-#include "../../../../core/system/time/sys_time.h"
+#include "system/time/sys_time.h"
 
 /**********************************************************************************************************************/
 /** The ADP_Common_DataSend_Callback primitive reports the results of a ADP_Common_DataSend Request

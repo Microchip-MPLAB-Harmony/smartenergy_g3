@@ -13,7 +13,7 @@
 #ifndef __PROTO_LOAD_NG_H__
 #define __PROTO_LOAD_NG_H__
 
-#include "../routing_wrapper/RoutingTypes.h"
+#include "/routing_wrapper/RoutingTypes.h"
 
 /**********************************************************************************************************************/
 /** Flags

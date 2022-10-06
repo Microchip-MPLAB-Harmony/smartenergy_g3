@@ -16,7 +16,7 @@
 #ifndef __BOOSTRAP_WRAPPER_H__
 #define __BOOSTRAP_WRAPPER_H__
 
-#include "../adp/AdpSharedTypes.h"
+#include "/adp/AdpSharedTypes.h"
 
 /* Maximum size of a bootstrap command */
 #define BOOTSTRAP_COMMAND_BUFFER_SIZE 200
