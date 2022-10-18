@@ -7,11 +7,11 @@
 #ifndef __ADP_API_H__
 #define __ADP_API_H__
 
-#include "AdpSharedTypes.h"
-#include "AdpApiTypes.h"
-
 #include <stdint.h>
 #include <stdbool.h>
+
+#include "adp_shared_types.h"
+#include "adp_api_types.h"
 
 /**********************************************************************************************************************/
 /** Forward declaration

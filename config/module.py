@@ -37,7 +37,7 @@ def loadModule():
     g3ConfigComponent = Module.CreateComponent("g3_config", "G3 Stack Configurator", "/SmartEnergy/Stack/G3", "g3/config/g3_configurator.py")
     g3ConfigComponent.setDisplayType("G3 Stack Configurator")
     
-    ###########  G3 LIBRARY Adaptation Layer Configurations  ###########
+    ###########  G3 Stack Adaptation Layer Configurations  ###########
     g3ConfigAdaptComponent = Module.CreateComponent("g3_adapt_config", "G3 Adaptation Layer Configurator", "/SmartEnergy/Stack/G3/Layer 2 Sublayer 2 - Adaptation", "g3/config/g3_configurator_adapt.py")
     g3ConfigAdaptComponent.setDisplayType("Adaptation Configurator")
 
@@ -49,9 +49,9 @@ def loadModule():
     g3AdpComponent.addDependency("adp_mac_wrapper_dependency", "MAC Wrapper", True, True)
     g3AdpComponent.addDependency("adp_srv_random_dependency", "Random", True, True)
     g3AdpComponent.addDependency("adp_srv_queue_dependency", "Queue", True, True)
-    g3AdpComponent.addDependency("adp_srv_security_dependency", "Security", True, True)
+    g3AdpComponent.addDependency("adp_srv_log_report_dependency", "Log Report", True, True)
     g3AdpComponent.addDependency("adp_sys_time_dependency", "SYS_TIME", True, True)
-    # TBD optional dependencies to logger and serialization and storage
+    # TBD optional dependencies to serialization and storage
     g3AdpComponent.setDisplayType("Adaptation Layer")
     
     ## LOADng
@@ -60,8 +60,9 @@ def loadModule():
     g3LOADngComponent.addDependency("loadng_mac_wrapper_dependency", "MAC Wrapper", True, True)
     g3LOADngComponent.addDependency("loadng_srv_random_dependency", "Random", True, True)
     g3LOADngComponent.addDependency("loadng_srv_queue_dependency", "Queue", True, True)
-    g3LOADngComponent.addDependency("adp_sys_time_dependency", "SYS_TIME", True, True)
-    # TBD optional dependencies to logger and serialization and storage
+    g3LOADngComponent.addDependency("loadng_srv_log_report_dependency", "Log Report", True, True)
+    g3LOADngComponent.addDependency("loadng_sys_time_dependency", "SYS_TIME", True, True)
+    # TBD optional dependencies to serialization and storage
     g3LOADngComponent.setDisplayType("Adaptation Layer")
     
     ## Bootstrap
@@ -69,7 +70,7 @@ def loadModule():
     g3BootstrapComponent.addCapability("libBootstrap", "Bootstrap", True) 
     g3BootstrapComponent.addDependency("bootstrap_srv_random_dependency", "Random", True, True)
     g3BootstrapComponent.addDependency("bootstrap_srv_security_dependency", "Security", True, True)
-    g3BootstrapComponent.addDependency("adp_sys_time_dependency", "SYS_TIME", True, True)
+    g3BootstrapComponent.addDependency("bootstrap_sys_time_dependency", "SYS_TIME", True, True)
     g3BootstrapComponent.setDisplayType("Adaptation Layer")
     
     ###########  G3 EAP Server Configurations  ###########
@@ -105,9 +106,10 @@ def loadModule():
     g3MacPlcComponent.addDependency("mac_plc_common_dependency", "MAC Common", True, True)
     g3MacPlcComponent.addDependency("mac_plc_wrapper_dependency", "MAC Wrapper", True, True)
     g3MacPlcComponent.addDependency("plc_srv_random_dependency", "Random", True, True)
+    g3MacPlcComponent.addDependency("plc_srv_log_report_dependency", "Log Report", True, True)
     g3MacPlcComponent.addDependency("plc_srv_security_dependency", "Security", True, True)
     g3MacPlcComponent.addDependency("plc_srv_g3_palplc_dependency", "G3_PAL_PLC", True, True)
-    # TBD optional dependencies to logger and storage
+    # TBD optional dependencies to storage
     g3MacPlcComponent.setDisplayType("MAC Layer")
     
     ## MAC RF
@@ -116,9 +118,10 @@ def loadModule():
     g3MacRfComponent.addDependency("mac_rf_common_dependency", "MAC Common", True, True)
     g3MacRfComponent.addDependency("mac_rf_wrapper_dependency", "MAC Wrapper", True, True)
     g3MacRfComponent.addDependency("rf_srv_random_dependency", "Random", True, True)
+    g3MacRfComponent.addDependency("rf_srv_log_report_dependency", "Log Report", True, True)
     g3MacRfComponent.addDependency("rf_srv_security_dependency", "Security", True, True)
     # TBD g3MacRfComponent.addDependency("rf_srv_g3_pal215_dependency", "G3_PAL_RF", False, True)
-    # TBD optional dependencies to logger and storage
+    # TBD optional dependencies to storage
     g3MacRfComponent.setDisplayType("MAC Layer")
     
     ###########  G3 Stack Services Configurations  ###########

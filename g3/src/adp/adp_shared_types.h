@@ -14,7 +14,7 @@
 #ifndef __ADP_SHARED_TYPES_H__
 #define __ADP_SHARED_TYPES_H__
 
-#include "AdpApiTypes.h"
+#include "adp_api_types.h"
 #include "system/time/sys_time.h"
 
 /**********************************************************************************************************************/
