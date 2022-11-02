@@ -94,7 +94,7 @@ typedef struct
     uint16_t ackRequest : 1;
     uint16_t panIdCompression : 1;
     uint16_t reserved : 2;
-    uint16_t m_nIEPresent : 1;
+    uint16_t iePresent : 1;
     uint16_t destAddressingMode : 2;
     uint16_t frameVersion : 2;
     uint16_t srcAddressingMode : 2;

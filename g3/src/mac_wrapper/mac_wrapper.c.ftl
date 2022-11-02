@@ -1414,8 +1414,18 @@ MAC_WRP_STATUS MAC_WRP_GetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBU
     }
     else
     {
-        /* Get from PLC MAC */
-        return (MAC_WRP_STATUS)(MAC_PLC_GetRequestSync((MAC_PLC_PIB_ATTRIBUTE)attribute, index, (MAC_PIB_VALUE *)pibValue));
+        /* RF Available IB has to be handled here */
+        if (eAttribute == MAC_WRP_PIB_MANUF_RF_IFACE_AVAILABLE) 
+        {
+            pibValue->length = 1;
+            pibValue->value[0] = 0;
+            return MAC_WRP_STATUS_SUCCESS;
+        }
+        else 
+        {
+            /* Get from PLC MAC */
+            return (MAC_WRP_STATUS)(MAC_PLC_GetRequestSync((MAC_PLC_PIB_ATTRIBUTE)eAttribute, u16Index, (MAC_PIB_VALUE *)pibValue));
+        }
     }
 <#elseif MAC_RF_PRESENT == true>
     /* Check attribute ID range to redirect to Common or RF MAC */
@@ -1426,8 +1436,18 @@ MAC_WRP_STATUS MAC_WRP_GetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBU
     }
     else
     {
-        /* Get from RF MAC */
-        return (MAC_WRP_STATUS)(MAC_RF_GetRequestSync((MAC_RF_PIB_ATTRIBUTE)attribute, index, (MAC_PIB_VALUE *)pibValue));
+        /* PLC Available IB has to be handled here */
+        if (eAttribute == MAC_WRP_PIB_MANUF_PLC_IFACE_AVAILABLE) 
+        {
+            pibValue->length = 1;
+            pibValue->value[0] = 0;
+            return MAC_WRP_STATUS_SUCCESS;  
+        }
+        else 
+        {
+            /* Get from RF MAC */
+            return (MAC_WRP_STATUS)(MAC_RF_GetRequestSync((MAC_PLC_PIB_ATTRIBUTE)eAttribute, u16Index, (MAC_PIB_VALUE *)pibValue));
+        }
     }
 </#if>
 }

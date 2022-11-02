@@ -796,6 +796,8 @@ typedef enum
     MAC_WRP_PIB_MANUF_NEIGHBOUR_LQI = 0x08000029,
     /* Best LQI found in neighbour table. 8 bits. */
     MAC_WRP_PIB_MANUF_BEST_LQI = 0x0800002A,
+    /* PLC Interface availability. 8 bits (bool). */
+    MAC_WRP_PIB_MANUF_PLC_IFACE_AVAILABLE = 0x0800002B,
     /* Gets or sets a parameter in Phy layer. Index will be used to contain PHY parameter ID. */
     /* See definitions below */
     MAC_WRP_PIB_MANUF_PHY_PARAM = 0x08000020,
@@ -900,6 +902,8 @@ typedef enum
     MAC_WRP_PIB_MANUF_ACK_CONFIRM_WAIT_TIME_RF = 0x0800021E,
     /* Configures time to wait for a Data Confirm before timing out. 32 bits */
     MAC_WRP_PIB_MANUF_DATA_CONFIRM_WAIT_TIME_RF = 0x0800021F,
+    /* RF Interface availability. 8 bits (bool). */
+    MAC_WRP_PIB_MANUF_RF_IFACE_AVAILABLE = 0x08000221,
     /* Gets or sets a parameter in Phy layer. Index will be used to contain PHY parameter ID */
     MAC_WRP_PIB_MANUF_PHY_PARAM_RF = 0x08000220
 } MAC_WRP_PIB_ATTRIBUTE;

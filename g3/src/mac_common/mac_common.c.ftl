@@ -309,6 +309,7 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
+                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
                 status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
             }
 </#if>
@@ -318,6 +319,7 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
+                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
                 status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
             }
 </#if>
@@ -327,6 +329,7 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
+                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
                 status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
             }
 </#if>
@@ -336,6 +339,7 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
+                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
                 status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
             }
 </#if>
@@ -345,6 +349,7 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
+                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
                 status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
             }
 </#if>
@@ -354,6 +359,7 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
+                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
                 status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
             }
 </#if>

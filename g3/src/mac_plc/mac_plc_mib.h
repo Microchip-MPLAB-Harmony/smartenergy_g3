@@ -129,6 +129,7 @@ typedef struct
     uint32_t rxWrongFCCount;
     uint32_t rxDecryptionErrorCount;
     bool plcDisable;
+    bool plcAvailable;
 } MAC_PLC_MIB;
 
 // *****************************************************************************
@@ -273,10 +274,14 @@ typedef enum
     MAC_PIB_MANUF_NEIGHBOUR_LQI = 0x08000029,
     /* Best LQI found in neighbour table. 8 bits. */
     MAC_PIB_MANUF_BEST_LQI = 0x0800002A,
+    /* PLC Interface availability. 8 bits (bool). */
+    MAC_PIB_MANUF_PLC_IFACE_AVAILABLE = 0x0800002B,
     // Gets or sets a parameter in Phy layer. Index will be used to contain PHY parameter ID.
     // Check 'enum EPhyParam' in MacRtMib.h for available Phy parameter IDs
     MAC_PIB_MANUF_PHY_PARAM = 0x08000020
 } MAC_PLC_PIB_ATTRIBUTE;
+
+MAC_STATUS MacSetMacRtAttributeSync(MAC_COMMON_PIB_ATTRIBUTE eAttribute, uint16_t u16Index, const MAC_PIB_VALUE *pValue);
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
