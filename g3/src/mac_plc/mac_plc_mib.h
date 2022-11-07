@@ -281,7 +281,58 @@ typedef enum
     MAC_PIB_MANUF_PHY_PARAM = 0x08000020
 } MAC_PLC_PIB_ATTRIBUTE;
 
-MAC_STATUS MacSetMacRtAttributeSync(MAC_COMMON_PIB_ATTRIBUTE eAttribute, uint16_t u16Index, const MAC_PIB_VALUE *pValue);
+// *****************************************************************************
+/* Function:
+    MAC_STATUS MAC_PLC_MIB_SetAttributeSync
+    (
+        MAC_COMMON_PIB_ATTRIBUTE attribute, 
+        uint16_t index, 
+        const MAC_PIB_VALUE *pibValue
+    )
+
+  Summary:
+    The MAC_PLC_MIB_SetAttributeSync primitive sets the value of an attribute in the
+    MAC layer Information Base (IB).
+
+  Description:
+    SetAttributeSync primitive is used to set the value of a MIB.
+    Sync suffix indicates that result of set operation is provided upon
+    function call return, in the return status code.
+
+  Precondition:
+    MAC_PLC_Init routine must have been called before.
+
+  Parameters:
+    attribute - Identifier of the Attribute to provide value
+
+    index - Index of element in case Attribute is a table
+            Otherwise index must be set to '0'
+
+    pibValue - Pointer to MAC_PIB_VALUE object where value is contained
+
+  Returns:
+    Result of set operation as a MAC_STATUS code.
+
+  Example:
+    <code>
+    MAC_STATUS status;
+    const MAC_PIB_VALUE value = {
+        .length = 1,
+        .value = 6
+    };
+
+    status = MAC_PLC_MIB_SetAttributeSync(MAC_COMMON_PIB_PROMISCUOUS_MODE, 0, &value);
+    if (status == MAC_STATUS_SUCCESS)
+    {
+        // MIB correctly set
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+MAC_STATUS MAC_PLC_MIB_SetAttributeSync(MAC_COMMON_PIB_ATTRIBUTE attribute, 
+    uint16_t index, const MAC_PIB_VALUE *pibValue);
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

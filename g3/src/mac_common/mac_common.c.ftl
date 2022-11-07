@@ -53,6 +53,7 @@
 #include "mac_common.h"
 <#if MAC_PLC_PRESENT == true>
 #include "../../../pal/plc/pal_plc.h"
+#include "mac_plc/mac_plc_mib.h"
 </#if>
 
 static MAC_COMMON_MIB macMibCommon;
@@ -309,8 +310,8 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
-                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
-                status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
+                /* Ignore result, as it depends on availability of PLC interface, which may be unavailable */
+                MAC_PLC_MIB_SetAttributeSync(attribute, index, pibValue);
             }
 </#if>
             break;
@@ -319,8 +320,8 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
-                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
-                status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
+                /* Ignore result, as it depends on availability of PLC interface, which may be unavailable */
+                MAC_PLC_MIB_SetAttributeSync(attribute, index, pibValue);
             }
 </#if>
             break;
@@ -329,8 +330,8 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
-                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
-                status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
+                /* Ignore result, as it depends on availability of PLC interface, which may be unavailable */
+                MAC_PLC_MIB_SetAttributeSync(attribute, index, pibValue);
             }
 </#if>
             break;
@@ -339,8 +340,8 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
-                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
-                status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
+                /* Ignore result, as it depends on availability of PLC interface, which may be unavailable */
+                MAC_PLC_MIB_SetAttributeSync(attribute, index, pibValue);
             }
 </#if>
             break;
@@ -349,8 +350,8 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
-                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
-                status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
+                /* Ignore result, as it depends on availability of PLC interface, which may be unavailable */
+                MAC_PLC_MIB_SetAttributeSync(attribute, index, pibValue);
             }
 </#if>
             break;
@@ -359,8 +360,8 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 <#if MAC_PLC_PRESENT == true>
             if (status == MAC_STATUS_SUCCESS)
             {
-                /* Ignore result at MacRt level, as it depends on availability of PLC interface, which may be unavailable */
-                status = (MAC_STATUS) MacRtSetRequestSync((enum EMacRtPibAttribute)attribute, index, (const struct TMacRtPibValue *)pibValue);
+                /* Ignore result, as it depends on availability of PLC interface, which may be unavailable */
+                MAC_PLC_MIB_SetAttributeSync(attribute, index, pibValue);
             }
 </#if>
             break;
