@@ -51,6 +51,7 @@
 #include <stdint.h>
 #include "system/system.h"
 #include "service/usi/srv_usi.h"
+#include "service/pcoup/srv_pcoup.h"
 #include "driver/plc/g3MacRt/drv_g3_macrt_comm.h"
 
 // *****************************************************************************
