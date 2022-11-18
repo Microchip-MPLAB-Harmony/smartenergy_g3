@@ -99,10 +99,8 @@ typedef struct
     uint8_t keyIndex;
     /* The QOS of the MSDU: 0x00 normal priority, 0x01 high priority */
     MAC_WRP_QUALITY_OF_SERVICE qualityOfService;
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
-    /* The Media Type to use on Request (if both PLC and RF MACs are present) */
+    /* The Media Type to use on Request (only used if both PLC and RF MACs are present) */
     MAC_WRP_MEDIA_TYPE_REQUEST mediaType;
-</#if>
 } MAC_WRP_DATA_REQUEST_PARAMS;
 
 // *****************************************************************************
@@ -126,10 +124,8 @@ typedef struct
     uint8_t msduHandle;
     /* The result of the last MSDU transmission */
     MAC_WRP_STATUS status;
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
-    /* The Confirm result Media Type (if both PLC and RF MACs are present) */
+    /* The Confirm result Media Type */
     MAC_WRP_MEDIA_TYPE_CONFIRM mediaType;
-</#if>
 } MAC_WRP_DATA_CONFIRM_PARAMS;
 
 // *****************************************************************************
@@ -185,10 +181,8 @@ typedef struct
     MAC_WRP_TONE_MAP computedToneMap;
     /* Phase Differential compared to Node that sent the frame */
     uint8_t phaseDifferential;
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
-    /* The Data Indication Media Type (if both PLC and RF MACs are present) */
+    /* The Data Indication Media Type */
     MAC_WRP_MEDIA_TYPE_INDICATION mediaType;
-</#if>
 } MAC_WRP_DATA_INDICATION_PARAMS;
 
 // *****************************************************************************
@@ -373,9 +367,8 @@ typedef struct
     MAC_WRP_SECURITY_LEVEL securityLevel;
     /* The index of the key used for decryption */
     uint8_t keyIndex;
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
+    /* The Comm Status Indication Media Type */
     MAC_WRP_MEDIA_TYPE_INDICATION mediaType;
-</#if>
 } MAC_WRP_COMM_STATUS_INDICATION_PARAMS;
 
 // *****************************************************************************
@@ -462,10 +455,8 @@ typedef struct
 {
     /* Callbacks */
     MAC_WRP_HANDLERS macWrpHandlers;
-<#if MAC_PLC_PRESENT == true>
-    /* PLC working band */
+    /* PLC working band. Only used if PLC MAC is present */
     MAC_WRP_BAND plcBand;
-</#if>
 } MAC_WRP_INIT;
 
 // *****************************************************************************
@@ -512,10 +503,8 @@ typedef struct
     MAC_WRP_HANDLE macWrpHandle;
     /* Callbacks */
     MAC_WRP_HANDLERS macWrpHandlers;
-<#if MAC_PLC_PRESENT == true>
-    /* PLC working band */
+    /* PLC working band. Only used if PLC MAC is present */
     MAC_WRP_BAND plcBand;
-</#if>
 } MAC_WRP_DATA;
 
 // *****************************************************************************
@@ -1348,6 +1337,55 @@ void MAC_WRP_ScanRequest(MAC_WRP_HANDLE handle, MAC_WRP_SCAN_REQUEST_PARAMS *sca
     which is the one in charge of Starting the PAN.
 */
 void MAC_WRP_StartRequest(MAC_WRP_HANDLE handle, MAC_WRP_START_REQUEST_PARAMS *startParams);
+
+// *****************************************************************************
+/* Function:
+    MAC_WRP_AVAILABLE_MAC_LAYERS MAC_WRP_GetAvailableMacLayers
+    (
+      MAC_WRP_HANDLE handle
+    )
+
+  Summary:
+    The MAC_WRP_GetAvailableMacLayers primitive gets the available MAC layer(s).
+
+  Description:
+    G3 projects may include PLC MAC, RF MAC, or both. This funtion allows upper
+    layers to get which MAC layer(s) is/are available at runtime.
+
+  Precondition:
+    A valid MAC Wrapper Handle has to be obtained before.
+
+  Parameters:
+    handle - A valid handle which identifies the Mac Wrapper instance
+
+  Returns:
+    Mac layer availability as a MAC_WRP_AVAILABLE_MAC_LAYERS enumerated value.
+
+  Example:
+    <code>
+    // ...
+    MAC_WRP_HANDLE handle;
+    handle = MAC_WRP_Open(MAC_WRP_INDEX_0);
+    // ...
+
+    MAC_WRP_AVAILABLE_MAC_LAYERS availableLayers;
+    availableLayers = MAC_WRP_GetAvailableMacLayers(handle);
+
+    if (availableLayers == MAC_WRP_AVAILABLE_MAC_PLC) {
+      // Only PLC MAC available
+    }
+    else if (availableLayers == MAC_WRP_AVAILABLE_MAC_RF) {
+      // Only RF MAC available
+    }
+    else {
+      // Both MAC layers available
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+MAC_WRP_AVAILABLE_MAC_LAYERS MAC_WRP_GetAvailableMacLayers(MAC_WRP_HANDLE handle);
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

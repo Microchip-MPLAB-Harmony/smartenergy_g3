@@ -191,6 +191,26 @@ typedef enum
 } MAC_WRP_MEDIA_TYPE_INDICATION;
 
 // *****************************************************************************
+/* MAC Wrapper Available MAC layers
+
+   Summary:
+    Defines the possible values for MAC layers availability.
+
+   Description:
+    This enumeration identifies the availability of MAC layers, so upper layers
+    may know in advance which MAC layer(s) are available below.
+
+   Remarks:
+    None.
+*/
+typedef enum
+{
+    MAC_WRP_AVAILABLE_MAC_PLC = 0x00,
+    MAC_WRP_AVAILABLE_MAC_RF = 0x01,
+    MAC_WRP_AVAILABLE_MAC_BOTH = 0x02,
+} MAC_WRP_AVAILABLE_MAC_LAYERS;
+
+// *****************************************************************************
 /* MAC Wrapper Tone Map definition
 
    Summary:
@@ -505,9 +525,7 @@ typedef struct
     uint8_t linkQuality;
     MAC_WRP_SHORT_ADDRESS lbaAddress;
     uint16_t rcCoord;
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_MEDIA_TYPE_INDICATION mediaType;
-</#if>
 } MAC_WRP_PAN_DESCRIPTOR;
 
 // *****************************************************************************
@@ -798,6 +816,8 @@ typedef enum
     MAC_WRP_PIB_MANUF_BEST_LQI = 0x0800002A,
     /* PLC Interface availability. 8 bits (bool). */
     MAC_WRP_PIB_MANUF_PLC_IFACE_AVAILABLE = 0x0800002B,
+    /* Last PLC frame duration in ms. 16 bits. */
+    MAC_WRP_PIB_MANUF_LAST_FRAME_DURATION_PLC = 0x0800002C,
     /* Gets or sets a parameter in Phy layer. Index will be used to contain PHY parameter ID. */
     /* See definitions below */
     MAC_WRP_PIB_MANUF_PHY_PARAM = 0x08000020,
@@ -904,6 +924,8 @@ typedef enum
     MAC_WRP_PIB_MANUF_DATA_CONFIRM_WAIT_TIME_RF = 0x0800021F,
     /* RF Interface availability. 8 bits (bool). */
     MAC_WRP_PIB_MANUF_RF_IFACE_AVAILABLE = 0x08000221,
+    /* Last PLC frame duration in ms. 16 bits. */
+    MAC_WRP_PIB_MANUF_LAST_FRAME_DURATION_RF = 0x08000222,
     /* Gets or sets a parameter in Phy layer. Index will be used to contain PHY parameter ID */
     MAC_WRP_PIB_MANUF_PHY_PARAM_RF = 0x08000220
 } MAC_WRP_PIB_ATTRIBUTE;
@@ -1136,7 +1158,6 @@ typedef struct
 
 #pragma pack(push,1)
 
-<#if MAC_PLC_PRESENT == true>
 // *****************************************************************************
 /* MAC Wrapper PLC Neighbour Table Entry definition
 
@@ -1184,8 +1205,6 @@ typedef struct
     uint8_t lqi;
 } MAC_WRP_POS_ENTRY;
 
-</#if>
-<#if MAC_RF_PRESENT == true>
 // *****************************************************************************
 /* MAC Wrapper RF POS Table Entry definition
 
@@ -1210,7 +1229,6 @@ typedef struct
     uint8_t reverseTxPowerOffset;
 } MAC_WRP_POS_ENTRY_RF;
 
-</#if>
 #pragma pack(pop)
 
 //DOM-IGNORE-BEGIN

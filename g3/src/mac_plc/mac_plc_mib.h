@@ -128,6 +128,7 @@ typedef struct
     uint32_t rxInvalidKeyCount;
     uint32_t rxWrongFCCount;
     uint32_t rxDecryptionErrorCount;
+    uint16_t lastFrameDurationPLC;
     bool plcDisable;
     bool plcAvailable;
 } MAC_PLC_MIB;
@@ -270,12 +271,14 @@ typedef enum
     MAC_PIB_MANUF_POS_TABLE_ELEMENT = 0x08000027,
     // Minimum LQI to consider a neighbour for Trickle
     MAC_PIB_MANUF_TRICKLE_MIN_LQI = 0x08000028,
-    /* LQI for a given neighbour, which short address will be indicated by index. 8 bits. */
+    // LQI for a given neighbour, which short address will be indicated by index. 8 bits.
     MAC_PIB_MANUF_NEIGHBOUR_LQI = 0x08000029,
-    /* Best LQI found in neighbour table. 8 bits. */
+    // Best LQI found in neighbour table. 8 bits.
     MAC_PIB_MANUF_BEST_LQI = 0x0800002A,
-    /* PLC Interface availability. 8 bits (bool). */
+    // PLC Interface availability. 8 bits (bool).
     MAC_PIB_MANUF_PLC_IFACE_AVAILABLE = 0x0800002B,
+    // Last PLC frame duration in ms. 16 bits.
+    MAC_PIB_MANUF_LAST_FRAME_DURATION_PLC = 0x0800002C,
     // Gets or sets a parameter in Phy layer. Index will be used to contain PHY parameter ID.
     // Check 'enum EPhyParam' in MacRtMib.h for available Phy parameter IDs
     MAC_PIB_MANUF_PHY_PARAM = 0x08000020

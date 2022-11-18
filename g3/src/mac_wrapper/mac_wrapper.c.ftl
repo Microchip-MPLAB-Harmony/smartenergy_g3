@@ -336,9 +336,10 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
 {
     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacPlcDataConfirm() Handle: 0x%02X Status: %u", dcParams->msduHandle, (uint8_t)dcParams->status);
 
+    MAC_WRP_DATA_CONFIRM_PARAMS dataConfirmParams;
+
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     HYAL_DATA_REQUEST *matchingDataReq;
-    MAC_WRP_DATA_CONFIRM_PARAMS dataConfirmParams;
     MAC_PIB_VALUE pibValue;
     MAC_WRP_STATUS status;
 
@@ -477,7 +478,10 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
 <#else>
     if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
     {
-        macWrpData.macWrpHandlers.dataConfirmCallback((MAC_WRP_DATA_CONFIRM_PARAMS *)dcParams);
+        /* Copy dcParams from Mac and fill Media Type */
+        memcpy(&dataConfirmParams, dcParams, sizeof(MAC_DATA_CONFIRM_PARAMS));
+        dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
+        macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
     }
 </#if>
 }
@@ -486,9 +490,9 @@ static void _Callback_MacPlcDataIndication(MAC_DATA_INDICATION_PARAMS *diParams)
 {
     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacPlcDataIndication");
 
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_DATA_INDICATION_PARAMS dataIndicationParams;
-    
+
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     /* Check if the same frame has been received on the other medium (duplicate detection), except for broadcast */
     if (MAC_SHORT_ADDRESS_BROADCAST != diParams->destAddress.shortAddress)
     {
@@ -512,7 +516,10 @@ static void _Callback_MacPlcDataIndication(MAC_DATA_INDICATION_PARAMS *diParams)
 <#else>
     if (macWrpData.macWrpHandlers.dataIndicationCallback != NULL)
     {
-        macWrpData.macWrpHandlers.dataIndicationCallback((MAC_WRP_DATA_INDICATION_PARAMS *)diParams);
+        /* Copy diParams from Mac and fill Media Type */
+        memcpy(&dataIndicationParams, diParams, sizeof(MAC_DATA_INDICATION_PARAMS));
+        dataIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_PLC;
+        macWrpData.macWrpHandlers.dataIndicationCallback(&dataIndicationParams);
     }
 </#if>
 }
@@ -576,7 +583,6 @@ static void _Callback_MacPlcBeaconNotify(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bn
 {
     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacPlcBeaconNotify: Pan ID: %04X", bnParams->panDescriptor.panId);
 
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS notifyIndicationParams;
 
     /* Copy bnParams from Mac. Media Type will be filled later */
@@ -587,12 +593,6 @@ static void _Callback_MacPlcBeaconNotify(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bn
         notifyIndicationParams.panDescriptor.mediaType = MAC_WRP_MEDIA_TYPE_IND_PLC;
         macWrpData.macWrpHandlers.beaconNotifyIndicationCallback(&notifyIndicationParams);
     }
-<#else>
-    if (macWrpData.macWrpHandlers.beaconNotifyIndicationCallback != NULL)
-    {
-        macWrpData.macWrpHandlers.beaconNotifyIndicationCallback((MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS *)bnParams);
-    }
-</#if>
 }
 
 static void _Callback_MacPlcScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
@@ -698,7 +698,6 @@ static void _Callback_MacPlcCommStatusIndication(MAC_COMM_STATUS_INDICATION_PARA
 {
     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacPlcCommStatusIndication: Status: %u", csParams->status);
 
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_COMM_STATUS_INDICATION_PARAMS commStatusIndicationParams;
 
     /* Copy csParams from Mac. Media Type will be filled later */
@@ -709,12 +708,6 @@ static void _Callback_MacPlcCommStatusIndication(MAC_COMM_STATUS_INDICATION_PARA
         commStatusIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_PLC;
         macWrpData.macWrpHandlers.commStatusIndicationCallback(&commStatusIndicationParams);
     }
-<#else>
-    if (macWrpData.macWrpHandlers.commStatusIndicationCallback != NULL)
-    {
-        macWrpData.macWrpHandlers.commStatusIndicationCallback((MAC_WRP_COMM_STATUS_INDICATION_PARAMS *)csParams);
-    }
-</#if>
 }
 
 static void _Callback_MacPlcMacSnifferIndication(MAC_SNIFFER_INDICATION_PARAMS *siParams)
@@ -733,9 +726,10 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
 {
     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacRfDataConfirm() Handle: 0x%02X Status: %u", dcParams->msduHandle, (uint8_t)dcParams->status);
 
+    MAC_WRP_DATA_CONFIRM_PARAMS dataConfirmParams;
+
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     HYAL_DATA_REQUEST *matchingDataReq;
-    MAC_WRP_DATA_CONFIRM_PARAMS dataConfirmParams;
     MAC_PIB_VALUE pibValue;
     MAC_WRP_STATUS status;
 
@@ -875,7 +869,10 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
     }
 <#else>
     if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL) {
-        macWrpData.macWrpHandlers.dataConfirmCallback((MAC_WRP_DATA_CONFIRM_PARAMS *)dcParams);
+        /* Copy dcParams from Mac and fill Media Type */
+        memcpy(&dataConfirmParams, dcParams, sizeof(MAC_DATA_CONFIRM_PARAMS));
+        dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
+        macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
     }
 </#if>
 }
@@ -884,9 +881,9 @@ static void _Callback_MacRfDataIndication(MAC_DATA_INDICATION_PARAMS *diParams)
 {
     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacRfDataIndication");
 
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_DATA_INDICATION_PARAMS dataIndicationParams;
 
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     /* Check if the same frame has been received on the other medium (duplicate detection), except for broadcast */
     if (MAC_SHORT_ADDRESS_BROADCAST != diParams->destAddress.shortAddress)
     {
@@ -910,7 +907,10 @@ static void _Callback_MacRfDataIndication(MAC_DATA_INDICATION_PARAMS *diParams)
 <#else>
     if (macWrpData.macWrpHandlers.dataIndicationCallback != NULL)
     {
-        macWrpData.macWrpHandlers.dataIndicationCallback((MAC_WRP_DATA_INDICATION_PARAMS *)diParams);
+        /* Copy diParams from Mac and fill Media Type */
+        memcpy(&dataIndicationParams, diParams, sizeof(MAC_DATA_INDICATION_PARAMS));
+        dataIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_RF;
+        macWrpData.macWrpHandlers.dataIndicationCallback(&dataIndicationParams);
     }
 </#if>
 }
@@ -974,7 +974,6 @@ static void _Callback_MacRfBeaconNotify(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bnP
 {
     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacRfBeaconNotify: Pan ID: %04X", bnParams->panDescriptor.panId);
 
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS notifyIndicationParams;
 
     /* Copy bnParams from Mac. Media Type will be filled later */
@@ -985,12 +984,6 @@ static void _Callback_MacRfBeaconNotify(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bnP
         notifyIndicationParams.panDescriptor.mediaType = MAC_WRP_MEDIA_TYPE_IND_RF;
         macWrpData.macWrpHandlers.beaconNotifyIndicationCallback(&notifyIndicationParams);
     }
-<#else>
-    if (macWrpData.macWrpHandlers.beaconNotifyIndicationCallback != NULL)
-    {
-        macWrpData.macWrpHandlers.beaconNotifyIndicationCallback((MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS *)bnParams);
-    }
-</#if>
 }
 
 static void _Callback_MacRfScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
@@ -1096,7 +1089,6 @@ static void _Callback_MacRfCommStatusIndication(MAC_COMM_STATUS_INDICATION_PARAM
 {
     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacRfCommStatusIndication: Status: %u", csParams->status);
 
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_COMM_STATUS_INDICATION_PARAMS commStatusIndicationParams;
 
     /* Copy csParams from Mac. Media Type will be filled later */
@@ -1107,12 +1099,6 @@ static void _Callback_MacRfCommStatusIndication(MAC_COMM_STATUS_INDICATION_PARAM
         commStatusIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_RF;
         macWrpData.macWrpHandlers.commStatusIndicationCallback(&commStatusIndicationParams);
     }
-<#else>
-    if (macWrpData.macWrpHandlers.commStatusIndicationCallback != NULL)
-    {
-        macWrpData.macWrpHandlers.commStatusIndicationCallback((MAC_WRP_COMM_STATUS_INDICATION_PARAMS *)csParams);
-    }
-</#if>
 }
 
 static void _Callback_MacRfMacSnifferIndication(MAC_SNIFFER_INDICATION_PARAMS *siParams)
@@ -1207,9 +1193,7 @@ void MAC_WRP_Init(MAC_WRP_HANDLE handle, MAC_WRP_INIT *init)
 
     /* Set init data */
     macWrpData.macWrpHandlers = init->macWrpHandlers;
-<#if MAC_PLC_PRESENT == true>
     macWrpData.plcBand = init->plcBand;
-</#if>
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     // Set default HyAL variables
@@ -1369,11 +1353,17 @@ void MAC_WRP_DataRequest(MAC_WRP_HANDLE handle, MAC_WRP_DATA_REQUEST_PARAMS *drP
         }
     }
 <#elseif MAC_PLC_PRESENT == true>
+    MAC_DATA_REQUEST_PARAMS dataReq;
     SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_INFO, drParams->msdu, drParams->msduLength, "MAC_WRP_DataRequest (Handle %02X): ", drParams->msduHandle);
-    MAC_PLC_DataRequest((MAC_DATA_REQUEST_PARAMS *)drParams);
+    // Copy data to Mac struct (media type is not copied as it is the last field of pParameters)
+    memcpy(&dataReq, drParams, sizeof(dataReq));
+    MAC_PLC_DataRequest(&dataReq);
 <#elseif MAC_RF_PRESENT == true>
+    MAC_DATA_REQUEST_PARAMS dataReq;
     SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_INFO, drParams->msdu, drParams->msduLength, "MAC_WRP_DataRequest (Handle %02X): ", drParams->msduHandle);
-    MAC_RF_DataRequest((MAC_DATA_REQUEST_PARAMS *)drParams);
+    // Copy data to Mac struct (media type is not copied as it is the last field of pParameters)
+    memcpy(&dataReq, drParams, sizeof(dataReq));
+    MAC_RF_DataRequest(&dataReq);
 </#if>
 }
 
@@ -1605,6 +1595,17 @@ void MAC_WRP_StartRequest(MAC_WRP_HANDLE handle, MAC_WRP_START_REQUEST_PARAMS *s
 <#if MAC_RF_PRESENT == true>
     // Start Network on PLC MAC
     MAC_RF_StartRequest((MAC_START_REQUEST_PARAMS *)startParams);
+</#if>
+}
+
+MAC_WRP_AVAILABLE_MAC_LAYERS MAC_WRP_GetAvailableMacLayers(MAC_WRP_HANDLE handle)
+{
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
+    return MAC_WRP_AVAILABLE_MAC_BOTH;
+<#elseif MAC_PLC_PRESENT == true>
+    return MAC_WRP_AVAILABLE_MAC_PLC;
+<#elseif MAC_RF_PRESENT == true>
+    return MAC_WRP_AVAILABLE_MAC_RF;
 </#if>
 }
 

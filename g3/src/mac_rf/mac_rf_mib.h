@@ -228,6 +228,7 @@ typedef struct
     uint32_t ackRxWaitTimeRF;
     uint32_t ackConfirmWaitTimeRF;
     uint32_t dataConfirmWaitTimeRF;
+    uint16_t lastFrameDurationRF;
     bool disablePhyRF;
     bool rfAvailable;
     uint8_t frequencyBandRF;
@@ -353,8 +354,10 @@ typedef enum
     MAC_PIB_MANUF_ACK_CONFIRM_WAIT_TIME_RF = 0x0800021E,
     // Configures time to wait for a Data Confirm before timing out
     MAC_PIB_MANUF_DATA_CONFIRM_WAIT_TIME_RF = 0x0800021F,
-    /* RF Interface availability. 8 bits (bool). */
+    // RF Interface availability. 8 bits (bool).
     MAC_PIB_MANUF_RF_IFACE_AVAILABLE = 0x08000221,
+    // Last PLC frame duration in ms. 16 bits.
+    MAC_PIB_MANUF_LAST_FRAME_DURATION_RF = 0x08000222,
     // Gets or sets a parameter in Phy layer. Index will be used to contain PHY parameter ID
     MAC_PIB_MANUF_PHY_PARAM_RF = 0x08000220
 } MAC_RF_PIB_ATTRIBUTE;
