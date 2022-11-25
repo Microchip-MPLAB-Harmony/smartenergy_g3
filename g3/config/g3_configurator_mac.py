@@ -140,63 +140,20 @@ def instantiateComponent(g3ConfigMacComponent):
     pMacCommonDefsHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_common")
     pMacCommonDefsHeader.setType("HEADER")
 
-    # MAC PLC Files
-    global macPlcLibFile
-    macPlcLibFile = g3ConfigMacComponent.createLibrarySymbol("G3_MAC_PLC_LIBRARY", None)
-    macPlcLibFile.setSourcePath("g3/libs/g3_lib_mac_plc.a")
-    macPlcLibFile.setOutputName("g3_lib_plc_mac.a")
-    macPlcLibFile.setDestPath("stack/g3/mac/mac_plc")
-    macPlcLibFile.setEnabled(True)
+    #####################################################################################################################################
+    # G3 STACK TEMPLATES 
     
-    macPlcHeader = g3ConfigMacComponent.createFileSymbol("MAC_PLC_HEADER", None)
-    macPlcHeader.setSourcePath("g3/src/mac_plc/mac_plc.h")
-    macPlcHeader.setOutputName("mac_plc.h")
-    macPlcHeader.setDestPath("stack/g3/mac/mac_plc")
-    macPlcHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_plc")
-    macPlcHeader.setType("HEADER")
-    
-    macPlcDefsHeader = g3ConfigMacComponent.createFileSymbol("MAC_PLC_DEFS_HEADER", None)
-    macPlcDefsHeader.setSourcePath("g3/src/mac_plc/mac_plc_defs.h")
-    macPlcDefsHeader.setOutputName("mac_plc_defs.h")
-    macPlcDefsHeader.setDestPath("stack/g3/mac/mac_plc")
-    macPlcDefsHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_plc")
-    macPlcDefsHeader.setType("HEADER")
-    
-    macPlcMibHeader = g3ConfigMacComponent.createFileSymbol("MAC_PLC_MIB_HEADER", None)
-    macPlcMibHeader.setSourcePath("g3/src/mac_plc/mac_plc_mib.h")
-    macPlcMibHeader.setOutputName("mac_plc_mib.h")
-    macPlcMibHeader.setDestPath("stack/g3/mac/mac_plc")
-    macPlcMibHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_plc")
-    macPlcMibHeader.setType("HEADER")
-    
-    # MAC RF Files
-    global macRfLibFile
-    macRfLibFile = g3ConfigMacComponent.createLibrarySymbol("G3_MAC_RF_LIBRARY", None)
-    macRfLibFile.setSourcePath("g3/libs/g3_lib_mac_rf.a")
-    macRfLibFile.setOutputName("g3_lib_rf_mac.a")
-    macRfLibFile.setDestPath("stack/g3/mac/mac_rf")
-    macRfLibFile.setEnabled(True)
-    
-    macRfHeader = g3ConfigMacComponent.createFileSymbol("MAC_RF_HEADER", None)
-    macRfHeader.setSourcePath("g3/src/mac_rf/mac_rf.h")
-    macRfHeader.setOutputName("mac_rf.h")
-    macRfHeader.setDestPath("stack/g3/mac/mac_rf")
-    macRfHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_rf")
-    macRfHeader.setType("HEADER")
-    
-    macRfDefsHeader = g3ConfigMacComponent.createFileSymbol("MAC_RF_DEFS_HEADER", None)
-    macRfDefsHeader.setSourcePath("g3/src/mac_rf/mac_rf_defs.h")
-    macRfDefsHeader.setOutputName("mac_rf_defs.h")
-    macRfDefsHeader.setDestPath("stack/g3/mac/mac_rf")
-    macRfDefsHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_rf")
-    macRfDefsHeader.setType("HEADER")
-    
-    macRfMibHeader = g3ConfigMacComponent.createFileSymbol("MAC_RF_MIB_HEADER", None)
-    macRfMibHeader.setSourcePath("g3/src/mac_rf/mac_rf_mib.h")
-    macRfMibHeader.setOutputName("mac_rf_mib.h")
-    macRfMibHeader.setDestPath("stack/g3/mac/mac_rf")
-    macRfMibHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_rf")
-    macRfMibHeader.setType("HEADER")
+    g3StackSystemConfigFile = g3ConfigMacComponent.createFileSymbol("G3_STACK_CONFIGURATION", None)
+    g3StackSystemConfigFile.setType("STRING")
+    g3StackSystemConfigFile.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")
+    g3StackSystemConfigFile.setSourcePath("g3/templates/system/configuration.h.ftl")
+    g3StackSystemConfigFile.setMarkup(True)
+
+    g3StackSystemDefFile = g3ConfigMacComponent.createFileSymbol("G3_STACK_DEF", None)
+    g3StackSystemDefFile.setType("STRING")
+    g3StackSystemDefFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_H_INCLUDES")
+    g3StackSystemDefFile.setSourcePath("g3/templates/system/definitions.h.ftl")
+    g3StackSystemDefFile.setMarkup(True)
 
 ################################################################################
 #### Business Logic ####

@@ -24,5 +24,34 @@
 def instantiateComponent(g3MacRfComponent):
     
     Log.writeInfoMessage("Loading PLC MAC for G3")
-
     
+    configName = Variables.get("__CONFIGURATION_NAME")
+    
+    # MAC RF Files
+    global macRfLibFile
+    macRfLibFile = g3MacRfComponent.createLibrarySymbol("G3_MAC_RF_LIBRARY", None)
+    macRfLibFile.setSourcePath("g3/libs/g3_lib_mac_rf.a")
+    macRfLibFile.setOutputName("g3_lib_rf_mac.a")
+    macRfLibFile.setDestPath("stack/g3/mac/mac_rf")
+    macRfLibFile.setEnabled(True)
+    
+    macRfHeader = g3MacRfComponent.createFileSymbol("MAC_RF_HEADER", None)
+    macRfHeader.setSourcePath("g3/src/mac_rf/mac_rf.h")
+    macRfHeader.setOutputName("mac_rf.h")
+    macRfHeader.setDestPath("stack/g3/mac/mac_rf")
+    macRfHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_rf")
+    macRfHeader.setType("HEADER")
+    
+    macRfDefsHeader = g3MacRfComponent.createFileSymbol("MAC_RF_DEFS_HEADER", None)
+    macRfDefsHeader.setSourcePath("g3/src/mac_rf/mac_rf_defs.h")
+    macRfDefsHeader.setOutputName("mac_rf_defs.h")
+    macRfDefsHeader.setDestPath("stack/g3/mac/mac_rf")
+    macRfDefsHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_rf")
+    macRfDefsHeader.setType("HEADER")
+    
+    macRfMibHeader = g3MacRfComponent.createFileSymbol("MAC_RF_MIB_HEADER", None)
+    macRfMibHeader.setSourcePath("g3/src/mac_rf/mac_rf_mib.h")
+    macRfMibHeader.setOutputName("mac_rf_mib.h")
+    macRfMibHeader.setDestPath("stack/g3/mac/mac_rf")
+    macRfMibHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_rf")
+    macRfMibHeader.setType("HEADER")
