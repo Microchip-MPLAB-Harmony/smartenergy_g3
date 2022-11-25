@@ -49,21 +49,21 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include "system/system.h"
 #include "system/time/sys_time.h"
 #include "mac_common.h"
 <#if MAC_PLC_PRESENT == true>
-#include "../../../pal/plc/pal_plc.h"
-#include "mac_plc/mac_plc_mib.h"
+#include "../mac_plc/mac_plc_mib.h"
 </#if>
 
 static MAC_COMMON_MIB macMibCommon;
 
 static const MAC_COMMON_MIB macMibCommonDefaults = {
     0xFFFF, // panId
-    {0}, // extendedAddress
+    {{0}}, // extendedAddress
     0xFFFF, // shortAddress
     false, // promiscuousMode
-    {0}, // keyTable
+    {{0}}, // keyTable
     0xFFFF, // rcCoord: set RC_COORD to its maximum value of 0xFFFF
     255, // posTableEntryTtl
     false, // coordinator
