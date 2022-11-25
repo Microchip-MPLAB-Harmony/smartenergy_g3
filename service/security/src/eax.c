@@ -25,6 +25,7 @@ Issue Date: 21/07/2009
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "configuration.h"
 #include "eax.h"
 #include "mode_hdr.h"
 #include "aes_wrapper.h"
