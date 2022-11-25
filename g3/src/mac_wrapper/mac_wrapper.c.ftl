@@ -49,6 +49,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include "system/system.h"
 #include "configuration.h"
 #include "mac_wrapper.h"
 #include "mac_wrapper_defs.h"
@@ -1123,7 +1124,7 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
     bool initError = false;
 
     /* Validate the request */
-    if (index >= MAC_WRP_INSTANCES_NUMBER)
+    if (index >= G3_MAC_WRP_INSTANCES_NUMBER)
     {
         return SYS_MODULE_OBJ_INVALID;
     }
@@ -1149,7 +1150,7 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
 MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index)
 {
     // Single instance allowed
-    if (index >= MAC_WRP_INSTANCES_NUMBER)
+    if (index >= G3_MAC_WRP_INSTANCES_NUMBER)
     {
         return MAC_WRP_HANDLE_INVALID;
     }
@@ -1157,7 +1158,7 @@ MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index)
     {
         macWrpData.state = MAC_WRP_STATE_IDLE;
         macWrpData.macWrpHandle = (MAC_WRP_HANDLE)0;
-        reuturn macWrpData.macWrpHandle;
+        return macWrpData.macWrpHandle;
     }
 }
 
@@ -1405,7 +1406,7 @@ MAC_WRP_STATUS MAC_WRP_GetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBU
     else
     {
         /* RF Available IB has to be handled here */
-        if (eAttribute == MAC_WRP_PIB_MANUF_RF_IFACE_AVAILABLE) 
+        if (attribute == MAC_WRP_PIB_MANUF_RF_IFACE_AVAILABLE) 
         {
             pibValue->length = 1;
             pibValue->value[0] = 0;
@@ -1414,7 +1415,7 @@ MAC_WRP_STATUS MAC_WRP_GetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBU
         else 
         {
             /* Get from PLC MAC */
-            return (MAC_WRP_STATUS)(MAC_PLC_GetRequestSync((MAC_PLC_PIB_ATTRIBUTE)eAttribute, u16Index, (MAC_PIB_VALUE *)pibValue));
+            return (MAC_WRP_STATUS)(MAC_PLC_GetRequestSync((MAC_PLC_PIB_ATTRIBUTE)attribute, index, (MAC_PIB_VALUE *)pibValue));
         }
     }
 <#elseif MAC_RF_PRESENT == true>
@@ -1427,7 +1428,7 @@ MAC_WRP_STATUS MAC_WRP_GetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBU
     else
     {
         /* PLC Available IB has to be handled here */
-        if (eAttribute == MAC_WRP_PIB_MANUF_PLC_IFACE_AVAILABLE) 
+        if (attribute == MAC_WRP_PIB_MANUF_PLC_IFACE_AVAILABLE) 
         {
             pibValue->length = 1;
             pibValue->value[0] = 0;
@@ -1436,7 +1437,7 @@ MAC_WRP_STATUS MAC_WRP_GetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBU
         else 
         {
             /* Get from RF MAC */
-            return (MAC_WRP_STATUS)(MAC_RF_GetRequestSync((MAC_PLC_PIB_ATTRIBUTE)eAttribute, u16Index, (MAC_PIB_VALUE *)pibValue));
+            return (MAC_WRP_STATUS)(MAC_RF_GetRequestSync((MAC_PLC_PIB_ATTRIBUTE)attribute, index, (MAC_PIB_VALUE *)pibValue));
         }
     }
 </#if>
@@ -1447,7 +1448,6 @@ MAC_WRP_STATUS MAC_WRP_SetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBU
     if (handle != macWrpData.macWrpHandle)
     {
         // Handle error
-        pibValue->length = 0;
         return MAC_WRP_STATUS_INVALID_HANDLE;
     }
 
@@ -1507,7 +1507,7 @@ void MAC_WRP_ResetRequest(MAC_WRP_HANDLE handle, MAC_WRP_RESET_REQUEST_PARAMS *r
         if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
         {
             resetConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
-            macWrpData.macWrpHandlers.resetConfirmCallback(&dataConfirm);
+            macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirm);
         }
 
         return;
@@ -1544,7 +1544,7 @@ void MAC_WRP_ScanRequest(MAC_WRP_HANDLE handle, MAC_WRP_SCAN_REQUEST_PARAMS *sca
         if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
         {
             scanConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
-            macWrpData.macWrpHandlers.scanConfirmCallback(&dataConfirm);
+            macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirm);
         }
 
         return;
@@ -1576,7 +1576,7 @@ void MAC_WRP_StartRequest(MAC_WRP_HANDLE handle, MAC_WRP_START_REQUEST_PARAMS *s
         if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
         {
             startConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
-            macWrpData.macWrpHandlers.startConfirmCallback(&dataConfirm);
+            macWrpData.macWrpHandlers.startConfirmCallback(&startConfirm);
         }
 
         return;
