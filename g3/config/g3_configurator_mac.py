@@ -88,6 +88,20 @@ def instantiateComponent(g3ConfigMacComponent):
     g3MacRFDSNTable.setMin(4)
     g3MacRFDSNTable.setMax(128)
 
+    g3MacSerializationEnable = g3ConfigMacComponent.createBooleanSymbol("MAC_SERIALIZATION_EN", None)
+    g3MacSerializationEnable.setLabel("Enable MAC Serialization")
+    g3MacSerializationEnable.setDescription("Enable/disable MAC serialization through USI")
+    g3MacSerializationEnable.setDefaultValue(False)
+
+    g3MacSerializationUsiInstance = g3ConfigMacComponent.createIntegerSymbol("MAC_SERIALIZATION_USI_INSTANCE", g3MacSerializationEnable)
+    g3MacSerializationUsiInstance.setLabel("USI Instance")
+    g3MacSerializationUsiInstance.setDescription("USI instance used for MAC serialization")
+    g3MacSerializationUsiInstance.setDefaultValue(0)
+    g3MacSerializationUsiInstance.setMax(0)
+    g3MacSerializationUsiInstance.setMin(0)
+    g3MacSerializationUsiInstance.setVisible(False)
+    g3MacSerializationUsiInstance.setDependencies(g3ShowUsiInstance, ["MAC_SERIALIZATION_EN"])
+
     ############################################################################
     #### Code Generation ####
     ############################################################################
@@ -229,11 +243,20 @@ def g3ShowRFTables(symbol, event):
         # Unknown option, behave as both MACs available
         symbol.setVisible(True)
 
+def g3ShowUsiInstance(symbol, event):
+    symbol.setVisible(event["value"])
+
+    if (event["value"] == True):
+        usiInstances = filter(lambda k: "srv_usi_" in k, Database.getActiveComponentIDs())
+        symbol.setMax(len(usiInstances) - 1)
+
+        Database.activateComponents(["srv_usi"])
+
 #Set symbols of other components
 def setVal(component, symbol, value):
     triggerDict = {"Component":component,"Id":symbol, "Value":value}
     if(Database.sendMessage(component, "SET_SYMBOL", triggerDict) == None):
-        print "Set Symbol Failure" + component + ":" + symbol + ":" + str(value)
+        print("Set Symbol Failure" + component + ":" + symbol + ":" + str(value))
         return False
     else:
         return True
@@ -242,7 +265,7 @@ def setVal(component, symbol, value):
 def handleMessage(messageID, args):
     retDict= {}
     if (messageID == "SET_SYMBOL"):
-        print "handleMessage: Set Symbol"
+        print("handleMessage: Set Symbol")
         retDict= {"Return": "Success"}
         Database.setSymbolValue(args["Component"], args["Id"], args["Value"])
     else:
