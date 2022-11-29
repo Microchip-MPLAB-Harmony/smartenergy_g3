@@ -1121,30 +1121,14 @@ static void _Callback_MacRfMacSnifferIndication(MAC_SNIFFER_INDICATION_PARAMS *s
 
 SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_INIT * const init)
 {
-    bool initError = false;
-
     /* Validate the request */
     if (index >= G3_MAC_WRP_INSTANCES_NUMBER)
     {
         return SYS_MODULE_OBJ_INVALID;
     }
 
-    if (macWrpData.inUse == true)
-    {
-        return SYS_MODULE_OBJ_INVALID;
-    }
-
-    macWrpData.inUse = true;
     macWrpData.state = MAC_WRP_STATE_NOT_READY;
-
-    if (initError)
-    {
-        return SYS_MODULE_OBJ_INVALID;
-    }
-    else
-    {
-        return (SYS_MODULE_OBJ)0; 
-    }
+    return (SYS_MODULE_OBJ)0; 
 }
 
 MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index)
@@ -1154,12 +1138,14 @@ MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index)
     {
         return MAC_WRP_HANDLE_INVALID;
     }
-    else
+    else if (macWrpData.state != MAC_WRP_STATE_NOT_READY)
     {
-        macWrpData.state = MAC_WRP_STATE_IDLE;
-        macWrpData.macWrpHandle = (MAC_WRP_HANDLE)0;
-        return macWrpData.macWrpHandle;
+        return MAC_WRP_HANDLE_INVALID;
     }
+
+    macWrpData.state = MAC_WRP_STATE_IDLE;
+    macWrpData.macWrpHandle = (MAC_WRP_HANDLE)0;
+    return macWrpData.macWrpHandle;
 }
 
 void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
@@ -1196,7 +1182,6 @@ void MAC_WRP_Init(MAC_WRP_HANDLE handle, MAC_WRP_INIT *init)
 
     /* Set init data */
     macWrpData.macWrpHandlers = init->macWrpHandlers;
-    macWrpData.plcBand = init->plcBand;
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     // Set default HyAL variables

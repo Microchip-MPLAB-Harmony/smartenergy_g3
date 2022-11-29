@@ -159,7 +159,7 @@ def instantiateComponent(g3ConfigMacComponent):
     
     g3StackSystemConfigFile = g3ConfigMacComponent.createFileSymbol("G3_STACK_CONFIGURATION", None)
     g3StackSystemConfigFile.setType("STRING")
-    g3StackSystemConfigFile.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")
+    g3StackSystemConfigFile.setOutputName("core.LIST_SYSTEM_CONFIG_H_MIDDLEWARE_CONFIGURATION")
     g3StackSystemConfigFile.setSourcePath("g3/templates/system/configuration.h.ftl")
     g3StackSystemConfigFile.setMarkup(True)
 
@@ -177,19 +177,19 @@ def instantiateComponent(g3ConfigMacComponent):
 
     plcSymSystemInitDataFile = g3ConfigMacComponent.createFileSymbol("G3_STACK_INIT_DATA", None)
     plcSymSystemInitDataFile.setType("STRING")
-    plcSymSystemInitDataFile.setOutputName("core.LIST_SYSTEM_INIT_C_DRIVER_INITIALIZATION_DATA")
+    plcSymSystemInitDataFile.setOutputName("core.LIST_SYSTEM_INIT_C_LIBRARY_INITIALIZATION_DATA")
     plcSymSystemInitDataFile.setSourcePath("g3/templates/system/initialize_data.c.ftl")
     plcSymSystemInitDataFile.setMarkup(True)
 
     plcSystemInitFile = g3ConfigMacComponent.createFileSymbol("G3_STACK_INIT", None)
     plcSystemInitFile.setType("STRING")
-    plcSystemInitFile.setOutputName("core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_DRIVERS")
+    plcSystemInitFile.setOutputName("core.LIST_SYSTEM_INIT_C_INITIALIZE_MIDDLEWARE")
     plcSystemInitFile.setSourcePath("g3/templates/system/initialize.c.ftl")
     plcSystemInitFile.setMarkup(True)
 
     plcSystemTasksFile = g3ConfigMacComponent.createFileSymbol("G3_STACK_SYS_TASK", None)
     plcSystemTasksFile.setType("STRING")
-    plcSystemTasksFile.setOutputName("core.LIST_SYSTEM_TASKS_C_CALL_DRIVER_TASKS")
+    plcSystemTasksFile.setOutputName("core.LIST_SYSTEM_TASKS_C_CALL_LIB_TASKS")
     plcSystemTasksFile.setSourcePath("g3/templates/system/system_tasks.c.ftl")
     plcSystemTasksFile.setMarkup(True)
 

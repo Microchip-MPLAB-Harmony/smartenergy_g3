@@ -23,5 +23,5 @@
 *******************************************************************************/
 -->
 
-    /* Maintain G3 MAC RT Driver */
+    /* Maintain G3 MAC */
     MAC_WRP_Tasks(sysObj.g3MacWrapper);
