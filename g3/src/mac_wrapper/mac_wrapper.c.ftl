@@ -1255,6 +1255,24 @@ void MAC_WRP_Init(MAC_WRP_HANDLE handle, MAC_WRP_INIT *init)
     MAC_COMMON_Init();
 }
 
+SYS_STATUS MAC_WRP_Status(void)
+{
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
+    if ((MAC_PLC_Status() == SYS_STATUS_READY) || (MAC_RF_Status() == SYS_STATUS_READY))
+    {
+        return SYS_STATUS_READY;
+    }
+    else
+    {
+        return SYS_STATUS_BUSY;
+    }
+<#elseif MAC_PLC_PRESENT == true>
+    return MAC_PLC_Status();
+<#elseif MAC_RF_PRESENT == true>
+    return MAC_RF_Status();
+</#if>
+}
+
 void MAC_WRP_DataRequest(MAC_WRP_HANDLE handle, MAC_WRP_DATA_REQUEST_PARAMS *drParams)
 {
     MAC_WRP_DATA_CONFIRM_PARAMS dataConfirm;

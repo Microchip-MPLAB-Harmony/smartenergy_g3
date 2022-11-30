@@ -255,6 +255,44 @@ void MAC_RF_Tasks(void);
 
 // *****************************************************************************
 /* Function:
+    SYS_STATUS MAC_RF_Status
+    (
+      void
+    )
+
+  Summary:
+    The MAC_RF_Status primitive retrieves the Status of RF MAC.
+
+  Description:
+    This primitive is intended to be called before using RF MAC layer
+    to ensure it is ready to be used.
+
+  Precondition:
+    MAC_RF_Init routine must have been called before.
+
+  Parameters:
+    None
+
+  Returns:
+    Status of RF MAC layer as a SYS_STATUS code.
+
+  Example:
+    <code>
+    SYS_STATUS status;
+    status = MAC_RF_Status();
+    if (status == SYS_STATUS_READY)
+    {
+        // MAC is ready to be used
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+SYS_STATUS MAC_RF_Status(void);
+
+// *****************************************************************************
+/* Function:
     void MAC_RF_DataRequest
     (
       MAC_DATA_REQUEST_PARAMS *drParams
