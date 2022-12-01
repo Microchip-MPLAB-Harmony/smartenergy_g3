@@ -29,9 +29,16 @@ def loadModule():
     ## G3 PAL PLC
     g3PalPlcComponent = Module.CreateComponent("g3PalPlc", "G3_PAL_PLC", "/SmartEnergy/Stack/G3/PAL", "pal/plc/config/pal_plc.py")
     g3PalPlcComponent.addCapability("g3PalPlc", "G3_PAL_PLC", True) 
-    g3PalPlcComponent.addDependency("g3PalPlc_G3MacRT_dependency", "DRV_G3_MAC_RT", True, True)
+    g3PalPlcComponent.addDependency("g3PalPlc_G3MacRT_dependency", "DRV_G3_MAC_RT", False, True)
     g3PalPlcComponent.addDependency("g3PalPlc_PCoup_dependency", "PCOUP", True, True)
     g3PalPlcComponent.setDisplayType("G3 PAL PLC")
+
+    ## G3 PAL RF
+    g3PalRfComponent = Module.CreateComponent("g3PalRf", "G3_PAL_RF", "/SmartEnergy/Stack/G3/PAL", "pal/rf/config/pal_rf.py")
+    g3PalRfComponent.addCapability("g3PalRf", "G3_PAL_RF", True) 
+    g3PalRfComponent.addDependency("g3PalRf_DrvRfPhy_dependency", "DRV_RF_PHY", False, True)
+    g3PalRfComponent.addDependency("g3PalRf_sysTime_dependency", "SYS_TIME", True, True)
+    g3PalRfComponent.setDisplayType("G3 PAL RF")
 
     ###########  G3 Stack Configurations  ###########
     g3ConfigComponent = Module.CreateComponent("g3_config", "G3 Stack Configurator", "/SmartEnergy/Stack/G3", "g3/config/g3_configurator.py")
@@ -120,7 +127,7 @@ def loadModule():
     g3MacRfComponent.addDependency("rf_srv_random_dependency", "Random", True, True)
     g3MacRfComponent.addDependency("rf_srv_log_report_dependency", "Log Report", True, True)
     g3MacRfComponent.addDependency("rf_srv_security_dependency", "Security", True, True)
-    # TBD g3MacRfComponent.addDependency("rf_srv_g3_pal215_dependency", "G3_PAL_RF", False, True)
+    g3MacRfComponent.addDependency("rf_srv_g3_palrf_dependency", "G3_PAL_RF", True, True)
     # TBD optional dependencies to storage
     g3MacRfComponent.setDisplayType("MAC Layer")
     

@@ -50,7 +50,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "system/system.h"
+<#if G3_PAL_PLC_PHY_SNIFFER_EN == true>  
 #include "service/usi/srv_usi.h"
+</#if>
 #include "service/pcoup/srv_pcoup.h"
 #include "driver/plc/g3MacRt/drv_g3_macrt_comm.h"
 

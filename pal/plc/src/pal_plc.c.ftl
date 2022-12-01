@@ -52,8 +52,12 @@
 #include "driver/driver.h"
 #include "driver/plc/g3MacRt/drv_g3_macrt.h"
 #include "service/pcoup/srv_pcoup.h"
+<#if G3_PAL_PLC_PVDD_MONITOR == true> 
 #include "service/pvddmon/srv_pvddmon.h"
+</#if>
+<#if G3_PAL_PLC_PHY_SNIFFER_EN == true>  
 #include "service/usi/srv_usi.h"
+</#if>
 #include "pal_plc.h"
 
 // *****************************************************************************
