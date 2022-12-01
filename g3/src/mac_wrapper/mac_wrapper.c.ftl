@@ -106,6 +106,44 @@ typedef struct
 } HYAL_DATA;
 
 </#if>
+<#if MAC_SERIALIZATION_EN == true>
+typedef enum
+{
+    MAC_WRP_SERIAL_STATUS_SUCCESS = 0,
+    MAC_WRP_SERIAL_STATUS_NOT_ALLOWED,
+    MAC_WRP_SERIAL_STATUS_UNKNOWN_COMMAND,
+    MAC_WRP_SERIAL_STATUS_INVALID_PARAMETER
+} MAC_WRP_SERIAL_STATUS;
+
+typedef enum
+{
+    /* Generic messages */
+    MAC_WRP_SERIAL_MSG_STATUS = 0,
+
+    /* MAC access request messages */
+    MAC_WRP_SERIAL_MSG_MAC_INITIALIZE = 50,
+    MAC_WRP_SERIAL_MSG_MAC_DATA_REQUEST,
+    MAC_WRP_SERIAL_MSG_MAC_GET_REQUEST,
+    MAC_WRP_SERIAL_MSG_MAC_SET_REQUEST,
+    MAC_WRP_SERIAL_MSG_MAC_RESET_REQUEST,
+    MAC_WRP_SERIAL_MSG_MAC_SCAN_REQUEST,
+    MAC_WRP_SERIAL_MSG_MAC_START_REQUEST,
+
+    /* MAC response/indication messages */
+    MAC_WRP_SERIAL_MSG_MAC_DATA_CONFIRM = 60,
+    MAC_WRP_SERIAL_MSG_MAC_DATA_INDICATION,
+    MAC_WRP_SERIAL_MSG_MAC_GET_CONFIRM,
+    MAC_WRP_SERIAL_MSG_MAC_SET_CONFIRM,
+    MAC_WRP_SERIAL_MSG_MAC_RESET_CONFIRM,
+    MAC_WRP_SERIAL_MSG_MAC_SCAN_CONFIRM,
+    MAC_WRP_SERIAL_MSG_MAC_BEACON_NOTIFY,
+    MAC_WRP_SERIAL_MSG_MAC_START_CONFIRM,
+    MAC_WRP_SERIAL_MSG_MAC_COMM_STATUS_INDICATION,
+    MAC_WRP_SERIAL_MSG_MAC_SNIFFER_INDICATION
+
+} MAC_WRP_SERIAL_MSG_ID;
+
+</#if>
 // *****************************************************************************
 // *****************************************************************************
 // Section: File Scope Variables
@@ -185,12 +223,18 @@ static const HYAL_DATA hyalDataDefaults = {
 
 static HYAL_DATA hyalData;
 
+</#if>
+<#if MAC_SERIALIZATION_EN == true>
+static uint8_t serialRspBuffer[512];
+
+</#if>
 // *****************************************************************************
 // *****************************************************************************
 // Section: local functions
 // *****************************************************************************
 // *****************************************************************************
 
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
 static uint16_t _hyalCrc16(const uint8_t *dataBuf, uint32_t length)
 {
     uint16_t crc = 0;
@@ -328,6 +372,621 @@ static bool _macWrpIsSharedAttribute(MAC_WRP_PIB_ATTRIBUTE attribute)
     }
 }
 
+<#if MAC_SERIALIZATION_EN == true>
+static void _Serial_memcpyToUsiEndianessUint32(uint8_t* pDst, uint8_t* pSrc)
+{
+    uint32_t aux;
+
+    memcpy((uint8_t *) &aux, pSrc, 4);
+
+    *pDst++ = (uint8_t) (aux >> 24);
+    *pDst++ = (uint8_t) (aux >> 16);
+    *pDst++ = (uint8_t) (aux >> 8);
+    *pDst = (uint8_t) aux;
+}
+
+static void _Serial_memcpyToUsiEndianessUint16(uint8_t* pDst, uint8_t* pSrc)
+{
+    uint16_t aux;
+
+    memcpy((uint8_t *) &aux, pSrc, 2);
+
+    *pDst++ = (uint8_t) (aux >> 8);
+    *pDst = (uint8_t) aux;
+}
+
+static void _Serial_memcpyFromUsiEndianessUint32(uint8_t* pDst, uint8_t* pSrc)
+{
+    uint32_t aux = 0;
+
+    aux = (*pSrc++) << 24;
+    aux += (*pSrc++) << 16;
+    aux += (*pSrc++) << 8;
+    aux += *pSrc;
+
+    memcpy(pDst, (uint8_t *)&aux, 4);
+}
+
+static void _Serial_memcpyFromUsiEndianessUint16(uint8_t* pDst, uint8_t* pSrc)
+{
+    uint16_t aux = 0;
+
+    aux += (*pSrc++) << 8;
+    aux += *pSrc;
+
+    memcpy(pDst, (uint8_t *)&aux, 2);
+}
+
+static void _Serial_StringifyMsgStatus(MAC_WRP_SERIAL_STATUS status, MAC_WRP_SERIAL_MSG_ID command)
+{
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_STATUS;
+    serialRspBuffer[serialRspLen++] = (uint8_t) status;
+    serialRspBuffer[serialRspLen] = (uint8_t) command;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
+}
+
+static void _Serial_StringifyDataConfirm(MAC_WRP_DATA_CONFIRM_PARAMS* dcParams)
+{
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_DATA_CONFIRM;
+    serialRspBuffer[serialRspLen++] = dcParams->msduHandle;
+    serialRspBuffer[serialRspLen++] = (uint8_t) dcParams->status;
+    serialRspBuffer[serialRspLen++] = (uint8_t) (dcParams->timestamp >> 24);
+    serialRspBuffer[serialRspLen++] = (uint8_t) (dcParams->timestamp >> 16);
+    serialRspBuffer[serialRspLen++] = (uint8_t) (dcParams->timestamp >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) dcParams->timestamp;
+    serialRspBuffer[serialRspLen] = (uint8_t) dcParams->mediaType;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
+}
+
+static void _Serial_StringifyDataIndication(MAC_WRP_DATA_INDICATION_PARAMS* diParams)
+{
+    uint8_t srcAddrLen, dstAddrLen;
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_DATA_INDICATION;
+    serialRspBuffer[serialRspLen++] = (uint8_t) (diParams->srcPanId >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) diParams->srcPanId;
+
+    if (diParams->srcAddress.addressMode == MAC_WRP_ADDRESS_MODE_SHORT)
+    {
+        srcAddrLen = 2;
+        serialRspBuffer[serialRspLen++] = srcAddrLen;
+        serialRspBuffer[serialRspLen++] = (uint8_t) (diParams->srcAddress.shortAddress >> 8);
+        serialRspBuffer[serialRspLen++] = (uint8_t) diParams->srcAddress.shortAddress;
+    }
+    else if (diParams->srcAddress.addressMode == MAC_WRP_ADDRESS_MODE_EXTENDED)
+    {
+        srcAddrLen = 8;
+        serialRspBuffer[serialRspLen++] = srcAddrLen;
+        memcpy(&serialRspBuffer[serialRspLen], diParams->srcAddress.extendedAddress.address, srcAddrLen);
+        serialRspLen += srcAddrLen;
+    }
+    else
+    {
+        return; /* This line must never be reached */
+    }
+
+    serialRspBuffer[serialRspLen++] = (uint8_t) (diParams->destPanId >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) diParams->destPanId;
+
+    if (diParams->destAddress.addressMode == MAC_WRP_ADDRESS_MODE_SHORT)
+    {
+        dstAddrLen = 2;
+        serialRspBuffer[serialRspLen++] = dstAddrLen;
+        serialRspBuffer[serialRspLen++] = (uint8_t) (diParams->destAddress.shortAddress >> 8);
+        serialRspBuffer[serialRspLen++] = (uint8_t) diParams->destAddress.shortAddress;
+    }
+    else if (diParams->destAddress.addressMode == MAC_WRP_ADDRESS_MODE_EXTENDED)
+    {
+        dstAddrLen = 8;
+        serialRspBuffer[serialRspLen++] = dstAddrLen;
+        memcpy(&serialRspBuffer[serialRspLen], diParams->destAddress.extendedAddress.address, dstAddrLen);
+        serialRspLen += dstAddrLen;
+    }
+    else
+    {
+        return; /* This line must never be reached */
+    }
+
+    serialRspBuffer[serialRspLen++] = diParams->linkQuality;
+    serialRspBuffer[serialRspLen++] = diParams->dsn;
+
+    serialRspBuffer[serialRspLen++] = (uint8_t) (diParams->timestamp >> 24);
+    serialRspBuffer[serialRspLen++] = (uint8_t) (diParams->timestamp >> 16);
+    serialRspBuffer[serialRspLen++] = (uint8_t) (diParams->timestamp >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) diParams->timestamp;
+
+    serialRspBuffer[serialRspLen++] = (uint8_t) diParams->securityLevel;
+    serialRspBuffer[serialRspLen++] = diParams->keyIndex;
+    serialRspBuffer[serialRspLen++] = (uint8_t) diParams->qualityOfService;
+
+    serialRspBuffer[serialRspLen++] = diParams->rxModulation;
+    serialRspBuffer[serialRspLen++] = diParams->rxModulationScheme;
+    memcpy(&serialRspBuffer[serialRspLen], diParams->rxToneMap.toneMap, 3);
+    serialRspLen += 3;
+    serialRspBuffer[serialRspLen++] = diParams->computedModulation;
+    serialRspBuffer[serialRspLen++] = diParams->computedModulationScheme;
+    memcpy(&serialRspBuffer[serialRspLen], diParams->computedToneMap.toneMap, 3);
+    serialRspLen += 3;
+
+    serialRspBuffer[serialRspLen++] = (uint8_t) (diParams->msduLength >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) diParams->msduLength;
+
+    memcpy(&serialRspBuffer[serialRspLen], diParams->msdu, diParams->msduLength);
+    serialRspLen += diParams->msduLength;
+
+    serialRspBuffer[serialRspLen] = (uint8_t)diParams->mediaType;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
+}
+
+static void _Serial_StringifySnifferIndication(MAC_WRP_SNIFFER_INDICATION_PARAMS* siParams)
+{
+    uint8_t srcAddrLen, dstAddrLen;
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_SNIFFER_INDICATION;
+    serialRspBuffer[serialRspLen++] = siParams->frameType;
+    serialRspBuffer[serialRspLen++] = (uint8_t) (siParams->srcPanId >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) siParams->srcPanId;
+
+    if (siParams->srcAddress.addressMode == MAC_WRP_ADDRESS_MODE_SHORT)
+    {
+        srcAddrLen = 2;
+        serialRspBuffer[serialRspLen++] = srcAddrLen;
+        serialRspBuffer[serialRspLen++] = (uint8_t) (siParams->srcAddress.shortAddress >> 8);
+        serialRspBuffer[serialRspLen++] = (uint8_t) siParams->srcAddress.shortAddress;
+    }
+    else if (siParams->srcAddress.addressMode == MAC_WRP_ADDRESS_MODE_EXTENDED)
+    {
+        srcAddrLen = 8;
+        serialRspBuffer[serialRspLen++] = srcAddrLen;
+        memcpy(&serialRspBuffer[serialRspLen], siParams->srcAddress.extendedAddress.address, srcAddrLen);
+        serialRspLen += srcAddrLen;
+    }
+    else
+    {
+        srcAddrLen = 0;
+        serialRspBuffer[serialRspLen++] = srcAddrLen;
+    }
+
+    serialRspBuffer[serialRspLen++] = (uint8_t) (siParams->destPanId >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) siParams->destPanId;
+
+    if (siParams->destAddress.addressMode == MAC_WRP_ADDRESS_MODE_SHORT)
+    {
+        dstAddrLen = 2;
+        serialRspBuffer[serialRspLen++] = dstAddrLen;
+        serialRspBuffer[serialRspLen++] = (uint8_t) (siParams->destAddress.shortAddress >> 8);
+        serialRspBuffer[serialRspLen++] = (uint8_t) siParams->destAddress.shortAddress;
+    }
+    else if (siParams->destAddress.addressMode == MAC_WRP_ADDRESS_MODE_EXTENDED)
+    {
+        dstAddrLen = 8;
+        serialRspBuffer[serialRspLen++] = dstAddrLen;
+        memcpy(&serialRspBuffer[serialRspLen], siParams->destAddress.extendedAddress.address, dstAddrLen);
+        serialRspLen += dstAddrLen;
+    }
+    else
+    {
+        dstAddrLen = 0;
+        serialRspBuffer[serialRspLen++] = dstAddrLen;
+    }
+
+    serialRspBuffer[serialRspLen++] = siParams->linkQuality;
+    serialRspBuffer[serialRspLen++] = siParams->dsn;
+
+    serialRspBuffer[serialRspLen++] = (uint8_t) (siParams->timestamp >> 24);
+    serialRspBuffer[serialRspLen++] = (uint8_t) (siParams->timestamp >> 16);
+    serialRspBuffer[serialRspLen++] = (uint8_t) (siParams->timestamp >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) siParams->timestamp;
+
+    serialRspBuffer[serialRspLen++] = (uint8_t) siParams->securityLevel;
+    serialRspBuffer[serialRspLen++] = siParams->keyIndex;
+    serialRspBuffer[serialRspLen++] = (uint8_t) siParams->qualityOfService;
+
+    serialRspBuffer[serialRspLen++] = siParams->rxModulation;
+    serialRspBuffer[serialRspLen++] = siParams->rxModulationScheme;
+    memcpy(&serialRspBuffer[serialRspLen], siParams->rxToneMap.toneMap, 3);
+    serialRspLen += 3;
+    serialRspBuffer[serialRspLen++] = siParams->computedModulation;
+    serialRspBuffer[serialRspLen++] = siParams->computedModulationScheme;
+    memcpy(&serialRspBuffer[serialRspLen], siParams->computedToneMap.toneMap, 3);
+    serialRspLen += 3;
+
+    serialRspBuffer[serialRspLen++] = (uint8_t) (siParams->msduLength >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) siParams->msduLength;
+
+    memcpy(&serialRspBuffer[serialRspLen], siParams->msdu, siParams->msduLength);
+    serialRspLen += siParams->msduLength;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
+}
+
+static void _Serial_StringifyResetConfirm(MAC_WRP_RESET_CONFIRM_PARAMS* rcParams)
+{
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_RESET_CONFIRM;
+    serialRspBuffer[serialRspLen++] = (uint8_t) rcParams->status;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
+}
+
+static void _Serial_StringifyBeaconNotIndication(MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS* bniParams)
+{
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_BEACON_NOTIFY;
+    serialRspBuffer[serialRspLen++] = (uint8_t) (bniParams->panDescriptor.panId >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) bniParams->panDescriptor.panId;
+    serialRspBuffer[serialRspLen++] = bniParams->panDescriptor.linkQuality;
+    serialRspBuffer[serialRspLen++] = (uint8_t) (bniParams->panDescriptor.lbaAddress >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) bniParams->panDescriptor.lbaAddress;
+    serialRspBuffer[serialRspLen++] = (uint8_t) (bniParams->panDescriptor.rcCoord >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) bniParams->panDescriptor.rcCoord;
+    serialRspBuffer[serialRspLen++] = (uint8_t) bniParams->panDescriptor.mediaType;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
+}
+
+static void _Serial_StringifyScanConfirm(MAC_WRP_SCAN_CONFIRM_PARAMS* scParams)
+{
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_SCAN_CONFIRM;
+    serialRspBuffer[serialRspLen++] = (uint8_t) scParams->status;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
+}
+
+static void _Serial_StringifyStartConfirm(MAC_WRP_START_CONFIRM_PARAMS* scParams)
+{
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_START_CONFIRM;
+    serialRspBuffer[serialRspLen++] = (uint8_t) scParams->status;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
+}
+
+static void _Serial_StringifyCommStatusIndication(MAC_WRP_COMM_STATUS_INDICATION_PARAMS* csiParams)
+{
+    uint8_t srcAddrLen, dstAddrLen;
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_COMM_STATUS_INDICATION;
+    serialRspBuffer[serialRspLen++] = (uint8_t) (csiParams->panId >> 8);
+    serialRspBuffer[serialRspLen++] = (uint8_t) csiParams->panId;
+
+    if (csiParams->srcAddress.addressMode == MAC_WRP_ADDRESS_MODE_SHORT)
+    {
+        srcAddrLen = 2;
+        serialRspBuffer[serialRspLen++] = srcAddrLen;
+        serialRspBuffer[serialRspLen++] = (uint8_t) (csiParams->srcAddress.shortAddress >> 8);
+        serialRspBuffer[serialRspLen++] = (uint8_t) csiParams->srcAddress.shortAddress;
+    }
+    else if (csiParams->srcAddress.addressMode == MAC_WRP_ADDRESS_MODE_EXTENDED)
+    {
+        srcAddrLen = 8;
+        serialRspBuffer[serialRspLen++] = srcAddrLen;
+        memcpy(&serialRspBuffer[serialRspLen], csiParams->srcAddress.extendedAddress.address, srcAddrLen);
+        serialRspLen += srcAddrLen;
+    }
+    else
+    {
+        return; /* This line must never be reached */
+    }
+
+    if (csiParams->destAddress.addressMode == MAC_WRP_ADDRESS_MODE_SHORT)
+    {
+        dstAddrLen = 2;
+        serialRspBuffer[serialRspLen++] = dstAddrLen;
+        serialRspBuffer[serialRspLen++] = (uint8_t) (csiParams->destAddress.shortAddress >> 8);
+        serialRspBuffer[serialRspLen++] = (uint8_t) csiParams->destAddress.shortAddress;
+    }
+    else if (csiParams->destAddress.addressMode == MAC_WRP_ADDRESS_MODE_EXTENDED)
+    {
+        dstAddrLen = 8;
+        serialRspBuffer[serialRspLen++] = dstAddrLen;
+        memcpy(&serialRspBuffer[serialRspLen], csiParams->destAddress.extendedAddress.address, dstAddrLen);
+        serialRspLen += dstAddrLen;
+    }
+    else
+    {
+        return; /* This line must never be reached */
+    }
+
+    serialRspBuffer[serialRspLen++] = (uint8_t) csiParams->status;
+    serialRspBuffer[serialRspLen++] = (uint8_t) csiParams->securityLevel;
+    serialRspBuffer[serialRspLen++] = csiParams->keyIndex;
+
+    serialRspBuffer[serialRspLen] = (uint8_t)csiParams->mediaType;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
+}
+
+static MAC_WRP_SERIAL_STATUS _Serial_ParseInitialize(uint8_t* pData)
+{
+    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    {
+        MAC_WRP_INIT macWrpInit;
+
+        /* Parse initialize message */
+        macWrpInit.plcBand = *pData;
+
+        /* Initialize MAC Wrapper if it has not been initialized yet */
+        macWrpInit.macWrpHandlers.beaconNotifyIndicationCallback = NULL;
+        macWrpInit.macWrpHandlers.commStatusIndicationCallback = NULL;
+        macWrpInit.macWrpHandlers.dataConfirmCallback = NULL;
+        macWrpInit.macWrpHandlers.dataIndicationCallback = NULL;
+        macWrpInit.macWrpHandlers.resetConfirmCallback = NULL;
+        macWrpInit.macWrpHandlers.scanConfirmCallback = NULL;
+        macWrpInit.macWrpHandlers.snifferIndicationCallback = NULL;
+        macWrpInit.macWrpHandlers.startConfirmCallback = NULL;
+        MAC_WRP_Init(macWrpData.macWrpHandle, &macWrpInit);
+    }
+
+    return MAC_WRP_SERIAL_STATUS_SUCCESS;
+}
+
+static MAC_WRP_SERIAL_STATUS _Serial_ParseDataRequest(uint8_t* pData)
+{
+    MAC_WRP_DATA_REQUEST_PARAMS drParams;
+    uint8_t srcAddrLen, dstAddrLen;
+
+    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    {
+        /* MAC Wrapper not initialized */
+        return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Parse data request message */
+    drParams.msduHandle = *pData++;
+    drParams.securityLevel =  (MAC_WRP_SECURITY_LEVEL) *pData++;
+    drParams.keyIndex = *pData++;
+    drParams.qualityOfService = (MAC_WRP_QUALITY_OF_SERVICE) *pData++;
+    drParams.txOptions = *pData++;
+    drParams.destPanId = ((MAC_WRP_PAN_ID) *pData++) << 8;
+    drParams.destPanId += (MAC_WRP_PAN_ID) *pData++;
+    srcAddrLen = *pData++;
+    if (srcAddrLen == 2)
+    {
+        drParams.srcAddressMode = MAC_WRP_ADDRESS_MODE_SHORT;
+    }
+    else if (srcAddrLen == 8)
+    {
+        drParams.srcAddressMode = MAC_WRP_ADDRESS_MODE_EXTENDED;
+    }
+    else
+    {
+        return MAC_WRP_SERIAL_STATUS_INVALID_PARAMETER;
+    }
+
+    dstAddrLen = *pData++;
+    if (dstAddrLen == 2)
+    {
+        drParams.destAddress.addressMode = MAC_WRP_ADDRESS_MODE_SHORT;
+        drParams.destAddress.shortAddress = ((MAC_WRP_SHORT_ADDRESS) *pData++) << 8;
+        drParams.destAddress.shortAddress += (MAC_WRP_SHORT_ADDRESS) *pData++;
+    }
+    else if (dstAddrLen == 8)
+    {
+        drParams.destAddress.addressMode = MAC_WRP_ADDRESS_MODE_EXTENDED;
+        memcpy(&drParams.destAddress.extendedAddress, pData, dstAddrLen);
+        pData += dstAddrLen;
+    }
+    else
+    {
+        return MAC_WRP_SERIAL_STATUS_INVALID_PARAMETER;
+    }
+
+    drParams.mediaType = (MAC_WRP_MEDIA_TYPE_REQUEST) *pData++;
+
+    drParams.msduLength = ((uint16_t)*pData++) << 8;
+    drParams.msduLength += (uint16_t)*pData++;
+    drParams.msdu = pData;
+
+    /* Send data request to MAC */
+    MAC_WRP_DataRequest(macWrpData.macWrpHandle, &drParams);
+
+    return MAC_WRP_SERIAL_STATUS_SUCCESS;
+}
+
+static MAC_WRP_SERIAL_STATUS _Serial_ParseGetRequest(uint8_t* pData)
+{
+    uint32_t attribute;
+    uint16_t index;
+    MAC_WRP_PIB_VALUE pibValue;
+    MAC_WRP_PIB_ATTRIBUTE pibAttr;
+    MAC_WRP_STATUS getStatus;
+    uint8_t serialRspLen = 0;
+
+    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    {
+        /* MAC Wrapper not initialized */
+        return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Get PIB from MAC */
+    MAC_WRP_SerialParseGetRequest(pData, &attribute, &index);
+    pibAttr = (MAC_WRP_PIB_ATTRIBUTE) attribute;
+    getStatus = MAC_WRP_GetRequestSync(macWrpData.macWrpHandle, pibAttr, index, &pibValue);
+
+    /* Fill serial response buffer */
+    serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_GET_CONFIRM;
+    serialRspLen += MAC_WRP_SerialStringifyGetConfirm(&serialRspBuffer[serialRspLen],
+            getStatus, pibAttr, index, &pibValue);
+
+    /* Send get confirm through USI */
+    SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
+
+    return MAC_WRP_SERIAL_STATUS_SUCCESS;
+}
+
+static MAC_WRP_SERIAL_STATUS _Serial_ParseSetRequest(uint8_t* pData)
+{
+    uint16_t index;
+    MAC_WRP_PIB_VALUE pibValue;
+    MAC_WRP_PIB_ATTRIBUTE attribute;
+    MAC_WRP_STATUS setStatus;
+    uint8_t serialRspLen = 0;
+
+    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    {
+        /* MAC Wrapper not initialized */
+        return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Set MAC PIB */
+    MAC_WRP_SerialParseSetRequest(pData, &attribute, &index, &pibValue);
+    setStatus = MAC_WRP_SetRequestSync(macWrpData.macWrpHandle, attribute, index, &pibValue);
+
+    /* Fill serial response buffer */
+    serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_SET_CONFIRM;
+    serialRspLen += MAC_WRP_SerialStringifySetConfirm(&serialRspBuffer[serialRspLen],
+            setStatus, attribute, index);
+
+    /* Send set confirm through USI */
+    SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
+
+    return MAC_WRP_SERIAL_STATUS_SUCCESS;
+}
+
+static MAC_WRP_SERIAL_STATUS _Serial_ParseResetRequest(uint8_t* pData)
+{
+    MAC_WRP_RESET_REQUEST_PARAMS rrParams;
+
+    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    {
+        /* MAC Wrapper not initialized */
+        return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Parse reset request message */
+    rrParams.setDefaultPib = (bool) *pData;
+
+    /* Send reset request to MAC */
+    MAC_WRP_ResetRequest(macWrpData.macWrpHandle, &rrParams);
+
+    return MAC_WRP_SERIAL_STATUS_SUCCESS;
+}
+
+static MAC_WRP_SERIAL_STATUS _Serial_ParseScanRequest(uint8_t* pData)
+{
+    MAC_WRP_SCAN_REQUEST_PARAMS srParams;
+
+    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    {
+        /* MAC Wrapper not initialized */
+        return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Parse scan request message */
+    srParams.scanDuration = ((uint16_t) *pData++) << 8;
+    srParams.scanDuration += *pData;
+
+    /* Send scan request to MAC */
+    MAC_WRP_ScanRequest(macWrpData.macWrpHandle, &srParams);
+
+    return MAC_WRP_SERIAL_STATUS_SUCCESS;
+}
+
+static MAC_WRP_SERIAL_STATUS _Serial_ParseStartRequest(uint8_t* pData)
+{
+    MAC_WRP_START_REQUEST_PARAMS srParams;
+
+    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    {
+        /* MAC Wrapper not initialized */
+        return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Parse start request message */
+    srParams.panId = ((uint16_t) *pData++) << 8;
+    srParams.panId += *pData;
+
+    MAC_WRP_StartRequest(macWrpData.macWrpHandle, &srParams);
+
+    return MAC_WRP_SERIAL_STATUS_SUCCESS;
+}
+
+static void _Callback_UsiMacProtocol(uint8_t* pData, size_t length)
+{
+    uint8_t command;
+    MAC_WRP_SERIAL_STATUS status = MAC_WRP_SERIAL_STATUS_UNKNOWN_COMMAND;
+
+    /* Protection for invalid length */
+    if (length == 0)
+    {
+        return;
+    }
+
+    /* Process received message */
+    command = (*pData++) & 0x3F;
+
+    switch(command)
+    {
+        case MAC_WRP_SERIAL_MSG_MAC_INITIALIZE:
+            status = _Serial_ParseInitialize(pData);
+            break;
+
+        case MAC_WRP_SERIAL_MSG_MAC_DATA_REQUEST:
+            status = _Serial_ParseDataRequest(pData);
+
+        case MAC_WRP_SERIAL_MSG_MAC_GET_REQUEST:
+            status = _Serial_ParseGetRequest(pData);
+
+        case MAC_WRP_SERIAL_MSG_MAC_SET_REQUEST:
+            status = _Serial_ParseSetRequest(pData);
+
+        case MAC_WRP_SERIAL_MSG_MAC_RESET_REQUEST:
+            status = _Serial_ParseResetRequest(pData);
+
+        case MAC_WRP_SERIAL_MSG_MAC_SCAN_REQUEST:
+            status = _Serial_ParseScanRequest(pData);
+
+        case MAC_WRP_SERIAL_MSG_MAC_START_REQUEST:
+            status = _Serial_ParseStartRequest(pData);
+
+        default:
+            break;
+    }
+
+    /* Initialize doesn't have Confirm so send status.
+     * Other messages all have confirm. Send status only if there is a processing error */
+    if ((status != MAC_WRP_SERIAL_STATUS_UNKNOWN_COMMAND) &&
+            ((status != MAC_WRP_SERIAL_STATUS_SUCCESS) || (command == MAC_WRP_SERIAL_MSG_MAC_INITIALIZE)))
+    {
+        _Serial_StringifyMsgStatus(status, command);
+    }
+}
+
+</#if>
 /* ------------------------------------------------ */
 /* ---------- Callbacks from MAC Layers ----------- */
 /* ------------------------------------------------ */
@@ -364,6 +1023,9 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
             {
                 /* Send confirm to upper layer */
                 dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
+<#if MAC_SERIALIZATION_EN == true>
+                _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
                 /* Release Data Req entry and send confirm */
                 matchingDataReq->used = false;
                 if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
@@ -398,6 +1060,9 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "No POS entry found, discard backup medium");
                     /* Send confirm to upper layer */
                     dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
+<#if MAC_SERIALIZATION_EN == true>
+                    _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
                     /* Release Data Req entry and send confirm */
                     matchingDataReq->used = false;
                     if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
@@ -410,6 +1075,9 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
         case MAC_WRP_MEDIA_TYPE_REQ_RF_BACKUP_PLC:
             /* PLC was used as backup medium. Send confirm to upper layer */
             dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC_AS_BACKUP;
+<#if MAC_SERIALIZATION_EN == true>
+            _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
             /* Release Data Req entry and send confirm */
             matchingDataReq->used = false;
             if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
@@ -429,10 +1097,6 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                     dataConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
                     /* Release Data Req entry and send confirm */
                     matchingDataReq->used = false;
-                    if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-                    {
-                        macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-                    }
                 }
                 else
                 {
@@ -440,10 +1104,14 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                     dataConfirmParams.status = (MAC_WRP_STATUS)dcParams->status;
                     /* Release Data Req entry and send confirm */
                     matchingDataReq->used = false;
-                    if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-                    {
-                        macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-                    }
+                }
+
+<#if MAC_SERIALIZATION_EN == true>
+                _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
+                if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
+                {
+                    macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
                 }
             }
             else {
@@ -455,6 +1123,9 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
         case MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP:
             /* Send confirm to upper layer */
             dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
+<#if MAC_SERIALIZATION_EN == true>
+            _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
             /* Release Data Req entry and send confirm */
             matchingDataReq->used = false;
             if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
@@ -468,6 +1139,9 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
             break;
         default: /* PLC only */
             dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
+<#if MAC_SERIALIZATION_EN == true>
+            _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
             /* Release Data Req entry and send confirm */
             matchingDataReq->used = false;
             if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
@@ -477,11 +1151,14 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
             break;
     }
 <#else>
+    /* Copy dcParams from Mac and fill Media Type */
+    memcpy(&dataConfirmParams, dcParams, sizeof(MAC_DATA_CONFIRM_PARAMS));
+    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
     if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
     {
-        /* Copy dcParams from Mac and fill Media Type */
-        memcpy(&dataConfirmParams, dcParams, sizeof(MAC_DATA_CONFIRM_PARAMS));
-        dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
         macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
     }
 </#if>
@@ -506,23 +1183,17 @@ static void _Callback_MacPlcDataIndication(MAC_DATA_INDICATION_PARAMS *diParams)
         }
     }
 
-    /* Copy diParams from Mac. Media Type will be filled later */
-    memcpy(&dataIndicationParams, diParams, sizeof(MAC_DATA_INDICATION_PARAMS));
-
-    if (macWrpData.macWrpHandlers.dataIndicationCallback != NULL)
-    {
-        dataIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_PLC;
-        macWrpData.macWrpHandlers.dataIndicationCallback(&dataIndicationParams);
-    }
-<#else>
-    if (macWrpData.macWrpHandlers.dataIndicationCallback != NULL)
-    {
-        /* Copy diParams from Mac and fill Media Type */
-        memcpy(&dataIndicationParams, diParams, sizeof(MAC_DATA_INDICATION_PARAMS));
-        dataIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_PLC;
-        macWrpData.macWrpHandlers.dataIndicationCallback(&dataIndicationParams);
-    }
 </#if>
+     /* Copy diParams from Mac and fill Media Type */
+    memcpy(&dataIndicationParams, diParams, sizeof(MAC_DATA_INDICATION_PARAMS));
+    dataIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_PLC;
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyDataIndication(&dataIndicationParams);
+</#if>
+    if (macWrpData.macWrpHandlers.dataIndicationCallback != NULL)
+    {
+        macWrpData.macWrpHandlers.dataIndicationCallback(&dataIndicationParams);
+    }
 }
 
 static void _Callback_MacPlcResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
@@ -540,10 +1211,6 @@ static void _Callback_MacPlcResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
         {
             /* Both SUCCESS, send confirm with SUCCESS */
             resetConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
-            if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
-            }
         }
         else
         {
@@ -551,19 +1218,19 @@ static void _Callback_MacPlcResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
             if (hyalData.firstResetConfirmStatus != MAC_STATUS_SUCCESS)
             {
                 resetConfirmParams.status = (MAC_WRP_STATUS)hyalData.firstResetConfirmStatus;
-                if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
-                }
             }
             else
             {
                 resetConfirmParams.status = (MAC_WRP_STATUS)rcParams->status;
-                if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
-                }
             }
+        }
+
+<#if MAC_SERIALIZATION_EN == true>
+        _Serial_StringifyResetConfirm(&resetConfirmParams);
+</#if>
+        if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
         }
     }
     else
@@ -573,6 +1240,9 @@ static void _Callback_MacPlcResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
         hyalData.waitingSecondResetConfirm = true;
     }
 <#else>
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyResetConfirm((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
+</#if>
     if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.resetConfirmCallback((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
@@ -586,12 +1256,15 @@ static void _Callback_MacPlcBeaconNotify(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bn
 
     MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS notifyIndicationParams;
 
-    /* Copy bnParams from Mac. Media Type will be filled later */
+    /* Copy bnParams from Mac and fill Media Type */
     memcpy(&notifyIndicationParams, bnParams, sizeof(MAC_BEACON_NOTIFY_INDICATION_PARAMS));
+    notifyIndicationParams.panDescriptor.mediaType = MAC_WRP_MEDIA_TYPE_IND_PLC;
 
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyBeaconNotIndication(&notifyIndicationParams);
+</#if>
     if (macWrpData.macWrpHandlers.beaconNotifyIndicationCallback != NULL)
     {
-        notifyIndicationParams.panDescriptor.mediaType = MAC_WRP_MEDIA_TYPE_IND_PLC;
         macWrpData.macWrpHandlers.beaconNotifyIndicationCallback(&notifyIndicationParams);
     }
 }
@@ -611,19 +1284,19 @@ static void _Callback_MacPlcScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
         {
             /* One or Both SUCCESS, send confirm with SUCCESS */
             scanConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
-            if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirmParams);
-            }
         }
         else
         {
             /* None of confirms SUCCESS, send confirm with latests status */
             scanConfirmParams.status = (MAC_WRP_STATUS)scParams->status;
-            if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirmParams);
-            }
+        }
+
+<#if MAC_SERIALIZATION_EN == true>
+        _Serial_StringifyScanConfirm(&scanConfirmParams);
+</#if>
+        if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirmParams);
         }
     }
     else
@@ -633,6 +1306,9 @@ static void _Callback_MacPlcScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
         hyalData.waitingSecondScanConfirm = true;
     }
 <#else>
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyScanConfirm((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
+</#if>
     if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.scanConfirmCallback((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
@@ -655,10 +1331,6 @@ static void _Callback_MacPlcStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
         {
             /* Both SUCCESS, send confirm with SUCCESS */
             startConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
-            if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
-            }
         }
         else
         {
@@ -666,19 +1338,19 @@ static void _Callback_MacPlcStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
             if (hyalData.firstStartConfirmStatus != MAC_STATUS_SUCCESS)
             {
                 startConfirmParams.status = (MAC_WRP_STATUS)hyalData.firstStartConfirmStatus;
-                if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
-                }
             }
             else
             {
                 startConfirmParams.status = (MAC_WRP_STATUS)scParams->status;
-                if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
-                }
             }
+        }
+
+<#if MAC_SERIALIZATION_EN == true>
+        _Serial_StringifyStartConfirm(&startConfirmParams);
+</#if>
+        if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
         }
     }
     else
@@ -688,6 +1360,9 @@ static void _Callback_MacPlcStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
         hyalData.waitingSecondStartConfirm = true;
     }
 <#else>
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyStartConfirm((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
+</#if>
     if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.startConfirmCallback((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
@@ -701,12 +1376,15 @@ static void _Callback_MacPlcCommStatusIndication(MAC_COMM_STATUS_INDICATION_PARA
 
     MAC_WRP_COMM_STATUS_INDICATION_PARAMS commStatusIndicationParams;
 
-    /* Copy csParams from Mac. Media Type will be filled later */
+    /* Copy csParams from Mac and fill Media Type */
     memcpy(&commStatusIndicationParams, csParams, sizeof(MAC_COMM_STATUS_INDICATION_PARAMS));
+    commStatusIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_PLC;
 
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyCommStatusIndication(&commStatusIndicationParams);
+</#if>
     if (macWrpData.macWrpHandlers.commStatusIndicationCallback != NULL)
     {
-        commStatusIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_PLC;
         macWrpData.macWrpHandlers.commStatusIndicationCallback(&commStatusIndicationParams);
     }
 }
@@ -715,6 +1393,9 @@ static void _Callback_MacPlcMacSnifferIndication(MAC_SNIFFER_INDICATION_PARAMS *
 {
     SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, siParams->msdu, siParams->msduLength, "_Callback_MacPlcMacSnifferIndication:  MSDU:");
 
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifySnifferIndication((MAC_WRP_SNIFFER_INDICATION_PARAMS *)siParams);
+</#if>
     if (macWrpData.macWrpHandlers.snifferIndicationCallback != NULL)
     {
         macWrpData.macWrpHandlers.snifferIndicationCallback((MAC_WRP_SNIFFER_INDICATION_PARAMS *)siParams);
@@ -752,6 +1433,9 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
         case MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF:
             /* RF was used as backup medium. Send confirm to upper layer */
             dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF_AS_BACKUP;
+<#if MAC_SERIALIZATION_EN == true>
+            _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
             /* Release Data Req entry and send confirm */
             matchingDataReq->used = false;
             if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
@@ -764,6 +1448,9 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
             {
                 /* Send confirm to upper layer */
                 dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
+<#if MAC_SERIALIZATION_EN == true>
+                _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
                 /* Release Data Req entry and send confirm */
                 matchingDataReq->used = false;
                 if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
@@ -799,6 +1486,9 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "No POS entry found, discard backup medium");
                     /* Send confirm to upper layer */
                     dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
+<#if MAC_SERIALIZATION_EN == true>
+                    _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
                     /* Release Data Req entry and send confirm */
                     matchingDataReq->used = false;
                     if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
@@ -820,10 +1510,6 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                     dataConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
                     /* Release Data Req entry and send confirm */
                     matchingDataReq->used = false;
-                    if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-                    {
-                        macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-                    }
                 }
                 else
                 {
@@ -831,10 +1517,14 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                     dataConfirmParams.status = (MAC_WRP_STATUS)dcParams->status;
                     /* Release Data Req entry and send confirm */
                     matchingDataReq->used = false;
-                    if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-                    {
-                        macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-                    }
+                }
+
+<#if MAC_SERIALIZATION_EN == true>
+                _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
+                if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
+                {
+                    macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
                 }
             }
             else
@@ -851,6 +1541,9 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
         case MAC_WRP_MEDIA_TYPE_REQ_RF_NO_BACKUP:
             /* Send confirm to upper layer */
             dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
+<#if MAC_SERIALIZATION_EN == true>
+            _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
             /* Release Data Req entry and send confirm */
             matchingDataReq->used = false;
             if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
@@ -860,6 +1553,9 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
             break;
         default: /* RF only */
             dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
+<#if MAC_SERIALIZATION_EN == true>
+            _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
             /* Release Data Req entry and send confirm */
             matchingDataReq->used = false;
             if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
@@ -869,10 +1565,14 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
             break;
     }
 <#else>
-    if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL) {
-        /* Copy dcParams from Mac and fill Media Type */
-        memcpy(&dataConfirmParams, dcParams, sizeof(MAC_DATA_CONFIRM_PARAMS));
-        dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
+    /* Copy dcParams from Mac and fill Media Type */
+    memcpy(&dataConfirmParams, dcParams, sizeof(MAC_DATA_CONFIRM_PARAMS));
+    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyDataConfirm(&dataConfirmParams);
+</#if>
+    if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
+    {
         macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
     }
 </#if>
@@ -897,23 +1597,17 @@ static void _Callback_MacRfDataIndication(MAC_DATA_INDICATION_PARAMS *diParams)
         }
     }
 
-    /* Copy diParams from Mac. Media Type will be filled later */
-    memcpy(&dataIndicationParams, diParams, sizeof(MAC_DATA_INDICATION_PARAMS));
-
-    if (macWrpData.macWrpHandlers.dataIndicationCallback != NULL)
-    {
-        dataIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_RF;
-        macWrpData.macWrpHandlers.dataIndicationCallback(&dataIndicationParams);
-    }
-<#else>
-    if (macWrpData.macWrpHandlers.dataIndicationCallback != NULL)
-    {
-        /* Copy diParams from Mac and fill Media Type */
-        memcpy(&dataIndicationParams, diParams, sizeof(MAC_DATA_INDICATION_PARAMS));
-        dataIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_RF;
-        macWrpData.macWrpHandlers.dataIndicationCallback(&dataIndicationParams);
-    }
 </#if>
+    /* Copy diParams from Mac and fill Media Type */
+    memcpy(&dataIndicationParams, diParams, sizeof(MAC_DATA_INDICATION_PARAMS));
+    dataIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_RF;
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyDataIndication(&dataIndicationParams);
+</#if>
+    if (macWrpData.macWrpHandlers.dataIndicationCallback != NULL)
+    {
+        macWrpData.macWrpHandlers.dataIndicationCallback(&dataIndicationParams);
+    }
 }
 
 static void _Callback_MacRfResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
@@ -931,10 +1625,6 @@ static void _Callback_MacRfResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
         {
             /* Both SUCCESS, send confirm with SUCCESS */
             resetConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
-            if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
-            }
         }
         else
         {
@@ -942,19 +1632,19 @@ static void _Callback_MacRfResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
             if (hyalData.firstResetConfirmStatus != MAC_STATUS_SUCCESS)
             {
                 resetConfirmParams.status = (MAC_WRP_STATUS)hyalData.firstResetConfirmStatus;
-                if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
-                }
             }
             else
             {
                 resetConfirmParams.status = (MAC_WRP_STATUS)rcParams->status;
-                if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
-                }
             }
+        }
+
+<#if MAC_SERIALIZATION_EN == true>
+        _Serial_StringifyResetConfirm(&resetConfirmParams);
+</#if>
+        if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
         }
     }
     else
@@ -964,6 +1654,9 @@ static void _Callback_MacRfResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
         hyalData.waitingSecondResetConfirm = true;
     }
 <#else>
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyResetConfirm((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
+</#if>
     if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.resetConfirmCallback((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
@@ -977,12 +1670,15 @@ static void _Callback_MacRfBeaconNotify(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bnP
 
     MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS notifyIndicationParams;
 
-    /* Copy bnParams from Mac. Media Type will be filled later */
+    /* Copy bnParams from Mac and fill Media Type */
     memcpy(&notifyIndicationParams, bnParams, sizeof(MAC_BEACON_NOTIFY_INDICATION_PARAMS));
+    notifyIndicationParams.panDescriptor.mediaType = MAC_WRP_MEDIA_TYPE_IND_RF;
 
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyBeaconNotIndication(&notifyIndicationParams);
+</#if>
     if (macWrpData.macWrpHandlers.beaconNotifyIndicationCallback != NULL)
     {
-        notifyIndicationParams.panDescriptor.mediaType = MAC_WRP_MEDIA_TYPE_IND_RF;
         macWrpData.macWrpHandlers.beaconNotifyIndicationCallback(&notifyIndicationParams);
     }
 }
@@ -1002,19 +1698,19 @@ static void _Callback_MacRfScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
         {
             /* One or Both SUCCESS, send confirm with SUCCESS */
             scanConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
-            if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirmParams);
-            }
         }
         else
         {
             /* None of confirms SUCCESS, send confirm with latests status */
             scanConfirmParams.status = (MAC_WRP_STATUS)scParams->status;
-            if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirmParams);
-            }
+        }
+
+<#if MAC_SERIALIZATION_EN == true>
+        _Serial_StringifyScanConfirm(&scanConfirmParams);
+</#if>
+        if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirmParams);
         }
     }
     else
@@ -1024,6 +1720,9 @@ static void _Callback_MacRfScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
         hyalData.waitingSecondScanConfirm = true;
     }
 <#else>
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyScanConfirm((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
+</#if>
     if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.scanConfirmCallback((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
@@ -1046,10 +1745,6 @@ static void _Callback_MacRfStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
         {
             /* Both SUCCESS, send confirm with SUCCESS */
             startConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
-            if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
-            }
         }
         else
         {
@@ -1057,19 +1752,19 @@ static void _Callback_MacRfStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
             if (hyalData.firstStartConfirmStatus != MAC_STATUS_SUCCESS)
             {
                 startConfirmParams.status = (MAC_WRP_STATUS)hyalData.firstStartConfirmStatus;
-                if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
-                }
             }
             else
             {
                 startConfirmParams.status = (MAC_WRP_STATUS)scParams->status;
-                if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
-                }
             }
+        }
+
+<#if MAC_SERIALIZATION_EN == true>
+        _Serial_StringifyStartConfirm(&startConfirmParams);
+</#if>
+        if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
         }
     }
     else
@@ -1079,6 +1774,9 @@ static void _Callback_MacRfStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
         hyalData.waitingSecondStartConfirm = true;
     }
 <#else>
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyStartConfirm((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
+</#if>
     if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.startConfirmCallback((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
@@ -1092,12 +1790,15 @@ static void _Callback_MacRfCommStatusIndication(MAC_COMM_STATUS_INDICATION_PARAM
 
     MAC_WRP_COMM_STATUS_INDICATION_PARAMS commStatusIndicationParams;
 
-    /* Copy csParams from Mac. Media Type will be filled later */
+    /* Copy csParams from Mac and fill Media Type */
     memcpy(&commStatusIndicationParams, csParams, sizeof(MAC_COMM_STATUS_INDICATION_PARAMS));
+    commStatusIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_RF;
 
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifyCommStatusIndication(&commStatusIndicationParams);
+</#if>
     if (macWrpData.macWrpHandlers.commStatusIndicationCallback != NULL)
     {
-        commStatusIndicationParams.mediaType = MAC_WRP_MEDIA_TYPE_IND_RF;
         macWrpData.macWrpHandlers.commStatusIndicationCallback(&commStatusIndicationParams);
     }
 }
@@ -1106,6 +1807,9 @@ static void _Callback_MacRfMacSnifferIndication(MAC_SNIFFER_INDICATION_PARAMS *s
 {
     SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, siParams->msdu, siParams->msduLength, "_Callback_MacRfMacSnifferIndication:  MSDU:");
 
+<#if MAC_SERIALIZATION_EN == true>
+    _Serial_StringifySnifferIndication((MAC_WRP_SNIFFER_INDICATION_PARAMS *)siParams);
+</#if>
     if (macWrpData.macWrpHandlers.snifferIndicationCallback != NULL)
     {
         macWrpData.macWrpHandlers.snifferIndicationCallback((MAC_WRP_SNIFFER_INDICATION_PARAMS *)siParams);
@@ -1128,6 +1832,11 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
     }
 
     macWrpData.state = MAC_WRP_STATE_NOT_READY;
+    macWrpData.macWrpHandle = (MAC_WRP_HANDLE) 0;
+<#if MAC_SERIALIZATION_EN == true>
+    macWrpData.usiHandle = SRV_USI_HANDLE_INVALID;
+    macWrpData.debugSetLength = 0;
+</#if>
     return (SYS_MODULE_OBJ)0; 
 }
 
@@ -1143,8 +1852,6 @@ MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index)
         return MAC_WRP_HANDLE_INVALID;
     }
 
-    macWrpData.state = MAC_WRP_STATE_IDLE;
-    macWrpData.macWrpHandle = (MAC_WRP_HANDLE)0;
     return macWrpData.macWrpHandle;
 }
 
@@ -1155,6 +1862,16 @@ void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
         // Invalid object
         return;
     }
+
+<#if MAC_SERIALIZATION_EN == true>
+    if (macWrpData.usiHandle == SRV_USI_HANDLE_INVALID)
+    {
+        /* Open USI instance for MAC serialization and register callback */
+        macWrpData.usiHandle = SRV_USI_Open(${MAC_SERIALIZATION_USI_INSTANCE});
+        SRV_USI_CallbackRegister(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, _Callback_UsiMacProtocol);
+    }
+
+</#if>
 <#if MAC_PLC_PRESENT == true>
     MAC_PLC_Tasks();
 </#if>
@@ -1240,6 +1957,8 @@ void MAC_WRP_Init(MAC_WRP_HANDLE handle, MAC_WRP_INIT *init)
 
 </#if>
     MAC_COMMON_Init();
+
+    macWrpData.state = MAC_WRP_STATE_IDLE;
 }
 
 SYS_STATUS MAC_WRP_Status(void)
@@ -1268,12 +1987,15 @@ void MAC_WRP_DataRequest(MAC_WRP_HANDLE handle, MAC_WRP_DATA_REQUEST_PARAMS *drP
     {
         /* Handle error */
         /* Send confirm to upper layer and return */
+        dataConfirm.msduHandle = drParams->msduHandle;
+        dataConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
+        dataConfirm.timestamp = 0;
+        dataConfirm.mediaType = (MAC_WRP_MEDIA_TYPE_CONFIRM) drParams->mediaType;
+<#if MAC_SERIALIZATION_EN == true>
+        _Serial_StringifyDataConfirm(&dataConfirm);
+</#if>
         if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
         {
-            dataConfirm.msduHandle = drParams->msduHandle;
-            dataConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
-            dataConfirm.timestamp = 0;
-            dataConfirm.mediaType = (MAC_WRP_MEDIA_TYPE_CONFIRM)drParams->mediaType;
             macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirm);
         }
 
@@ -1292,12 +2014,15 @@ void MAC_WRP_DataRequest(MAC_WRP_HANDLE handle, MAC_WRP_DATA_REQUEST_PARAMS *drP
     {
         /* Too many data requests */
         /* Send confirm to upper layer */
+        dataConfirm.msduHandle = drParams->msduHandle;
+        dataConfirm.status = MAC_WRP_STATUS_QUEUE_FULL;
+        dataConfirm.timestamp = 0;
+        dataConfirm.mediaType = (MAC_WRP_MEDIA_TYPE_CONFIRM)drParams->mediaType;
+<#if MAC_SERIALIZATION_EN == true>
+        _Serial_StringifyDataConfirm(&dataConfirm);
+</#if>
         if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
         {
-            dataConfirm.msduHandle = drParams->msduHandle;
-            dataConfirm.status = MAC_WRP_STATUS_QUEUE_FULL;
-            dataConfirm.timestamp = 0;
-            dataConfirm.mediaType = (MAC_WRP_MEDIA_TYPE_CONFIRM)drParams->mediaType;
             macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirm);
         }
     }
@@ -1361,13 +2086,13 @@ void MAC_WRP_DataRequest(MAC_WRP_HANDLE handle, MAC_WRP_DATA_REQUEST_PARAMS *drP
 <#elseif MAC_PLC_PRESENT == true>
     MAC_DATA_REQUEST_PARAMS dataReq;
     SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_INFO, drParams->msdu, drParams->msduLength, "MAC_WRP_DataRequest (Handle %02X): ", drParams->msduHandle);
-    // Copy data to Mac struct (media type is not copied as it is the last field of pParameters)
+    // Copy data to Mac struct (media type is not copied as it is the last field of drParams)
     memcpy(&dataReq, drParams, sizeof(dataReq));
     MAC_PLC_DataRequest(&dataReq);
 <#elseif MAC_RF_PRESENT == true>
     MAC_DATA_REQUEST_PARAMS dataReq;
     SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_INFO, drParams->msdu, drParams->msduLength, "MAC_WRP_DataRequest (Handle %02X): ", drParams->msduHandle);
-    // Copy data to Mac struct (media type is not copied as it is the last field of pParameters)
+    // Copy data to Mac struct (media type is not copied as it is the last field of drParams)
     memcpy(&dataReq, drParams, sizeof(dataReq));
     MAC_RF_DataRequest(&dataReq);
 </#if>
@@ -1509,9 +2234,12 @@ void MAC_WRP_ResetRequest(MAC_WRP_HANDLE handle, MAC_WRP_RESET_REQUEST_PARAMS *r
         /* Handle error */
         /* Send confirm to upper layer and return */
         MAC_WRP_RESET_CONFIRM_PARAMS resetConfirm;
+        resetConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
+<#if MAC_SERIALIZATION_EN == true>
+        _Serial_StringifyResetConfirm(&resetConfirm);
+</#if>
         if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
         {
-            resetConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
             macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirm);
         }
 
@@ -1546,9 +2274,12 @@ void MAC_WRP_ScanRequest(MAC_WRP_HANDLE handle, MAC_WRP_SCAN_REQUEST_PARAMS *sca
         /* Handle error */
         /* Send confirm to upper layer and return */
         MAC_WRP_SCAN_CONFIRM_PARAMS scanConfirm;
+        scanConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
+<#if MAC_SERIALIZATION_EN == true>
+        _Serial_StringifyScanConfirm(&scanConfirm);
+</#if>
         if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
         {
-            scanConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
             macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirm);
         }
 
@@ -1578,9 +2309,12 @@ void MAC_WRP_StartRequest(MAC_WRP_HANDLE handle, MAC_WRP_START_REQUEST_PARAMS *s
         /* Handle error */
         /* Send confirm to upper layer and return */
         MAC_WRP_START_CONFIRM_PARAMS startConfirm;
+        startConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
+<#if MAC_SERIALIZATION_EN == true>
+        _Serial_StringifyStartConfirm(&startConfirm);
+</#if>
         if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
         {
-            startConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
             macWrpData.macWrpHandlers.startConfirmCallback(&startConfirm);
         }
 
@@ -1614,6 +2348,929 @@ MAC_WRP_AVAILABLE_MAC_LAYERS MAC_WRP_GetAvailableMacLayers(MAC_WRP_HANDLE handle
 </#if>
 }
 
+<#if MAC_SERIALIZATION_EN == true>
+void MAC_WRP_SerialParseGetRequest (
+    uint8_t* pData,
+    uint32_t* attribute,
+    uint16_t* index
+)
+{
+    uint32_t attrAux;
+    uint16_t attrIndexAux;
+
+    attrAux = ((uint32_t) *pData++) << 24;
+    attrAux += ((uint32_t) *pData++) << 16;
+    attrAux += ((uint32_t) *pData++) << 8;
+    attrAux += (uint32_t) *pData++;
+    *attribute = attrAux;
+
+    attrIndexAux = ((uint16_t) *pData++) << 8;
+    attrIndexAux += (uint16_t) *pData;
+    *index = attrIndexAux;
+}
+
+uint8_t MAC_WRP_SerialStringifyGetConfirm (
+    uint8_t *serialData,
+    MAC_WRP_STATUS getStatus,
+    MAC_WRP_PIB_ATTRIBUTE attribute,
+    uint16_t index,
+    MAC_WRP_PIB_VALUE* pibValue
+)
+{
+    uint8_t serialRspLen = 0;
+<#if MAC_PLC_PRESENT == true>
+    MAC_WRP_NEIGHBOUR_ENTRY* pNeighbourEntry;
+    MAC_WRP_POS_ENTRY* pPosEntry;
+</#if>
+<#if MAC_RF_PRESENT == true>
+    MAC_WRP_POS_ENTRY_RF* pPosEntryRF;
+</#if>
+
+    serialData[serialRspLen++] = (uint8_t) getStatus;
+    serialData[serialRspLen++] = (uint8_t) ((uint32_t) attribute >> 24);
+    serialData[serialRspLen++] = (uint8_t) ((uint32_t) attribute >> 16);
+    serialData[serialRspLen++] = (uint8_t) ((uint32_t) attribute >> 8);
+    serialData[serialRspLen++] = (uint8_t) attribute;
+    serialData[serialRspLen++] = (uint8_t) (index >> 8);
+    serialData[serialRspLen++] = (uint8_t) index;
+
+    serialData[serialRspLen++] = pibValue->length;
+
+    if (getStatus == MAC_WRP_STATUS_SUCCESS)
+    {
+        switch (attribute)
+        {
+            /* 8-bit IBs */
+            case MAC_WRP_PIB_PROMISCUOUS_MODE:
+            case MAC_WRP_PIB_POS_TABLE_ENTRY_TTL:
+            case MAC_WRP_PIB_MANUF_PLC_IFACE_AVAILABLE:
+            case MAC_WRP_PIB_MANUF_RF_IFACE_AVAILABLE:
+<#if MAC_PLC_PRESENT == true>
+            case MAC_WRP_PIB_BSN:
+            case MAC_WRP_PIB_DSN:
+            case MAC_WRP_PIB_MAX_BE:
+            case MAC_WRP_PIB_MAX_CSMA_BACKOFFS:
+            case MAC_WRP_PIB_MAX_FRAME_RETRIES:
+            case MAC_WRP_PIB_MIN_BE:
+            case MAC_WRP_PIB_SECURITY_ENABLED:
+            case MAC_WRP_PIB_TIMESTAMP_SUPPORTED:
+            case MAC_WRP_PIB_HIGH_PRIORITY_WINDOW_SIZE:
+            case MAC_WRP_PIB_FREQ_NOTCHING:
+            case MAC_WRP_PIB_CSMA_FAIRNESS_LIMIT:
+            case MAC_WRP_PIB_TMR_TTL:
+            case MAC_WRP_PIB_DUPLICATE_DETECTION_TTL:
+            case MAC_WRP_PIB_BEACON_RANDOMIZATION_WINDOW_LENGTH:
+            case MAC_WRP_PIB_A:
+            case MAC_WRP_PIB_K:
+            case MAC_WRP_PIB_MIN_CW_ATTEMPTS:
+            case MAC_WRP_PIB_CENELEC_LEGACY_MODE:
+            case MAC_WRP_PIB_FCC_LEGACY_MODE:
+            case MAC_WRP_PIB_BROADCAST_MAX_CW_ENABLE:
+            case MAC_WRP_PIB_POS_RECENT_ENTRY_THRESHOLD:
+            case MAC_WRP_PIB_PLC_DISABLE:
+            case MAC_WRP_PIB_MANUF_FORCED_MOD_SCHEME:
+            case MAC_WRP_PIB_MANUF_FORCED_MOD_TYPE:
+            case MAC_WRP_PIB_MANUF_FORCED_MOD_SCHEME_ON_TMRESPONSE:
+            case MAC_WRP_PIB_MANUF_FORCED_MOD_TYPE_ON_TMRESPONSE:
+            case MAC_WRP_PIB_MANUF_LAST_RX_MOD_SCHEME:
+            case MAC_WRP_PIB_MANUF_LAST_RX_MOD_TYPE:
+            case MAC_WRP_PIB_MANUF_LBP_FRAME_RECEIVED:
+            case MAC_WRP_PIB_MANUF_LNG_FRAME_RECEIVED:
+            case MAC_WRP_PIB_MANUF_BCN_FRAME_RECEIVED:
+            case MAC_WRP_PIB_MANUF_ENABLE_MAC_SNIFFER:
+            case MAC_WRP_PIB_MANUF_RETRIES_LEFT_TO_FORCE_ROBO:
+            case MAC_WRP_PIB_MANUF_SLEEP_MODE:
+</#if>
+<#if MAC_RF_PRESENT == true>
+            case MAC_WRP_PIB_DSN_RF:
+            case MAC_WRP_PIB_MAX_BE_RF:
+            case MAC_WRP_PIB_MAX_CSMA_BACKOFFS_RF:
+            case MAC_WRP_PIB_MAX_FRAME_RETRIES_RF:
+            case MAC_WRP_PIB_MIN_BE_RF:
+            case MAC_WRP_PIB_TIMESTAMP_SUPPORTED_RF:
+            case MAC_WRP_PIB_DUPLICATE_DETECTION_TTL_RF:
+            case MAC_WRP_PIB_COUNTER_OCTETS_RF:
+            case MAC_WRP_PIB_USE_ENHANCED_BEACON_RF:
+            case MAC_WRP_PIB_EB_HEADER_IE_LIST_RF:
+            case MAC_WRP_PIB_EB_FILTERING_ENABLED_RF:
+            case MAC_WRP_PIB_EBSN_RF:
+            case MAC_WRP_PIB_EB_AUTO_SA_RF:
+            case MAC_WRP_PIB_OPERATING_MODE_RF:
+            case MAC_WRP_PIB_DUTY_CYCLE_USAGE_RF:
+            case MAC_WRP_PIB_DUTY_CYCLE_THRESHOLD_RF:
+            case MAC_WRP_PIB_FREQUENCY_BAND_RF:
+            case MAC_WRP_PIB_TRANSMIT_ATTEN_RF:
+            case MAC_WRP_PIB_ADAPTIVE_POWER_STEP_RF:
+            case MAC_WRP_PIB_ADAPTIVE_POWER_HIGH_BOUND_RF:
+            case MAC_WRP_PIB_ADAPTIVE_POWER_LOW_BOUND_RF:
+            case MAC_WRP_PIB_DISABLE_PHY_RF:
+            case MAC_WRP_PIB_MANUF_SECURITY_RESET_RF:
+            case MAC_WRP_PIB_MANUF_LBP_FRAME_RECEIVED_RF:
+            case MAC_WRP_PIB_MANUF_LNG_FRAME_RECEIVED_RF:
+            case MAC_WRP_PIB_MANUF_BCN_FRAME_RECEIVED_RF:
+            case MAC_WRP_PIB_MANUF_ENABLE_MAC_SNIFFER_RF:
+</#if>
+                serialData[serialRspLen++] = pibValue->value[0];
+                break;
+
+            /* 16-bit IBs */
+            case MAC_WRP_PIB_PAN_ID:
+            case MAC_WRP_PIB_SHORT_ADDRESS:
+            case MAC_WRP_PIB_RC_COORD:
+<#if MAC_PLC_PRESENT == true>
+            case MAC_WRP_PIB_POS_RECENT_ENTRIES:
+            case MAC_WRP_PIB_MANUF_COORD_SHORT_ADDRESS:
+            case MAC_WRP_PIB_MANUF_MAX_MAC_PAYLOAD_SIZE:
+            case MAC_WRP_PIB_MANUF_NEIGHBOUR_TABLE_COUNT:
+            case MAC_WRP_PIB_MANUF_POS_TABLE_COUNT:
+</#if>
+<#if MAC_RF_PRESENT == true>
+            case MAC_WRP_PIB_CHANNEL_NUMBER_RF:
+            case MAC_WRP_PIB_DUTY_CYCLE_PERIOD_RF:
+            case MAC_WRP_PIB_DUTY_CYCLE_LIMIT_RF:
+            case MAC_WRP_PIB_MANUF_POS_TABLE_COUNT_RF:
+</#if>
+                _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], pibValue->value);
+                serialRspLen += 2;
+                break;
+
+            /* 32-bit IBs */
+<#if MAC_PLC_PRESENT == true>
+            case MAC_WRP_PIB_FRAME_COUNTER:
+            case MAC_WRP_PIB_TX_DATA_PACKET_COUNT:
+            case MAC_WRP_PIB_RX_DATA_PACKET_COUNT:
+            case MAC_WRP_PIB_TX_CMD_PACKET_COUNT:
+            case MAC_WRP_PIB_RX_CMD_PACKET_COUNT:
+            case MAC_WRP_PIB_CSMA_FAIL_COUNT:
+            case MAC_WRP_PIB_CSMA_NO_ACK_COUNT:
+            case MAC_WRP_PIB_RX_DATA_BROADCAST_COUNT:
+            case MAC_WRP_PIB_TX_DATA_BROADCAST_COUNT:
+            case MAC_WRP_PIB_BAD_CRC_COUNT:
+            case MAC_WRP_PIB_MANUF_RX_OTHER_DESTINATION_COUNT:
+            case MAC_WRP_PIB_MANUF_RX_INVALID_FRAME_LENGTH_COUNT:
+            case MAC_WRP_PIB_MANUF_RX_MAC_REPETITION_COUNT:
+            case MAC_WRP_PIB_MANUF_RX_WRONG_ADDR_MODE_COUNT:
+            case MAC_WRP_PIB_MANUF_RX_UNSUPPORTED_SECURITY_COUNT:
+            case MAC_WRP_PIB_MANUF_RX_WRONG_KEY_ID_COUNT:
+            case MAC_WRP_PIB_MANUF_RX_INVALID_KEY_COUNT:
+            case MAC_WRP_PIB_MANUF_RX_WRONG_FC_COUNT:
+            case MAC_WRP_PIB_MANUF_RX_DECRYPTION_ERROR_COUNT:
+            case MAC_WRP_PIB_MANUF_RX_SEGMENT_DECODE_ERROR_COUNT:
+</#if>
+<#if MAC_RF_PRESENT == true>
+            case MAC_WRP_PIB_FRAME_COUNTER_RF:
+            case MAC_WRP_PIB_RETRY_COUNT_RF:
+            case MAC_WRP_PIB_MULTIPLE_RETRY_COUNT_RF:
+            case MAC_WRP_PIB_TX_FAIL_COUNT_RF:
+            case MAC_WRP_PIB_TX_SUCCESS_COUNT_RF:
+            case MAC_WRP_PIB_FCS_ERROR_COUNT_RF:
+            case MAC_WRP_PIB_SECURITY_FAILURE_COUNT_RF:
+            case MAC_WRP_PIB_DUPLICATE_FRAME_COUNT_RF:
+            case MAC_WRP_PIB_RX_SUCCESS_COUNT_RF:
+            case MAC_WRP_PIB_NACK_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_ACK_TX_DELAY_RF:
+            case MAC_WRP_PIB_MANUF_ACK_RX_WAIT_TIME_RF:
+            case MAC_WRP_PIB_MANUF_ACK_CONFIRM_WAIT_TIME_RF:
+            case MAC_WRP_PIB_MANUF_DATA_CONFIRM_WAIT_TIME_RF:
+            case MAC_WRP_PIB_MANUF_RX_OTHER_DESTINATION_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_RX_INVALID_FRAME_LENGTH_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_RX_WRONG_ADDR_MODE_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_RX_UNSUPPORTED_SECURITY_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_RX_WRONG_KEY_ID_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_RX_INVALID_KEY_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_RX_WRONG_FC_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_RX_DECRYPTION_ERROR_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_TX_DATA_PACKET_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_RX_DATA_PACKET_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_TX_CMD_PACKET_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_RX_CMD_PACKET_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_CSMA_FAIL_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_RX_DATA_BROADCAST_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_TX_DATA_BROADCAST_COUNT_RF:
+            case MAC_WRP_PIB_MANUF_BAD_CRC_COUNT_RF:
+</#if>
+                _Serial_memcpyToUsiEndianessUint32(&serialData[serialRspLen], pibValue->value);
+                serialRspLen += 4;
+                break;
+
+            /* Tables and lists */
+            case MAC_WRP_PIB_MANUF_EXTENDED_ADDRESS:
+                memcpy(&serialData[serialRspLen], pibValue->value, 8);
+                serialRspLen += 8;
+                break;
+
+<#if MAC_PLC_PRESENT == true>
+            case MAC_WRP_PIB_MANUF_DEVICE_TABLE:
+</#if>
+<#if MAC_RF_PRESENT == true>
+            case MAC_WRP_PIB_DEVICE_TABLE_RF:
+</#if>
+                /* m_nPanId */
+                _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], pibValue->value);
+                serialRspLen += 2;
+                /* m_nShortAddress */
+                _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], &pibValue->value[2]);
+                serialRspLen += 2;
+                /* m_au32FrameCounter */
+                _Serial_memcpyToUsiEndianessUint32(&serialData[serialRspLen], &pibValue->value[4]);
+                serialRspLen += 4;
+                break;
+
+<#if MAC_PLC_PRESENT == true>
+            case MAC_WRP_PIB_MANUF_MAC_INTERNAL_VERSION:
+            case MAC_WRP_PIB_MANUF_MAC_RT_INTERNAL_VERSION:
+</#if>
+<#if MAC_RF_PRESENT == true>
+            case MAC_WRP_PIB_MANUF_MAC_INTERNAL_VERSION_RF:
+</#if>
+            /* Version */
+                serialData[serialRspLen++] = pibValue->value[0]; /* m_u8Major */
+                serialData[serialRspLen++] = pibValue->value[1]; /* m_u8Minor */
+                serialData[serialRspLen++] = pibValue->value[2]; /* m_u8Revision */
+                serialData[serialRspLen++] = pibValue->value[3]; /* m_u8Year */
+                serialData[serialRspLen++] = pibValue->value[4]; /* m_u8Month */
+                serialData[serialRspLen++] = pibValue->value[5]; /* m_u8Day */
+                break;
+
+<#if MAC_PLC_PRESENT == true>
+            case MAC_WRP_PIB_NEIGHBOUR_TABLE:
+            case MAC_WRP_PIB_MANUF_NEIGHBOUR_TABLE_ELEMENT:
+                pNeighbourEntry = (MAC_WRP_NEIGHBOUR_ENTRY*) pibValue->value;
+                serialData[serialRspLen++] = (uint8_t) (pNeighbourEntry->shortAddress >> 8);
+                serialData[serialRspLen++] = (uint8_t) pNeighbourEntry->shortAddress;
+                memcpy(&serialData[serialRspLen], pNeighbourEntry->toneMap.toneMap, (MAC_WRP_MAX_TONE_GROUPS + 7) / 8);
+                serialRspLen += (MAC_WRP_MAX_TONE_GROUPS + 7) / 8;
+                serialData[serialRspLen++] = (uint8_t) pNeighbourEntry->modulationType;
+                serialData[serialRspLen++] = (uint8_t) pNeighbourEntry->txGain;
+                serialData[serialRspLen++] = (uint8_t) pNeighbourEntry->txRes;
+                memcpy(&serialData[serialRspLen], pNeighbourEntry->txCoef.txCoef, 6);
+                serialRspLen += 6;
+                serialData[serialRspLen++] = (uint8_t) pNeighbourEntry->modulationScheme;
+                serialData[serialRspLen++] = (uint8_t) pNeighbourEntry->phaseDifferential;
+                serialData[serialRspLen++] = (uint8_t) pNeighbourEntry->lqi;
+                serialData[serialRspLen++] = (uint8_t) (pNeighbourEntry->tmrValidTime >> 8);
+                serialData[serialRspLen++] = (uint8_t) pNeighbourEntry->tmrValidTime;
+                /* Length has to be incremented by 2 due to bitfields in the entry are serialized in separate fields */
+                serialData[7] = pibValue->length + 2;
+                break;
+
+            case MAC_WRP_PIB_POS_TABLE:
+            case MAC_WRP_PIB_MANUF_POS_TABLE_ELEMENT:
+                pPosEntry = (MAC_WRP_POS_ENTRY*) pibValue->value;
+                serialData[serialRspLen++] = (uint8_t) (pPosEntry->shortAddress >> 8);
+                serialData[serialRspLen++] = (uint8_t) pPosEntry->shortAddress;
+                serialData[serialRspLen++] = (uint8_t) pPosEntry->lqi;
+                serialData[serialRspLen++] = (uint8_t) (pPosEntry->posValidTime >> 8);
+                serialData[serialRspLen++] = (uint8_t) pPosEntry->posValidTime;
+                break;
+
+            case MAC_WRP_PIB_TONE_MASK:
+                memcpy(&serialData[serialRspLen], pibValue->value, (MAC_WRP_MAX_TONES + 7) / 8);
+                serialRspLen += (MAC_WRP_MAX_TONES + 7) / 8;
+                break;
+
+            case MAC_WRP_PIB_MANUF_BAND_INFORMATION:
+                /* m_u16FlMax */
+                _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], pibValue->value);
+                serialRspLen += 2;
+                /* m_u8Band */
+                serialData[serialRspLen++] = pibValue->value[2];
+                /* m_u8Tones */
+                serialData[serialRspLen++] = pibValue->value[3];
+                /* m_u8Carriers */
+                serialData[serialRspLen++] = pibValue->value[4];
+                /* m_u8TonesInCarrier */
+                serialData[serialRspLen++] = pibValue->value[5];
+                /* m_u8FlBand */
+                serialData[serialRspLen++] = pibValue->value[6];
+                /* m_u8MaxRsBlocks */
+                serialData[serialRspLen++] = pibValue->value[7];
+                /* m_u8TxCoefBits */
+                serialData[serialRspLen++] = pibValue->value[8];
+                /* m_u8PilotsFreqSpa */
+                serialData[serialRspLen++] = pibValue->value[9];
+                break;
+
+            case MAC_WRP_PIB_MANUF_FORCED_TONEMAP:
+            case MAC_WRP_PIB_MANUF_FORCED_TONEMAP_ON_TMRESPONSE:
+                serialData[serialRspLen++] = pibValue->value[0];
+                serialData[serialRspLen++] = pibValue->value[1];
+                serialData[serialRspLen++] = pibValue->value[2];
+                break;
+
+            case MAC_WRP_PIB_MANUF_DEBUG_SET:
+                serialData[serialRspLen++] = pibValue->value[0];
+                serialData[serialRspLen++] = pibValue->value[1];
+                serialData[serialRspLen++] = pibValue->value[2];
+                serialData[serialRspLen++] = pibValue->value[3];
+                serialData[serialRspLen++] = pibValue->value[4];
+                serialData[serialRspLen++] = pibValue->value[5];
+                serialData[serialRspLen++] = pibValue->value[6];
+                break;
+
+            case MAC_WRP_PIB_MANUF_DEBUG_READ:
+                memcpy(&serialData[serialRspLen], pibValue->value, macWrpData.debugSetLength);
+                serialRspLen += macWrpData.debugSetLength;
+                break;
+
+</#if>
+<#if MAC_RF_PRESENT == true>
+            case MAC_WRP_PIB_SEC_SECURITY_LEVEL_LIST_RF:
+                /* 4 Byte entries. */
+                serialData[serialRspLen++] = pibValue->value[0]; /* m_u8FrameType */
+                serialData[serialRspLen++] = pibValue->value[1]; /* m_u8CommandId */
+                serialData[serialRspLen++] = pibValue->value[2]; /* m_u8SecurityMinimum */
+                serialData[serialRspLen++] = pibValue->value[3]; /* m_bOverrideSecurityMinimum */
+                break;
+
+            case MAC_WRP_PIB_POS_TABLE_RF: /* 9 Byte entries. */
+            case MAC_WRP_PIB_MANUF_POS_TABLE_ELEMENT_RF:
+                pPosEntryRF = (MAC_WRP_POS_ENTRY_RF*) pibValue->value;
+                serialData[serialRspLen++] = (uint8_t) (pPosEntryRF->shortAddress >> 8);
+                serialData[serialRspLen++] = (uint8_t) pPosEntryRF->shortAddress;
+                serialData[serialRspLen++] = (uint8_t) pPosEntryRF->forwardLqi;
+                serialData[serialRspLen++] = (uint8_t) pPosEntryRF->reverseLqi;
+                serialData[serialRspLen++] = (uint8_t) pPosEntryRF->dutyCycle;
+                serialData[serialRspLen++] = (uint8_t) pPosEntryRF->forwardTxPowerOffset;
+                serialData[serialRspLen++] = (uint8_t) pPosEntryRF->reverseTxPowerOffset;
+                serialData[serialRspLen++] = (uint8_t) (pPosEntryRF->posValidTime >> 8);
+                serialData[serialRspLen++] = (uint8_t) pPosEntryRF->posValidTime;
+                break;
+
+</#if>
+            case MAC_WRP_PIB_KEY_TABLE:
+                /* response will be MAC_WRP_STATUS_UNAVAILABLE_KEY */
+                break;
+
+<#if MAC_PLC_PRESENT == true>
+            case MAC_WRP_PIB_MANUF_SECURITY_RESET:
+            case MAC_WRP_PIB_MANUF_RESET_MAC_STATS:
+                /* Response will be mac_status_denied */
+                break;
+
+            case MAC_WRP_PIB_MANUF_PHY_PARAM:
+                switch (index)
+                {
+                    case MAC_WRP_PHY_PARAM_VERSION:
+                    case MAC_WRP_PHY_PARAM_TX_TOTAL:
+                    case MAC_WRP_PHY_PARAM_TX_TOTAL_BYTES:
+                    case MAC_WRP_PHY_PARAM_TX_TOTAL_ERRORS:
+                    case MAC_WRP_PHY_PARAM_BAD_BUSY_TX:
+                    case MAC_WRP_PHY_PARAM_TX_BAD_BUSY_CHANNEL:
+                    case MAC_WRP_PHY_PARAM_TX_BAD_LEN:
+                    case MAC_WRP_PHY_PARAM_TX_BAD_FORMAT:
+                    case MAC_WRP_PHY_PARAM_TX_TIMEOUT:
+                    case MAC_WRP_PHY_PARAM_RX_TOTAL:
+                    case MAC_WRP_PHY_PARAM_RX_TOTAL_BYTES:
+                    case MAC_WRP_PHY_PARAM_RX_RS_ERRORS:
+                    case MAC_WRP_PHY_PARAM_RX_EXCEPTIONS:
+                    case MAC_WRP_PHY_PARAM_RX_BAD_LEN:
+                    case MAC_WRP_PHY_PARAM_RX_BAD_CRC_FCH:
+                    case MAC_WRP_PHY_PARAM_RX_FALSE_POSITIVE:
+                    case MAC_WRP_PHY_PARAM_RX_BAD_FORMAT:
+                    case MAC_WRP_PHY_PARAM_TIME_BETWEEN_NOISE_CAPTURES:
+                        _Serial_memcpyToUsiEndianessUint32(&serialData[serialRspLen], pibValue->value);
+                        serialRspLen += 4;
+                        break;
+
+                    case MAC_WRP_PHY_PARAM_LAST_MSG_RSSI:
+                    case MAC_WRP_PHY_PARAM_ACK_TX_CFM:
+                        _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], pibValue->value);
+                        serialRspLen += 2;
+                        break;
+
+                    case MAC_WRP_PHY_PARAM_ENABLE_AUTO_NOISE_CAPTURE:
+                    case MAC_WRP_PHY_PARAM_DELAY_NOISE_CAPTURE_AFTER_RX:
+                    case MAC_WRP_PHY_PARAM_CFG_AUTODETECT_BRANCH:
+                    case MAC_WRP_PHY_PARAM_CFG_IMPEDANCE:
+                    case MAC_WRP_PHY_PARAM_RRC_NOTCH_ACTIVE:
+                    case MAC_WRP_PHY_PARAM_RRC_NOTCH_INDEX:
+                    case MAC_WRP_PHY_PARAM_PLC_DISABLE:
+                    case MAC_WRP_PHY_PARAM_NOISE_PEAK_POWER:
+                    case MAC_WRP_PHY_PARAM_LAST_MSG_LQI:
+                    case MAC_WRP_PHY_PARAM_PREAMBLE_NUM_SYNCP:
+                        serialData[serialRspLen++] = pibValue->value[0];
+                        break;
+
+                    default:
+                        break;
+                }
+                break;
+
+</#if>
+<#if MAC_RF_PRESENT == true>
+            case MAC_WRP_PIB_EB_PAYLOAD_IE_LIST_RF:
+                /* This IB is an empty array */
+                break;
+
+            case MAC_WRP_PIB_MANUF_RESET_MAC_STATS_RF:
+                /* Response will be mac_status_denied */
+                break;
+
+            case MAC_WRP_PIB_MANUF_PHY_PARAM_RF:
+                switch (index)
+                {
+                    case MAC_WRP_RF_PHY_PARAM_PHY_CHANNEL_FREQ_HZ:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_TOTAL:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_TOTAL_BYTES:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_TOTAL:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_BUSY_TX:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_BUSY_RX:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_BUSY_CHN:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_BAD_LEN:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_BAD_FORMAT:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_TIMEOUT:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_ABORTED:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_CFM_NOT_HANDLED:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_RX_TOTAL:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_RX_TOTAL_BYTES:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_TOTAL:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_FALSE_POSITIVE:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_BAD_LEN:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_BAD_FORMAT:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_BAD_FCS_PAY:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_ABORTED:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_RX_OVERRIDE:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_RX_IND_NOT_HANDLED:
+                        _Serial_memcpyToUsiEndianessUint32(&serialData[serialRspLen], pibValue->value);
+                        serialRspLen += 4;
+                        break;
+
+                    case MAC_WRP_RF_PHY_PARAM_DEVICE_ID:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_BAND_OPERATING_MODE:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_CHANNEL_NUM:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TURNAROUND_TIME:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_TX_PAY_SYMBOLS:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_RX_PAY_SYMBOLS:
+                    case MAC_WRP_RF_PHY_PARAM_MAC_UNIT_BACKOFF_PERIOD:
+                        _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], pibValue->value);
+                        serialRspLen += 2;
+                        break;
+
+                    case MAC_WRP_RF_PHY_PARAM_DEVICE_RESET:
+                    case MAC_WRP_RF_PHY_PARAM_TRX_RESET:
+                    case MAC_WRP_RF_PHY_PARAM_TRX_SLEEP:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_STATS_RESET:
+                    case MAC_WRP_RF_PHY_PARAM_TX_FSK_FEC:
+                    case MAC_WRP_RF_PHY_PARAM_TX_OFDM_MCS:
+                    case MAC_WRP_RF_PHY_PARAM_SET_CONTINUOUS_TX_MODE:
+                        serialData[serialRspLen++] = pibValue->value[0];
+                        break;
+
+                    case MAC_WRP_RF_PHY_PARAM_FW_VERSION:
+                        serialData[serialRspLen++] = pibValue->value[0]; /* Major */
+                        serialData[serialRspLen++] = pibValue->value[1]; /* Minor */
+                        serialData[serialRspLen++] = pibValue->value[2]; /* Revision */
+                        serialData[serialRspLen++] = pibValue->value[3]; /* Year */
+                        serialData[serialRspLen++] = pibValue->value[4]; /* Month */
+                        serialData[serialRspLen++] = pibValue->value[5]; /* Day */
+                        break;
+
+                    default:
+                        break;
+                }
+                break;
+
+</#if>
+            default:
+                break;
+		}
+	}
+
+	return serialRspLen;
+}
+
+void MAC_WRP_SerialParseSetRequest (
+    uint8_t* pData,
+    MAC_WRP_PIB_ATTRIBUTE* attribute,
+    uint16_t* index,
+    MAC_WRP_PIB_VALUE* pibValue
+)
+{
+	uint8_t pibLenCnt = 0;
+    uint32_t attrAux;
+    uint16_t attrIndexAux;
+<#if MAC_PLC_PRESENT == true>
+    MAC_WRP_NEIGHBOUR_ENTRY pNeighbourEntry;
+    MAC_WRP_POS_ENTRY pPosEntry;
+</#if>
+<#if MAC_RF_PRESENT == true>
+    MAC_WRP_POS_ENTRY_RF pPosEntryRF;
+</#if>
+
+    attrAux = ((uint32_t) *pData++) << 24;
+    attrAux += ((uint32_t) *pData++) << 16;
+    attrAux += ((uint32_t) *pData++) << 8;
+    attrAux += (uint32_t) *pData++;
+    *attribute = (MAC_WRP_PIB_ATTRIBUTE) attrAux;
+
+    attrIndexAux = ((uint16_t) *pData++) << 8;
+    attrIndexAux += (uint16_t) *pData;
+    *index = attrIndexAux;
+
+    pibValue->length = *pData++;
+
+    switch (*attribute)
+    {
+        /* 8-bit IBs */
+        case MAC_WRP_PIB_PROMISCUOUS_MODE:
+        case MAC_WRP_PIB_POS_TABLE_ENTRY_TTL:
+        case MAC_WRP_PIB_MANUF_PLC_IFACE_AVAILABLE:
+        case MAC_WRP_PIB_MANUF_RF_IFACE_AVAILABLE:
+<#if MAC_PLC_PRESENT == true>
+        case MAC_WRP_PIB_BSN:
+        case MAC_WRP_PIB_DSN:
+        case MAC_WRP_PIB_MAX_BE:
+        case MAC_WRP_PIB_MAX_CSMA_BACKOFFS:
+        case MAC_WRP_PIB_MAX_FRAME_RETRIES:
+        case MAC_WRP_PIB_MIN_BE:
+        case MAC_WRP_PIB_HIGH_PRIORITY_WINDOW_SIZE:
+        case MAC_WRP_PIB_FREQ_NOTCHING:
+        case MAC_WRP_PIB_CSMA_FAIRNESS_LIMIT:
+        case MAC_WRP_PIB_TMR_TTL:
+        case MAC_WRP_PIB_DUPLICATE_DETECTION_TTL:
+        case MAC_WRP_PIB_BEACON_RANDOMIZATION_WINDOW_LENGTH:
+        case MAC_WRP_PIB_A:
+        case MAC_WRP_PIB_K:
+        case MAC_WRP_PIB_MIN_CW_ATTEMPTS:
+        case MAC_WRP_PIB_BROADCAST_MAX_CW_ENABLE:
+        case MAC_WRP_PIB_POS_RECENT_ENTRY_THRESHOLD:
+        case MAC_WRP_PIB_PLC_DISABLE:
+        case MAC_WRP_PIB_MANUF_FORCED_MOD_SCHEME:
+        case MAC_WRP_PIB_MANUF_FORCED_MOD_TYPE:
+        case MAC_WRP_PIB_MANUF_FORCED_MOD_SCHEME_ON_TMRESPONSE:
+        case MAC_WRP_PIB_MANUF_FORCED_MOD_TYPE_ON_TMRESPONSE:
+        case MAC_WRP_PIB_MANUF_LBP_FRAME_RECEIVED:
+        case MAC_WRP_PIB_MANUF_LNG_FRAME_RECEIVED:
+        case MAC_WRP_PIB_MANUF_BCN_FRAME_RECEIVED:
+        case MAC_WRP_PIB_MANUF_ENABLE_MAC_SNIFFER:
+        case MAC_WRP_PIB_MANUF_RETRIES_LEFT_TO_FORCE_ROBO:
+        case MAC_WRP_PIB_MANUF_SLEEP_MODE:
+</#if>
+<#if MAC_RF_PRESENT == true>
+        case MAC_WRP_PIB_DSN_RF:
+        case MAC_WRP_PIB_MAX_BE_RF:
+        case MAC_WRP_PIB_MAX_CSMA_BACKOFFS_RF:
+        case MAC_WRP_PIB_MAX_FRAME_RETRIES_RF:
+        case MAC_WRP_PIB_MIN_BE_RF:
+        case MAC_WRP_PIB_DUPLICATE_DETECTION_TTL_RF:
+        case MAC_WRP_PIB_EBSN_RF:
+        case MAC_WRP_PIB_OPERATING_MODE_RF:
+        case MAC_WRP_PIB_DUTY_CYCLE_USAGE_RF:
+        case MAC_WRP_PIB_DUTY_CYCLE_THRESHOLD_RF:
+        case MAC_WRP_PIB_FREQUENCY_BAND_RF:
+        case MAC_WRP_PIB_TRANSMIT_ATTEN_RF:
+        case MAC_WRP_PIB_ADAPTIVE_POWER_STEP_RF:
+        case MAC_WRP_PIB_ADAPTIVE_POWER_HIGH_BOUND_RF:
+        case MAC_WRP_PIB_ADAPTIVE_POWER_LOW_BOUND_RF:
+        case MAC_WRP_PIB_DISABLE_PHY_RF:
+        case MAC_WRP_PIB_MANUF_LBP_FRAME_RECEIVED_RF:
+        case MAC_WRP_PIB_MANUF_LNG_FRAME_RECEIVED_RF:
+        case MAC_WRP_PIB_MANUF_BCN_FRAME_RECEIVED_RF:
+        case MAC_WRP_PIB_MANUF_ENABLE_MAC_SNIFFER_RF:
+</#if>
+            pibValue->value[0] = *pData;
+            break;
+
+        /* 16-bit IBs */
+        case MAC_WRP_PIB_PAN_ID:
+        case MAC_WRP_PIB_SHORT_ADDRESS:
+        case MAC_WRP_PIB_RC_COORD:
+<#if MAC_PLC_PRESENT == true>
+        case MAC_WRP_PIB_POS_RECENT_ENTRIES:
+</#if>
+<#if MAC_RF_PRESENT == true>
+        case MAC_WRP_PIB_DUTY_CYCLE_PERIOD_RF:
+        case MAC_WRP_PIB_DUTY_CYCLE_LIMIT_RF:
+        case MAC_WRP_PIB_MANUF_POS_TABLE_COUNT_RF:
+</#if>
+            _Serial_memcpyFromUsiEndianessUint16(pibValue->value, pData);
+            break;
+
+        /* 32-bit IBs */
+<#if MAC_PLC_PRESENT == true>
+        case MAC_WRP_PIB_FRAME_COUNTER:
+        case MAC_WRP_PIB_TX_DATA_PACKET_COUNT:
+        case MAC_WRP_PIB_RX_DATA_PACKET_COUNT:
+        case MAC_WRP_PIB_TX_CMD_PACKET_COUNT:
+        case MAC_WRP_PIB_RX_CMD_PACKET_COUNT:
+        case MAC_WRP_PIB_CSMA_FAIL_COUNT:
+        case MAC_WRP_PIB_CSMA_NO_ACK_COUNT:
+        case MAC_WRP_PIB_RX_DATA_BROADCAST_COUNT:
+        case MAC_WRP_PIB_TX_DATA_BROADCAST_COUNT:
+        case MAC_WRP_PIB_BAD_CRC_COUNT:
+        case MAC_WRP_PIB_MANUF_RX_OTHER_DESTINATION_COUNT:
+        case MAC_WRP_PIB_MANUF_RX_INVALID_FRAME_LENGTH_COUNT:
+        case MAC_WRP_PIB_MANUF_RX_MAC_REPETITION_COUNT:
+        case MAC_WRP_PIB_MANUF_RX_WRONG_ADDR_MODE_COUNT:
+        case MAC_WRP_PIB_MANUF_RX_UNSUPPORTED_SECURITY_COUNT:
+        case MAC_WRP_PIB_MANUF_RX_WRONG_KEY_ID_COUNT:
+        case MAC_WRP_PIB_MANUF_RX_INVALID_KEY_COUNT:
+        case MAC_WRP_PIB_MANUF_RX_WRONG_FC_COUNT:
+        case MAC_WRP_PIB_MANUF_RX_DECRYPTION_ERROR_COUNT:
+        case MAC_WRP_PIB_MANUF_RX_SEGMENT_DECODE_ERROR_COUNT:
+</#if>
+<#if MAC_RF_PRESENT == true>
+        case MAC_WRP_PIB_FRAME_COUNTER_RF:
+        case MAC_WRP_PIB_RETRY_COUNT_RF:
+        case MAC_WRP_PIB_MULTIPLE_RETRY_COUNT_RF:
+        case MAC_WRP_PIB_TX_FAIL_COUNT_RF:
+        case MAC_WRP_PIB_TX_SUCCESS_COUNT_RF:
+        case MAC_WRP_PIB_FCS_ERROR_COUNT_RF:
+        case MAC_WRP_PIB_SECURITY_FAILURE_COUNT_RF:
+        case MAC_WRP_PIB_DUPLICATE_FRAME_COUNT_RF:
+        case MAC_WRP_PIB_RX_SUCCESS_COUNT_RF:
+        case MAC_WRP_PIB_NACK_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_ACK_TX_DELAY_RF:
+        case MAC_WRP_PIB_MANUF_ACK_RX_WAIT_TIME_RF:
+        case MAC_WRP_PIB_MANUF_ACK_CONFIRM_WAIT_TIME_RF:
+        case MAC_WRP_PIB_MANUF_DATA_CONFIRM_WAIT_TIME_RF:
+        case MAC_WRP_PIB_MANUF_RX_OTHER_DESTINATION_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_RX_INVALID_FRAME_LENGTH_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_RX_WRONG_ADDR_MODE_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_RX_UNSUPPORTED_SECURITY_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_RX_WRONG_KEY_ID_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_RX_INVALID_KEY_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_RX_WRONG_FC_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_RX_DECRYPTION_ERROR_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_TX_DATA_PACKET_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_RX_DATA_PACKET_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_TX_CMD_PACKET_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_RX_CMD_PACKET_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_CSMA_FAIL_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_RX_DATA_BROADCAST_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_TX_DATA_BROADCAST_COUNT_RF:
+        case MAC_WRP_PIB_MANUF_BAD_CRC_COUNT_RF:
+</#if>
+            _Serial_memcpyFromUsiEndianessUint32(pibValue->value, pData);
+            break;
+
+        /* Tables and lists */
+        case MAC_WRP_PIB_MANUF_EXTENDED_ADDRESS:
+            /* m_au8Address */
+            memcpy(pibValue->value, pData, 8);
+            break;
+
+        case MAC_WRP_PIB_KEY_TABLE:
+            memcpy(pibValue->value, pData, MAC_WRP_SECURITY_KEY_LENGTH);
+            break;
+
+<#if MAC_PLC_PRESENT == true>
+        case MAC_WRP_PIB_NEIGHBOUR_TABLE:
+            pNeighbourEntry.shortAddress = (uint16_t) ((*pData++) << 8);
+            pNeighbourEntry.shortAddress += (uint16_t) *pData++;
+            memcpy(pNeighbourEntry.toneMap.toneMap, pData, (MAC_WRP_MAX_TONE_GROUPS + 7) / 8);
+            pData += (MAC_WRP_MAX_TONE_GROUPS + 7) / 8;
+            pNeighbourEntry.modulationType = *pData++;
+            pNeighbourEntry.txGain = *pData++;
+            pNeighbourEntry.txRes = *pData++;
+            memcpy(pNeighbourEntry.txCoef.txCoef, pData, 6);
+            pData += 6;
+            pNeighbourEntry.modulationScheme = *pData++;
+            pNeighbourEntry.phaseDifferential = *pData++;
+            pNeighbourEntry.lqi  = *pData++;
+            pNeighbourEntry.tmrValidTime = (uint16_t) ((*pData++) << 8);
+            pNeighbourEntry.tmrValidTime += (uint16_t) *pData;
+            memcpy(pibValue->value, &pNeighbourEntry, sizeof(MAC_WRP_NEIGHBOUR_ENTRY));
+            /* Struct saves 2 bytes with bit-fields */
+            pibValue->length  -= 2;
+            break;
+
+        case MAC_WRP_PIB_POS_TABLE:
+            pPosEntry.shortAddress = (uint16_t) ((*pData++) << 8);
+            pPosEntry.shortAddress += (uint16_t) *pData++;
+            pPosEntry.lqi  = *pData++;
+            pPosEntry.posValidTime = (uint16_t) ((*pData++) << 8);
+            pPosEntry.posValidTime += (uint16_t) *pData;
+            memcpy(pibValue->value, &pPosEntry, sizeof(MAC_WRP_POS_ENTRY));
+            break;
+
+        case MAC_WRP_PIB_TONE_MASK:
+            memcpy(pibValue->value, pData, (MAC_WRP_MAX_TONES + 7) / 8);
+            break;
+
+        case MAC_WRP_PIB_MANUF_FORCED_TONEMAP:
+        case MAC_WRP_PIB_MANUF_FORCED_TONEMAP_ON_TMRESPONSE:
+            pibValue->value[pibLenCnt++] = *pData++;
+            pibValue->value[pibLenCnt++] = *pData++;
+            pibValue->value[pibLenCnt] = *pData;
+            break;
+
+        case MAC_WRP_PIB_MANUF_DEBUG_SET:
+            memcpy(pibValue->value, pData, 7);
+            _Serial_memcpyFromUsiEndianessUint16((uint8_t *) &macWrpData.debugSetLength, &pData[5]);
+            if (macWrpData.debugSetLength > 255) {
+                macWrpData.debugSetLength = 0;
+            }
+            break;
+
+</#if>
+<#if MAC_RF_PRESENT == true>
+        case MAC_WRP_PIB_POS_TABLE_RF: /* 9 Byte entries. */
+            pPosEntryRF.shortAddress = (uint16_t) ((*pData++) << 8);
+            pPosEntryRF.shortAddress += (uint16_t) *pData++;
+            pPosEntryRF.forwardLqi  = *pData++;
+            pPosEntryRF.reverseLqi  = *pData++;
+            pPosEntryRF.dutyCycle  = *pData++;
+            pPosEntryRF.forwardTxPowerOffset = *pData++;
+            pPosEntryRF.reverseTxPowerOffset = *pData++;
+            pPosEntryRF.posValidTime = (uint16_t) ((*pData++) << 8);
+            pPosEntryRF.posValidTime += (uint16_t) *pData;
+            memcpy(pibValue->value, &pPosEntryRF, sizeof(MAC_WRP_POS_ENTRY_RF));
+            break;
+
+</#if>
+<#if MAC_PLC_PRESENT == true>
+        case MAC_WRP_PIB_SECURITY_ENABLED:
+        case MAC_WRP_PIB_TIMESTAMP_SUPPORTED:
+        case MAC_WRP_PIB_CENELEC_LEGACY_MODE:
+        case MAC_WRP_PIB_FCC_LEGACY_MODE:
+        case MAC_WRP_PIB_MANUF_DEVICE_TABLE:
+        case MAC_WRP_PIB_MANUF_NEIGHBOUR_TABLE_ELEMENT:
+        case MAC_WRP_PIB_MANUF_BAND_INFORMATION:
+        case MAC_WRP_PIB_MANUF_COORD_SHORT_ADDRESS:
+        case MAC_WRP_PIB_MANUF_MAX_MAC_PAYLOAD_SIZE:
+        case MAC_WRP_PIB_MANUF_LAST_RX_MOD_SCHEME:
+        case MAC_WRP_PIB_MANUF_LAST_RX_MOD_TYPE:
+        case MAC_WRP_PIB_MANUF_NEIGHBOUR_TABLE_COUNT:
+        case MAC_WRP_PIB_MANUF_POS_TABLE_COUNT:
+        case MAC_WRP_PIB_MANUF_MAC_INTERNAL_VERSION:
+        case MAC_WRP_PIB_MANUF_MAC_RT_INTERNAL_VERSION:
+        case MAC_WRP_PIB_MANUF_DEBUG_READ:
+        case MAC_WRP_PIB_MANUF_POS_TABLE_ELEMENT:
+            /* MAC_WRP_STATUS_READ_ONLY */
+            break;
+
+        case MAC_WRP_PIB_MANUF_SECURITY_RESET:
+            /* If length is 0 then DeviceTable is going to be reset else response will be MAC_WRP_STATUS_INVALID_PARAMETER */
+            break;
+        case MAC_WRP_PIB_MANUF_RESET_MAC_STATS:
+            /* If length is 0 then MAC Statistics will be reset */
+            break;
+
+        case MAC_WRP_PIB_MANUF_PHY_PARAM:
+            switch (attrIndexAux)
+            {
+                case MAC_WRP_PHY_PARAM_VERSION:
+                case MAC_WRP_PHY_PARAM_TX_TOTAL:
+                case MAC_WRP_PHY_PARAM_TX_TOTAL_BYTES:
+                case MAC_WRP_PHY_PARAM_TX_TOTAL_ERRORS:
+                case MAC_WRP_PHY_PARAM_BAD_BUSY_TX:
+                case MAC_WRP_PHY_PARAM_TX_BAD_BUSY_CHANNEL:
+                case MAC_WRP_PHY_PARAM_TX_BAD_LEN:
+                case MAC_WRP_PHY_PARAM_TX_BAD_FORMAT:
+                case MAC_WRP_PHY_PARAM_TX_TIMEOUT:
+                case MAC_WRP_PHY_PARAM_RX_TOTAL:
+                case MAC_WRP_PHY_PARAM_RX_TOTAL_BYTES:
+                case MAC_WRP_PHY_PARAM_RX_RS_ERRORS:
+                case MAC_WRP_PHY_PARAM_RX_EXCEPTIONS:
+                case MAC_WRP_PHY_PARAM_RX_BAD_LEN:
+                case MAC_WRP_PHY_PARAM_RX_BAD_CRC_FCH:
+                case MAC_WRP_PHY_PARAM_RX_FALSE_POSITIVE:
+                case MAC_WRP_PHY_PARAM_RX_BAD_FORMAT:
+                case MAC_WRP_PHY_PARAM_TIME_BETWEEN_NOISE_CAPTURES:
+                    _Serial_memcpyFromUsiEndianessUint32(pibValue->value, pData);
+                    break;
+
+                case MAC_WRP_PHY_PARAM_LAST_MSG_RSSI:
+                case MAC_WRP_PHY_PARAM_ACK_TX_CFM:
+                    _Serial_memcpyFromUsiEndianessUint16(pibValue->value, pData);
+                    break;
+
+                case MAC_WRP_PHY_PARAM_ENABLE_AUTO_NOISE_CAPTURE:
+                case MAC_WRP_PHY_PARAM_DELAY_NOISE_CAPTURE_AFTER_RX:
+                case MAC_WRP_PHY_PARAM_CFG_AUTODETECT_BRANCH:
+                case MAC_WRP_PHY_PARAM_CFG_IMPEDANCE:
+                case MAC_WRP_PHY_PARAM_RRC_NOTCH_ACTIVE:
+                case MAC_WRP_PHY_PARAM_RRC_NOTCH_INDEX:
+                case MAC_WRP_PHY_PARAM_PLC_DISABLE:
+                case MAC_WRP_PHY_PARAM_NOISE_PEAK_POWER:
+                case MAC_WRP_PHY_PARAM_LAST_MSG_LQI:
+                case MAC_WRP_PHY_PARAM_PREAMBLE_NUM_SYNCP:
+                    pibValue->value[0] = *pData;
+                    break;
+
+                default:
+                    break;
+            }
+            break;
+
+</#if>
+<#if MAC_RF_PRESENT == true>
+        case MAC_WRP_PIB_TIMESTAMP_SUPPORTED_RF:
+        case MAC_WRP_PIB_DEVICE_TABLE_RF:
+        case MAC_WRP_PIB_COUNTER_OCTETS_RF:
+        case MAC_WRP_PIB_USE_ENHANCED_BEACON_RF:
+        case MAC_WRP_PIB_EB_HEADER_IE_LIST_RF:
+        case MAC_WRP_PIB_EB_PAYLOAD_IE_LIST_RF:
+        case MAC_WRP_PIB_EB_FILTERING_ENABLED_RF:
+        case MAC_WRP_PIB_EB_AUTO_SA_RF:
+        case MAC_WRP_PIB_SEC_SECURITY_LEVEL_LIST_RF:
+        case MAC_WRP_PIB_MANUF_MAC_INTERNAL_VERSION_RF:
+        case MAC_WRP_PIB_MANUF_POS_TABLE_ELEMENT_RF:
+            /* MAC_WRP_STATUS_READ_ONLY */
+            break;
+
+        case MAC_WRP_PIB_MANUF_SECURITY_RESET_RF:
+            /* If length is 0 then DeviceTableRF is going to be reset else response will be MAC_WRP_STATUS_INVALID_PARAMETER */
+            break;
+        case MAC_WRP_PIB_MANUF_RESET_MAC_STATS_RF:
+            /* If length is 0 then MAC Statistics will be reset */
+            break;
+
+        case MAC_WRP_PIB_MANUF_PHY_PARAM_RF:
+            switch (attrIndexAux)
+            {
+                case MAC_WRP_RF_PHY_PARAM_PHY_CHANNEL_FREQ_HZ:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_TOTAL:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_TOTAL_BYTES:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_TOTAL:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_BUSY_TX:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_BUSY_RX:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_BUSY_CHN:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_BAD_LEN:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_BAD_FORMAT:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_TIMEOUT:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_ERR_ABORTED:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_CFM_NOT_HANDLED:
+                case MAC_WRP_RF_PHY_PARAM_PHY_RX_TOTAL:
+                case MAC_WRP_RF_PHY_PARAM_PHY_RX_TOTAL_BYTES:
+                case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_TOTAL:
+                case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_FALSE_POSITIVE:
+                case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_BAD_LEN:
+                case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_BAD_FORMAT:
+                case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_BAD_FCS_PAY:
+                case MAC_WRP_RF_PHY_PARAM_PHY_RX_ERR_ABORTED:
+                case MAC_WRP_RF_PHY_PARAM_PHY_RX_OVERRIDE:
+                case MAC_WRP_RF_PHY_PARAM_PHY_RX_IND_NOT_HANDLED:
+                    _Serial_memcpyFromUsiEndianessUint32(pibValue->value, pData);
+                    break;
+
+                case MAC_WRP_RF_PHY_PARAM_DEVICE_ID:
+                case MAC_WRP_RF_PHY_PARAM_PHY_BAND_OPERATING_MODE:
+                case MAC_WRP_RF_PHY_PARAM_PHY_CHANNEL_NUM:
+                case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TURNAROUND_TIME:
+                case MAC_WRP_RF_PHY_PARAM_PHY_TX_PAY_SYMBOLS:
+                case MAC_WRP_RF_PHY_PARAM_PHY_RX_PAY_SYMBOLS:
+                case MAC_WRP_RF_PHY_PARAM_MAC_UNIT_BACKOFF_PERIOD:
+                    _Serial_memcpyFromUsiEndianessUint16(pibValue->value, pData);
+                    break;
+
+                case MAC_WRP_RF_PHY_PARAM_DEVICE_RESET:
+                case MAC_WRP_RF_PHY_PARAM_TRX_RESET:
+                case MAC_WRP_RF_PHY_PARAM_TRX_SLEEP:
+                case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD:
+                case MAC_WRP_RF_PHY_PARAM_PHY_STATS_RESET:
+                case MAC_WRP_RF_PHY_PARAM_TX_FSK_FEC:
+                case MAC_WRP_RF_PHY_PARAM_TX_OFDM_MCS:
+                case MAC_WRP_RF_PHY_PARAM_SET_CONTINUOUS_TX_MODE:
+                    pibValue->value[0] = *pData;
+                    break;
+
+                case MAC_WRP_RF_PHY_PARAM_FW_VERSION:
+                    pibValue->value[pibLenCnt++] = *pData++; /* Major */
+                    pibValue->value[pibLenCnt++] = *pData++; /* Minor */
+                    pibValue->value[pibLenCnt++] = *pData++; /* Revision */
+                    pibValue->value[pibLenCnt++] = *pData++; /* Year */
+                    pibValue->value[pibLenCnt++] = *pData++; /* Month */
+                    pibValue->value[pibLenCnt] = *pData; /* Day */
+                    break;
+
+                default:
+                    break;
+            }
+            break;
+
+</#if>
+        default:
+            break;
+    }
+}
+
+uint8_t MAC_WRP_SerialStringifySetConfirm (
+    uint8_t *serialData,
+    MAC_WRP_STATUS setStatus,
+    MAC_WRP_PIB_ATTRIBUTE attribute,
+    uint16_t index
+)
+{
+    uint8_t serialRspLen = 0;
+
+    serialData[serialRspLen++] = (uint8_t) setStatus;
+    serialData[serialRspLen++] = (uint8_t) ((uint32_t) attribute >> 24);
+    serialData[serialRspLen++] = (uint8_t) ((uint32_t) attribute >> 16);
+    serialData[serialRspLen++] = (uint8_t) ((uint32_t) attribute >> 8);
+    serialData[serialRspLen++] = (uint8_t) attribute;
+    serialData[serialRspLen++] = (uint8_t) (index >> 8);
+    serialData[serialRspLen++] = (uint8_t) index;
+
+    return serialRspLen;
+}
+
+</#if>
 /*******************************************************************************
  End of File
 */
