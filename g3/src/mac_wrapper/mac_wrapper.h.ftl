@@ -51,7 +51,7 @@
 
 #include "mac_wrapper_defs.h"
 <#if MAC_SERIALIZATION_EN == true>
-#include "../../../../service/usi/srv_usi.h"
+#include "service/usi/srv_usi.h"
 </#if>
 
 // DOM-IGNORE-BEGIN
@@ -1321,16 +1321,26 @@ typedef struct
 {
     /* State of the MAC Wrapper module */
     MAC_WRP_STATE state;
-    /* Mac Wrapper instance handle */
-    MAC_WRP_HANDLE macWrpHandle;
     /* Callbacks */
     MAC_WRP_HANDLERS macWrpHandlers;
+    /* Mac Wrapper instance handle */
+    MAC_WRP_HANDLE macWrpHandle;
 <#if MAC_SERIALIZATION_EN == true>
+    /* Mac Serialization handle */
+    MAC_WRP_HANDLE macSerialHandle;
     /* USI handle for MAC serialization */
     SRV_USI_HANDLE usiHandle;
     /* PIB serialization debug set length */
     uint16_t debugSetLength;
+    /* Flag to indicate reset request through serial interface */
+    bool serialResetRequest;
+    /* Flag to indicate start request through serial interface */
+    bool serialStartRequest;
+    /* Flag to indicate scan request through serial interface */
+    bool serialScanRequest;
 </#if>
+    /* Flag to indicate scan request in progress */
+    bool scanRequestInProgress;
 } MAC_WRP_DATA;
 
 // *****************************************************************************

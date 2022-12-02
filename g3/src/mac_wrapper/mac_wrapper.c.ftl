@@ -69,6 +69,29 @@
 // *****************************************************************************
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
+/* Buffer size to store data to be sent as Mac Data Request */
+#define HYAL_BACKUP_BUF_SIZE   400
+
+</#if>
+typedef struct
+{
+    MAC_DATA_REQUEST_PARAMS dataReqParams;
+    MAC_WRP_MEDIA_TYPE_REQUEST dataReqMediaType;
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
+    uint8_t backupBuffer[HYAL_BACKUP_BUF_SIZE];
+    MAC_STATUS firstConfirmStatus;
+    bool waitingSecondConfirm;
+</#if>
+<#if MAC_SERIALIZATION_EN == true>
+    bool serialDataRequest;
+</#if>
+    bool used;
+} MAC_WRP_DATA_REQ_ENTRY;
+
+/* Data Request Queue size */
+#define HYAL_DATA_REQ_QUEUE_SIZE   2
+
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
 typedef struct
 {
     uint16_t srcAddress;
@@ -77,32 +100,14 @@ typedef struct
     uint8_t mediaType;
 } HYAL_DUPLICATES_ENTRY;
 
-/* Buffer size to store data to be sent as Mac Data Request */
-#define HYAL_BACKUP_BUF_SIZE   400
-
 typedef struct
 {
-  MAC_DATA_REQUEST_PARAMS dataReqParams;
-  MAC_WRP_MEDIA_TYPE_REQUEST dataReqMediaType;
-  uint8_t backupBuffer[HYAL_BACKUP_BUF_SIZE];
-  MAC_STATUS firstConfirmStatus;
-  bool waitingSecondConfirm;
-  bool used;
-} HYAL_DATA_REQUEST;
-
-/* Data Request Queue size */
-#define HYAL_DATA_REQ_QUEUE_SIZE   2
-
-typedef struct
-{
-  // Data Service Control
-  HYAL_DATA_REQUEST dataReqQueue[HYAL_DATA_REQ_QUEUE_SIZE];
-  MAC_STATUS firstScanConfirmStatus;
-  bool waitingSecondScanConfirm;
-  MAC_STATUS firstResetConfirmStatus;
-  bool waitingSecondResetConfirm;
-  MAC_STATUS firstStartConfirmStatus;
-  bool waitingSecondStartConfirm;
+    MAC_STATUS firstScanConfirmStatus;
+    bool waitingSecondScanConfirm;
+    MAC_STATUS firstResetConfirmStatus;
+    bool waitingSecondResetConfirm;
+    MAC_STATUS firstStartConfirmStatus;
+    bool waitingSecondStartConfirm;
 } HYAL_DATA;
 
 </#if>
@@ -152,6 +157,9 @@ typedef enum
 
 // This is the module data object
 static MAC_WRP_DATA macWrpData;
+
+// Data Service Control
+static MAC_WRP_DATA_REQ_ENTRY dataReqQueue[HYAL_DATA_REQ_QUEUE_SIZE];
 
 <#if MAC_PLC_PRESENT == true>
 #define MAC_MAX_DEVICE_TABLE_ENTRIES_PLC    ${MAC_PLC_DEVICE_TABLE_SIZE?string}
@@ -212,7 +220,6 @@ static const uint16_t crc16_tab[256] = {
 static HYAL_DUPLICATES_ENTRY hyALDuplicatesTable[HYAL_DUPLICATES_TABLE_SIZE] = {{0}};
 
 static const HYAL_DATA hyalDataDefaults = {
-  {{{{MAC_ADDRESS_MODE_NO_ADDRESS}}}}, // dataReqQueue
   MAC_STATUS_SUCCESS, // firstScanConfirmStatus
   false, // waitingSecondScanConfirm
   MAC_STATUS_SUCCESS, // firstResetConfirmStatus
@@ -233,6 +240,44 @@ static uint8_t serialRspBuffer[512];
 // Section: local functions
 // *****************************************************************************
 // *****************************************************************************
+
+static MAC_WRP_DATA_REQ_ENTRY *_getFreeDataReqEntry(void)
+{
+    uint8_t index;
+    MAC_WRP_DATA_REQ_ENTRY *found = NULL;
+
+    for (index = 0; index < HYAL_DATA_REQ_QUEUE_SIZE; index++)
+    {
+        if (dataReqQueue[index].used == false)
+        {
+            found = &dataReqQueue[index];
+            dataReqQueue[index].used = true;
+            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_getFreeDataReqEntry() Found free HyALDataReqQueueEntry on index %u", index);
+            break;
+        }
+    }
+
+    return found;
+}
+
+static MAC_WRP_DATA_REQ_ENTRY *_getDataReqEntryByHandle(uint8_t handle)
+{
+    uint8_t index;
+    MAC_WRP_DATA_REQ_ENTRY *found = NULL;
+
+    for (index = 0; index < HYAL_DATA_REQ_QUEUE_SIZE; index++)
+    {
+        if ((dataReqQueue[index].used == true) && 
+            (dataReqQueue[index].dataReqParams.msduHandle == handle))
+        {
+            found = &dataReqQueue[index];
+            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_getDataReqEntryByHandle() Found matching HyALDataReqQueueEntry on index %u, Handle: 0x%02X", index, handle);
+            break;
+        }
+    }
+
+    return found;
+}
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
 static uint16_t _hyalCrc16(const uint8_t *dataBuf, uint32_t length)
@@ -285,44 +330,6 @@ static bool _hyalCheckDuplicates(uint16_t srcAddr, uint8_t *msdu, uint16_t msduL
 
     // Return duplicate or not
     return duplicate;
-}
-
-static HYAL_DATA_REQUEST *_hyalGetFreeDataReqEntry(void)
-{
-    uint8_t index;
-    HYAL_DATA_REQUEST *found = NULL;
-
-    for (index = 0; index < HYAL_DATA_REQ_QUEUE_SIZE; index++)
-    {
-        if (!hyalData.dataReqQueue[index].used)
-        {
-            found = &hyalData.dataReqQueue[index];
-            hyalData.dataReqQueue[index].used = true;
-            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_hyalGetFreeDataReqEntry() Found free HyALDataReqQueueEntry on index %u", index);
-            break;
-        }
-    }
-
-    return found;
-}
-
-static HYAL_DATA_REQUEST *_hyalGetDataReqEntryByHandle(uint8_t handle)
-{
-    uint8_t index;
-    HYAL_DATA_REQUEST *found = NULL;
-
-    for (index = 0; index < HYAL_DATA_REQ_QUEUE_SIZE; index++)
-    {
-        if (hyalData.dataReqQueue[index].used && 
-            (hyalData.dataReqQueue[index].dataReqParams.msduHandle == handle))
-        {
-            found = &hyalData.dataReqQueue[index];
-            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_hyalGetDataReqEntryByHandle() Found matching HyALDataReqQueueEntry on index %u, Handle: 0x%02X", index, handle);
-            break;
-        }
-    }
-
-    return found;
 }
 
 static bool _macWrpIsAttributeInPLCRange(MAC_WRP_PIB_ATTRIBUTE attribute)
@@ -748,7 +755,7 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseInitialize(uint8_t* pData)
         macWrpInit.macWrpHandlers.scanConfirmCallback = NULL;
         macWrpInit.macWrpHandlers.snifferIndicationCallback = NULL;
         macWrpInit.macWrpHandlers.startConfirmCallback = NULL;
-        MAC_WRP_Init(macWrpData.macWrpHandle, &macWrpInit);
+        MAC_WRP_Init(macWrpData.macSerialHandle, &macWrpInit);
     }
 
     return MAC_WRP_SERIAL_STATUS_SUCCESS;
@@ -812,7 +819,7 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseDataRequest(uint8_t* pData)
     drParams.msdu = pData;
 
     /* Send data request to MAC */
-    MAC_WRP_DataRequest(macWrpData.macWrpHandle, &drParams);
+    MAC_WRP_DataRequest(macWrpData.macSerialHandle, &drParams);
 
     return MAC_WRP_SERIAL_STATUS_SUCCESS;
 }
@@ -835,7 +842,7 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseGetRequest(uint8_t* pData)
     /* Get PIB from MAC */
     MAC_WRP_SerialParseGetRequest(pData, &attribute, &index);
     pibAttr = (MAC_WRP_PIB_ATTRIBUTE) attribute;
-    getStatus = MAC_WRP_GetRequestSync(macWrpData.macWrpHandle, pibAttr, index, &pibValue);
+    getStatus = MAC_WRP_GetRequestSync(macWrpData.macSerialHandle, pibAttr, index, &pibValue);
 
     /* Fill serial response buffer */
     serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_GET_CONFIRM;
@@ -864,7 +871,7 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseSetRequest(uint8_t* pData)
 
     /* Set MAC PIB */
     MAC_WRP_SerialParseSetRequest(pData, &attribute, &index, &pibValue);
-    setStatus = MAC_WRP_SetRequestSync(macWrpData.macWrpHandle, attribute, index, &pibValue);
+    setStatus = MAC_WRP_SetRequestSync(macWrpData.macSerialHandle, attribute, index, &pibValue);
 
     /* Fill serial response buffer */
     serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_SET_CONFIRM;
@@ -891,7 +898,8 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseResetRequest(uint8_t* pData)
     rrParams.setDefaultPib = (bool) *pData;
 
     /* Send reset request to MAC */
-    MAC_WRP_ResetRequest(macWrpData.macWrpHandle, &rrParams);
+    macWrpData.serialResetRequest = true;
+    MAC_WRP_ResetRequest(macWrpData.macSerialHandle, &rrParams);
 
     return MAC_WRP_SERIAL_STATUS_SUCCESS;
 }
@@ -911,7 +919,7 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseScanRequest(uint8_t* pData)
     srParams.scanDuration += *pData;
 
     /* Send scan request to MAC */
-    MAC_WRP_ScanRequest(macWrpData.macWrpHandle, &srParams);
+    MAC_WRP_ScanRequest(macWrpData.macSerialHandle, &srParams);
 
     return MAC_WRP_SERIAL_STATUS_SUCCESS;
 }
@@ -930,7 +938,9 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseStartRequest(uint8_t* pData)
     srParams.panId = ((uint16_t) *pData++) << 8;
     srParams.panId += *pData;
 
-    MAC_WRP_StartRequest(macWrpData.macWrpHandle, &srParams);
+    /* Send start request to MAC */
+    macWrpData.serialStartRequest = true;
+    MAC_WRP_StartRequest(macWrpData.macSerialHandle, &srParams);
 
     return MAC_WRP_SERIAL_STATUS_SUCCESS;
 }
@@ -994,17 +1004,18 @@ static void _Callback_UsiMacProtocol(uint8_t* pData, size_t length)
 <#if MAC_PLC_PRESENT == true>
 static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacPlcDataConfirm() Handle: 0x%02X Status: %u", dcParams->msduHandle, (uint8_t)dcParams->status);
-
     MAC_WRP_DATA_CONFIRM_PARAMS dataConfirmParams;
-
+    MAC_WRP_DATA_REQ_ENTRY *matchingDataReq;
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
-    HYAL_DATA_REQUEST *matchingDataReq;
     MAC_PIB_VALUE pibValue;
     MAC_WRP_STATUS status;
+    bool sendConfirm = false;
+</#if>
+
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacPlcDataConfirm() Handle: 0x%02X Status: %u", dcParams->msduHandle, (uint8_t)dcParams->status);
 
     /* Get Data Request entry matching confirm */
-    matchingDataReq = _hyalGetDataReqEntryByHandle(dcParams->msduHandle);
+    matchingDataReq = _getDataReqEntryByHandle(dcParams->msduHandle);
 
     /* Avoid unmached handling */
     if (matchingDataReq == NULL)
@@ -1013,25 +1024,19 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
         return;
     }
 
-    /* Copy dcParams from Mac. Media Type will be filled later */
+    /* Copy dcParams from Mac */
     memcpy(&dataConfirmParams, dcParams, sizeof(MAC_DATA_CONFIRM_PARAMS));
-    
+
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     switch (matchingDataReq->dataReqMediaType)
     {
         case MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF:
             if (dcParams->status == MAC_STATUS_SUCCESS)
             {
-                /* Send confirm to upper layer */
+                /* Fill Media Type */
                 dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
-<#if MAC_SERIALIZATION_EN == true>
-                _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-                /* Release Data Req entry and send confirm */
-                matchingDataReq->used = false;
-                if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-                }
+                /* Send confirm to upper layer */
+                sendConfirm = true;
             }
             else
             {
@@ -1047,6 +1052,7 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                     status = (MAC_WRP_STATUS) MAC_RF_GetRequestSync(MAC_PIB_MANUF_POS_TABLE_ELEMENT_RF, 
                             matchingDataReq->dataReqParams.destAddress.shortAddress, &pibValue);
                 }
+
                 /* Check status to try backup medium */
                 if (status == MAC_WRP_STATUS_SUCCESS)
                 {
@@ -1056,34 +1062,20 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                     matchingDataReq->dataReqParams.msdu = matchingDataReq->backupBuffer;
                     MAC_RF_DataRequest(&matchingDataReq->dataReqParams);
                 }
-                else {
+                else
+                {
                     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "No POS entry found, discard backup medium");
-                    /* Send confirm to upper layer */
+                    /* Fill Media Type */
                     dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
-<#if MAC_SERIALIZATION_EN == true>
-                    _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-                    /* Release Data Req entry and send confirm */
-                    matchingDataReq->used = false;
-                    if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-                    {
-                        macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-                    }
+                    /* Send confirm to upper layer */
+                    sendConfirm = true;
                 }
             }
             break;
         case MAC_WRP_MEDIA_TYPE_REQ_RF_BACKUP_PLC:
             /* PLC was used as backup medium. Send confirm to upper layer */
             dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC_AS_BACKUP;
-<#if MAC_SERIALIZATION_EN == true>
-            _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-            /* Release Data Req entry and send confirm */
-            matchingDataReq->used = false;
-            if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-            }
+            sendConfirm = true;
             break;
         case MAC_WRP_MEDIA_TYPE_REQ_BOTH:
             if (matchingDataReq->waitingSecondConfirm)
@@ -1095,72 +1087,83 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                 {
                     /* At least one SUCCESS, send confirm with SUCCESS */
                     dataConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
-                    /* Release Data Req entry and send confirm */
-                    matchingDataReq->used = false;
                 }
                 else
                 {
                     /* None SUCCESS. Return result from second confirm */
                     dataConfirmParams.status = (MAC_WRP_STATUS)dcParams->status;
-                    /* Release Data Req entry and send confirm */
-                    matchingDataReq->used = false;
                 }
 
-<#if MAC_SERIALIZATION_EN == true>
-                _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-                if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-                }
+                /* Send confirm to upper layer */
+                sendConfirm = true;
             }
-            else {
+            else
+            {
                 /* This is the First Confirm, store status and wait for Second */
                 matchingDataReq->firstConfirmStatus = dcParams->status;
                 matchingDataReq->waitingSecondConfirm = true;
             }
             break;
         case MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP:
-            /* Send confirm to upper layer */
+            /* Fill Media Type */
             dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
-<#if MAC_SERIALIZATION_EN == true>
-            _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-            /* Release Data Req entry and send confirm */
-            matchingDataReq->used = false;
-            if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-            }
+            /* Send confirm to upper layer */
+            sendConfirm = true;
             break;
         case MAC_WRP_MEDIA_TYPE_REQ_RF_NO_BACKUP:
             /* PLC confirm not expected on RF_NO_BACKUP request. Ignore it */
+            matchingDataReq->used = false;
             SRV_LOG_REPORT_Message(SRV_LOG_REPORT_ERROR, "_Callback_MacPlcDataConfirm() called from a MEDIA_TYPE_REQ_RF_NO_BACKUP request!!");
             break;
         default: /* PLC only */
+            /* Fill Media Type */
             dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
-<#if MAC_SERIALIZATION_EN == true>
-            _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-            /* Release Data Req entry and send confirm */
-            matchingDataReq->used = false;
-            if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-            }
+            /* Send confirm to upper layer */
+            sendConfirm = true;
             break;
     }
-<#else>
-    /* Copy dcParams from Mac and fill Media Type */
-    memcpy(&dataConfirmParams, dcParams, sizeof(MAC_DATA_CONFIRM_PARAMS));
-    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
+
+    if (sendConfirm == true)
+    {
+        /* Release Data Req entry and send confirm to upper layer */
+        matchingDataReq->used = false;
 <#if MAC_SERIALIZATION_EN == true>
-    _Serial_StringifyDataConfirm(&dataConfirmParams);
+        if (matchingDataReq->serialDataRequest == true)
+        {
+            _Serial_StringifyDataConfirm(&dataConfirmParams);
+        }
+        else if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
+        }
+<#else>
+        if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
+        }
 </#if>
+    }
+<#else>
+    /* Fill Media Type */
+    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
+
+    /* Release Data Req entry and send confirm to upper layer */
+    matchingDataReq->used = false;
+<#if MAC_SERIALIZATION_EN == true>
+    if (matchingDataReq->serialDataRequest == true)
+    {
+        _Serial_StringifyDataConfirm(&dataConfirmParams);
+    }
+    else if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
+    {
+        macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
+    }
+<#else>
     if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
     }
+</#if>
 </#if>
 }
 
@@ -1226,12 +1229,21 @@ static void _Callback_MacPlcResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
         }
 
 <#if MAC_SERIALIZATION_EN == true>
-        _Serial_StringifyResetConfirm(&resetConfirmParams);
-</#if>
+        if (macWrpData.serialResetRequest == true)
+        {
+            _Serial_StringifyResetConfirm(&resetConfirmParams);
+            macWrpData.serialResetRequest = false;
+        }
+        else if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
+        }
+<#else>
         if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
         {
             macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
         }
+</#if>
     }
     else
     {
@@ -1241,12 +1253,21 @@ static void _Callback_MacPlcResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
     }
 <#else>
 <#if MAC_SERIALIZATION_EN == true>
-    _Serial_StringifyResetConfirm((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
-</#if>
+    if (macWrpData.serialResetRequest == true)
+    {
+        _Serial_StringifyResetConfirm((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
+        macWrpData.serialResetRequest = false;
+    }
+    else if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
+    {
+        macWrpData.macWrpHandlers.resetConfirmCallback((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
+    }
+<#else>
     if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.resetConfirmCallback((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
     }
+</#if>
 </#if>
 }
 
@@ -1278,7 +1299,7 @@ static void _Callback_MacPlcScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
     
     if (hyalData.waitingSecondScanConfirm)
     {
-        /* Second Confirm arrived. Send confirm to upper layer depending on results */
+        /* Second Confirm arrived */
         if ((hyalData.firstScanConfirmStatus == MAC_STATUS_SUCCESS) ||
                 (scParams->status == MAC_STATUS_SUCCESS))
         {
@@ -1291,13 +1312,25 @@ static void _Callback_MacPlcScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
             scanConfirmParams.status = (MAC_WRP_STATUS)scParams->status;
         }
 
+        /* Clear flag */
+        macWrpData.scanRequestInProgress = false;
+
+        /* Send confirm to upper layer */
 <#if MAC_SERIALIZATION_EN == true>
-        _Serial_StringifyScanConfirm(&scanConfirmParams);
-</#if>
+        if (macWrpData.serialScanRequest == true)
+        {
+            _Serial_StringifyScanConfirm(&scanConfirmParams);
+        }
+        else if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirmParams);
+        }
+<#else>
         if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
         {
             macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirmParams);
         }
+</#if>
     }
     else
     {
@@ -1306,13 +1339,25 @@ static void _Callback_MacPlcScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
         hyalData.waitingSecondScanConfirm = true;
     }
 <#else>
+    /* Clear flag */
+    macWrpData.scanRequestInProgress = false;
+
+    /* Send confirm to upper layer */
 <#if MAC_SERIALIZATION_EN == true>
-    _Serial_StringifyScanConfirm((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
-</#if>
+    if (macWrpData.serialScanRequest == true)
+    {
+        _Serial_StringifyScanConfirm((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
+    }
+    else if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
+    {
+        macWrpData.macWrpHandlers.scanConfirmCallback((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
+    }
+<#else>
     if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.scanConfirmCallback((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
     }
+</#if>
 </#if>
 }
 
@@ -1346,12 +1391,21 @@ static void _Callback_MacPlcStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
         }
 
 <#if MAC_SERIALIZATION_EN == true>
-        _Serial_StringifyStartConfirm(&startConfirmParams);
-</#if>
+        if (macWrpData.serialStartRequest == true)
+        {
+            _Serial_StringifyStartConfirm(&startConfirmParams);
+            macWrpData.serialStartRequest = false;
+        }
+        else if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
+        }
+<#else>
         if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
         {
             macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
         }
+</#if>
     }
     else
     {
@@ -1361,12 +1415,21 @@ static void _Callback_MacPlcStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
     }
 <#else>
 <#if MAC_SERIALIZATION_EN == true>
-    _Serial_StringifyStartConfirm((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
-</#if>
+    if (macWrpData.serialStartRequest == true)
+    {
+        _Serial_StringifyStartConfirm((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
+        macWrpData.serialStartRequest = false;
+    }
+    else if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
+    {
+        macWrpData.macWrpHandlers.startConfirmCallback((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
+    }
+<#else>
     if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.startConfirmCallback((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
     }
+</#if>
 </#if>
 }
 
@@ -1406,17 +1469,18 @@ static void _Callback_MacPlcMacSnifferIndication(MAC_SNIFFER_INDICATION_PARAMS *
 <#if MAC_RF_PRESENT == true>
 static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacRfDataConfirm() Handle: 0x%02X Status: %u", dcParams->msduHandle, (uint8_t)dcParams->status);
-
     MAC_WRP_DATA_CONFIRM_PARAMS dataConfirmParams;
-
+    MAC_WRP_DATA_REQ_ENTRY *matchingDataReq;
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
-    HYAL_DATA_REQUEST *matchingDataReq;
     MAC_PIB_VALUE pibValue;
     MAC_WRP_STATUS status;
+    bool sendConfirm = false;
+</#if>
+
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacRfDataConfirm() Handle: 0x%02X Status: %u", dcParams->msduHandle, (uint8_t)dcParams->status);
 
     /* Get Data Request entry matching confirm */
-    matchingDataReq = _hyalGetDataReqEntryByHandle(dcParams->msduHandle);
+    matchingDataReq = _getDataReqEntryByHandle(dcParams->msduHandle);
 
     /* Avoid unmached handling */
     if (matchingDataReq == NULL)
@@ -1425,42 +1489,28 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
         return;
     }
 
-    /* Copy dcParams from Mac. Media Type will be filled later */
+    /* Copy dcParams from Mac */
     memcpy(&dataConfirmParams, dcParams, sizeof(MAC_DATA_CONFIRM_PARAMS));
-    
+
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     switch (matchingDataReq->dataReqMediaType)
     {
         case MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF:
             /* RF was used as backup medium. Send confirm to upper layer */
             dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF_AS_BACKUP;
-<#if MAC_SERIALIZATION_EN == true>
-            _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-            /* Release Data Req entry and send confirm */
-            matchingDataReq->used = false;
-            if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-            }
+            sendConfirm = true;
             break;
         case MAC_WRP_MEDIA_TYPE_REQ_RF_BACKUP_PLC:
             if (dcParams->status == MAC_STATUS_SUCCESS)
             {
-                /* Send confirm to upper layer */
+                /* Fill Media Type */
                 dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
-<#if MAC_SERIALIZATION_EN == true>
-                _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-                /* Release Data Req entry and send confirm */
-                matchingDataReq->used = false;
-                if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-                }
+                /* Send confirm to upper layer */
+                sendConfirm = true;
             }
             else
             {
-                /* Check Dest Address mode and/or RF POS table before attempting data request */
+                /* Check Dest Address mode and/or PLC POS table before attempting data request */
                 if (matchingDataReq->dataReqParams.destAddress.addressMode == MAC_ADDRESS_MODE_EXTENDED)
                 {
                     status = MAC_WRP_STATUS_SUCCESS;
@@ -1472,11 +1522,12 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                     status = (MAC_WRP_STATUS) MAC_PLC_GetRequestSync(MAC_PIB_MANUF_POS_TABLE_ELEMENT, 
                             matchingDataReq->dataReqParams.destAddress.shortAddress, &pibValue);
                 }
+
                 /* Check status to try backup medium */
                 if (status == MAC_WRP_STATUS_SUCCESS)
                 {
                     /* Try on backup medium */
-                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Try PLC as Backup Meduim");
+                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Try PLC as Backup Medium");
                     /* Set Msdu pointer to backup buffer, as current pointer is no longer valid */
                     matchingDataReq->dataReqParams.msdu = matchingDataReq->backupBuffer;
                     MAC_PLC_DataRequest(&matchingDataReq->dataReqParams);
@@ -1484,17 +1535,10 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                 else
                 {
                     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "No POS entry found, discard backup medium");
-                    /* Send confirm to upper layer */
+                    /* Fill Media Type */
                     dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
-<#if MAC_SERIALIZATION_EN == true>
-                    _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-                    /* Release Data Req entry and send confirm */
-                    matchingDataReq->used = false;
-                    if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-                    {
-                        macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-                    }
+                    /* Send confirm to upper layer */
+                    sendConfirm = true;
                 }
             }
             break;
@@ -1508,24 +1552,15 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                 {
                     /* At least one SUCCESS, send confirm with SUCCESS */
                     dataConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
-                    /* Release Data Req entry and send confirm */
-                    matchingDataReq->used = false;
                 }
                 else
                 {
                     /* None SUCCESS. Return result from second confirm */
                     dataConfirmParams.status = (MAC_WRP_STATUS)dcParams->status;
-                    /* Release Data Req entry and send confirm */
-                    matchingDataReq->used = false;
                 }
 
-<#if MAC_SERIALIZATION_EN == true>
-                _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-                if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-                {
-                    macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-                }
+                /* Send confirm to upper layer */
+                sendConfirm = true;
             }
             else
             {
@@ -1535,46 +1570,65 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
             }
             break;
         case MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP:
-            /* RF confirm not expected after a PLC_NO_BACKUP request. Ignore it */
-            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_ERROR, "_Callback_MacPlcDataConfirm() called from a MEDIA_TYPE_REQ_PLC_NO_BACKUP request!!");
+            /* RF confirm not expected on PLC_NO_BACKUP request. Ignore it */
+            matchingDataReq->used = false;
+            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_ERROR, "_Callback_MacRfDataConfirm() called from a MEDIA_TYPE_REQ_PLC_NO_BACKUP request!!");
             break;
         case MAC_WRP_MEDIA_TYPE_REQ_RF_NO_BACKUP:
+            /* Fill Media Type */
+            dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
             /* Send confirm to upper layer */
-            dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
-<#if MAC_SERIALIZATION_EN == true>
-            _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-            /* Release Data Req entry and send confirm */
-            matchingDataReq->used = false;
-            if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-            }
-            break;
+            sendConfirm = true;
+            break;        
         default: /* RF only */
+            /* Fill Media Type */
             dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
-<#if MAC_SERIALIZATION_EN == true>
-            _Serial_StringifyDataConfirm(&dataConfirmParams);
-</#if>
-            /* Release Data Req entry and send confirm */
-            matchingDataReq->used = false;
-            if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
-            {
-                macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
-            }
+            /* Send confirm to upper layer */
+            sendConfirm = true;
             break;
     }
-<#else>
-    /* Copy dcParams from Mac and fill Media Type */
-    memcpy(&dataConfirmParams, dcParams, sizeof(MAC_DATA_CONFIRM_PARAMS));
-    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
+
+    if (sendConfirm == true)
+    {
+        /* Release Data Req entry and send confirm to upper layer */
+        matchingDataReq->used = false;
 <#if MAC_SERIALIZATION_EN == true>
-    _Serial_StringifyDataConfirm(&dataConfirmParams);
+        if (matchingDataReq->serialDataRequest == true)
+        {
+            _Serial_StringifyDataConfirm(&dataConfirmParams);
+        }
+        else if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
+        }
+<#else>
+        if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
+        }
 </#if>
+    }
+<#else>
+    /* Fill Media Type */
+    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
+
+    /* Release Data Req entry and send confirm to upper layer */
+    matchingDataReq->used = false;
+<#if MAC_SERIALIZATION_EN == true>
+    if (matchingDataReq->serialDataRequest == true)
+    {
+        _Serial_StringifyDataConfirm(&dataConfirmParams);
+    }
+    else if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
+    {
+        macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
+    }
+<#else>
     if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirmParams);
     }
+</#if>
 </#if>
 }
 
@@ -1640,12 +1694,21 @@ static void _Callback_MacRfResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
         }
 
 <#if MAC_SERIALIZATION_EN == true>
-        _Serial_StringifyResetConfirm(&resetConfirmParams);
-</#if>
+        if (macWrpData.serialResetRequest == true)
+        {
+            _Serial_StringifyResetConfirm(&resetConfirmParams);
+            macWrpData.serialResetRequest = false;
+        }
+        else if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
+        }
+<#else>
         if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
         {
             macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirmParams);
         }
+</#if>
     }
     else
     {
@@ -1655,12 +1718,21 @@ static void _Callback_MacRfResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
     }
 <#else>
 <#if MAC_SERIALIZATION_EN == true>
-    _Serial_StringifyResetConfirm((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
-</#if>
+    if (macWrpData.serialResetRequest == true)
+    {
+        _Serial_StringifyResetConfirm((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
+        macWrpData.serialResetRequest = false;
+    }
+    else if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
+    {
+        macWrpData.macWrpHandlers.resetConfirmCallback((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
+    }
+<#else>
     if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.resetConfirmCallback((MAC_WRP_RESET_CONFIRM_PARAMS *)rcParams);
     }
+</#if>
 </#if>
 }
 
@@ -1692,7 +1764,7 @@ static void _Callback_MacRfScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
     
     if (hyalData.waitingSecondScanConfirm)
     {
-        /* Second Confirm arrived. Send confirm to upper layer depending on results */
+        /* Second Confirm arrived */
         if ((hyalData.firstScanConfirmStatus == MAC_STATUS_SUCCESS) ||
                 (scParams->status == MAC_STATUS_SUCCESS))
         {
@@ -1705,13 +1777,25 @@ static void _Callback_MacRfScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
             scanConfirmParams.status = (MAC_WRP_STATUS)scParams->status;
         }
 
+        /* Clear flag */
+        macWrpData.scanRequestInProgress = false;
+
+        /* Send confirm to upper layer */
 <#if MAC_SERIALIZATION_EN == true>
-        _Serial_StringifyScanConfirm(&scanConfirmParams);
-</#if>
+        if (macWrpData.serialScanRequest == true)
+        {
+            _Serial_StringifyScanConfirm(&scanConfirmParams);
+        }
+        else if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirmParams);
+        }
+<#else>
         if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
         {
             macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirmParams);
         }
+</#if>
     }
     else
     {
@@ -1720,13 +1804,25 @@ static void _Callback_MacRfScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
         hyalData.waitingSecondScanConfirm = true;
     }
 <#else>
+    /* Clear flag */
+    macWrpData.scanRequestInProgress = false;
+
+    /* Send confirm to upper layer */
 <#if MAC_SERIALIZATION_EN == true>
-    _Serial_StringifyScanConfirm((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
-</#if>
+    if (macWrpData.serialScanRequest == true)
+    {
+        _Serial_StringifyScanConfirm((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
+    }
+    else if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
+    {
+        macWrpData.macWrpHandlers.scanConfirmCallback((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
+    }
+<#else>
     if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.scanConfirmCallback((MAC_WRP_SCAN_CONFIRM_PARAMS *)scParams);
     }
+</#if>
 </#if>
 }
 
@@ -1760,12 +1856,21 @@ static void _Callback_MacRfStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
         }
 
 <#if MAC_SERIALIZATION_EN == true>
-        _Serial_StringifyStartConfirm(&startConfirmParams);
-</#if>
+        if (macWrpData.serialStartRequest == true)
+        {
+            _Serial_StringifyStartConfirm(&startConfirmParams);
+            macWrpData.serialStartRequest = false;
+        }
+        else if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
+        }
+<#else>
         if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
         {
             macWrpData.macWrpHandlers.startConfirmCallback(&startConfirmParams);
         }
+</#if>
     }
     else
     {
@@ -1775,12 +1880,21 @@ static void _Callback_MacRfStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
     }
 <#else>
 <#if MAC_SERIALIZATION_EN == true>
-    _Serial_StringifyStartConfirm((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
-</#if>
+    if (macWrpData.serialStartRequest == true)
+    {
+        _Serial_StringifyStartConfirm((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
+        macWrpData.serialStartRequest = false;
+    }
+    else if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
+    {
+        macWrpData.macWrpHandlers.startConfirmCallback((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
+    }
+<#else>
     if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
     {
         macWrpData.macWrpHandlers.startConfirmCallback((MAC_WRP_START_CONFIRM_PARAMS *)scParams);
     }
+</#if>
 </#if>
 }
 
@@ -1834,9 +1948,18 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
     macWrpData.state = MAC_WRP_STATE_NOT_READY;
     macWrpData.macWrpHandle = (MAC_WRP_HANDLE) 0;
 <#if MAC_SERIALIZATION_EN == true>
+    macWrpData.macSerialHandle = (MAC_WRP_HANDLE) 1;
     macWrpData.usiHandle = SRV_USI_HANDLE_INVALID;
     macWrpData.debugSetLength = 0;
+    macWrpData.serialResetRequest = false;
+    macWrpData.serialStartRequest = false;
 </#if>
+    macWrpData.scanRequestInProgress = false;
+    for (uint8_t index = 0; index < HYAL_DATA_REQ_QUEUE_SIZE; index++)
+    {
+        dataReqQueue[index].used = false;
+    }
+
     return (SYS_MODULE_OBJ)0; 
 }
 
@@ -1867,7 +1990,7 @@ void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
     if (macWrpData.usiHandle == SRV_USI_HANDLE_INVALID)
     {
         /* Open USI instance for MAC serialization and register callback */
-        macWrpData.usiHandle = SRV_USI_Open(${MAC_SERIALIZATION_USI_INSTANCE});
+        macWrpData.usiHandle = SRV_USI_Open(G3_MAC_WRP_SERIAL_USI_INDEX);
         SRV_USI_CallbackRegister(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, _Callback_UsiMacProtocol);
     }
 
@@ -1892,7 +2015,11 @@ void MAC_WRP_Init(MAC_WRP_HANDLE handle, MAC_WRP_INIT *init)
 </#if>
 
     /* Validate the request */
+<#if MAC_SERIALIZATION_EN == true>
+    if ((handle != macWrpData.macWrpHandle) && (handle != macWrpData.macSerialHandle))
+<#else>
     if (handle != macWrpData.macWrpHandle)
+</#if>
     {
         return;
     }
@@ -1982,125 +2109,136 @@ SYS_STATUS MAC_WRP_Status(void)
 void MAC_WRP_DataRequest(MAC_WRP_HANDLE handle, MAC_WRP_DATA_REQUEST_PARAMS *drParams)
 {
     MAC_WRP_DATA_CONFIRM_PARAMS dataConfirm;
+    MAC_WRP_DATA_REQ_ENTRY *dataReqEntry;
 
+<#if MAC_SERIALIZATION_EN == true>
+    if ((handle != macWrpData.macWrpHandle) && (handle != macWrpData.macSerialHandle))
+<#else>
     if (handle != macWrpData.macWrpHandle)
+</#if>
     {
         /* Handle error */
         /* Send confirm to upper layer and return */
-        dataConfirm.msduHandle = drParams->msduHandle;
-        dataConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
-        dataConfirm.timestamp = 0;
-        dataConfirm.mediaType = (MAC_WRP_MEDIA_TYPE_CONFIRM) drParams->mediaType;
-<#if MAC_SERIALIZATION_EN == true>
-        _Serial_StringifyDataConfirm(&dataConfirm);
-</#if>
         if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
         {
+            dataConfirm.msduHandle = drParams->msduHandle;
+            dataConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
+            dataConfirm.timestamp = 0;
+            dataConfirm.mediaType = (MAC_WRP_MEDIA_TYPE_CONFIRM) drParams->mediaType;
             macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirm);
         }
 
         return;
     }
 
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
-    HYAL_DATA_REQUEST *hyalDataReq;
-
     SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_INFO, drParams->msdu, drParams->msduLength, "MAC_WRP_DataRequest (Handle: 0x%02X Media Type: %02X): ", drParams->msduHandle, drParams->mediaType);
 
     /* Look for free Data Request Entry */
-    hyalDataReq = _hyalGetFreeDataReqEntry();
-    
-    if (hyalDataReq == NULL)
+    dataReqEntry = _getFreeDataReqEntry();
+
+    if (dataReqEntry == NULL)
     {
         /* Too many data requests */
-        /* Send confirm to upper layer */
+        /* Send confirm to upper layer and return */
         dataConfirm.msduHandle = drParams->msduHandle;
         dataConfirm.status = MAC_WRP_STATUS_QUEUE_FULL;
         dataConfirm.timestamp = 0;
         dataConfirm.mediaType = (MAC_WRP_MEDIA_TYPE_CONFIRM)drParams->mediaType;
 <#if MAC_SERIALIZATION_EN == true>
-        _Serial_StringifyDataConfirm(&dataConfirm);
-</#if>
+        if (handle == macWrpData.macSerialHandle)
+        {
+            _Serial_StringifyDataConfirm(&dataConfirm);
+        }
+        else if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirm);
+        }
+<#else>
         if (macWrpData.macWrpHandlers.dataConfirmCallback != NULL)
         {
             macWrpData.macWrpHandlers.dataConfirmCallback(&dataConfirm);
         }
+</#if>
+
+        return;
+    }
+
+    /* Accept request */
+    /* Copy data to Mac struct (media type is not copied as it is the last field of drParams) */
+    memcpy(&dataReqEntry->dataReqParams, drParams, sizeof(dataReqEntry->dataReqParams));
+<#if MAC_SERIALIZATION_EN == true>
+    if (handle == macWrpData.macSerialHandle)
+    {
+        dataReqEntry->serialDataRequest = true;
     }
     else
     {
-        /* Accept request */
-        /* Copy parameters from MacWrp struct to Mac struct */
-        memcpy(&hyalDataReq->dataReqParams, drParams, sizeof(hyalDataReq->dataReqParams));
-        /* Copy MediaType */
-        hyalDataReq->dataReqMediaType = drParams->mediaType;
-        /* Copy data to backup buffer, just in case backup media has to be used, current pointer will not be valid later */
-        if (drParams->msduLength <= HYAL_BACKUP_BUF_SIZE)
-        {
-            memcpy(hyalDataReq->backupBuffer, drParams->msdu, drParams->msduLength);
-        }
+        dataReqEntry->serialDataRequest = false;
+    }
 
-        /* Different handling for Broadcast and Unicast requests */
-        if ((drParams->destAddress.addressMode == MAC_WRP_ADDRESS_MODE_SHORT) &&
-            (drParams->destAddress.shortAddress == MAC_WRP_SHORT_ADDRESS_BROADCAST))
+</#if>
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
+    /* Copy MediaType */
+    dataReqEntry->dataReqMediaType = drParams->mediaType;
+    /* Copy data to backup buffer, just in case backup media has to be used, current pointer will not be valid later */
+    if (drParams->msduLength <= HYAL_BACKUP_BUF_SIZE)
+    {
+        memcpy(dataReqEntry->backupBuffer, drParams->msdu, drParams->msduLength);
+    }
+
+    /* Different handling for Broadcast and Unicast requests */
+    if ((drParams->destAddress.addressMode == MAC_WRP_ADDRESS_MODE_SHORT) &&
+        (drParams->destAddress.shortAddress == MAC_WRP_SHORT_ADDRESS_BROADCAST))
+    {
+        /* Broadcast */
+        /* Overwrite MediaType to both */
+        dataReqEntry->dataReqMediaType = MAC_WRP_MEDIA_TYPE_REQ_BOTH;
+        /* Set control variable */
+        dataReqEntry->waitingSecondConfirm = false;
+        /* Request on both Media */
+        MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
+        MAC_RF_DataRequest(&dataReqEntry->dataReqParams);
+    }
+    else
+    {
+        /* Unicast */
+        switch (dataReqEntry->dataReqMediaType)
         {
-            /* Broadcast */
-            /* Overwrite MediaType to both */
-            hyalDataReq->dataReqMediaType = MAC_WRP_MEDIA_TYPE_REQ_BOTH;
-            /* Set control variable */
-            hyalDataReq->waitingSecondConfirm = false;
-            /* Request on both Media */
-            MAC_PLC_DataRequest(&hyalDataReq->dataReqParams);
-            MAC_RF_DataRequest(&hyalDataReq->dataReqParams);
-        }
-        else
-        {
-            /* Unicast */
-            switch (hyalDataReq->dataReqMediaType)
-            {
-                case MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF:
-                    MAC_PLC_DataRequest(&hyalDataReq->dataReqParams);
-                    break;
-                case MAC_WRP_MEDIA_TYPE_REQ_RF_BACKUP_PLC:
-                    MAC_RF_DataRequest(&hyalDataReq->dataReqParams);
-                    break;
-                case MAC_WRP_MEDIA_TYPE_REQ_BOTH:
-                    /* Set control variable */
-                    hyalDataReq->waitingSecondConfirm = false;
-                    /* Request on both Media */
-                    MAC_PLC_DataRequest(&hyalDataReq->dataReqParams);
-                    MAC_RF_DataRequest(&hyalDataReq->dataReqParams);
-                    break;
-                case MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP:
-                    MAC_PLC_DataRequest(&hyalDataReq->dataReqParams);
-                    break;
-                case MAC_WRP_MEDIA_TYPE_REQ_RF_NO_BACKUP:
-                    MAC_RF_DataRequest(&hyalDataReq->dataReqParams);
-                    break;
-                default: /* PLC only */
-                    hyalDataReq->dataReqMediaType = MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP;
-                    MAC_PLC_DataRequest(&hyalDataReq->dataReqParams);
-                    break;
-            }
+            case MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF:
+            case MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP:
+                MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
+                break;
+            case MAC_WRP_MEDIA_TYPE_REQ_RF_BACKUP_PLC:
+            case MAC_WRP_MEDIA_TYPE_REQ_RF_NO_BACKUP:
+                MAC_RF_DataRequest(&dataReqEntry->dataReqParams);
+                break;
+            case MAC_WRP_MEDIA_TYPE_REQ_BOTH:
+                /* Set control variable */
+                dataReqEntry->waitingSecondConfirm = false;
+                /* Request on both Media */
+                MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
+                MAC_RF_DataRequest(&dataReqEntry->dataReqParams);
+                break;
+            default: /* PLC only */
+                dataReqEntry->dataReqMediaType = MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP;
+                MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
+                break;
         }
     }
 <#elseif MAC_PLC_PRESENT == true>
-    MAC_DATA_REQUEST_PARAMS dataReq;
-    SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_INFO, drParams->msdu, drParams->msduLength, "MAC_WRP_DataRequest (Handle %02X): ", drParams->msduHandle);
-    // Copy data to Mac struct (media type is not copied as it is the last field of drParams)
-    memcpy(&dataReq, drParams, sizeof(dataReq));
-    MAC_PLC_DataRequest(&dataReq);
+    MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
 <#elseif MAC_RF_PRESENT == true>
-    MAC_DATA_REQUEST_PARAMS dataReq;
-    SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_INFO, drParams->msdu, drParams->msduLength, "MAC_WRP_DataRequest (Handle %02X): ", drParams->msduHandle);
-    // Copy data to Mac struct (media type is not copied as it is the last field of drParams)
-    memcpy(&dataReq, drParams, sizeof(dataReq));
-    MAC_RF_DataRequest(&dataReq);
+    MAC_RF_DataRequest(&dataReqEntry->dataReqParams);
 </#if>
 }
 
 MAC_WRP_STATUS MAC_WRP_GetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBUTE attribute, uint16_t index, MAC_WRP_PIB_VALUE *pibValue)
 {
+<#if MAC_SERIALIZATION_EN == true>
+    if ((handle != macWrpData.macWrpHandle) && (handle != macWrpData.macSerialHandle))
+<#else>
     if (handle != macWrpData.macWrpHandle)
+</#if>
     {
         // Handle error
         pibValue->length = 0;
@@ -2175,7 +2313,11 @@ MAC_WRP_STATUS MAC_WRP_GetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBU
 
 MAC_WRP_STATUS MAC_WRP_SetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBUTE attribute, uint16_t index, const MAC_WRP_PIB_VALUE *pibValue)
 {
+<#if MAC_SERIALIZATION_EN == true>
+    if ((handle != macWrpData.macWrpHandle) && (handle != macWrpData.macSerialHandle))
+<#else>
     if (handle != macWrpData.macWrpHandle)
+</#if>
     {
         // Handle error
         return MAC_WRP_STATUS_INVALID_HANDLE;
@@ -2229,17 +2371,18 @@ MAC_WRP_STATUS MAC_WRP_SetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBU
 
 void MAC_WRP_ResetRequest(MAC_WRP_HANDLE handle, MAC_WRP_RESET_REQUEST_PARAMS *rstParams)
 {
+<#if MAC_SERIALIZATION_EN == true>
+    if ((handle != macWrpData.macWrpHandle) && (handle != macWrpData.macSerialHandle))
+<#else>
     if (handle != macWrpData.macWrpHandle)
+</#if>
     {
         /* Handle error */
         /* Send confirm to upper layer and return */
         MAC_WRP_RESET_CONFIRM_PARAMS resetConfirm;
-        resetConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
-<#if MAC_SERIALIZATION_EN == true>
-        _Serial_StringifyResetConfirm(&resetConfirm);
-</#if>
         if (macWrpData.macWrpHandlers.resetConfirmCallback != NULL)
         {
+            resetConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
             macWrpData.macWrpHandlers.resetConfirmCallback(&resetConfirm);
         }
 
@@ -2269,28 +2412,66 @@ void MAC_WRP_ResetRequest(MAC_WRP_HANDLE handle, MAC_WRP_RESET_REQUEST_PARAMS *r
 
 void MAC_WRP_ScanRequest(MAC_WRP_HANDLE handle, MAC_WRP_SCAN_REQUEST_PARAMS *scanParams)
 {
+    MAC_WRP_SCAN_CONFIRM_PARAMS scanConfirm;
+
+<#if MAC_SERIALIZATION_EN == true>
+    if ((handle != macWrpData.macWrpHandle) && (handle != macWrpData.macSerialHandle))
+<#else>
     if (handle != macWrpData.macWrpHandle)
+</#if>
     {
         /* Handle error */
         /* Send confirm to upper layer and return */
-        MAC_WRP_SCAN_CONFIRM_PARAMS scanConfirm;
-        scanConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
-<#if MAC_SERIALIZATION_EN == true>
-        _Serial_StringifyScanConfirm(&scanConfirm);
-</#if>
         if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
         {
+            scanConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
             macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirm);
         }
 
         return;
     }
 
+    if (macWrpData.scanRequestInProgress == true)
+    {
+        /* Scan request already in progress */
+        /* Send confirm to upper layer and return */
+        scanConfirm.status = MAC_WRP_STATUS_DENIED;
+<#if MAC_SERIALIZATION_EN == true>
+        if (handle == macWrpData.macSerialHandle)
+        {
+            _Serial_StringifyScanConfirm(&scanConfirm);
+        }
+        else if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirm);
+        }
+<#else>
+        if (macWrpData.macWrpHandlers.scanConfirmCallback != NULL)
+        {
+            macWrpData.macWrpHandlers.scanConfirmCallback(&scanConfirm);
+        }
+</#if>
+
+        return;
+    }
+
     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_ScanRequest: Duration: %u", scanParams->scanDuration);
 
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     // Set control variable
+    macWrpData.scanRequestInProgress = true;
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     hyalData.waitingSecondScanConfirm = false;
+</#if>
+<#if MAC_SERIALIZATION_EN == true>
+    if (handle == macWrpData.macSerialHandle)
+    {
+        macWrpData.serialScanRequest = true;
+    }
+    else
+    {
+        macWrpData.serialScanRequest = false;
+    }
+
 </#if>
 <#if MAC_PLC_PRESENT == true>
     // Set PLC MAC on Scan state
@@ -2304,17 +2485,18 @@ void MAC_WRP_ScanRequest(MAC_WRP_HANDLE handle, MAC_WRP_SCAN_REQUEST_PARAMS *sca
 
 void MAC_WRP_StartRequest(MAC_WRP_HANDLE handle, MAC_WRP_START_REQUEST_PARAMS *startParams)
 {
+<#if MAC_SERIALIZATION_EN == true>
+    if ((handle != macWrpData.macWrpHandle) && (handle != macWrpData.macSerialHandle))
+<#else>
     if (handle != macWrpData.macWrpHandle)
+</#if>
     {
         /* Handle error */
         /* Send confirm to upper layer and return */
         MAC_WRP_START_CONFIRM_PARAMS startConfirm;
-        startConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
-<#if MAC_SERIALIZATION_EN == true>
-        _Serial_StringifyStartConfirm(&startConfirm);
-</#if>
         if (macWrpData.macWrpHandlers.startConfirmCallback != NULL)
         {
+            startConfirm.status = MAC_WRP_STATUS_INVALID_HANDLE;
             macWrpData.macWrpHandlers.startConfirmCallback(&startConfirm);
         }
 

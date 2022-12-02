@@ -251,8 +251,6 @@ def g3ShowUsiInstance(symbol, event):
         usiInstances = filter(lambda k: "srv_usi_" in k, Database.getActiveComponentIDs())
         symbol.setMax(len(usiInstances) - 1)
 
-        Database.activateComponents(["srv_usi"])
-
 #Set symbols of other components
 def setVal(component, symbol, value):
     triggerDict = {"Component":component,"Id":symbol, "Value":value}

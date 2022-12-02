@@ -18,3 +18,6 @@
 /* MAC Wrapper Identification */
 #define G3_MAC_WRP_INDEX_0               0
 #define G3_MAC_WRP_INSTANCES_NUMBER      1
+<#if MAC_SERIALIZATION_EN == true>
+#define G3_MAC_WRP_SERIAL_USI_INDEX      ${MAC_SERIALIZATION_USI_INSTANCE}
+</#if>
