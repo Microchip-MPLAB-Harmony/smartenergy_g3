@@ -1174,6 +1174,8 @@ void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
 </#if>
 <#if MAC_RF_PRESENT == true>
     MAC_RF_Tasks();
+<#else>
+    MAC_COMMON_GetMsCounter(); // Just to avoid counter overflow
 </#if>
 }
 
