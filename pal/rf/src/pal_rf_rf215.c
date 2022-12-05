@@ -101,8 +101,8 @@ static void _palRfRxIndCallback(DRV_RF215_RX_INDICATION_OBJ* indObj, uintptr_t c
     
     pData = indObj->psdu;
     len = indObj->psduLen;
-    rxParameters.timeIni = indObj->timeIni;
-    rxParameters.timeEnd = indObj->timeIni + indObj->ppduDurationUS;
+    rxParameters.timeIni = indObj->timeIniCount;
+    rxParameters.timeEnd = indObj->timeIniCount + indObj->ppduDurationCount;
     rxParameters.rssi = indObj->rssiDBm;
     rxParameters.fcsOk = indObj->fcsOk;
         
@@ -120,8 +120,8 @@ static void _palRfTxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CONF
     uint32_t timeEnd;
     
     /* Get Frame times */
-    timeIni = cfmObj->timeIni;
-    timeEnd = timeIni + cfmObj->ppduDurationUS;
+    timeIni = cfmObj->timeIniCount;
+    timeEnd = timeIni + cfmObj->ppduDurationCount;
     
     switch(cfmObj->txResult)
     {
@@ -264,7 +264,7 @@ void PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
     txReqObj.psdu = pData;
     txReqObj.psduLen = length;
     txReqObj.timeMode = TX_TIME_ABSOLUTE;
-    txReqObj.time = txParameters->time;
+    txReqObj.timeCount = txParameters->time;
     txReqObj.txPwrAtt = txParameters->txPowerAttenuation;
     txReqObj.modScheme = palRfData.rfPhyModScheme;
     
@@ -289,8 +289,8 @@ void PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
         DRV_RF215_TX_CONFIRM_OBJ cfmObj;
         
         cfmObj.txResult = txResult;
-        cfmObj.timeIni = SYS_TIME_Counter64Get();
-        cfmObj.ppduDurationUS = 0;
+        cfmObj.timeIniCount = SYS_TIME_Counter64Get();
+        cfmObj.ppduDurationCount = 0;
         _palRfTxCfmCallback(DRV_RF215_TX_HANDLE_INVALID, &cfmObj, 0);
     }
 }
