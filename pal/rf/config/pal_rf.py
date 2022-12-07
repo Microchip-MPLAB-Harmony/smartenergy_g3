@@ -23,6 +23,21 @@
 *****************************************************************************"""
 g3_pal_rf_helpkeyword = "mcc_g3_pal_rf_config"
 
+def showSymbol(symbol, event):
+    symbol.setVisible(event["value"])
+
+    if (event["value"] == True):
+        usiInstances = filter(lambda k: "srv_usi_" in k, Database.getActiveComponentIDs())
+        symbol.setMax(len(usiInstances) - 1)
+
+def activatesDependencies(symbol, event):
+    if (event["id"] == "G3_PAL_RF_PHY_SNIFFER_EN"):
+        if (event["value"] == True):
+            if(Database.getComponentByID("srv_usi") == None):
+                Database.activateComponents(["srv_usi"])
+                
+            if(Database.getComponentByID("srv_rsniffer") == None):
+                Database.activateComponents(["srv_rsniffer"])
 
 def instantiateComponent(g3PalRfComponent):
     
@@ -42,28 +57,47 @@ def instantiateComponent(g3PalRfComponent):
     g3PalRfConfigComment = g3PalRfComponent.createCommentSymbol("G3_PAL_RF_CONFIG_COMMENT", None)
     g3PalRfConfigComment.setLabel("***Selected RF PHY driver is not compatible with this PAL RF***")
     g3PalRfConfigComment.setVisible(False)
-    
 
+    g3PalRfPhySnifferEnable = g3PalRfComponent.createBooleanSymbol("G3_PAL_RF_PHY_SNIFFER_EN", None)
+    g3PalRfPhySnifferEnable.setLabel("Enable RF PHY sniffer")
+    g3PalRfPhySnifferEnable.setDefaultValue(False)
+    g3PalRfPhySnifferEnable.setHelp(g3_pal_rf_helpkeyword)
+
+    g3PalRfUSIInstance = g3PalRfComponent.createIntegerSymbol("G3_PAL_RF_USI_INSTANCE", g3PalRfPhySnifferEnable)
+    g3PalRfUSIInstance.setLabel("USI Instance")
+    g3PalRfUSIInstance.setDefaultValue(0)
+    g3PalRfUSIInstance.setMax(0)
+    g3PalRfUSIInstance.setMin(0)
+    g3PalRfUSIInstance.setVisible(False)
+    g3PalRfUSIInstance.setHelp(g3_pal_rf_helpkeyword)
+    g3PalRfUSIInstance.setDependencies(showSymbol, ["G3_PAL_RF_PHY_SNIFFER_EN"])
+
+    g3PalRfDummySymbol = g3PalRfComponent.createBooleanSymbol("G3_PAL_RF_DUMMY", None)
+    g3PalRfDummySymbol.setLabel("Dummy")
+    g3PalRfDummySymbol.setDefaultValue(False)
+    g3PalRfDummySymbol.setVisible(False)
+    g3PalRfDummySymbol.setDependencies(activatesDependencies, ["G3_PAL_RF_PHY_SNIFFER_EN"])
+    
     #####################################################################################################################################
     # G3 PAL RF FILES 
 
     global g3PalRfSrcFile
     g3PalRfSrcFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_SOURCE", None)
-    g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_rf215.c")
+    g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_rf215.c.ftl")
     g3PalRfSrcFile.setOutputName("pal_rf.c")
     g3PalRfSrcFile.setDestPath("stack/g3/pal/rf")
     g3PalRfSrcFile.setProjectPath("config/" + configName + "/stack/g3/pal/rf/")
     g3PalRfSrcFile.setType("SOURCE")
-    g3PalRfSrcFile.setMarkup(False)
+    g3PalRfSrcFile.setMarkup(True)
 
     global g3PalRfHdrFile
     g3PalRfHdrFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_HEADER", None)
-    g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h")
+    g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h.ftl")
     g3PalRfHdrFile.setOutputName("pal_rf.h")
     g3PalRfHdrFile.setDestPath("stack/g3/pal/rf")
     g3PalRfHdrFile.setProjectPath("config/" + configName + "/stack/g3/pal/rf/")
     g3PalRfHdrFile.setType("HEADER")
-    g3PalRfHdrFile.setMarkup(False)
+    g3PalRfHdrFile.setMarkup(True)
 
     #####################################################################################################################################
     # G3 PAL RF TEMPLATES 
@@ -98,8 +132,8 @@ def onAttachmentConnected(source, target):
         deviceUsed = localComponent.getSymbolByID("G3_PAL_RF_DEVICE")
         deviceUsed.setValue(remoteComponentID.upper())
         if (remoteComponentID.upper() == "DRVRF215"):
-            g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_rf215.c")
-            g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h")
+            g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_rf215.c.ftl")
+            g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h.ftl")
             g3PalRfConfigComment.setVisible(False)
         elif (remoteComponentID.upper() == "WBZ45"):  ########################      TBD!!!!!!!!!!!!!!!!
             g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_wbz45.c")
@@ -118,8 +152,8 @@ def onAttachmentDisconnected(source, target):
 
     if localConnectID == "g3PalRf_DrvRfPhy_dependency":
         localComponent.getSymbolByID("G3_PAL_RF_DEVICE").clearValue()
-        g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_rf215.c")
-        g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h")
+        g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_rf215.c.ftl")
+        g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h.ftl")
         g3PalRfConfigComment.setVisible(False)
 
     

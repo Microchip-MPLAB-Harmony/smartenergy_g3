@@ -51,8 +51,8 @@
 #include "configuration.h"
 #include "system/time/sys_time.h"
 #include "driver/driver.h"
-// TBD !!!!!!!!!!!!!!!  #include "driver/rf215/drv_rf215.h"
-// TBD !!!!!!!!!!!!!!!  #include "driver/rf215/drv_rf215_definitions.h"
+#include "driver/rf215/drv_rf215.h"
+#include "driver/rf215/drv_rf215_definitions.h"
 #include "pal_rf.h"
 
 // *****************************************************************************
@@ -60,14 +60,14 @@
 // Section: File Scope Variables
 // *****************************************************************************
 // *****************************************************************************
-static PAL_RF_DATA palRfData;
+static PAL_RF_DATA palRfData = {0};
 
 const PAL_RF_OBJECT_BASE PAL_RF_OBJECT_BASE_Default =
 {
     .PAL_RF_Initialize = PAL_RF_Initialize,
+    .PAL_RF_HandleGet = PAL_RF_HandleGet,
     .PAL_RF_Status = PAL_RF_Status,
-    .PAL_RF_Open = PAL_RF_Open,
-    .PAL_RF_Close = PAL_RF_Close,
+    .PAL_RF_Deinitialize = PAL_RF_Deinitialize,
     .PAL_RF_TxRequest = PAL_RF_TxRequest,
     .PAL_RF_Reset = PAL_RF_Reset,
     .PAL_RF_GetPhyTime = PAL_RF_GetPhyTime,
@@ -88,10 +88,6 @@ const PAL_RF_OBJECT_BASE PAL_RF_OBJECT_BASE_Default =
 // Section: local callbacks
 // *****************************************************************************
 // *****************************************************************************
-static void _palRfInitCallback(uintptr_t context)
-{
-    palRfData.status = SYS_STATUS_READY;
-}
 
 static void _palRfRxIndCallback(DRV_RF215_RX_INDICATION_OBJ* indObj, uintptr_t ctxt)
 {
@@ -101,8 +97,8 @@ static void _palRfRxIndCallback(DRV_RF215_RX_INDICATION_OBJ* indObj, uintptr_t c
     
     pData = indObj->psdu;
     len = indObj->psduLen;
-    rxParameters.timeIni = indObj->timeIniCount;
-    rxParameters.timeEnd = indObj->timeIniCount + indObj->ppduDurationCount;
+    rxParameters.timeIniCount = indObj->timeIniCount;
+    rxParameters.timeEndCount = indObj->timeIniCount + indObj->ppduDurationCount;
     rxParameters.rssi = indObj->rssiDBm;
     rxParameters.fcsOk = indObj->fcsOk;
         
@@ -116,12 +112,12 @@ static void _palRfTxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CONF
     uintptr_t ctxt)
 {
     PAL_RF_PHY_STATUS status = PAL_RF_PHY_ERROR;
-    uint32_t timeIni;
-    uint32_t timeEnd;
+    uint32_t timeIniCount;
+    uint32_t timeEndCount;
     
     /* Get Frame times */
-    timeIni = cfmObj->timeIniCount;
-    timeEnd = timeIni + cfmObj->ppduDurationCount;
+    timeIniCount = cfmObj->timeIniCount;
+    timeEndCount = timeIniCount + cfmObj->ppduDurationCount;
     
     switch(cfmObj->txResult)
     {
@@ -164,9 +160,27 @@ static void _palRfTxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CONF
     
     if (palRfData.rfPhyHandlers.palRfTxConfirm)
     {
-        palRfData.rfPhyHandlers.palRfTxConfirm(status, timeIni, timeEnd);
+        palRfData.rfPhyHandlers.palRfTxConfirm(status, timeIniCount, timeEndCount);
     }
     
+}
+
+static void _palRfInitCallback(uintptr_t context)
+{
+    palRfData.drvRfPhyHandle = DRV_RF215_Open(DRV_RF215_INDEX_0, RF215_TRX_ID_RF09);
+    
+    if (palRfData.drvRfPhyHandle == DRV_HANDLE_INVALID)
+    {
+        palRfData.status = SYS_STATUS_ERROR;
+    }
+    else
+    {
+        /* Register RF PHY driver callbacks */
+        DRV_RF215_RxIndCallbackRegister(palRfData.drvRfPhyHandle, _palRfRxIndCallback, 0);
+        DRV_RF215_TxCfmCallbackRegister(palRfData.drvRfPhyHandle, _palRfTxCfmCallback, 0);
+
+        palRfData.status = SYS_STATUS_READY;
+    }
 }
 
 // *****************************************************************************
@@ -180,24 +194,41 @@ SYS_MODULE_OBJ PAL_RF_Initialize(const SYS_MODULE_INDEX index,
 {
     PAL_RF_INIT *palInit = (PAL_RF_INIT *)init;
     
-    palRfData.status = SYS_STATUS_BUSY;
+    if (palRfData.status == PAL_RF_STATUS_DEINITIALIZED)
+    {
+        _palRfInitCallback(0);
+    }
+    else
+    {
+        palRfData.status = SYS_STATUS_BUSY;
     
-    palRfData.drvRfPhyHandle = DRV_HANDLE_INVALID;
+        palRfData.drvRfPhyHandle = DRV_HANDLE_INVALID;
+
+        DRV_RF215_ReadyStatusCallbackRegister(DRV_RF215_INDEX_0, _palRfInitCallback, 0);
+
+        palRfData.rfPhyHandlers.palRfDataIndication = palInit->rfPhyHandlers.palRfDataIndication;
+        palRfData.rfPhyHandlers.palRfTxConfirm = palInit->rfPhyHandlers.palRfTxConfirm;
+
+        palRfData.rfPhyModScheme = FSK_FEC_OFF;
+    }
     
-    // 802.15.4 - NOT SUPPORTED
-    // DRV_RF215_ReadyStatusCallbackRegister(DRV_RF215_INDEX_0, _palRfInitCallback, 0);
-        
-    palRfData.rfPhyHandlers.palRfDataIndication = palInit->rfPhyHandlers.palRfDataIndication;
-    palRfData.rfPhyHandlers.palRfTxConfirm = palInit->rfPhyHandlers.palRfTxConfirm;
-    
-    palRfData.rfPhyModScheme = FSK_FEC_OFF;
-    
-    return (SYS_MODULE_OBJ)0;    
+    return (SYS_MODULE_OBJ)PAL_RF_PHY_INDEX;    
 }
 
-SYS_STATUS PAL_RF_Status(SYS_MODULE_OBJ object)
+PAL_RF_HANDLE PAL_RF_HandleGet(const SYS_MODULE_INDEX index)
+{    
+    /* Check Single instance */
+    if (index != PAL_RF_PHY_INDEX)
+    {
+        return PAL_RF_HANDLE_INVALID;
+    }
+
+    return (PAL_RF_HANDLE)&palRfData;
+}
+
+PAL_RF_STATUS PAL_RF_Status(SYS_MODULE_OBJ object)
 {
-    if (object != 0)
+    if (object != (SYS_MODULE_OBJ)PAL_RF_PHY_INDEX)
     {
         return SYS_STATUS_ERROR;
     }
@@ -205,88 +236,60 @@ SYS_STATUS PAL_RF_Status(SYS_MODULE_OBJ object)
     return palRfData.status;
 }
  
-PAL_RF_HANDLE PAL_RF_Open(const SYS_MODULE_INDEX drvIndex, 
-        const DRV_IO_INTENT intent)
+void PAL_RF_Deinitialize(SYS_MODULE_OBJ object)
 {
-    if (palRfData.status == SYS_STATUS_BUSY)
-    {
-        /* Not initialized yet */
-        return PAL_RF_HANDLE_INVALID;
-    }
-    
-    if (palRfData.drvRfPhyHandle != DRV_HANDLE_INVALID)
-    {
-        /* Already open */
-        return (PAL_RF_HANDLE)palRfData.drvRfPhyHandle; 
-    }
-    
-    //palRfData.drvRfPhyHandle = DRV_RF215_Open(DRV_RF215_INDEX_0, RF215_TRX_ID_RF09);
-    // 802.15.4 - NOT SUPPORTED
-    
-    if (palRfData.drvRfPhyHandle == DRV_HANDLE_INVALID)
-    {
-        palRfData.status = SYS_STATUS_ERROR;
-        return PAL_RF_HANDLE_INVALID;
-    }
-    
-    /* Register RF PHY driver callbacks */   // 802.15.4 - NOT SUPPORTED - How to set Callbacks??
-    DRV_RF215_RxIndCallbackRegister(palRfData.drvRfPhyHandle, _palRfRxIndCallback, 0);
-    DRV_RF215_TxCfmCallbackRegister(palRfData.drvRfPhyHandle, _palRfTxCfmCallback, 0);
-    
-    return (PAL_RF_HANDLE)palRfData.drvRfPhyHandle;
-}
- 
-void PAL_RF_Close(PAL_RF_HANDLE handle)
-{
-    if (handle != (PAL_RF_HANDLE)palRfData.drvRfPhyHandle)
+    if (object != (SYS_MODULE_OBJ)PAL_RF_PHY_INDEX)
     {
         return;
     }
     
+    palRfData.status = PAL_RF_STATUS_DEINITIALIZED;
+    
+    DRV_RF215_Close((DRV_HANDLE)palRfData.drvRfPhyHandle);
     palRfData.drvRfPhyHandle = DRV_HANDLE_INVALID;
-    // 802.15.4 - NOT SUPPORTED
+    
 }
  
 void PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData, 
         uint16_t length, PAL_RF_TX_PARAMETERS *txParameters)
 {
-    Frame_info_t txFrameInfo;
-    Csma_mode_t  txCsmaMode;
-    Bool frameRetry = false;
-    Retval_t txResult;
+    DRV_RF215_TX_REQUEST_OBJ txReqObj;
+    DRV_RF215_TX_RESULT txResult;
             
-    if (handle != (PAL_RF_HANDLE)palRfData.drvRfPhyHandle)
+    if (handle != (PAL_RF_HANDLE)&palRfData)
     {
         if (palRfData.rfPhyHandlers.palRfTxConfirm)
         {
-            palRfData.rfPhyHandlers.palRfTxConfirm(PAL_RF_PHY_TRX_OFF, txParameters->time, 
-                    txParameters->time);
+            palRfData.rfPhyHandlers.palRfTxConfirm(PAL_RF_PHY_TRX_OFF, txParameters->timeCount, 
+                    txParameters->timeCount);
         }
         return;
     }
     
-    txFrameInfo ?? // 802.15.4 TBD
-    // txReqObj.psdu = pData;
-    // txReqObj.psduLen = length;
-    // txReqObj.timeMode = TX_TIME_ABSOLUTE;
-    // txReqObj.timeCount = txParameters->time;
-    // txReqObj.txPwrAtt = txParameters->txPowerAttenuation;
-    // txReqObj.modScheme = palRfData.rfPhyModScheme;
+    txReqObj.psdu = pData;
+    txReqObj.psduLen = length;
+    txReqObj.timeMode = TX_TIME_ABSOLUTE;
+    txReqObj.timeCount = txParameters->timeCount;
+    txReqObj.txPwrAtt = txParameters->txPowerAttenuation;
+    txReqObj.modScheme = palRfData.rfPhyModScheme;
     
     if (txParameters->csmaEnable)
     {
-        /* CSMA used: 802.15.4  TBD */
-        txCsmaMode = ??;
+        /* CSMA used: Energy above threshold and carrier sense CCA Mode */
+        txReqObj.ccaMode = PHY_CCA_MODE_3;
+        /* Programmed TX canceled once RX frame detected */
+        txReqObj.cancelByRx = true;
     }
     else
     {
-        /* CSMA not used: 802.15.4  TBD */
-        txCsmaMode = 0;
+        /* CSMA not used */
+        txReqObj.ccaMode = PHY_CCA_OFF;
+        txReqObj.cancelByRx = false;
     }
     
-    txResult = PHY_TxFrame(&txFrame, txCsmaMode, frameRetry);
+    DRV_RF215_TxRequest(palRfData.drvRfPhyHandle, &txReqObj, &txResult);
     
-    if (txResult != PHY_BUSY)
+    if (txResult != RF215_TX_SUCCESS)
     {
         DRV_RF215_TX_CONFIRM_OBJ cfmObj;
         
@@ -299,17 +302,20 @@ void PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
  
 void PAL_RF_Reset(PAL_RF_HANDLE handle)
 {
-    if (handle != palRfData.drvRfPhyHandle)
+    uint8_t resetValue = 1;
+    
+    if (handle != (PAL_RF_HANDLE)&palRfData)
     {
         return;
     }
     
-    PHY_reset();  // 802.15.4 API
+    DRV_RF215_SetPib(palRfData.drvRfPhyHandle, RF215_PIB_DEVICE_RESET, &resetValue);
+    DRV_RF215_SetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_STATS_RESET, &resetValue);
 }
  
 uint64_t PAL_RF_GetPhyTime(PAL_RF_HANDLE handle)
 {
-    if (handle != palRfData.drvRfPhyHandle)
+    if (handle != (PAL_RF_HANDLE)&palRfData)
     {
         return 0;
     }
@@ -319,42 +325,44 @@ uint64_t PAL_RF_GetPhyTime(PAL_RF_HANDLE handle)
 
 PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibObj)
 {
-    if (handle != palRfData.drvRfPhyHandle)
+    if (handle != (PAL_RF_HANDLE)&palRfData)
     {
         return PAL_RF_PIB_INVALID_HANDLE;
     }
     
-    if (palRfData.status != SYS_STATUS_READY)
+    if (palRfData.status != PAL_RF_STATUS_READY)
     {
         /* Ignore request */
         return PAL_RF_PIB_ERROR;
     }
     
-    return (PAL_RF_PIB_RESULT)PHY_PibGet(pibObj->pib, pibObj->pData);    // 802.15.4 API
+    return (PAL_RF_PIB_RESULT)DRV_RF215_GetPib(palRfData.drvRfPhyHandle, pibObj->pib, 
+            pibObj->pData);
 }
 
 PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibObj)
 {
-    if (handle != palRfData.drvRfPhyHandle)
+    if (handle != (PAL_RF_HANDLE)&palRfData)
     {
         return PAL_RF_PIB_INVALID_HANDLE;
     }
     
-    if (palRfData.status != SYS_STATUS_READY)
+    if (palRfData.status != PAL_RF_STATUS_READY)
     {
         /* Ignore request */
         return PAL_RF_PIB_ERROR;
     }
     
-    return (PAL_RF_PIB_RESULT)PHY_PibSet(pibObj->pib, pibObj->pData);    // 802.15.4 API
+    return (PAL_RF_PIB_RESULT)DRV_RF215_SetPib(palRfData.drvRfPhyHandle, pibObj->pib, 
+            pibObj->pData);
 }
 
 uint8_t PAL_RF_GetRfPhyPibLength(PAL_RF_HANDLE handle, DRV_RF215_PIB_ATTRIBUTE attribute)
 {
-    if (handle != palRfData.drvRfPhyHandle)
+    if (handle != (PAL_RF_HANDLE)&palRfData)
     {
         return PAL_RF_PIB_INVALID_HANDLE;
     }
     
-    return 0;      // 802.15.4 API . NOT USED
+    return DRV_RF215_GetPibSize(attribute);
 }

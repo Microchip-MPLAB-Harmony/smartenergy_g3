@@ -73,18 +73,17 @@
 */
 typedef enum {
     
-    PAL_PLC_SUCCESS = MAC_RT_STATUS_SUCCESS,
-    PAL_PLC_CHANNEL_ACCESS_FAILURE = MAC_RT_STATUS_CHANNEL_ACCESS_FAILURE,
-    PAL_PLC_DENIED = MAC_RT_STATUS_DENIED, 
-    PAL_PLC_INVALID_INDEX = MAC_RT_STATUS_INVALID_INDEX, 
-    PAL_PLC_INVALID_PARAMETER = MAC_RT_STATUS_INVALID_PARAMETER, 
-    PAL_PLC_NO_ACK = MAC_RT_STATUS_NO_ACK, 
-    PAL_PLC_READ_ONLY = MAC_RT_STATUS_READ_ONLY, 
-    PAL_PLC_TRANSACTION_OVERFLOW = MAC_RT_STATUS_TRANSACTION_OVERFLOW, 
-    PAL_PLC_UNSUPPORTED_ATTRIBUTE = MAC_RT_STATUS_UNSUPPORTED_ATTRIBUTE,
-    PAL_PLC_ERROR
+    PAL_PLC_PIB_SUCCESS = MAC_RT_STATUS_SUCCESS,
+    PAL_PLC_PIB_CHANNEL_ACCESS_FAILURE = MAC_RT_STATUS_CHANNEL_ACCESS_FAILURE,
+    PAL_PLC_PIB_DENIED = MAC_RT_STATUS_DENIED, 
+    PAL_PLC_PIB_INVALID_INDEX = MAC_RT_STATUS_INVALID_INDEX, 
+    PAL_PLC_PIB_INVALID_PARAMETER = MAC_RT_STATUS_INVALID_PARAMETER, 
+    PAL_PLC_PIB_NO_ACK = MAC_RT_STATUS_NO_ACK, 
+    PAL_PLC_PIB_READ_ONLY = MAC_RT_STATUS_READ_ONLY, 
+    PAL_PLC_PIB_TRANSACTION_OVERFLOW = MAC_RT_STATUS_TRANSACTION_OVERFLOW, 
+    PAL_PLC_PIB_UNSUPPORTED_ATTRIBUTE = MAC_RT_STATUS_UNSUPPORTED_ATTRIBUTE,
             
-} PAL_PLC_RESULT;
+} PAL_PLC_PIB_RESULT;
 
 // *****************************************************************************
 /* PAL PLC Handle
@@ -120,12 +119,12 @@ typedef uintptr_t PAL_PLC_HANDLE;
 #define PAL_PLC_HANDLE_INVALID   ((PAL_PLC_HANDLE) (-1))
 
 typedef enum {
-    PAL_PLC_STATE_IDLE,
-    PAL_PLC_STATE_INIT,
-    PAL_PLC_STATE_OPENING,
-    PAL_PLC_STATE_READY,
-    PAL_PLC_STATE_ERROR
-} PAL_PLC_STATE;
+    PAL_PLC_STATUS_UNINITIALIZED = SYS_STATUS_UNINITIALIZED,
+    PAL_PLC_STATUS_BUSY = SYS_STATUS_BUSY,
+    PAL_PLC_STATUS_READY = SYS_STATUS_READY,
+    PAL_PLC_STATUS_ERROR = SYS_STATUS_ERROR,
+    PAL_PLC_STATUS_INVALID_OBJECT = SYS_STATUS_ERROR_EXTENDED - 1,         
+} PAL_PLC_STATUS;
 
 typedef void (*PAL_PLC_DataIndication)(uint8_t *pData, uint16_t length);
 typedef void (*PAL_PLC_CommStatusIndication)(uint8_t *pData);
@@ -150,17 +149,18 @@ typedef struct
 {
     MAC_RT_BAND                      macRtBand;
     PAL_PLC_HANDLERS                 macRtHandlers;
+    bool                             initMIB;
 } PAL_PLC_INIT;
 
 typedef struct  
 {
     SYS_MODULE_OBJ   (*PAL_PLC_Initialize)(const SYS_MODULE_INDEX index, const SYS_MODULE_INIT * const init);
+    
+    PAL_PLC_HANDLE   (*PAL_PLC_HandleGet)(const SYS_MODULE_INDEX index);
                      
-    SYS_STATUS       (*PAL_PLC_Status)(SYS_MODULE_OBJ object);
+    PAL_PLC_STATUS   (*PAL_PLC_Status)(SYS_MODULE_OBJ object);
                      
-    DRV_HANDLE       (*PAL_PLC_Open)(const SYS_MODULE_INDEX drvIndex, const DRV_IO_INTENT intent);
-                     
-    void             (*PAL_PLC_Close)(DRV_HANDLE handle);
+    void             (*PAL_PLC_Deinitialize)(SYS_MODULE_OBJ object);
                      
     void             (*PAL_PLC_TxRequest)(DRV_HANDLE handle, uint8_t *pData, uint16_t length);
                      
@@ -168,9 +168,9 @@ typedef struct
                      
     uint32_t         (*PAL_PLC_GetPhyTime)(DRV_HANDLE handle);
 
-    PAL_PLC_RESULT   (*PAL_PLC_GetMacRtPib)(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pibObj);
+    PAL_PLC_PIB_RESULT   (*PAL_PLC_GetMacRtPib)(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pibObj);
 
-    PAL_PLC_RESULT   (*PAL_PLC_SetMacRtPib)(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pibObj);
+    PAL_PLC_PIB_RESULT   (*PAL_PLC_SetMacRtPib)(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pibObj);
                                 
 } PAL_PLC_OBJECT_BASE;
 
@@ -186,9 +186,7 @@ typedef struct
 {
     DRV_HANDLE drvG3MacRtHandle;
     
-    SYS_STATUS status;
-    
-    PAL_PLC_STATE state;
+    PAL_PLC_STATUS status;
     
     PAL_PLC_HANDLERS initHandlers;
     
@@ -241,11 +239,11 @@ extern const PAL_PLC_OBJECT_BASE  PAL_PLC_OBJECT_BASE_Default;
 
 SYS_MODULE_OBJ PAL_PLC_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_INIT * const init);
 
-SYS_STATUS PAL_PLC_Status(SYS_MODULE_OBJ object);
- 
-PAL_PLC_HANDLE PAL_PLC_Open(const SYS_MODULE_INDEX drvIndex, const DRV_IO_INTENT intent);
- 
-void PAL_PLC_Close(PAL_PLC_HANDLE handle);
+PAL_PLC_HANDLE PAL_PLC_HandleGet(const SYS_MODULE_INDEX index);
+
+PAL_PLC_STATUS PAL_PLC_Status(SYS_MODULE_OBJ object);
+
+void PAL_PLC_Deinitialize(SYS_MODULE_OBJ object);
  
 void PAL_PLC_TxRequest(PAL_PLC_HANDLE handle, uint8_t *pData, uint16_t length);
  
@@ -253,9 +251,9 @@ void PAL_PLC_Reset(PAL_PLC_HANDLE handle, bool resetMib);
  
 uint32_t PAL_PLC_GetPhyTime(PAL_PLC_HANDLE handle);
 
-PAL_PLC_RESULT PAL_PLC_GetMacRtPib(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pibObj);
+PAL_PLC_PIB_RESULT PAL_PLC_GetMacRtPib(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pibObj);
 
-PAL_PLC_RESULT PAL_PLC_SetMacRtPib(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pibObj);
+PAL_PLC_PIB_RESULT PAL_PLC_SetMacRtPib(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pibObj);
  
 #endif // #ifndef _PAL_PLC_H
 /*******************************************************************************
