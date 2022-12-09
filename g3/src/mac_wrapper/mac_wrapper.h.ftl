@@ -1332,6 +1332,8 @@ typedef struct
     SRV_USI_HANDLE usiHandle;
     /* PIB serialization debug set length */
     uint16_t debugSetLength;
+    /* Flag to indicate initialize through serial interface */
+    bool serialInitialize;
     /* Flag to indicate reset request through serial interface */
     bool serialResetRequest;
     /* Flag to indicate start request through serial interface */

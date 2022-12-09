@@ -252,7 +252,7 @@ static MAC_WRP_DATA_REQ_ENTRY *_getFreeDataReqEntry(void)
         {
             found = &dataReqQueue[index];
             dataReqQueue[index].used = true;
-            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_getFreeDataReqEntry() Found free HyALDataReqQueueEntry on index %u", index);
+            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_getFreeDataReqEntry() Found free data request entry on index %u", index);
             break;
         }
     }
@@ -271,7 +271,7 @@ static MAC_WRP_DATA_REQ_ENTRY *_getDataReqEntryByHandle(uint8_t handle)
             (dataReqQueue[index].dataReqParams.msduHandle == handle))
         {
             found = &dataReqQueue[index];
-            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_getDataReqEntryByHandle() Found matching HyALDataReqQueueEntry on index %u, Handle: 0x%02X", index, handle);
+            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_getDataReqEntryByHandle() Found matching data request entry on index %u, Handle: 0x%02X", index, handle);
             break;
         }
     }
@@ -431,7 +431,7 @@ static void _Serial_StringifyMsgStatus(MAC_WRP_SERIAL_STATUS status, MAC_WRP_SER
     /* Fill serial response buffer */
     serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_STATUS;
     serialRspBuffer[serialRspLen++] = (uint8_t) status;
-    serialRspBuffer[serialRspLen] = (uint8_t) command;
+    serialRspBuffer[serialRspLen++] = (uint8_t) command;
 
     /* Send through USI */
     SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
@@ -449,7 +449,7 @@ static void _Serial_StringifyDataConfirm(MAC_WRP_DATA_CONFIRM_PARAMS* dcParams)
     serialRspBuffer[serialRspLen++] = (uint8_t) (dcParams->timestamp >> 16);
     serialRspBuffer[serialRspLen++] = (uint8_t) (dcParams->timestamp >> 8);
     serialRspBuffer[serialRspLen++] = (uint8_t) dcParams->timestamp;
-    serialRspBuffer[serialRspLen] = (uint8_t) dcParams->mediaType;
+    serialRspBuffer[serialRspLen++] = (uint8_t) dcParams->mediaType;
 
     /* Send through USI */
     SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
@@ -458,7 +458,7 @@ static void _Serial_StringifyDataConfirm(MAC_WRP_DATA_CONFIRM_PARAMS* dcParams)
 static void _Serial_StringifyDataIndication(MAC_WRP_DATA_INDICATION_PARAMS* diParams)
 {
     uint8_t srcAddrLen, dstAddrLen;
-    uint8_t serialRspLen = 0;
+    uint16_t serialRspLen = 0;
 
     /* Fill serial response buffer */
     serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_DATA_INDICATION;
@@ -533,7 +533,7 @@ static void _Serial_StringifyDataIndication(MAC_WRP_DATA_INDICATION_PARAMS* diPa
     memcpy(&serialRspBuffer[serialRspLen], diParams->msdu, diParams->msduLength);
     serialRspLen += diParams->msduLength;
 
-    serialRspBuffer[serialRspLen] = (uint8_t)diParams->mediaType;
+    serialRspBuffer[serialRspLen++] = (uint8_t)diParams->mediaType;
 
     /* Send through USI */
     SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
@@ -542,7 +542,7 @@ static void _Serial_StringifyDataIndication(MAC_WRP_DATA_INDICATION_PARAMS* diPa
 static void _Serial_StringifySnifferIndication(MAC_WRP_SNIFFER_INDICATION_PARAMS* siParams)
 {
     uint8_t srcAddrLen, dstAddrLen;
-    uint8_t serialRspLen = 0;
+    uint16_t serialRspLen = 0;
 
     /* Fill serial response buffer */
     serialRspBuffer[serialRspLen++] = MAC_WRP_SERIAL_MSG_MAC_SNIFFER_INDICATION;
@@ -731,7 +731,7 @@ static void _Serial_StringifyCommStatusIndication(MAC_WRP_COMM_STATUS_INDICATION
     serialRspBuffer[serialRspLen++] = (uint8_t) csiParams->securityLevel;
     serialRspBuffer[serialRspLen++] = csiParams->keyIndex;
 
-    serialRspBuffer[serialRspLen] = (uint8_t)csiParams->mediaType;
+    serialRspBuffer[serialRspLen++] = (uint8_t)csiParams->mediaType;
 
     /* Send through USI */
     SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
@@ -756,6 +756,8 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseInitialize(uint8_t* pData)
         macWrpInit.macWrpHandlers.snifferIndicationCallback = NULL;
         macWrpInit.macWrpHandlers.startConfirmCallback = NULL;
         MAC_WRP_Init(macWrpData.macSerialHandle, &macWrpInit);
+
+        macWrpData.serialInitialize = true;
     }
 
     return MAC_WRP_SERIAL_STATUS_SUCCESS;
@@ -967,21 +969,27 @@ static void _Callback_UsiMacProtocol(uint8_t* pData, size_t length)
 
         case MAC_WRP_SERIAL_MSG_MAC_DATA_REQUEST:
             status = _Serial_ParseDataRequest(pData);
+            break;
 
         case MAC_WRP_SERIAL_MSG_MAC_GET_REQUEST:
             status = _Serial_ParseGetRequest(pData);
+            break;
 
         case MAC_WRP_SERIAL_MSG_MAC_SET_REQUEST:
             status = _Serial_ParseSetRequest(pData);
+            break;
 
         case MAC_WRP_SERIAL_MSG_MAC_RESET_REQUEST:
             status = _Serial_ParseResetRequest(pData);
+            break;
 
         case MAC_WRP_SERIAL_MSG_MAC_SCAN_REQUEST:
             status = _Serial_ParseScanRequest(pData);
+            break;
 
         case MAC_WRP_SERIAL_MSG_MAC_START_REQUEST:
             status = _Serial_ParseStartRequest(pData);
+            break;
 
         default:
             break;
@@ -990,7 +998,8 @@ static void _Callback_UsiMacProtocol(uint8_t* pData, size_t length)
     /* Initialize doesn't have Confirm so send status.
      * Other messages all have confirm. Send status only if there is a processing error */
     if ((status != MAC_WRP_SERIAL_STATUS_UNKNOWN_COMMAND) &&
-            ((status != MAC_WRP_SERIAL_STATUS_SUCCESS) || (command == MAC_WRP_SERIAL_MSG_MAC_INITIALIZE)))
+            ((status != MAC_WRP_SERIAL_STATUS_SUCCESS) ||
+            ((command == MAC_WRP_SERIAL_MSG_MAC_INITIALIZE) && (macWrpData.serialInitialize == false))))
     {
         _Serial_StringifyMsgStatus(status, command);
     }
@@ -1951,6 +1960,7 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
     macWrpData.macSerialHandle = (MAC_WRP_HANDLE) 1;
     macWrpData.usiHandle = SRV_USI_HANDLE_INVALID;
     macWrpData.debugSetLength = 0;
+    macWrpData.serialInitialize = false;
     macWrpData.serialResetRequest = false;
     macWrpData.serialStartRequest = false;
 </#if>
@@ -1992,6 +2002,15 @@ void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
         /* Open USI instance for MAC serialization and register callback */
         macWrpData.usiHandle = SRV_USI_Open(G3_MAC_WRP_SERIAL_USI_INDEX);
         SRV_USI_CallbackRegister(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, _Callback_UsiMacProtocol);
+    }
+
+    if (macWrpData.serialInitialize == true)
+    {
+        if (MAC_WRP_Status() == SYS_STATUS_READY)
+        {
+            macWrpData.serialInitialize = false;
+            _Serial_StringifyMsgStatus(MAC_WRP_SERIAL_STATUS_SUCCESS, MAC_WRP_SERIAL_MSG_MAC_INITIALIZE);
+        }
     }
 
 </#if>
@@ -3031,7 +3050,7 @@ void MAC_WRP_SerialParseSetRequest (
     MAC_WRP_PIB_VALUE* pibValue
 )
 {
-	uint8_t pibLenCnt = 0;
+    uint8_t pibLenCnt = 0;
     uint32_t attrAux;
     uint16_t attrIndexAux;
 <#if MAC_PLC_PRESENT == true>
@@ -3049,7 +3068,7 @@ void MAC_WRP_SerialParseSetRequest (
     *attribute = (MAC_WRP_PIB_ATTRIBUTE) attrAux;
 
     attrIndexAux = ((uint16_t) *pData++) << 8;
-    attrIndexAux += (uint16_t) *pData;
+    attrIndexAux += (uint16_t) *pData++;
     *index = attrIndexAux;
 
     pibValue->length = *pData++;
