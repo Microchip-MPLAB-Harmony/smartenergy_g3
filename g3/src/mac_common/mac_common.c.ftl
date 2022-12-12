@@ -74,7 +74,6 @@ static bool alreadyInitialized = false;
 // Time control variables
 static uint64_t currentCounter64 = 0;
 static uint64_t previousCounter64 = 0;
-static uint32_t currentMsCounter = 0;
 
 void MAC_COMMON_Init(void)
 {
@@ -384,11 +383,10 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
 
 uint32_t MAC_COMMON_GetMsCounter(void)
 {
-    uint64_t diffCounter64;
+    uint64_t diffCounter64, currentCounter64;
     uint32_t elapsedMs;
 
-    // Store Previous and Retrieve current timer counter
-    previousCounter64 = currentCounter64;
+    // Get current timer counter    
     currentCounter64 = SYS_TIME_Counter64Get();
     // Diff with previous
     diffCounter64 = currentCounter64 - previousCounter64;
@@ -396,6 +394,8 @@ uint32_t MAC_COMMON_GetMsCounter(void)
     elapsedMs = SYS_TIME_CountToMS((uint32_t)diffCounter64);
     // Update Ms counter
     currentMsCounter += elapsedMs;
+    // Update previous counter for next computation
+    previousCounter64 += SYS_TIME_MSToCount(elapsedMs);
 
     return currentMsCounter;
 }

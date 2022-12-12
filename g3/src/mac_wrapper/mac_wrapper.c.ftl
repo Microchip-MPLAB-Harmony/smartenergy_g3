@@ -89,7 +89,7 @@ typedef struct
 } MAC_WRP_DATA_REQ_ENTRY;
 
 /* Data Request Queue size */
-#define HYAL_DATA_REQ_QUEUE_SIZE   2
+#define MAC_WRP_DATA_REQ_QUEUE_SIZE   2
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
 typedef struct
@@ -159,7 +159,7 @@ typedef enum
 static MAC_WRP_DATA macWrpData;
 
 // Data Service Control
-static MAC_WRP_DATA_REQ_ENTRY dataReqQueue[HYAL_DATA_REQ_QUEUE_SIZE];
+static MAC_WRP_DATA_REQ_ENTRY dataReqQueue[MAC_WRP_DATA_REQ_QUEUE_SIZE];
 
 <#if MAC_PLC_PRESENT == true>
 #define MAC_MAX_DEVICE_TABLE_ENTRIES_PLC    ${MAC_PLC_DEVICE_TABLE_SIZE?string}
@@ -246,7 +246,7 @@ static MAC_WRP_DATA_REQ_ENTRY *_getFreeDataReqEntry(void)
     uint8_t index;
     MAC_WRP_DATA_REQ_ENTRY *found = NULL;
 
-    for (index = 0; index < HYAL_DATA_REQ_QUEUE_SIZE; index++)
+    for (index = 0; index < MAC_WRP_DATA_REQ_QUEUE_SIZE; index++)
     {
         if (dataReqQueue[index].used == false)
         {
@@ -265,7 +265,7 @@ static MAC_WRP_DATA_REQ_ENTRY *_getDataReqEntryByHandle(uint8_t handle)
     uint8_t index;
     MAC_WRP_DATA_REQ_ENTRY *found = NULL;
 
-    for (index = 0; index < HYAL_DATA_REQ_QUEUE_SIZE; index++)
+    for (index = 0; index < MAC_WRP_DATA_REQ_QUEUE_SIZE; index++)
     {
         if ((dataReqQueue[index].used == true) && 
             (dataReqQueue[index].dataReqParams.msduHandle == handle))
@@ -1965,7 +1965,7 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
     macWrpData.serialStartRequest = false;
 </#if>
     macWrpData.scanRequestInProgress = false;
-    for (uint8_t index = 0; index < HYAL_DATA_REQ_QUEUE_SIZE; index++)
+    for (uint8_t index = 0; index < MAC_WRP_DATA_REQ_QUEUE_SIZE; index++)
     {
         dataReqQueue[index].used = false;
     }
