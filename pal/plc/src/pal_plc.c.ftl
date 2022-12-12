@@ -74,19 +74,6 @@ extern uint8_t g3_mac_rt_bin2_end;
 
 static PAL_PLC_DATA palPlcData = {0};
 
-const PAL_PLC_OBJECT_BASE PAL_PLC_OBJECT_BASE_Default =
-{
-    .PAL_PLC_Initialize = PAL_PLC_Initialize,
-    .PAL_PLC_HandleGet = PAL_PLC_HandleGet,
-    .PAL_PLC_Status = PAL_PLC_Status,
-    .PAL_PLC_Deinitialize = PAL_PLC_Deinitialize,
-    .PAL_PLC_TxRequest = PAL_PLC_TxRequest,
-    .PAL_PLC_Reset = PAL_PLC_Reset,
-    .PAL_PLC_GetPhyTime = PAL_PLC_GetPhyTime,
-    .PAL_PLC_GetMacRtPib = PAL_PLC_GetMacRtPib,
-    .PAL_PLC_SetMacRtPib = PAL_PLC_SetMacRtPib
-};
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: local functions

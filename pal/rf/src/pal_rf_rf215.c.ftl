@@ -66,28 +66,6 @@
 // *****************************************************************************
 static PAL_RF_DATA palRfData = {0};
 
-const PAL_RF_OBJECT_BASE PAL_RF_OBJECT_BASE_Default =
-{
-    .PAL_RF_Initialize = PAL_RF_Initialize,
-    .PAL_RF_HandleGet = PAL_RF_HandleGet,
-    .PAL_RF_Status = PAL_RF_Status,
-    .PAL_RF_Deinitialize = PAL_RF_Deinitialize,
-    .PAL_RF_TxRequest = PAL_RF_TxRequest,
-    .PAL_RF_TxCancel = PAL_RF_TxCancel,
-    .PAL_RF_Reset = PAL_RF_Reset,
-    .PAL_RF_GetPhyTime = PAL_RF_GetPhyTime,
-    .PAL_RF_GetRfPhyPib = PAL_RF_GetRfPhyPib,
-    .PAL_RF_SetRfPhyPib = PAL_RF_SetRfPhyPib,
-    .PAL_RF_GetRfPhyPibLength = PAL_RF_GetRfPhyPibLength
-};
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: local functions
-// *****************************************************************************
-// *****************************************************************************
-
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: local callbacks
@@ -300,11 +278,12 @@ void PAL_RF_Deinitialize(SYS_MODULE_OBJ object)
     
 }
  
-void PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData, 
+PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData, 
         uint16_t length, PAL_RF_TX_PARAMETERS *txParameters)
 {
     DRV_RF215_TX_REQUEST_OBJ txReqObj;
     DRV_RF215_TX_RESULT txResult;
+    DRV_RF215_TX_HANDLE rfPhyTxReqHandle;
             
     if (handle != (PAL_RF_HANDLE)&palRfData)
     {
@@ -313,7 +292,7 @@ void PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
             palRfData.rfPhyHandlers.palRfTxConfirm(PAL_RF_PHY_TRX_OFF, txParameters->timeCount, 
                     txParameters->timeCount);
         }
-        return;
+        return PAL_RF_TX_HANDLE_INVALID;
     }
     
     txReqObj.psdu = pData;
@@ -337,9 +316,9 @@ void PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
         txReqObj.cancelByRx = false;
     }
     
-    palRfData.rfPhyTxReqHandle = DRV_RF215_TxRequest(palRfData.drvRfPhyHandle, &txReqObj, &txResult);
+    rfPhyTxReqHandle = DRV_RF215_TxRequest(palRfData.drvRfPhyHandle, &txReqObj, &txResult);
     
-    if (palRfData.rfPhyTxReqHandle == DRV_RF215_TX_HANDLE_INVALID)
+    if (rfPhyTxReqHandle == DRV_RF215_TX_HANDLE_INVALID)
     {
         DRV_RF215_TX_CONFIRM_OBJ cfmObj;
         
@@ -348,16 +327,18 @@ void PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
         cfmObj.ppduDurationCount = 0;
         _palRfTxCfmCallback(DRV_RF215_TX_HANDLE_INVALID, &cfmObj, 0);
     }
+    
+    return (PAL_RF_TX_HANDLE)rfPhyTxReqHandle;
 }
 
-void PAL_RF_TxCancel(PAL_RF_HANDLE handle)
+void PAL_RF_TxCancel(PAL_RF_HANDLE handle, PAL_RF_TX_HANDLE txHandle)
 {
     if (handle != (PAL_RF_HANDLE)&palRfData)
     {
         return;
     }
     
-    DRV_RF215_TxCancel(palRfData.drvRfPhyHandle, palRfData.rfPhyTxReqHandle);
+    DRV_RF215_TxCancel(palRfData.drvRfPhyHandle, (DRV_RF215_TX_HANDLE)txHandle);
 }
  
 void PAL_RF_Reset(PAL_RF_HANDLE handle)
@@ -373,16 +354,6 @@ void PAL_RF_Reset(PAL_RF_HANDLE handle)
     DRV_RF215_SetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_STATS_RESET, &resetValue);
 }
  
-uint64_t PAL_RF_GetPhyTime(PAL_RF_HANDLE handle)
-{
-    if (handle != (PAL_RF_HANDLE)&palRfData)
-    {
-        return 0;
-    }
-    
-    return SYS_TIME_Counter64Get();
-}
-
 PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibObj)
 {
     if (handle != (PAL_RF_HANDLE)&palRfData)
