@@ -72,8 +72,8 @@ static const MAC_COMMON_MIB macMibCommonDefaults = {
 static bool alreadyInitialized = false;
 
 // Time control variables
-static uint64_t currentCounter64 = 0;
 static uint64_t previousCounter64 = 0;
+static uint32_t currentMsCounter = 0;
 
 void MAC_COMMON_Init(void)
 {
