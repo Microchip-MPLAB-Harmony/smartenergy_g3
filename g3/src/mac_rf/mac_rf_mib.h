@@ -104,15 +104,15 @@
    Remarks:
     None.
 */
-typedef struct
+typedef struct __attribute__((packed))
 {
-    uint16_t posValidTime;
     MAC_SHORT_ADDRESS shortAddress;
     uint8_t forwardLqi;
     uint8_t reverseLqi;
     uint8_t dutyCycle;
     uint8_t forwardTxPowerOffset;
     uint8_t reverseTxPowerOffset;
+    uint16_t posValidTime;
 } MAC_RF_POS_TABLE_ENTRY;
 
 // *****************************************************************************
@@ -128,7 +128,7 @@ typedef struct
    Remarks:
     None.
 */
-typedef struct
+typedef struct __attribute__((packed))
 {
     MAC_ADDRESS address;
     uint8_t dsn;
