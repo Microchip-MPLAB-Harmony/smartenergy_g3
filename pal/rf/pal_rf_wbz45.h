@@ -134,14 +134,14 @@ typedef enum {
 } PAL_RF_PHY_STATUS;
 
 typedef struct {
-    uint32_t timeCount;
+    uint64_t timeCount;
     uint32_t txPowerAttenuation;
     bool csmaEnable;
 } PAL_RF_TX_PARAMETERS;
 
 typedef struct {
-    uint32_t timeIniCount;
-    uint32_t timeEndCount;
+    uint64_t timeIniCount;
+    uint64_t timeEndCount;
     int8_t rssi;
     bool fcsOk;
 } PAL_RF_RX_PARAMETERS;
@@ -154,7 +154,7 @@ typedef struct {
 } PAL_RF_PIB_OBJ;
 
 typedef void (*PAL_RF_DataIndication)(uint8_t *pData, uint16_t length, PAL_RF_RX_PARAMETERS *pParameters);
-typedef void (*PAL_RF_TxConfirm)(PAL_RF_PHY_STATUS status, uint32_t timeIni, uint32_t timeEnd);
+typedef void (*PAL_RF_TxConfirm)(PAL_RF_PHY_STATUS status, uint64_t timeIni, uint64_t timeEnd);
 
 typedef struct
 {

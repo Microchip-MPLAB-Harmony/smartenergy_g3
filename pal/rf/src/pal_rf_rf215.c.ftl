@@ -114,8 +114,8 @@ static void _palRfTxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CONF
     uintptr_t ctxt)
 {
     PAL_RF_PHY_STATUS status = PAL_RF_PHY_ERROR;
-    uint32_t timeIniCount;
-    uint32_t timeEndCount;
+    uint64_t timeIniCount;
+    uint64_t timeEndCount;
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
     uint8_t* pRfSnifferData;
     size_t rfSnifferDataSize;

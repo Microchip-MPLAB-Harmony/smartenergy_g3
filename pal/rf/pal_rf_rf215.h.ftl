@@ -214,7 +214,7 @@ typedef enum
 typedef struct 
 {
     /* TX time (PPDU start), referred to system 64-bit time counter */
-    uint32_t timeCount;
+    uint64_t timeCount;
 
     /* Transmitter power attenuation in dB (max 31 dB) */
     uint32_t txPowerAttenuation;
@@ -241,10 +241,10 @@ typedef struct
 typedef struct 
 {
     /* RX time (PPDU start), referred to system 64-bit time counter */
-    uint32_t timeIniCount;
+    uint64_t timeIniCount;
     
     /* RX time (PPDU end), referred to system 64-bit time counter */
-    uint32_t timeEndCount;
+    uint64_t timeEndCount;
 
     /* RSSI in dBm */
     int8_t rssi;
@@ -345,7 +345,7 @@ typedef void (*PAL_RF_DataIndication)(uint8_t *pData, uint16_t length, PAL_RF_RX
 
   Example:
     <code>
-    static void _rfTxConfirm(PAL_RF_PHY_STATUS status, uint32_t timeIni, uint32_t timeEnd)
+    static void _rfTxConfirm(PAL_RF_PHY_STATUS status, uint64_t timeIni, uint64_t timeEnd)
     {
         // Tx Confirm handling here.
     }
@@ -362,7 +362,7 @@ typedef void (*PAL_RF_DataIndication)(uint8_t *pData, uint16_t length, PAL_RF_RX
     None.
 */
 
-typedef void (*PAL_RF_TxConfirm)(PAL_RF_PHY_STATUS status, uint32_t timeIni, uint32_t timeEnd);
+typedef void (*PAL_RF_TxConfirm)(PAL_RF_PHY_STATUS status, uint64_t timeIni, uint64_t timeEnd);
 
 // *****************************************************************************
 /* PAL RF Handlers Data
