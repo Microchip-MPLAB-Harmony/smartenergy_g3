@@ -50,6 +50,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "system/system.h"
+#include "driver/driver.h"
 #include "driver/rf215/drv_rf215_definitions.h"
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
 #include "service/usi/srv_usi.h"
