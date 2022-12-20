@@ -136,6 +136,8 @@ typedef struct
     MAC_PLC_TABLES *macPlcTables;
     /* PLC working band */
     MAC_PLC_BAND plcBand;
+    /* PLC PAL index from configuration */
+    uint8_t palPlcIndex;
 } MAC_PLC_INIT;
 
 // *****************************************************************************
@@ -232,6 +234,7 @@ typedef struct
         .macPlcHandlers.macPlcMacSnifferIndication = NULL, // MAC Sniffer not used
         .macPlcTables = &tables, // Variable containing the MAC PLC Tables
         .plcBand = MAC_PLC_BAND_CENELEC_A,
+        .palPlcIndex = 0,
     };
 
     MAC_PLC_Init(&macPlcInit);

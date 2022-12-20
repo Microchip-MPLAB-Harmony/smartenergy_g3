@@ -2070,6 +2070,8 @@ void MAC_WRP_Init(MAC_WRP_HANDLE handle, MAC_WRP_INIT *init)
 
     plcInitData.macPlcTables = &macPlcTables;
     plcInitData.plcBand = (MAC_PLC_BAND)init->plcBand;
+    // Get PAL index from configuration header
+    plcInitData.palPlcIndex = PAL_PLC_PHY_INDEX;
 
     MAC_PLC_Init(&plcInitData);
 
@@ -2098,6 +2100,8 @@ void MAC_WRP_Init(MAC_WRP_HANDLE handle, MAC_WRP_INIT *init)
     macRfTables.macRfDsnTable = macRfDsnTable;
 
     rfInitData.macRfTables = &macRfTables;
+    // Get PAL index from configuration header
+    rfInitData.palRfIndex = PAL_RF_PHY_INDEX;
 
     MAC_RF_Init(&rfInitData);
 

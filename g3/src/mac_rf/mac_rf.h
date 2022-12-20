@@ -107,6 +107,8 @@ typedef struct
     MAC_RF_HANDLERS macRfHandlers;
     /* Pointer to MAC Tables */
     MAC_RF_TABLES *macRfTables;
+    /* RF PAL index from configuration */
+    uint8_t palRfIndex;
 } MAC_RF_INIT;
 
 // *****************************************************************************
@@ -201,6 +203,7 @@ typedef struct
         .macRfHandlers.macRfCommStatusIndication = appCommStatus,
         .macRfHandlers.macRfMacSnifferIndication = NULL, // MAC Sniffer not used
         .macRfTables = &tables, // Variable containing the MAC RF Tables
+        .palRfIndex = 0,
     };
 
     MAC_RF_Init(&macRfInit);
