@@ -185,30 +185,35 @@ static void _palRfTxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CONF
 </#if>
 }
 
-static void _palRfInitCallback(uintptr_t context)
+static void _palRfInitCallback(uintptr_t context, SYS_STATUS status)
 {
+    if (status == SYS_STATUS_ERROR)
+    {
+        palRfData.status = SYS_STATUS_ERROR;
+        return;
+    }
+
     palRfData.drvRfPhyHandle = DRV_RF215_Open(DRV_RF215_INDEX_0, RF215_TRX_ID_RF09);
     
     if (palRfData.drvRfPhyHandle == DRV_HANDLE_INVALID)
     {
         palRfData.status = SYS_STATUS_ERROR;
+        return;
     }
-    else
-    {
-        /* Register RF PHY driver callbacks */
-        DRV_RF215_RxIndCallbackRegister(palRfData.drvRfPhyHandle, _palRfRxIndCallback, 0);
-        DRV_RF215_TxCfmCallbackRegister(palRfData.drvRfPhyHandle, _palRfTxCfmCallback, 0);
+
+    /* Register RF PHY driver callbacks */
+    DRV_RF215_RxIndCallbackRegister(palRfData.drvRfPhyHandle, _palRfRxIndCallback, 0);
+    DRV_RF215_TxCfmCallbackRegister(palRfData.drvRfPhyHandle, _palRfTxCfmCallback, 0);
 
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true>         
-        /* Get USI handler for RF PHY SNIFFER protocol */
-        palRfData.srvUsiHandler = SRV_USI_Open(PAL_RF_PHY_SNIFFER_USI_INSTANCE);
-        
-        /* Get RF PHY configuration */
-        DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_CONFIG, &palRfData.rfPhyConfig);
+    /* Get USI handler for RF PHY SNIFFER protocol */
+    palRfData.srvUsiHandler = SRV_USI_Open(PAL_RF_PHY_SNIFFER_USI_INSTANCE);
+    
+    /* Get RF PHY configuration */
+    DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_CONFIG, &palRfData.rfPhyConfig);
 
 </#if>
-        palRfData.status = SYS_STATUS_READY;
-    }
+    palRfData.status = SYS_STATUS_READY;
 }
 
 // *****************************************************************************
@@ -221,26 +226,26 @@ SYS_MODULE_OBJ PAL_RF_Initialize(const SYS_MODULE_INDEX index,
         const SYS_MODULE_INIT * const init)
 {
     PAL_RF_INIT *palInit = (PAL_RF_INIT *)init;
-    
+
+    palRfData.rfPhyHandlers.palRfDataIndication = palInit->rfPhyHandlers.palRfDataIndication;
+    palRfData.rfPhyHandlers.palRfTxConfirm = palInit->rfPhyHandlers.palRfTxConfirm;
+
+    palRfData.rfPhyModScheme = FSK_FEC_OFF;
+
     if (palRfData.status == PAL_RF_STATUS_DEINITIALIZED)
     {
-        _palRfInitCallback(0);
+        _palRfInitCallback(0, SYS_STATUS_READY);
     }
     else
     {
         palRfData.status = SYS_STATUS_BUSY;
-    
+
         palRfData.drvRfPhyHandle = DRV_HANDLE_INVALID;
 
         DRV_RF215_ReadyStatusCallbackRegister(DRV_RF215_INDEX_0, _palRfInitCallback, 0);
-
-        palRfData.rfPhyHandlers.palRfDataIndication = palInit->rfPhyHandlers.palRfDataIndication;
-        palRfData.rfPhyHandlers.palRfTxConfirm = palInit->rfPhyHandlers.palRfTxConfirm;
-
-        palRfData.rfPhyModScheme = FSK_FEC_OFF;
     }
-    
-    return (SYS_MODULE_OBJ)PAL_RF_PHY_INDEX;    
+
+    return (SYS_MODULE_OBJ)PAL_RF_PHY_INDEX;
 }
 
 PAL_RF_HANDLE PAL_RF_HandleGet(const SYS_MODULE_INDEX index)
