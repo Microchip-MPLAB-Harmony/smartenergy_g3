@@ -35,13 +35,8 @@ void LOADNG_DiscoverPath(uint16_t u16DstAddr, uint8_t u8MetricType, LOADNG_Disco
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
 void LOADNG_ProcessMessage(uint16_t u16MacSrcAddr, uint8_t u8MediaType, enum EAdpMac_Modulation eModulation, uint8_t u8ActiveTones,
   uint8_t u8SubCarriers, uint8_t u8LQI, uint16_t u16MessageLength, uint8_t *pMessageBuffer);
-#else
-void LOADNG_ProcessMessage(uint16_t u16MacSrcAddr, enum EAdpMac_Modulation eModulation, uint8_t u8ActiveTones,
-  uint8_t u8SubCarriers, uint8_t u8LQI, uint16_t u16MessageLength, uint8_t *pMessageBuffer);
-#endif
 
 /**********************************************************************************************************************/
 /**
@@ -58,7 +53,7 @@ void LOADNG_DiscoverRoute(uint16_t u16DstAddr, uint8_t u8MaxHops, bool bRepair, 
 /**********************************************************************************************************************/
 /** Refresh the valid time of the route
  **********************************************************************************************************************/
-void LOADNG_RefreshRoute(uint16_t u16DstAddr, bool bRemoveBlacklist);
+void LOADNG_RefreshRoute(uint16_t u16DstAddr);
 
 /**********************************************************************************************************************/
 /**
@@ -68,12 +63,12 @@ void LOADNG_AddCircularRoute(uint16_t m_u16LastCircularRouteAddress);
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-void LOADNG_DeleteRoute(uint16_t u16DstAddr, bool bBlacklist);
+void LOADNG_DeleteRoute(uint16_t u16DstAddr);
 
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-void LOADNG_DeleteRoutePosition(uint32_t u32Position, bool bBlacklist);
+void LOADNG_DeleteRoutePosition(uint32_t u32Position);
 
 /**********************************************************************************************************************/
 /** returns true if route is known
@@ -83,14 +78,7 @@ bool LOADNG_RouteExists(uint16_t u16DestinationAddress);
 /**********************************************************************************************************************/
 /** before calling this function, check if route exists (LOADNG_RouteExists)
  **********************************************************************************************************************/
-uint16_t LOADNG_GetRoute(uint16_t u16DestinationAddress);
-
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
-/**********************************************************************************************************************/
-/** before calling this function, check if route exists (LOADNG_RouteExists)
- **********************************************************************************************************************/
 uint16_t LOADNG_GetRouteAndMediaType(uint16_t u16DestinationAddress, uint8_t *pu8MediaType);
-#endif
 
 /**********************************************************************************************************************/
 /** Inserts a route in the routing table
@@ -100,11 +88,7 @@ struct TAdpRoutingTableEntry *LOADNG_AddRouteEntry(struct TAdpRoutingTableEntry 
 /**********************************************************************************************************************/
 /** Add new candidate route
  **********************************************************************************************************************/
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
 struct TAdpRoutingTableEntry *LOADNG_AddRoute(uint16_t u16DstAddr, uint16_t u16NextHopAddr, uint8_t u8MediaType, bool *pbTableFull);
-#else
-struct TAdpRoutingTableEntry *LOADNG_AddRoute(uint16_t u16DstAddr, uint16_t u16NextHopAddr, bool *pbTableFull);
-#endif
 
 /**********************************************************************************************************************/
 /** Gets a pointer to Route Entry. before calling this function, check if route exists (LOADNG_RouteExists)
@@ -132,7 +116,6 @@ void LOADNG_GetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, struct T
 void LOADNG_SetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
   uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue, struct TAdpSetConfirm *pSetConfirm);
 
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
 /**********************************************************************************************************************/
 /** Adds node to blacklist for a given medium
  **********************************************************************************************************************/
@@ -142,7 +125,6 @@ void LOADNG_AddBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType);
 /** Removes a node from blacklist for a given medium
  **********************************************************************************************************************/
 void LOADNG_RemoveBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType);
-#endif
 
 #endif
 

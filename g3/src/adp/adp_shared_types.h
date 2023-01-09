@@ -50,9 +50,7 @@ struct TDataSendParameters {
   uint16_t m_u16DatagramSize;
   uint8_t m_u8NumRepairReSendAttemps;
   ADP_Common_DataSend_Callback m_fnctCallback;
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
   uint8_t m_u8MediaType;
-#endif
 };
 
 struct TDataSend1280 {
@@ -105,9 +103,7 @@ struct TLowpanFragmentedData {
 
 struct TUserDataRREQRREP {
   uint8_t m_u8FrameType;
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
   uint8_t m_u8MediaType;
-#endif
   uint16_t m_u16DstAddr;
   void * m_pRREPGeneration;
   void * m_pRouteEntry;
@@ -118,9 +114,7 @@ struct TUserDataPREQ {
   uint16_t m_u16OrigAddr;
   uint16_t m_u16NextHopAddr;
   uint16_t m_u16RsvBits;
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
   uint8_t m_u8MediaType;
-#endif
   uint8_t m_u8MetricType;
   uint8_t m_u8ForwardHops;
 };
@@ -153,9 +147,7 @@ struct TAdpMac_DataRequest {
   uint8_t m_u8QualityOfService;
   uint8_t m_u8SecurityLevel;
   uint8_t m_u8KeyIndex;
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
   uint8_t m_u8MediaType;
-#endif
 };
 
 #pragma pack(pop)

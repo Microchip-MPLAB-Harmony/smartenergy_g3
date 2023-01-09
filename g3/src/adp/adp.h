@@ -137,24 +137,14 @@ struct TAdpNetworkStartConfirm {
 typedef void (*AdpNetworkStartConfirm)(
   struct TAdpNetworkStartConfirm *pNetworkStartConfirm);
 
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
 /**********************************************************************************************************************/
 /** The AdpNetworkJoinRequest primitive allows the upper layer to join an existing network.
  ***********************************************************************************************************************
  * @param u16PanId The 16-bit PAN identifier of the network to join.
  * @param u16LbaAddress The 16-bit short address of the device acting as a LoWPAN bootstrap agent (relay)
- * @param u8MediaType The Media Type to use for frame exchange with LBA
+ * @param u8MediaType The Media Type to use for frame exchange with LBA. Only used in Hybrid Profile.
  **********************************************************************************************************************/
 void AdpNetworkJoinRequest(uint16_t u16PanId, uint16_t u16LbaAddress, uint8_t u8MediaType);
-#else
-/**********************************************************************************************************************/
-/** The AdpNetworkJoinRequest primitive allows the upper layer to join an existing network.
- ***********************************************************************************************************************
- * @param u16PanId The 16-bit PAN identifier of the network to join.
- * @param u16LbaAddress The 16-bit short address of the device acting as a LoWPAN bootstrap agent (relay)
- **********************************************************************************************************************/
-void AdpNetworkJoinRequest(uint16_t u16PanId, uint16_t u16LbaAddress);
-#endif
 
 /**********************************************************************************************************************/
 /** The AdpNetworkJoinConfirm primitive allows the upper layer to be notified of the completion of an
@@ -398,9 +388,7 @@ struct TAdpNetworkStatusIndication {
   uint8_t m_u8Status;
   uint8_t m_u8SecurityLevel;
   uint8_t m_u8KeyIndex;
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
   uint8_t m_u8MediaType;
-#endif
 };
 
 typedef void (*AdpNetworkStatusIndication)(
@@ -557,12 +545,8 @@ typedef void (*AdpLbpIndication)(struct TAdpLbpIndication *pLbpIndication);
  * data must be updated to protect the system in case of critical failure.
  **********************************************************************************************************************/
 struct TAdpNonVolatileData {
-#if defined(__PLC_MAC__)
   uint32_t m_u32FrameCounter;
-#endif
-#if defined(__RF_MAC__)
   uint32_t m_u32FrameCounterRF;
-#endif
   uint16_t m_u16DiscoverSeqNumber;
   uint8_t m_u8BroadcastSeqNumber;
 };

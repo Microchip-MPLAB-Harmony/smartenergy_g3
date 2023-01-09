@@ -45,9 +45,7 @@ struct TAdpPanDescriptor {
   uint8_t m_u8LinkQuality;
   uint16_t m_u16LbaAddress;
   uint16_t m_u16RcCoord;
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
   uint8_t m_u8MediaType;
-#endif
 };
 
 /**********************************************************************************************************************/
