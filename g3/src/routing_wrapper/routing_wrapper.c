@@ -373,7 +373,6 @@ bool Routing_IsInDestinationAddressSet(uint16_t u16Addr)
 #endif
 }
 
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
@@ -385,24 +384,9 @@ void Routing_ProcessMessage(uint16_t u16MacSrcAddr, uint8_t u8MediaType, enum EA
 #endif
 }
 
-#else
-
-/**********************************************************************************************************************/
-/**
- **********************************************************************************************************************/
-void Routing_ProcessMessage(uint16_t u16MacSrcAddr, enum EAdpMac_Modulation eModulation, uint8_t u8ActiveTones, uint8_t u8Subcarriers, uint8_t u8LQI,
-  uint16_t u16MessageLength, uint8_t *pMessageBuffer)
-{
-#if (ENABLE_ROUTING == 1)
-  LOADNG_ProcessMessage(u16MacSrcAddr, eModulation, u8ActiveTones, u8Subcarriers, u8LQI, u16MessageLength, pMessageBuffer);
-#endif
-}
-#endif
-
 /**********************************************************************************************************************/
 /** Creates a new route
  **********************************************************************************************************************/
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
 struct TAdpRoutingTableEntry *Routing_AddRoute(uint16_t u16DstAddr, uint16_t u16NextHopAddr, uint8_t u8MediaType, bool *pbTableFull)
 {
 #if (ENABLE_ROUTING == 1)
@@ -412,26 +396,15 @@ struct TAdpRoutingTableEntry *Routing_AddRoute(uint16_t u16DstAddr, uint16_t u16
   return NULL;
 #endif
 }
-#else
-struct TAdpRoutingTableEntry *Routing_AddRoute(uint16_t u16DstAddr, uint16_t u16NextHopAddr, bool *pbTableFull)
-{
-#if (ENABLE_ROUTING == 1)
-  return LOADNG_AddRoute(u16DstAddr, u16NextHopAddr, pbTableFull);
-#else
-  *pbTableFull = false;
-  return NULL;
-#endif
-}
-#endif
 
 /**********************************************************************************************************************/
 /** Refresh the valid time of the route
  * This function is called when a message is sent and confirmed by the MAC layer: also set the bidirectional flag
  **********************************************************************************************************************/
-void Routing_RefreshRoute(uint16_t u16DstAddr, bool bRemoveBlacklist)
+void Routing_RefreshRoute(uint16_t u16DstAddr)
 {
 #if (ENABLE_ROUTING == 1)
-  LOADNG_RefreshRoute(u16DstAddr, bRemoveBlacklist);
+  LOADNG_RefreshRoute(u16DstAddr);
 #endif
 }
 
@@ -448,20 +421,10 @@ void Routing_AddCircularRoute(uint16_t m_u16LastCircularRouteAddress)
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-void Routing_DeleteRoute(uint16_t u16DstAddr, bool bBlacklist)
+void Routing_DeleteRoute(uint16_t u16DstAddr)
 {
 #if (ENABLE_ROUTING == 1)
-  LOADNG_DeleteRoute(u16DstAddr, bBlacklist);
-#endif
-}
-
-/**********************************************************************************************************************/
-/**
- **********************************************************************************************************************/
-void Routing_DeleteRoutePosition(uint32_t u32Position, bool bBlacklist)
-{
-#if (ENABLE_ROUTING == 1)
-  LOADNG_DeleteRoutePosition(u32Position, bBlacklist);
+  LOADNG_DeleteRoute(u16DstAddr);
 #endif
 }
 
@@ -480,23 +443,6 @@ bool Routing_RouteExists(uint16_t u16DestinationAddress)
 /**********************************************************************************************************************/
 /** Before calling this function, check if route exists
  **********************************************************************************************************************/
-uint16_t Routing_GetRoute(uint16_t u16DestinationAddress)
-{
-#if (ENABLE_ROUTING == 1)
-  return LOADNG_GetRoute(u16DestinationAddress);
-#else
-  struct TAdpMacGetConfirm adpMacGetConfirm;
-  uint16_t u16AdpShortAddress;
-  AdpMacGetRequestSync(MAC_WRP_PIB_SHORT_ADDRESS, 0, &adpMacGetConfirm);
-  memcpy(&u16AdpShortAddress, &adpMacGetConfirm.m_au8AttributeValue, 2);
-  return u16AdpShortAddress;
-#endif
-}
-
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
-/**********************************************************************************************************************/
-/** Before calling this function, check if route exists
- **********************************************************************************************************************/
 uint16_t Routing_GetRouteAndMediaType(uint16_t u16DestinationAddress, uint8_t *pu8MediaType)
 {
 #if (ENABLE_ROUTING == 1)
@@ -510,7 +456,6 @@ uint16_t Routing_GetRouteAndMediaType(uint16_t u16DestinationAddress, uint8_t *p
   return u16AdpShortAddress;
 #endif
 }
-#endif
 
 /**********************************************************************************************************************/
 /** Inserts a route in the routing table
@@ -556,7 +501,6 @@ uint32_t Routing_GetRouteCount(void)
   return u32Count;
 }
 
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
 /**********************************************************************************************************************/
 /** Adds node to blacklist for a given medium
  **********************************************************************************************************************/
@@ -576,4 +520,3 @@ void Routing_RemoveBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType)
   LOADNG_RemoveBlacklistOnMedium(u16Addr, u8MediaType);
 #endif
 }
-#endif

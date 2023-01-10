@@ -17,6 +17,7 @@
 #include "routing.h"
 #include "stack/service/queue/srv_queue.h"
 #include "system/time/sys_time.h"
+#include "mac_wrapper.h"
 
 #define RERR_CODE_NO_AVAILABLE_ROUTE   0
 #define RERR_CODE_HOP_LIMIT_EXCEEDED   1
@@ -36,9 +37,7 @@ struct TAdpRoutingTableEntry {
   uint8_t m_u8Bidirectional : 1;
   uint8_t m_u8RREPSent : 1;
   uint8_t m_u8MetricType : 2;
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
   uint8_t m_u8MediaType : 1;
-#endif
 
   /// Absolute time in milliseconds when the entry expires
   int32_t m_i32ValidTime;
@@ -46,9 +45,7 @@ struct TAdpRoutingTableEntry {
 
 struct TAdpBlacklistTableEntry {
   uint16_t m_u16Addr;
-#if defined(__PLC_MAC__) && defined(__RF_MAC__)
   uint8_t m_u8MediaType;
-#endif
   /// Absolute time in milliseconds when the entry expires
   int32_t m_i32ValidTime;
 };
