@@ -116,6 +116,34 @@ struct TRouteCostParameters {
   uint8_t m_u8LQI;
 };
 
+// *****************************************************************************
+/* Description of an element in the pending routing request table
+
+  Summary:
+   Description of an element in the pending routing request table.
+
+  Description:
+    This structure contains the data stored in each element of the pending
+    routing request table.
+
+  Remarks:
+    None.
+*/
+typedef struct _pending_rreq_table_element_tag
+{
+    /* Pointer to the previous object of the queue */
+    struct _pending_rreq_table_element_tag *prev;                
+    
+    /* Pointer to the next object of the queue */
+    struct _pending_rreq_table_element_tag *next;                
+
+    /* Pointer to the used data */
+    void *userData;   
+    
+    /* Information about data type (optional information if needed) */
+    uint8_t dataType;                      
+} PENDING_RREQ_TABLE_ELEMENT;
+
 struct TRoutingTables {
   uint8_t m_PendingRREQTableSize;
   uint8_t m_RRepGenerationTableSize;
@@ -141,7 +169,7 @@ struct TRoutingTables {
    * Contains the routing table
    */
 
-  struct TQueueElement *m_PendingRREQTable;
+  PENDING_RREQ_TABLE_ELEMENT *m_PendingRREQTable;
   struct TRRepGeneration *m_RRepGenerationTable;
   struct TDiscoverRouteEntry *m_DiscoverRouteTable;
   struct TRReqForwarding *m_RReqForwardingTable;
