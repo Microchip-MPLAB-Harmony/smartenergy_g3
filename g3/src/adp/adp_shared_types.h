@@ -56,7 +56,7 @@ struct TDataSendParameters {
 struct TDataSend1280 {
   struct TDataSendParameters m_SendParameters;
   uint8_t m_au8Data[1281]; // 1280 + 1 extra byte needed for Lowpan IPv6 header (compressed or not)
-  struct TTimer m_fragTimer;
+  SYS_TIME_HANDLE m_fragTimer;
 };
 
 struct TDataSend400 {
@@ -78,7 +78,7 @@ struct TProcessQueueEntry {
   struct TProcessQueueEntry *m_pNext;
   int32_t m_i32DelayTime;
   int32_t m_i32ValidTime;
-  struct TTimer *m_pFragTimer;
+  SYS_TIME_HANDLE m_pFragTimer;
 };
 
 

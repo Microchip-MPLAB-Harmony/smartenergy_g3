@@ -67,7 +67,10 @@ struct TDiscoverRouteEntry {
   void *m_pUserData;
 
   // Timer to control the discovery process if no response is received
-  struct TTimer m_Timer;
+  SYS_TIME_HANDLE m_Timer;
+  
+  // User data recovered by timer expiration
+  uintptr_t m_pTimerUserData;  
 
   // Current try number
   uint8_t m_u8Try;
@@ -81,7 +84,7 @@ struct TDiscoverPath {
   // Callback called when the discovery is finished
   LOADNG_DiscoverPath_Callback m_fnctCallback;
   // Timer to control the discovery process if no response is received
-  struct TTimer m_Timer;
+  SYS_TIME_HANDLE m_Timer;
 };
 
 struct TRRepGeneration {
@@ -91,7 +94,8 @@ struct TRRepGeneration {
   uint8_t m_u8Flags;   // Flags received from RREQ
   uint8_t m_u8MetricType;   // MetricType received from RREQ
   uint8_t m_bWaitingForAck;   // Flag to indicate entry is waiting for ACK, timer can be expired but RREP were not sent due to channel saturation
-  struct TTimer m_Timer;   // Timer to control the RREP sending
+  SYS_TIME_HANDLE m_Timer;   // Timer to control the RREP sending
+  uintptr_t m_pTimerUserData;  // User data recovered by timer expiration
 };
 
 struct TRReqForwarding {
@@ -106,7 +110,7 @@ struct TRReqForwarding {
   uint8_t m_u8WeakLinkCount;   // RREQ Weak Link Count
   uint8_t m_u8RsvBits;   // Reserved bits
   uint8_t m_u8ClusterCounter;   // Cluster Counter
-  struct TTimer m_Timer;   // Timer to control the RREQ sending
+  SYS_TIME_HANDLE m_Timer;   // Timer to control the RREQ sending
 };
 
 struct TRouteCostParameters {
