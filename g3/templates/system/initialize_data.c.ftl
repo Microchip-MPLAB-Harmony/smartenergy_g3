@@ -31,7 +31,7 @@ SYS_MODULE_INIT g3MacWraperInitData = {
 };
 
 // </editor-fold>
-<#if g3_adapt_config??>
+<#if (g3_adapt_config)??>
 // <editor-fold defaultstate="collapsed" desc="G3 ADP Initialization Data">
 /* G3 ADP Buffers and Queues */
 struct TDataSend1280 g3Adp1280Buffers[G3_ADP_NUM_BUFFERS_1280];
@@ -74,4 +74,4 @@ ADP_INIT g3AdpInitData = {
 };
 
 // </editor-fold>
-<#if>
+</#if>

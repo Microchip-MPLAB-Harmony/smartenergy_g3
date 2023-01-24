@@ -12,8 +12,8 @@
 </#if>
 #include "stack/g3/mac/mac_wrapper/mac_wrapper.h"
 #include "stack/g3/mac/mac_wrapper/mac_wrapper_defs.h"
-<#if g3_adapt_config??>
+<#if (g3_adapt_config)??>
 #include "stack/g3/adaptation/adp.h"
 #include "stack/g3/adaptation/adp_api_types.h"
 #include "stack/g3/adaptation/adp_shared_types.h"
-<#if>
+</#if>

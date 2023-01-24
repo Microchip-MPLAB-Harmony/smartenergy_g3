@@ -25,8 +25,8 @@
 
     /* Maintain G3 MAC */
     MAC_WRP_Tasks(sysObj.g3MacWrapper);
-<#if g3_adapt_config??>
+<#if (g3_adapt_config)??>
 
     /* Maintain G3 ADP */
     ADP_Tasks(sysObj.g3Adp);
-<#if>
+</#if>
