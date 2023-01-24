@@ -32,9 +32,30 @@ def instantiateComponent(g3AdpComponent):
     
     #### Library Files ######################################################
 
-    global adpLibFile
     adpLibFile = g3AdpComponent.createLibrarySymbol("G3_ADP_LIBRARY", None)
     adpLibFile.setSourcePath("g3/libs/g3_lib_adp.a")
     adpLibFile.setOutputName("g3_lib_adp.a")
     adpLibFile.setDestPath("stack/g3/adaptation")
     adpLibFile.setEnabled(True)
+
+    #### ADP header Files ######################################################
+    adpHeader = g3AdpComponent.createFileSymbol("G3_ADP_HEADER", None)
+    adpHeader.setSourcePath("g3/src/adp/adp.h")
+    adpHeader.setOutputName("adp.h")
+    adpHeader.setDestPath("stack/g3/adaptation")
+    adpHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    adpHeader.setType("HEADER")
+
+    adpApiTypesHeader = g3AdpComponent.createFileSymbol("G3_ADP_API_TYPES_HEADER", None)
+    adpApiTypesHeader.setSourcePath("g3/src/adp/adp_api_types.h")
+    adpApiTypesHeader.setOutputName("adp_api_types.h")
+    adpApiTypesHeader.setDestPath("stack/g3/adaptation")
+    adpApiTypesHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    adpApiTypesHeader.setType("HEADER")
+
+    adpSharedTypesHeader = g3AdpComponent.createFileSymbol("G3_ADP_SHARED_TYPES_HEADER", None)
+    adpSharedTypesHeader.setSourcePath("g3/src/adp/adp_shared_types.h")
+    adpSharedTypesHeader.setOutputName("adp_shared_types.h")
+    adpSharedTypesHeader.setDestPath("stack/g3/adaptation")
+    adpSharedTypesHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    adpSharedTypesHeader.setType("HEADER")

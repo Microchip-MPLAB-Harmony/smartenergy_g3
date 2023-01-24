@@ -152,20 +152,6 @@ struct TAdpMac_DataRequest {
 
 #pragma pack(pop)
 
-/**********************************************************************************************************************/
-/** Functions to get pointers and sizes from AdpConf file to populate TDataSendContext
- **********************************************************************************************************************/
-struct TDataSend1280* AdpConfGet1280BufPtr(void);
-struct TDataSend400* AdpConfGet400BufPtr(void);
-struct TDataSend100* AdpConfGet100BufPtr(void);
-uint8_t AdpConfGet1280BufCount(void);
-uint8_t AdpConfGet400BufCount(void);
-uint8_t AdpConfGet100BufCount(void);
-struct TProcessQueueEntry* AdpConfGetProcessQueuePtr(void);
-uint8_t AdpConfGetProcessQueueCount(void);
-struct TLowpanFragmentedData* AdpConfGetFragmentedTransferTablePtr(void);
-uint8_t AdpConfGetFragmentedTransferTableCount(void);
-
 #endif
 
 /**********************************************************************************************************************/

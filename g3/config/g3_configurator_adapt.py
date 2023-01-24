@@ -32,6 +32,33 @@ def instantiateComponent(g3ConfigAdaptComponent):
     g3ConfigLOADng.setDependencies(g3LOADngEnable, ["LOADNG_ENABLE"])
     g3ConfigLOADng.setDefaultValue(True)
 
+    g3CountBuffers1280 = g3ConfigAdaptComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_1280", None)
+    g3CountBuffers1280.setLabel("Number of 1280-byte buffers")
+    g3CountBuffers1280.setDescription("Number of 1280-byte buffers for adaptation layer")
+    g3CountBuffers1280.setDefaultValue(1)
+    g3CountBuffers1280.setMin(1)
+    g3CountBuffers1280.setMax(16)
+
+    g3CountBuffers400 = g3ConfigAdaptComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_400", None)
+    g3CountBuffers400.setLabel("Number of 400-byte buffers")
+    g3CountBuffers400.setDescription("Number of 400-byte buffers for adaptation layer")
+    g3CountBuffers400.setDefaultValue(3)
+    g3CountBuffers400.setMin(1)
+    g3CountBuffers400.setMax(32)
+
+    g3CountBuffers100 = g3ConfigAdaptComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_100", None)
+    g3CountBuffers100.setLabel("Number of 100-byte buffers")
+    g3CountBuffers100.setDescription("Number of 100-byte buffers for adaptation layer")
+    g3CountBuffers100.setDefaultValue(3)
+    g3CountBuffers100.setMin(1)
+    g3CountBuffers100.setMax(64)
+
+    g3FragmentedTransferTableSize = g3ConfigAdaptComponent.createIntegerSymbol("ADP_FRAGMENTED_TRANSFER_TABLE_SIZE", None)
+    g3FragmentedTransferTableSize.setLabel("Fragmented transfer table size")
+    g3FragmentedTransferTableSize.setDescription("The number of fragmented transfers which can be handled in parallel")
+    g3FragmentedTransferTableSize.setDefaultValue(1)
+    g3FragmentedTransferTableSize.setMin(1)
+    g3FragmentedTransferTableSize.setMax(16)
 
 #def finalizeComponent(g3ConfigAdaptComponent):
 
@@ -46,7 +73,7 @@ def g3LOADngEnable(symbol, event):
 def setVal(component, symbol, value):
     triggerDict = {"Component":component,"Id":symbol, "Value":value}
     if(Database.sendMessage(component, "SET_SYMBOL", triggerDict) == None):
-        print "Set Symbol Failure" + component + ":" + symbol + ":" + str(value)
+        print("Set Symbol Failure" + component + ":" + symbol + ":" + str(value))
         return False
     else:
         return True
@@ -55,7 +82,7 @@ def setVal(component, symbol, value):
 def handleMessage(messageID, args):
     retDict= {}
     if (messageID == "SET_SYMBOL"):
-        print "handleMessage: Set Symbol"
+        print("handleMessage: Set Symbol")
         retDict= {"Return": "Success"}
         Database.setSymbolValue(args["Component"], args["Id"], args["Value"])
     else:

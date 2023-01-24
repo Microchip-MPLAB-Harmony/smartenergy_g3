@@ -13,6 +13,98 @@
 #include "adp_shared_types.h"
 #include "adp_api_types.h"
 
+// *****************************************************************************
+/* ADP Initialization Data
+
+  Summary:
+    Defines the data required to initialize the ADP Layer.
+
+  Description:
+    This data type defines the data required to initialize the G3 ADP layer.
+
+  Remarks:
+    None.
+*/
+
+typedef struct
+{
+    /* Pointer to start of 1280-byte buffers */
+    void*           pBuffers1280;
+
+    /* Pointer to start of 400-byte buffers */
+    void*           pBuffers400;
+
+    /* Pointer to start of 100-byte buffers */
+    void*           pBuffers100;
+
+    /* Pointer to start of process queue entries */
+    void*           pProcessQueueEntries;
+
+    /* Pointer to start of fragmented transfer entries */
+    void*           pFragmentedTransferEntries;
+
+    /* Number of 1280-byte buffers */
+    uint8_t         numBuffers1280;
+
+    /* Number of 400-byte buffers */
+    uint8_t         numBuffers400;
+
+    /* Number of 100-byte buffers */
+    uint8_t         numBuffers100;
+
+    /* Number of process queue entries */
+    uint8_t         numProcessQueueEntries;
+
+    /* Number of fragmented transfer entries */
+    uint8_t         numFragmentedTransferEntries;
+
+} ADP_INIT;
+
+// *****************************************************************************
+/* Function:
+    SYS_MODULE_OBJ ADP_Initialize
+    (
+      const SYS_MODULE_INDEX index,
+      const SYS_MODULE_INIT * const init
+    )
+
+  Summary:
+    Initializes the ADP module for the specified Index.
+
+  Description:
+    This routine initializes the ADP module making it ready for clients
+    to open and use.
+
+  Precondition:
+    None.
+
+  Parameters:
+    index - Identifier for the instance to be initialized (single instance allowed)
+
+    init  - Pointer to the init data structure containing any data necessary to
+            initialize the module.
+
+  Returns:
+    If successful, returns a valid module instance object.
+    Otherwise, returns SYS_MODULE_OBJ_INVALID.
+
+  Example:
+    <code>
+    ADP_INIT initData;
+    SYS_MODULE_OBJ sysObjAdp;
+
+    sysObjAdp = ADP_Initialize(G3_ADP_INDEX_0, (SYS_MODULE_INIT *)&initData);
+    if (sysObjAdp == SYS_MODULE_OBJ_INVALID)
+    {
+        // Handle error
+    }
+    </code>
+
+  Remarks:
+    This routine must be called before any other ADP routine is called.
+*/
+SYS_MODULE_OBJ ADP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_INIT * const init);
+
 /**********************************************************************************************************************/
 /** Forward declaration
  **********************************************************************************************************************/
