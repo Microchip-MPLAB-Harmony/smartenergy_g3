@@ -106,6 +106,49 @@ typedef struct
 */
 SYS_MODULE_OBJ ADP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_INIT * const init);
 
+// *****************************************************************************
+/* Function:
+    void ADP_Tasks
+    (
+      SYS_MODULE_OBJ object
+    )
+
+  Summary:
+    Maintains ADP State Machine.
+
+  Description:
+    Maintains the Adaptation Layer State Machine.
+
+  Precondition:
+    ADP_Initialize routine must have been called before,
+    and its returned object used when calling this function.
+
+  Parameters:
+    object - Identifier for the object instance
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    // ...
+    SYS_MODULE_OBJ sysObjAdp;
+    sysObjAdp = ADP_Initialize(G3_MAC_WRP_INDEX_0, &initData);
+    // ...
+
+    while (true)
+    {
+        ADP_Tasks(sysObjAdp);
+    
+        // Do other tasks
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_Tasks(SYS_MODULE_OBJ object);
+
 /**********************************************************************************************************************/
 /** Forward declaration
  **********************************************************************************************************************/
@@ -119,12 +162,6 @@ struct TAdpNotifications;
  * @param band Working band (should be inline with the hardware)
  **********************************************************************************************************************/
 void AdpInitialize(struct TAdpNotifications *pNotifications, enum TAdpBand band);
-
-/**********************************************************************************************************************/
-/** This function should be called at least every millisecond in order to allow the G3 stack to run and execute its
- * internal tasks.
- **********************************************************************************************************************/
-bool AdpEventHandler(void);
 
 /**********************************************************************************************************************/
 /** The AdpDataRequest primitive requests the transfer of an application PDU to another device or multiple devices.
