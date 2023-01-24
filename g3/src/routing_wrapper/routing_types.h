@@ -14,7 +14,7 @@
 #ifndef __ROUTING_TYPES_H__
 #define __ROUTING_TYPES_H__
 
-#include "routing.h"
+#include "routing_wrapper.h"
 #include "stack/service/queue/srv_queue.h"
 #include "system/time/sys_time.h"
 #include "mac_wrapper.h"

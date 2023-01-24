@@ -12,6 +12,7 @@
 
 #include "adp_shared_types.h"
 #include "adp_api_types.h"
+#include "system/system.h"
 
 // *****************************************************************************
 /* ADP Initialization Data

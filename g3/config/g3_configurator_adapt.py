@@ -32,6 +32,70 @@ def instantiateComponent(g3ConfigAdaptComponent):
     g3ConfigLOADng.setDependencies(g3LOADngEnable, ["LOADNG_ENABLE"])
     g3ConfigLOADng.setDefaultValue(True)
 
+    loadngPendingRReqTable = g3ConfigAdaptComponent.createIntegerSymbol("LOADNG_PENDING_RREQ_TABLE_SIZE", g3ConfigLOADng)
+    loadngPendingRReqTable.setLabel("Pending RREQ table size")
+    loadngPendingRReqTable.setDescription("Number of RREQs/RERRs that can be stored to respect the parameter ADP_IB_RREQ_WAIT")
+    loadngPendingRReqTable.setDefaultValue(6)
+    loadngPendingRReqTable.setMin(1)
+    loadngPendingRReqTable.setMax(128)
+    loadngPendingRReqTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
+    loadngRRepGenerationTable = g3ConfigAdaptComponent.createIntegerSymbol("LOADNG_RREP_GENERATION_TABLE_SIZE", g3ConfigLOADng)
+    loadngRRepGenerationTable.setLabel("RREQ generation table size")
+    loadngRRepGenerationTable.setDescription("Number of RREQs from different sources, that can be handled at the same time")
+    loadngRRepGenerationTable.setDefaultValue(3)
+    loadngRRepGenerationTable.setMin(1)
+    loadngRRepGenerationTable.setMax(128)
+    loadngRRepGenerationTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
+    loadngRReqForwardingTable = g3ConfigAdaptComponent.createIntegerSymbol("LOADNG_RREQ_FORWARDING_TABLE_SIZE", g3ConfigLOADng)
+    loadngRReqForwardingTable.setLabel("RREP forwarding table size")
+    loadngRReqForwardingTable.setDescription("Number of entries of RREP forwarding table for LOADNG")
+    loadngRReqForwardingTable.setDefaultValue(5)
+    loadngRReqForwardingTable.setMin(1)
+    loadngRReqForwardingTable.setMax(128)
+    loadngRReqForwardingTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
+    loadngDiscoverRouteTable = g3ConfigAdaptComponent.createIntegerSymbol("LOADNG_DISCOVER_ROUTE_TABLE_SIZE", g3ConfigLOADng)
+    loadngDiscoverRouteTable.setLabel("Discover route table size")
+    loadngDiscoverRouteTable.setDescription("Number of route discover that can be handled at the same time")
+    loadngDiscoverRouteTable.setDefaultValue(3)
+    loadngDiscoverRouteTable.setMin(1)
+    loadngDiscoverRouteTable.setMax(128)
+    loadngDiscoverRouteTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
+    adpRoutingTable = g3ConfigAdaptComponent.createIntegerSymbol("ADP_ROUTING_TABLE_SIZE", g3ConfigLOADng)
+    adpRoutingTable.setLabel("Routing table size")
+    adpRoutingTable.setDescription("Number of entries in the Routing Table for LOADNG")
+    adpRoutingTable.setDefaultValue(150)
+    adpRoutingTable.setMin(1)
+    adpRoutingTable.setMax(1024)
+    adpRoutingTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
+    adpBlacklistTable = g3ConfigAdaptComponent.createIntegerSymbol("ADP_BLACKLIST_TABLE_SIZE", g3ConfigLOADng)
+    adpBlacklistTable.setLabel("Blacklist table size")
+    adpBlacklistTable.setDescription("Number of entries in the Blacklist Table for LOADNG")
+    adpBlacklistTable.setDefaultValue(20)
+    adpBlacklistTable.setMin(1)
+    adpBlacklistTable.setMax(256)
+    adpBlacklistTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
+    adpRoutingSet = g3ConfigAdaptComponent.createIntegerSymbol("ADP_ROUTING_SET_SIZE", g3ConfigLOADng)
+    adpRoutingSet.setLabel("Routing set size")
+    adpRoutingSet.setDescription("Number of entries in the Routing Set for LOADNG")
+    adpRoutingSet.setDefaultValue(30)
+    adpRoutingSet.setMin(1)
+    adpRoutingSet.setMax(256)
+    adpRoutingSet.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
+    adpDestinationAddressSet = g3ConfigAdaptComponent.createIntegerSymbol("ADP_DESTINATION_ADDRESS_SET_SIZE", g3ConfigLOADng)
+    adpDestinationAddressSet.setLabel("Destination address set size")
+    adpDestinationAddressSet.setDescription("Number of entries in the Destination Address Set Table")
+    adpDestinationAddressSet.setDefaultValue(1)
+    adpDestinationAddressSet.setMin(1)
+    adpDestinationAddressSet.setMax(128)
+    adpDestinationAddressSet.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
     g3CountBuffers1280 = g3ConfigAdaptComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_1280", None)
     g3CountBuffers1280.setLabel("Number of 1280-byte buffers")
     g3CountBuffers1280.setDescription("Number of 1280-byte buffers for adaptation layer")
@@ -60,7 +124,32 @@ def instantiateComponent(g3ConfigAdaptComponent):
     g3FragmentedTransferTableSize.setMin(1)
     g3FragmentedTransferTableSize.setMax(16)
 
+    ############################################################################
+    #### Code Generation ####
+    ############################################################################
+    configName = Variables.get("__CONFIGURATION_NAME")
+    
+    #### Routing Wrapper Files #################################################
+    routingWrapperHeader = g3ConfigAdaptComponent.createFileSymbol("G3_ROUTING_WRAPPER_HEADER", None)
+    routingWrapperHeader.setSourcePath("g3/src/routing_wrapper/routing_wrapper.h")
+    routingWrapperHeader.setOutputName("routing_wrapper.h")
+    routingWrapperHeader.setDestPath("stack/g3/adaptation")
+    routingWrapperHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    routingWrapperHeader.setType("HEADER")
+
+    routingWrapperSource = g3ConfigAdaptComponent.createFileSymbol("G3_ROUTING_WRAPPER_SOURCE", None)
+    routingWrapperSource.setSourcePath("g3/src/routing_wrapper/routing_wrapper.c.ftl")
+    routingWrapperSource.setOutputName("routing_wrapper.c")
+    routingWrapperSource.setDestPath("stack/g3/adaptation")
+    routingWrapperSource.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    routingWrapperSource.setType("SOURCE")
+    routingWrapperSource.setMarkup(True)
+
 #def finalizeComponent(g3ConfigAdaptComponent):
+
+def showSymbol(symbol, event):
+    # Show/hide configuration symbol depending on parent enabled/disabled
+    symbol.setVisible(event["value"])
 
 def g3LOADngEnable(symbol, event):
     #g3AdaptGroup = Database.findGroup("ADAPTATION LAYER")

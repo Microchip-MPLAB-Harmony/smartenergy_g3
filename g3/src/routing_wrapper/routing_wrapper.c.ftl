@@ -1,118 +1,38 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include "conf_global.h"
-#include "conf_tables.h"
 
-#include <AdpApi.h>
-#include <mac_wrapper.h>
-
-#include <RoutingTypes.h>
-#include <RoutingApi.h>
-
-#define LOG_LEVEL LOG_LEVEL_ADP
-#include <Logger.h>
-
-/* Check ENABLE_ROUTING definition */
-#ifndef ENABLE_ROUTING
-  #error "ENABLE_ROUTING undefined"
-#endif
-
-#if (ENABLE_ROUTING == 1)
-  #include <ProtoLoadNg.h>
-#endif
-
-/**********************************************************************************************************************/
-/** Table Sizes Configuration
- **********************************************************************************************************************/
-#if (ENABLE_ROUTING == 1)
-
-// The number of entries in the Routing Table and Routing Set
-
-  #ifndef CONF_ADP_ROUTING_TABLE_SIZE
-    #define CONF_ADP_ROUTING_TABLE_SIZE   150
-  #endif
-
-  #ifndef CONF_ADP_ROUTING_SET_SIZE
-    #define CONF_ADP_ROUTING_SET_SIZE     30
-  #endif
-
-  #define ADP_ROUTING_TABLE_SIZE   CONF_ADP_ROUTING_TABLE_SIZE
-  #define ADP_ROUTING_SET_SIZE     CONF_ADP_ROUTING_SET_SIZE
-
-// The number of entries in the Blacklist Table
-  #define ADP_BLACKLIST_TABLE_SIZE 20
-
-// The number of entries in the Destination Address Set Table
-  #define ADP_DESTINATION_ADDRESS_SET_TABLE_SIZE 1
-
-// The number of route discover can be handled in the same time
-  #define LOADNG_DISCOVER_ROUTE_TABLE_SIZE 3
-
-// The number of RREQs from different sources, can be handled in the same time
-
-  #ifndef CONF_LOADNG_RREP_GENERATION_TABLE_SIZE
-    #define CONF_LOADNG_RREP_GENERATION_TABLE_SIZE   3
-  #endif
-
-  #define LOADNG_RREP_GENERATION_TABLE_SIZE   CONF_LOADNG_RREP_GENERATION_TABLE_SIZE
-  
-  #ifndef CONF_LOADNG_RREQ_FORWARDING_TABLE_SIZE
-    #define CONF_LOADNG_RREQ_FORWARDING_TABLE_SIZE   5
-  #endif
-
-  #define LOADNG_RREQ_FORWARDING_TABLE_SIZE   CONF_LOADNG_RREQ_FORWARDING_TABLE_SIZE
-
-// The number of RREQs/RERRs can be stored to respect the parameter ADP_IB_RREQ_WAIT
-  #define LOADNG_PENDING_RREQ_TABLE_SIZE 6
-
-#else // (ENABLE_ROUTING == 0)
-
-// The number of entries in the Routing Table
-  #define ADP_ROUTING_TABLE_SIZE 0
-  #define ADP_ROUTING_SET_SIZE 0
-
-// The number of entries in the Blacklist Table
-  #define ADP_BLACKLIST_TABLE_SIZE 0
-
-// The number of entries in the Destination Address Set Table
-  #define ADP_DESTINATION_ADDRESS_SET_TABLE_SIZE 0
-
-// The number of route discover can be handled in the same time
-  #define LOADNG_DISCOVER_ROUTE_TABLE_SIZE 0
-
-// The number of RREQs from different sources, can be handled in the same time
-  #define LOADNG_RREP_GENERATION_TABLE_SIZE 0
-  
-  #define LOADNG_RREQ_FORWARDING_TABLE_SIZE   0
-
-// The number of RREQs/RERRs can be stored to respect the parameter ADP_IB_RREQ_WAIT
-  #define LOADNG_PENDING_RREQ_TABLE_SIZE 0
-
-#endif
+#include "adp.h"
+#include "mac_wrapper.h"
+#include "routing_types.h"
+#include "routing_wrapper.h"
+<#if LOADNG_ENABLE == true>
+#include "loadng.h"
+</#if>
+#include "service/log_report/srv_log_report.h"
 
 /**********************************************************************************************************************/
 /** Internal variables
  **********************************************************************************************************************/
 struct TRoutingTables g_RoutingTables;
 
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
 struct TQueueElement g_PendingRREQTable[LOADNG_PENDING_RREQ_TABLE_SIZE];
-struct TRRepGeneration g_RRepGenerationTable[LOADNG_RREP_GENERATION_TABLE_SIZE];
-  struct TRReqForwarding g_RReqForwardingTable[LOADNG_RREQ_FORWARDING_TABLE_SIZE];
+struct TRRepGeneration g_RRepGenerationTable[LOADNG_RREP_GEN_TABLE_SIZE];
+  struct TRReqForwarding g_RReqForwardingTable[LOADNG_RREQ_FORWARD_TABLE_SIZE];
 struct TDiscoverRouteEntry g_DiscoverRouteTable[LOADNG_DISCOVER_ROUTE_TABLE_SIZE];
-struct TAdpRoutingTableEntry g_AdpRoutingTable[ADP_ROUTING_TABLE_SIZE];
-struct TAdpBlacklistTableEntry g_AdpBlacklistTable[ADP_BLACKLIST_TABLE_SIZE];
-struct TAdpRoutingTableEntry g_AdpRoutingSet[ADP_ROUTING_SET_SIZE];
-uint16_t g_AdpDestinationAddressSet[ADP_DESTINATION_ADDRESS_SET_TABLE_SIZE];
-#endif
+struct TAdpRoutingTableEntry g_AdpRoutingTable[G3_ADP_ROUTING_TABLE_SIZE];
+struct TAdpBlacklistTableEntry g_AdpBlacklistTable[G3_ADP_BLACKLIST_TABLE_SIZE];
+struct TAdpRoutingTableEntry g_AdpRoutingSet[G3_ADP_ROUTING_SET_SIZE];
+uint16_t g_AdpDestinationAddressSet[G3_ADP_DESTINATION_ADDR_SET_SIZE];
+</#if>
 
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
 void Routing_Reset(uint8_t u8Band)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   // Store the table sizes, to make LoadNG library independent of table sizes.
   g_RoutingTables.m_AdpRoutingTableSize = ADP_ROUTING_TABLE_SIZE;
   g_RoutingTables.m_AdpBlacklistTableSize = ADP_BLACKLIST_TABLE_SIZE;
@@ -135,8 +55,7 @@ void Routing_Reset(uint8_t u8Band)
   g_RoutingTables.m_RReqForwardingTable = g_RReqForwardingTable;
 
   LOADNG_Reset(u8Band, &g_RoutingTables);
-#endif
-  return;
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -144,67 +63,67 @@ void Routing_Reset(uint8_t u8Band)
  **********************************************************************************************************************/
 bool Routing_IsDisabled()
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   struct TAdpGetConfirm adpGetConfirm;
   RoutingGetMib(ADP_IB_DISABLE_DEFAULT_ROUTING, 0, &adpGetConfirm);
   return (bool)adpGetConfirm.m_au8AttributeValue[0];
-#else
+<#else>
   return true;
-#endif
+</#if>
 }
 
 bool Routing_IsAutoRREQDisabled()
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   struct TAdpGetConfirm adpGetConfirm;
   RoutingGetMib(ADP_IB_MANUF_DISABLE_AUTO_RREQ, 0, &adpGetConfirm);
   return (bool)adpGetConfirm.m_au8AttributeValue[0];
-#else
+<#else>
   return true;
-#endif
+</#if>
 }
 
 bool Routing_AdpDefaultCoordRouteEnabled()
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   struct TAdpGetConfirm adpGetConfirm;
   RoutingGetMib(ADP_IB_DEFAULT_COORD_ROUTE_ENABLED, 0, &adpGetConfirm);
   return (bool)adpGetConfirm.m_au8AttributeValue[0];
-#else
+<#else>
   return false;
-#endif
+</#if>
 }
 
 uint8_t Routing_AdpRREPWait()
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   struct TAdpGetConfirm adpGetConfirm;
   RoutingGetMib(ADP_IB_RREP_WAIT, 0, &adpGetConfirm);
   return adpGetConfirm.m_au8AttributeValue[0];
-#else
+<#else>
   return 4;
-#endif
+</#if>
 }
 
 uint16_t Routing_GetDiscoverRouteGlobalSeqNo()
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   uint16_t u16Value;
   struct TAdpGetConfirm adpGetConfirm;
   RoutingGetMib(ADP_IB_MANUF_DISCOVER_SEQUENCE_NUMBER, 0, &adpGetConfirm);
   memcpy(&u16Value, &adpGetConfirm.m_au8AttributeValue, 2);
   return u16Value;
-#else
+<#else>
   return 1;
-#endif
+</#if>
 }
 
 void Routing_SetDiscoverRouteGlobalSeqNo(uint16_t seqNo)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   struct TAdpSetConfirm adpSetConfirm;
   RoutingSetMib(ADP_IB_MANUF_DISCOVER_SEQUENCE_NUMBER, 0, 2, (uint8_t *)&seqNo, &adpSetConfirm);
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -212,9 +131,9 @@ void Routing_SetDiscoverRouteGlobalSeqNo(uint16_t seqNo)
  **********************************************************************************************************************/
 void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, struct TAdpGetConfirm *pGetConfirm)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   LOADNG_GetMib(u32AttributeId, u16AttributeIndex, pGetConfirm);
-#else
+<#else>
   LOG_DBG(Log("Get request. Attribute: %08X; Index: %u", u32AttributeId, u16AttributeIndex));
   if ((u32AttributeId == ADP_IB_RREP_WAIT) ||
     (u32AttributeId == ADP_IB_ROUTING_TABLE) ||
@@ -258,7 +177,7 @@ void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, struct T
   else {
     pGetConfirm->m_u8Status = G3_UNSUPPORTED_ATTRIBUTE;
   }
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -267,9 +186,9 @@ void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, struct T
 void RoutingSetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
   uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue, struct TAdpSetConfirm *pSetConfirm)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   LOADNG_SetMib(u32AttributeId, u16AttributeIndex, u8AttributeLength, pu8AttributeValue, pSetConfirm);
-#else
+<#else>
   if ((u32AttributeId == ADP_IB_RREP_WAIT) ||
     (u32AttributeId == ADP_IB_BLACKLIST_TABLE) ||
     (u32AttributeId == ADP_IB_ROUTING_TABLE) ||
@@ -308,7 +227,7 @@ void RoutingSetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
   else {
     pSetConfirm->m_u8Status = G3_UNSUPPORTED_ATTRIBUTE;
   }
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -316,16 +235,16 @@ void RoutingSetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
  **********************************************************************************************************************/
 void Routing_DiscoverPath(uint16_t u16DstAddr, uint8_t u8MetricType, LOADNG_DiscoverPath_Callback callback)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   if (!Routing_IsDisabled()) {
     LOADNG_DiscoverPath(u16DstAddr, u8MetricType, callback);
   }
   else {
     callback(G3_INVALID_REQUEST, NULL);
   }
-#else
+<#else>
   callback(G3_INVALID_REQUEST, NULL);
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -333,9 +252,9 @@ void Routing_DiscoverPath(uint16_t u16DstAddr, uint8_t u8MetricType, LOADNG_Disc
  **********************************************************************************************************************/
 void Routing_NotifyRouteError(uint16_t u16DstAddr, uint16_t u16UnreachableAddress, uint8_t u8ErrorCode)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   LOADNG_NotifyRouteError(u16DstAddr, u16UnreachableAddress, u8ErrorCode);
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -349,16 +268,16 @@ void Routing_DiscoverRoute(
   LOADNG_DiscoverRoute_Callback fnctDiscoverCallback
   )
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   if (!Routing_IsDisabled()) {
     LOADNG_DiscoverRoute(u16DstAddr, u8MaxHops, bRepair, pUserData, fnctDiscoverCallback);
   }
   else {
     fnctDiscoverCallback(G3_ROUTE_ERROR, u16DstAddr, 0xFFFF, NULL);
   }
-#else
+<#else>
   fnctDiscoverCallback(G3_ROUTE_ERROR, u16DstAddr, 0xFFFF, NULL);
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -366,11 +285,11 @@ void Routing_DiscoverRoute(
  **********************************************************************************************************************/
 bool Routing_IsInDestinationAddressSet(uint16_t u16Addr)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   return LOADNG_IsInDestinationAddressSet(u16Addr);
-#else
+<#else>
   return false;
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -379,9 +298,9 @@ bool Routing_IsInDestinationAddressSet(uint16_t u16Addr)
 void Routing_ProcessMessage(uint16_t u16MacSrcAddr, uint8_t u8MediaType, enum EAdpMac_Modulation eModulation, uint8_t u8ActiveTones, uint8_t u8Subcarriers, uint8_t u8LQI,
   uint16_t u16MessageLength, uint8_t *pMessageBuffer)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   LOADNG_ProcessMessage(u16MacSrcAddr, u8MediaType, eModulation, u8ActiveTones, u8Subcarriers, u8LQI, u16MessageLength, pMessageBuffer);
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -389,12 +308,12 @@ void Routing_ProcessMessage(uint16_t u16MacSrcAddr, uint8_t u8MediaType, enum EA
  **********************************************************************************************************************/
 struct TAdpRoutingTableEntry *Routing_AddRoute(uint16_t u16DstAddr, uint16_t u16NextHopAddr, uint8_t u8MediaType, bool *pbTableFull)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   return LOADNG_AddRoute(u16DstAddr, u16NextHopAddr, u8MediaType, pbTableFull);
-#else
+<#else>
   *pbTableFull = false;
   return NULL;
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -403,9 +322,9 @@ struct TAdpRoutingTableEntry *Routing_AddRoute(uint16_t u16DstAddr, uint16_t u16
  **********************************************************************************************************************/
 void Routing_RefreshRoute(uint16_t u16DstAddr)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   LOADNG_RefreshRoute(u16DstAddr);
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -413,9 +332,9 @@ void Routing_RefreshRoute(uint16_t u16DstAddr)
  **********************************************************************************************************************/
 void Routing_AddCircularRoute(uint16_t m_u16LastCircularRouteAddress)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   LOADNG_AddCircularRoute(m_u16LastCircularRouteAddress);
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -423,9 +342,9 @@ void Routing_AddCircularRoute(uint16_t m_u16LastCircularRouteAddress)
  **********************************************************************************************************************/
 void Routing_DeleteRoute(uint16_t u16DstAddr)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   LOADNG_DeleteRoute(u16DstAddr);
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -433,11 +352,11 @@ void Routing_DeleteRoute(uint16_t u16DstAddr)
  **********************************************************************************************************************/
 bool Routing_RouteExists(uint16_t u16DestinationAddress)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   return LOADNG_RouteExists(u16DestinationAddress);
-#else
+<#else>
   return false;
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -445,16 +364,16 @@ bool Routing_RouteExists(uint16_t u16DestinationAddress)
  **********************************************************************************************************************/
 uint16_t Routing_GetRouteAndMediaType(uint16_t u16DestinationAddress, uint8_t *pu8MediaType)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   return LOADNG_GetRouteAndMediaType(u16DestinationAddress, pu8MediaType);
-#else
+<#else>
   struct TAdpMacGetConfirm adpMacGetConfirm;
   uint16_t u16AdpShortAddress;
   AdpMacGetRequestSync(MAC_WRP_PIB_SHORT_ADDRESS, 0, &adpMacGetConfirm);
   memcpy(&u16AdpShortAddress, &adpMacGetConfirm.m_au8AttributeValue, 2);
   *pu8MediaType = 0;
   return u16AdpShortAddress;
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -464,11 +383,11 @@ struct TAdpRoutingTableEntry *Routing_AddRouteEntry(struct TAdpRoutingTableEntry
 {
   struct TAdpRoutingTableEntry *pRet = 0L;
   *pbTableFull = false;
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   if (!Routing_IsDisabled()) {
     pRet = LOADNG_AddRouteEntry(pNewEntry, pbTableFull);
   }
-#endif
+</#if>
   return pRet;
 }
 
@@ -478,11 +397,11 @@ struct TAdpRoutingTableEntry *Routing_AddRouteEntry(struct TAdpRoutingTableEntry
 struct TAdpRoutingTableEntry *Routing_GetRouteEntry(uint16_t u16DestinationAddress)
 {
   struct TAdpRoutingTableEntry *pRet = 0L;
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   if (!Routing_IsDisabled()) {
     pRet = LOADNG_GetRouteEntry(u16DestinationAddress);
   }
-#endif
+</#if>
   return pRet;
 }
 
@@ -493,11 +412,11 @@ uint32_t Routing_GetRouteCount(void)
 {
   uint32_t u32Count;
   u32Count = 0;
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   if (!Routing_IsDisabled()) {
     u32Count = LOADNG_GetRouteCount();
   }
-#endif
+</#if>
   return u32Count;
 }
 
@@ -506,9 +425,9 @@ uint32_t Routing_GetRouteCount(void)
  **********************************************************************************************************************/
 void Routing_AddBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   LOADNG_AddBlacklistOnMedium(u16Addr, u8MediaType);
-#endif
+</#if>
 }
 
 /**********************************************************************************************************************/
@@ -516,7 +435,7 @@ void Routing_AddBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType)
  **********************************************************************************************************************/
 void Routing_RemoveBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType)
 {
-#if (ENABLE_ROUTING == 1)
+<#if LOADNG_ENABLE == true>
   LOADNG_RemoveBlacklistOnMedium(u16Addr, u8MediaType);
-#endif
+</#if>
 }
