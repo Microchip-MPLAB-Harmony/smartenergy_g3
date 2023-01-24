@@ -40,9 +40,9 @@ def instantiateComponent(g3LOADngComponent):
     LOADngLibFile.setEnabled(True)
 
     #### LOADNG header Files ###################################################
-    adpHeader = g3LOADngComponent.createFileSymbol("G3_ADP_HEADER", None)
-    adpHeader.setSourcePath("g3/src/loadng/loadng.h")
-    adpHeader.setOutputName("loadng.h")
-    adpHeader.setDestPath("stack/g3/adaptation")
-    adpHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
-    adpHeader.setType("HEADER")
+    LOADngHeader = g3LOADngComponent.createFileSymbol("G3_LOADNG_HEADER", None)
+    LOADngHeader.setSourcePath("g3/src/loadng/loadng.h")
+    LOADngHeader.setOutputName("loadng.h")
+    LOADngHeader.setDestPath("stack/g3/adaptation")
+    LOADngHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    LOADngHeader.setType("HEADER")
