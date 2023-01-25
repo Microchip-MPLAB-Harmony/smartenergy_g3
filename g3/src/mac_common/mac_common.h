@@ -17,7 +17,7 @@
 
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -301,51 +301,6 @@ MAC_STATUS MAC_COMMON_GetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
     None.
 */
 MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_t index, const MAC_PIB_VALUE *pibValue);
-
-// *****************************************************************************
-/* Function:
-    uint32_t MAC_COMMON_GetMsCounter
-    (
-      void
-    )
-
-  Summary:
-    The MAC_COMMON_GetMsCounter primitive gets the value of a counter that is
-    incremented every millisecond.
-
-  Description:
-    MAC layer makes use of SYS_TIME service to get the value of the millisecond
-    counter in order to be able to set timeouts and perform delays.
-    This function returns the current value of such counter.
-
-  Precondition:
-    MAC_COMMON_Init primitive has to be called before.
-
-  Parameters:
-    None.
-
-  Returns:
-    Value of MAC milliseconds counter.
-
-  Example:
-    <code>
-    previousCounter = MAC_COMMON_GetMsCounter();
-
-    // Perform other actions
-    // ...
-
-    newCounter = MAC_COMMON_GetMsCounter();
-
-    if ((newCounter - previousCounter) > TIMEOUT_MS)
-    {
-        // Timeout elapsed
-    }
-    </code>
-
-  Remarks:
-    None.
-*/
-uint32_t MAC_COMMON_GetMsCounter(void);
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

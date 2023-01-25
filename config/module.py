@@ -58,6 +58,7 @@ def loadModule():
     g3AdpComponent.addDependency("adp_srv_queue_dependency", "Queue", True, True)
     g3AdpComponent.addDependency("adp_srv_log_report_dependency", "Log Report", True, True)
     g3AdpComponent.addDependency("adp_sys_time_dependency", "SYS_TIME", True, True)
+    g3AdpComponent.addDependency("adp_srv_timemgmt_dependency", "Time Management", True, True)
     # TBD optional dependencies to serialization and storage
     g3AdpComponent.setDisplayType("Adaptation Layer")
     
@@ -69,6 +70,7 @@ def loadModule():
     g3LOADngComponent.addDependency("loadng_srv_queue_dependency", "Queue", True, True)
     g3LOADngComponent.addDependency("loadng_srv_log_report_dependency", "Log Report", True, True)
     g3LOADngComponent.addDependency("loadng_sys_time_dependency", "SYS_TIME", True, True)
+    g3LOADngComponent.addDependency("loadng_srv_timemgmt_dependency", "Time Management", True, True)
     # TBD optional dependencies to serialization and storage
     g3LOADngComponent.setDisplayType("Adaptation Layer")
     
@@ -116,6 +118,7 @@ def loadModule():
     g3MacPlcComponent.addDependency("plc_srv_log_report_dependency", "Log Report", True, True)
     g3MacPlcComponent.addDependency("plc_srv_security_dependency", "Security", True, True)
     g3MacPlcComponent.addDependency("plc_srv_g3_palplc_dependency", "G3_PAL_PLC", True, True)
+    g3MacPlcComponent.addDependency("plc_srv_timemgmt_dependency", "Time Management", True, True)
     # TBD optional dependencies to storage
     g3MacPlcComponent.setDisplayType("MAC Layer")
     
@@ -128,6 +131,7 @@ def loadModule():
     g3MacRfComponent.addDependency("rf_srv_log_report_dependency", "Log Report", True, True)
     g3MacRfComponent.addDependency("rf_srv_security_dependency", "Security", True, True)
     g3MacRfComponent.addDependency("rf_srv_g3_palrf_dependency", "G3_PAL_RF", True, True)
+    g3MacRfComponent.addDependency("rf_srv_timemgmt_dependency", "Time Management", True, True)
     # TBD optional dependencies to storage
     g3MacRfComponent.setDisplayType("MAC Layer")
     
@@ -137,4 +141,10 @@ def loadModule():
     srvSecurityComponent.addCapability("libsrvSecurity", "Security", True)  
     srvSecurityComponent.addDependency("security_crypto_dependency", "LIB_CRYPTO", True, True)
     srvSecurityComponent.setDisplayType("Security Service")
+    
+    ## Time Management
+    srvTimeMgmtComponent = Module.CreateComponent("srvTimeManagement", "Time Management", "/SmartEnergy/Stack/Services", "service/time_management/config/srv_time_management.py")
+    srvTimeMgmtComponent.addCapability("libsrvTimeMgmt", "Time Management", True)  
+    srvTimeMgmtComponent.addDependency("timemgmt_sys_time_dependency", "SYS_TIME", True, True)
+    srvTimeMgmtComponent.setDisplayType("Time Management Service")
     
