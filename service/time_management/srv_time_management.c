@@ -84,5 +84,5 @@ uint32_t SRV_TIME_MANAGEMENT_GetMsCounter(void)
 
 bool SRV_TIME_MANAGEMENT_TimeIsPast(int32_t timeValue)
 {
-     return (SRV_TIME_MANAGEMENT_GetMsCounter() - timeValue > 0);
+     return (((int32_t)(SRV_TIME_MANAGEMENT_GetMsCounter()) - timeValue) > 0);
 }
