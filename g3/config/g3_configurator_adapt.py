@@ -130,6 +130,13 @@ def instantiateComponent(g3ConfigAdaptComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
     
     #### Routing Wrapper Files #################################################
+    routingTypesHeader = g3ConfigAdaptComponent.createFileSymbol("G3_ROUTING_TYPES_HEADER", None)
+    routingTypesHeader.setSourcePath("g3/src/routing_wrapper/routing_types.h")
+    routingTypesHeader.setOutputName("routing_types.h")
+    routingTypesHeader.setDestPath("stack/g3/adaptation")
+    routingTypesHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    routingTypesHeader.setType("HEADER")
+    
     routingWrapperHeader = g3ConfigAdaptComponent.createFileSymbol("G3_ROUTING_WRAPPER_HEADER", None)
     routingWrapperHeader.setSourcePath("g3/src/routing_wrapper/routing_wrapper.h")
     routingWrapperHeader.setOutputName("routing_wrapper.h")

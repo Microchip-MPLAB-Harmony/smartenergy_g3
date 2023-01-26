@@ -14,7 +14,7 @@
 #ifndef __ROUTING_API_H__
 #define __ROUTING_API_H__
 
-#include "../adp/adp.h"
+#include "adp.h"
 
 void Routing_Reset(uint8_t u8Band);
 
