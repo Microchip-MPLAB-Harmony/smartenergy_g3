@@ -1,18 +1,1300 @@
-/**********************************************************************************************************************/
-/** Defines the API provided by ADP for the upper layer.
- ***********************************************************************************************************************
- *
- **********************************************************************************************************************/
+/*******************************************************************************
+  ADP Interface Header File
 
-#ifndef __ADP_API_H__
-#define __ADP_API_H__
+  Company:
+    Microchip Technology Inc.
 
+  File Name:
+    adp.h
+
+  Summary:
+    ADP Interface Header File
+
+  Description:
+    The ADP provides a simple interface to manage the G3 Adaptation Layer. This
+    file provides the interface definition for the ADP.
+*******************************************************************************/
+
+//DOM-IGNORE-BEGIN
+/*******************************************************************************
+* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
+*
+* Subject to your compliance with these terms, you may use Microchip software
+* and any derivatives exclusively with Microchip products. It is your
+* responsibility to comply with third party license terms applicable to your
+* use of third party software (including open source software) that may
+* accompany Microchip software.
+*
+* THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+* EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+* WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+* PARTICULAR PURPOSE.
+*
+* IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
+* INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
+* WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
+* BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
+* FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
+* ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
+* THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+*******************************************************************************/
+//DOM-IGNORE-END
+
+#ifndef _ADP_H
+#define _ADP_H
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: File includes
+// *****************************************************************************
+// *****************************************************************************
 #include <stdint.h>
 #include <stdbool.h>
 
 #include "adp_shared_types.h"
 #include "adp_api_types.h"
 #include "system/system.h"
+
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus  // Provide C++ Compatibility
+
+    extern "C" {
+
+#endif
+// DOM-IGNORE-END
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Data Types
+// *****************************************************************************
+// *****************************************************************************
+
+// *****************************************************************************
+/* ADP Data Confirm Parameters
+
+   Summary:
+    Defines the parameters for the ADP Data Confirm event handler function.
+
+   Description:
+    The structure contains the fields reported by the ADP Data Confirm
+    event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* The status code (result) of a previous ADP Data Request */
+    uint8_t status;
+
+    /* The handle of the NSDU confirmed by this primitive */
+    uint8_t nsduHandle;
+
+} ADP_DATA_CFM_PARAMS;
+
+// *****************************************************************************
+/* ADP Data Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Data Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Data
+    Confirm event handling callback function. The ADP Data Confirm primitive
+    allows the upper layer to be notified of the completion of an ADP Data
+    Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Data
+    Confirm events back from module.
+
+  Parameters:
+    pDataConfirm - Pointer to structure containing parameters related to confirm
+
+  Example:
+    <code>
+    App_DataConfirm(ADP_DATA_CFM_PARAMS *params)
+    {
+        // Check result
+        if (params->status == G3_SUCCESS)
+        {
+            txHandler = params->nsduHandle;
+            // Dispatch according to handler
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_DATA_CFM_CALLBACK)(ADP_DATA_CFM_PARAMS* pDataCfm);
+
+// *****************************************************************************
+/* ADP Data Indication Parameters
+
+   Summary:
+    Defines the parameters for the ADP Data Indication event handler function.
+
+   Description:
+    The structure contains the fields reported by the ADP Data Indication
+    event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* The received NSDU */
+    const uint8_t* pNsdu;
+
+    /* The size of the NSDU, in bytes; Up to 1280 bytes */
+    uint16_t nsduLength;
+
+    /* The value of the link quality during reception of the frame */
+    uint8_t linkQualityIndicator;
+
+} ADP_DATA_IND_PARAMS;
+
+// *****************************************************************************
+/* ADP Data Indication Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Data Indication Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Data
+    Indication event handling callback function. The ADP Data Indication
+    primitive is used to transfer received data from the adaptation sublayer to
+    the upper layer.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Data
+    Indication events back from module.
+
+  Parameters:
+    pDataIndication - Pointer to structure containing parameters related to
+                      indication
+
+  Example:
+    <code>
+    App_DataIndication(ADP_DATA_IND_PARAMS *params)
+    {
+        // Check Link Quality
+        if (params->linkQualityIndicator > 40)
+        {
+            // Check data content in params->pNsdu
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_DATA_IND_CALLBACK)(ADP_DATA_IND_PARAMS* pDataInd);
+
+// *****************************************************************************
+/* ADP Discovery Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Discovery Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Discovery
+    Confirm event handling callback function. The ADP Discovery Confirm
+    primitive allows the upper layer to be notified of the completion of an
+    ADP Discovery Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Discovery
+    Confirm events back from module.
+
+  Parameters:
+    status - The status of the discovery request
+
+  Example:
+    <code>
+    App_DiscoveryConfirm(uint8_t status)
+    {
+        // Check result
+        if (status == G3_SUCCESS)
+        {
+            
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_DISCOVERY_CFM_CALLBACK)(uint8_t status);
+
+// *****************************************************************************
+/* ADP Discovery Indication Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Discovery Indication Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Discovery
+    Indication event handling callback function. The ADP Discovery Indication
+    primitive is generated by the ADP layer to notify the application about the
+    discovery of a new PAN coordinator or LBA.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Discovery
+    Indication events back from module.
+
+  Parameters:
+    pPanDescriptor - Pointer to PAN descriptor containing information about the
+                     PAN
+
+  Example:
+    <code>
+    App_DiscoveryIndication(ADP_PAN_DESCRIPTOR *panDescriptor)
+    {
+        uint8_t mediaType = MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF;
+
+        if (panDescriptor-> == MAC_WRP_MEDIA_TYPE_IND_RF)
+        {
+            mediaType = MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_PLC;
+        }
+
+        ADP_NetworkJoinRequest(panDescriptor->panId, panDescriptor->panId, mediaType);
+        // Wait for Network Join Confirm    
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_DISCOVERY_IND_CALLBACK)(ADP_PAN_DESCRIPTOR* pPanDescriptor);
+
+// *****************************************************************************
+/* ADP Network Start Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Network Start Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Network
+    Start Confirm event handling callback function. The ADP Network Start
+    Confirm primitive allows the upper layer to be notified of the completion of
+    an ADP Network Start Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Network
+    Start Confirm events back from module.
+
+  Parameters:
+    status - The status of the request
+
+  Example:
+    <code>
+    App_NetworkStartConfirm(uint8_t status)
+    {
+        // Check result
+        if (status == G3_SUCCESS)
+        {
+            
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_NETWORK_START_CFM_CALLBACK)(uint8_t status);
+
+// *****************************************************************************
+/* ADP Network Join Confirm Parameters
+
+   Summary:
+    Defines the parameters for the ADP Network Join Confirm event handler
+    function.
+
+   Description:
+    The structure contains the fields reported by the ADP Network Join Confirm
+    event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* The 16-bit network address that was allocated to the device */
+    uint16_t networkAddress;
+
+    /* The 16-bit address of the PAN of which the device is now a member */
+    uint16_t panId;
+
+    /* The status of the request */
+    uint8_t status;
+
+} ADP_NETWORK_JOIN_CFM_PARAMS;
+
+// *****************************************************************************
+/* ADP Network Join Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Network Join Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Network
+    Join Confirm event handling callback function. The ADP Network Join Confirm
+    primitive allows the upper layer to be notified of the completion of an
+    ADP Network Join Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Network Join
+    Confirm events back from module.
+
+  Parameters:
+    pDataConfirm - Pointer to structure containing parameters related to confirm
+
+  Example:
+    <code>
+    App_NetworkJoinConfirm(ADP_NETWORK_JOIN_CFM_PARAMS *params)
+    {
+        // Check result
+        if (params->status == G3_SUCCESS)
+        {
+            
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_NETWORK_JOIN_CFM_CALLBACK)(ADP_NETWORK_JOIN_CFM_PARAMS* pNetworkJoinCfm);
+
+// *****************************************************************************
+/* ADP Network Leave Indication Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Network Leave Indication Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Network
+    Leave Indication event handling callback function. The ADP Network Leave
+    Indication primitive is is generated by the ADP layer of a non-coordinator
+    device to inform the upper layer that it has been unregistered from the
+    network by the coordinator.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Network
+    Leave Indication events back from module.
+
+  Parameters:
+    None.
+
+  Example:
+    <code>
+    App_NetworkLeaveIndication(void)
+    {
+        // Handle Network Leave Indication
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_NETWORK_LEAVE_IND_CALLBACK)(void);
+
+// *****************************************************************************
+/* ADP Network Leave Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Network Leave Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Network
+    Leave Confirm event handling callback function. The ADP Network Leave
+    Confirm primitive allows the upper layer to be notified of the completion of
+    an ADP Network Leave Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Network
+    Leave Confirm events back from module.
+
+  Parameters:
+    status - The status of the request
+
+  Example:
+    <code>
+    App_NetworkLeaveConfirm(uint8_t status)
+    {
+        // Check result
+        if (status == G3_SUCCESS)
+        {
+            
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_NETWORK_LEAVE_CFM_CALLBACK)(uint8_t status);
+
+// *****************************************************************************
+/* ADP Reset Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Reset Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Reset
+    Confirm event handling callback function. The ADP Reset Confirm primitive
+    allows the upper layer to be notified of the completion of an ADP Reset
+    Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Reset
+    Confirm events back from module.
+
+  Parameters:
+    status - The status of the request
+
+  Example:
+    <code>
+    App_ResetConfirm(uint8_t status)
+    {
+        // Check result
+        if (status == G3_SUCCESS)
+        {
+            
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_RESET_CFM_CALLBACK)(uint8_t status);
+
+// *****************************************************************************
+/* ADP Set Confirm Parameters
+
+   Summary:
+    Defines the parameters for the ADP Set Confirm event handler function.
+
+   Description:
+    The structure contains the fields reported by the ADP Set Confirm
+    event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* The identifier of the IB attribute set */
+    uint32_t attributeId;
+
+    /* The index within the table of the specified IB attribute */
+    uint16_t attributeIndex;
+
+    /* The status of the set request */
+    uint8_t status;
+
+} ADP_SET_CFM_PARAMS;
+
+// *****************************************************************************
+/* ADP Set Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Set Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Set
+    Confirm event handling callback function. The ADP Set Confirm primitive
+    allows the upper layer to be notified of the completion of an ADP Set
+    Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Set
+    Confirm events back from module.
+
+  Parameters:
+    pSetCfm - Pointer to structure containing parameters related to confirm
+
+  Example:
+    <code>
+    App_SetConfirm(ADP_SET_CFM_PARAMS *params)
+    {
+        // Check result
+        if (params->status == G3_SUCCESS)
+        {
+
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_SET_CFM_CALLBACK)(ADP_SET_CFM_PARAMS* pSetCfm);
+
+// *****************************************************************************
+/* ADP MAC Set Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a MAC Set Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP MAC Set
+    Confirm event handling callback function. The ADP MAC Set Confirm primitive
+    allows the upper layer to be notified of the completion of an ADP MAC Set
+    Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive MAC Set
+    Confirm events back from module.
+
+  Parameters:
+    pSetCfm - Pointer to structure containing parameters related to confirm
+
+  Example:
+    <code>
+    App_MacSetConfirm(ADP_SET_CFM_PARAMS *params)
+    {
+        // Check result
+        if (params->status == G3_SUCCESS)
+        {
+
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_MAC_SET_CFM_CALLBACK)(ADP_SET_CFM_PARAMS* pSetCfm);
+
+// *****************************************************************************
+/* ADP Get Confirm Parameters
+
+   Summary:
+    Defines the parameters for the ADP Get Confirm event handler function.
+
+   Description:
+    The structure contains the fields reported by the ADP Get Confirm
+    event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* The identifier of the IB attribute read */
+    uint32_t attributeId;
+
+    /* The index within the table of the specified IB attribute read */
+    uint16_t attributeIndex;
+
+    /* The status of the set request */
+    uint8_t status;
+
+    /* The length of the value of the attribute read from the IB */
+    uint8_t attributeLength;
+
+    /* The value of the attribute read from the IB */
+    uint8_t attributeValue[64];
+
+} ADP_GET_CFM_PARAMS;
+
+// *****************************************************************************
+/* ADP Get Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Get Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Get
+    Confirm event handling callback function. The ADP Get Confirm primitive
+    allows the upper layer to be notified of the completion of an ADP Get
+    Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Get
+    Confirm events back from module.
+
+  Parameters:
+    pGetCfm - Pointer to structure containing parameters related to confirm
+
+  Example:
+    <code>
+    App_GetConfirm(ADP_GET_CFM_PARAMS *params)
+    {
+        // Check result
+        if (params->status == G3_SUCCESS)
+        {
+            // The value is in params->attributeValue
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_GET_CFM_CALLBACK)(ADP_GET_CFM_PARAMS* pGetCfm);
+
+// *****************************************************************************
+/* ADP MAC Get Confirm Parameters
+
+   Summary:
+    Defines the parameters for the ADP MAC Get Confirm event handler function.
+
+   Description:
+    The structure contains the fields reported by the ADP MAC Get Confirm
+    event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* The identifier of the IB attribute read */
+    uint32_t attributeId;
+
+    /* The index within the table of the specified IB attribute read */
+    uint16_t attributeIndex;
+
+    /* The status of the set request */
+    uint8_t status;
+
+    /* The length of the value of the attribute read from the IB */
+    uint8_t attributeLength;
+
+    /* The value of the attribute read from the IB */
+    uint8_t attributeValue[144];
+
+} ADP_MAC_GET_CFM_PARAMS;
+
+// *****************************************************************************
+/* ADP MAC Get Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a MAC Get Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP MAC Get
+    Confirm event handling callback function. The ADP MAC Get Confirm primitive
+    allows the upper layer to be notified of the completion of an
+    ADP MAC Get Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive MAC Get
+    Confirm events back from module.
+
+  Parameters:
+    pGetCfm - Pointer to structure containing parameters related to confirm
+
+  Example:
+    <code>
+    App_MacGetConfirm(ADP_MAC_GET_CFM_PARAMS *params)
+    {
+        // Check result
+        if (params->status == G3_SUCCESS)
+        {
+            // The value is in params->attributeValue
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_MAC_GET_CFM_CALLBACK)(ADP_MAC_GET_CFM_PARAMS* pGetCfm);
+
+// *****************************************************************************
+/* ADP LBP Confirm Parameters
+
+   Summary:
+    Defines the parameters for the ADP LBP Confirm event handler function.
+
+   Description:
+    The structure contains the fields reported by the ADP LBP Confirm
+    event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* The status code of a previous ADP LBP Request */
+    uint8_t status;
+
+    /* The handle of the NSDU confirmed by this primitive */
+    uint8_t nsduHandle;
+
+} ADP_LBP_CFM_PARAMS;
+
+// *****************************************************************************
+/* ADP LBP Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a LBP Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP LBP
+    Confirm event handling callback function. The ADP LBP Confirm primitive
+    allows the upper layer to be notified of the completion of an LBP Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive LBP
+    Confirm events back from module.
+
+  Parameters:
+    pLbpCfm - Pointer to structure containing parameters related to confirm
+
+  Example:
+    <code>
+    App_LbpConfirm(ADP_LBP_CFM_PARAMS *params)
+    {
+        // Check result
+        if (params->status == G3_SUCCESS)
+        {
+
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_LBP_CFM_CALLBACK)(ADP_LBP_CFM_PARAMS* pLbpCfm);
+
+/ *****************************************************************************
+/* ADP LBP Indication Parameters
+
+   Summary:
+    Defines the parameters for the ADP LBP Indication event handler function.
+
+   Description:
+    The structure contains the fields reported by the ADP LBP Indication
+    event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* The received NSDU */
+    const uint8_t* pNsdu;
+
+    /* The size of the NSDU, in bytes; Up to 1280 bytes */
+    uint16_t nsduLength;
+
+    /* Address of the LBA. When directly communicating with the LBD (using
+     * extended addressing), this field is set to 0xFFFF */
+    uint16_t srcAddr;
+
+    /* The value of the link quality during reception of the frame */
+    uint8_t linkQualityIndicator;
+
+    /* TRUE if the frame was received with a security level greater or equal
+     * to adpSecurityLevel, FALSE otherwise */
+    bool securityEnabled;
+
+} ADP_LBP_IND_PARAMS;
+
+// *****************************************************************************
+/* ADP LBP Indication Event Handler Function Pointer
+
+  Summary:
+    Pointer to a LBP Indication Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP LBP
+    Indication event handling callback function. The ADP LBP Indication
+    primitive is used to transfer received data from the adaptation sublayer to
+    the upper layer.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive LBP
+    Indication events back from module.
+
+  Parameters:
+    pLbpInd - Pointer to structure containing parameters related to indication
+
+  Example:
+    <code>
+    App_LbpIndication(ADP_LBP_IND_PARAMS *params)
+    {
+        // Check Link Quality
+        if (params->linkQualityIndicator > 40)
+        {
+            // Check data content in params->pNsdu
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_LBP_IND_CALLBACK)(ADP_LBP_IND_PARAMS* pLbpInd);
+
+// *****************************************************************************
+/* ADP Route Discovery Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Route Discovery Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Route
+    Discovery Confirm event handling callback function. The ADP Route Discovery
+    Confirm primitive allows the upper layer to be notified of the completion of
+    an ADP Route Discovery Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Route
+    Discovery Confirm events back from module.
+
+  Parameters:
+    status - The status of the route discovery
+
+  Example:
+    <code>
+    App_DiscoveryConfirm(uint8_t status)
+    {
+        // Check result
+        if (status == G3_SUCCESS)
+        {
+            
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_ROUTE_DISCOVERY_CFM_CALLBACK)(uint8_t status);
+
+// *****************************************************************************
+/* ADP Path Discovery Confirm Parameters
+
+   Summary:
+    Defines the parameters for the ADP Path Discovery Confirm event handler
+    function.
+
+   Description:
+    The structure contains the fields reported by the ADP Path Discovery Confirm
+    event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* The short unicast destination address of the path discovery */
+    uint16_t dstAddr;
+
+    /* The originator of the path reply */
+    uint16_t origAddr;
+    
+    /* The status of the path discovery (status can be INCOMPLETE and the other
+     * parameters contain the	discovered path) */
+    uint8_t status;
+
+    /* Path metric type */
+    uint8_t metricType;
+
+    /* Number of path hops in the forward table */
+    uint8_t forwardHopsCount;
+
+    /* Number of path hops in the reverse table */
+    uint8_t reverseHopsCount;
+
+    /* Table with the information of each hop in forward direction (according
+     * to forwardHopsCount) */
+    ADP_HOP_DESCRIPTOR forwardPath[16];
+
+    /* Table with the information of each hop in reverse direction (according
+     * to reverseHopsCount) */
+    ADP_HOP_DESCRIPTOR reversePath[16];
+
+} ADP_PATH_DISCOVERY_CFM_PARAMS;
+
+// *****************************************************************************
+/* ADP Path Discovery Confirm Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Path Discovery Confirm Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Path
+    Discovery Confirm event handling callback function. The ADP Path Discovery
+    Confirm primitive allows the upper layer to be notified of the completion of
+    an ADP Path Discovery Request.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Path
+    Discovery Confirm events back from module.
+
+  Parameters:
+    pPathDiscoveryCfm - Pointer to structure containing parameters related to
+                        confirm
+
+  Example:
+    <code>
+    App_PathDiscoveryConfirm(ADP_LBP_CFM_PARAMS *params)
+    {
+        // Check result
+        if (params->status == G3_SUCCESS)
+        {
+
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_PATH_DISCOVERY_CFM_CALLBACK)(ADP_PATH_DISCOVERY_CFM_PARAMS* pPathDiscoveryCfm);
+
+/ *****************************************************************************
+/* ADP Network Status Indication Parameters
+
+   Summary:
+    Defines the parameters for the ADP Network Status Indication event handler
+    function.
+
+   Description:
+    The structure contains the fields reported by the ADP Network Status
+    Indication event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* The individual device address of the entity from which the frame causing
+     * the error originated */
+    ADP_ADDRESS srcDeviceAddress;
+
+    /* The individual device address of the device for which the frame was
+     * intended */
+    ADP_ADDRESS dstDeviceAddress;
+
+    /* The 16-bit PAN identifier of the device from which the frame was received
+     * or to which the frame was being sent */
+    uint16_t panId;
+
+    /* The communications status */
+    uint8_t status;
+
+    /* The security level purportedly used by the received frame */
+    uint8_t securityLevel;
+
+    /* The index of the key purportedly used by the originator of the received
+     * frame */
+    uint8_t keyIndex;
+    
+    /* The medium (PLC/RF) from which the frame was received */
+    uint8_t mediaType;
+
+} ADP_NETWORK_STATUS_IND_PARAMS;
+
+// *****************************************************************************
+/* ADP Network Status Indication Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Network Status Indication Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Network
+    Status Indication event handling callback function. The ADP Network Status
+    Indication primitive allows the next higher layer of a PAN coordinator or a
+    coordinator to be notified when a particular event occurs on the PAN.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Network Status
+    Indication events back from module.
+
+  Parameters:
+    pNetworkStatusInd - Pointer to structure containing parameters related to
+                        indication
+
+  Example:
+    <code>
+    App_NetworkStatusIndication(ADP_NETWORK_STATUS_IND_PARAMS *params)
+    {
+        // Handle Network Status Indication
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_NETWORK_STATUS_IND_CALLBACK)(ADP_NETWORK_STATUS_IND_PARAMS* pNetworkStatusInd);
+
+// *****************************************************************************
+/* ADP Buffer Indication Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Buffer Indication Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Buffer
+    Indication event handling callback function. The ADP Buffer Indication
+    primitive allows the next higher layer to be notified when the modem has
+    reached its capability limit to perform the next frame.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Buffer
+    Indication events back from module.
+
+  Parameters:
+    bufferReady - true: modem is ready to receive more data frame
+                  false: modem is not ready, stop sending data frame
+
+  Example:
+    <code>
+    App_BufferIndication(bool bufferReady)
+    {
+        if (bufferReady == true)
+        {
+            // Modem is ready to receive more data frame
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_BUFFER_IND_CALLBACK)(bool bufferReady);
+
+// *****************************************************************************
+/* ADP PREQ Indication Event Handler Function Pointer
+
+  Summary:
+    Pointer to a PREQ Indication Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP PREQ
+    Indication event handling callback function. The ADP PREQ Indication
+    primitive allows the next higher layer to be notified when a PREQ frame is
+    received in unicast mode with Originator Address equal to Coordinator
+    Address and with Destination Address equal to Device Address.
+
+    A client must register a pointer using the event handling function whose
+    function signature (parameter and return value types) matches the types
+    specified by this function pointer in order to receive PREQ Indication
+    events back from module.
+
+  Parameters:
+    None.
+
+  Example:
+    <code>
+    App_NetworkLeaveIndication(void)
+    {
+        // Handle PREQ Indication
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_PREQ_IND_CALLBACK)(void);
+
+// *****************************************************************************
+/* ADP Non-Volatile Data Indication Parameters
+
+   Summary:
+    Defines the parameters for the ADP Non-Volatile Data Indication event
+    handler function.
+
+   Description:
+    The structure contains the fields reported by the ADP Non-Volatile Data
+    Indication event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* MAC frame counter for PLC */
+    uint32_t frameCounter;
+
+    /* MAC frame counter for RF */
+    uint32_t frameCounterRF;
+
+    /* Discover sequence number */
+    uint16_t discoverSeqNumber;
+
+    /* Broadcast sequence number */
+    uint8_t broadcastSeqNumber;
+
+} ADP_NON_VOLATILE_DATA_IND_PARAMS;
+
+// *****************************************************************************
+/* ADP Non-Volatile Data Indication Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Non-Volatile Data Indication Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP
+    Non-Volatile Data Indication event handling callback function. The ADP
+    Non-Volatile Data Indication primitive allows the next higher layer to be
+    notified when non-volatile stored data must be updated to protect the system
+    in case of critical failure.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Non-Volatile
+    Data Indication events back from module.
+
+  Parameters:
+    pNonVolatileDataInd - Pointer to structure containing parameters related to
+                          indication
+
+  Example:
+    <code>
+    App_NonVolatileDataIndication(ADP_NON_VOLATILE_DATA_IND_PARAMS *params)
+    {
+        // Store non-volatile data
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_NON_VOLATILE_DATA_IND_CALLBACK)(ADP_NON_VOLATILE_DATA_IND_PARAMS* pNonVolatileDataInd);
+
+// *****************************************************************************
+/* ADP Route Not Found Indication Parameters
+
+   Summary:
+    Defines the parameters for the ADP Route Not Found Indication event handler
+    function.
+
+   Description:
+    The structure contains the fields reported by the ADP Route Not Found
+    Indication event handler function.
+
+   Remarks:
+    None.
+*/
+typedef struct {
+    /* The NSDU failed to be delivered */
+    const uint8_t* pNsdu;
+
+    /* The size of the NSDU failed to be delivered, in bytes; Range: 0 - 1280 */
+    uint16_t nsduLength;
+
+    /* Address of the frame originator */
+    uint16_t srcAddr;
+
+    /* Address of the frame final destination */
+    uint16_t destAddr;
+
+    /* Address of the next hop to frame final destination */
+    uint16_t nextHopAddr;
+
+    /* Address of the previous hop to frame final destination */
+    uint16_t previousHopAddr;
+    
+    /* Route Cost of the broken route (0xFFFF if route did not exist) */
+    uint16_t routeCost;
+
+    /* Hop Count of the broken route (0xFF if route did not exist) */
+    uint8_t hopCount;
+
+    /* Weak Link Count of the broken route (0xFF if route did not exist) */
+    uint8_t weakLinkCount;
+
+    /* Indicates whether the route existed and just failed */
+    bool routeJustBroken;
+
+    /* Indicates whether the Header of the frame dropped due to No Route was
+     * compressed */
+    bool compressedHeader;
+
+} ADP_ROUTE_NOT_FOUND_IND_PARAMS;
+
+// *****************************************************************************
+/* ADP Route Not Found Indication Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Route Not Found Indication Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Route Not
+    Found Indication event handling callback function. The ADP Route Not Found
+    Indication primitive is used to indicate the upper layer that a route is not
+    available.
+
+    A client must register a pointer using the event handling
+    function whose function signature (parameter and return value types) matches
+    the types specified by this function pointer in order to receive Route Not
+    Found Indication events back from module.
+
+  Parameters:
+    pRouteNotFoundInd - Pointer to structure containing parameters related to
+                        indication
+
+  Example:
+    <code>
+    App_RouteNotFoundIndication(ADP_ROUTE_NOT_FOUND_IND_PARAMS *params)
+    {
+        // Handle Route Not Found Indication
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_ROUTE_NOT_FOUND_IND_CALLBACK)(ADP_ROUTE_NOT_FOUND_IND_PARAMS* pRouteNotFoundInd);
+
+// *****************************************************************************
+/* ADP Callback Notificatios Structure
+
+   Summary:
+    Set of event handler function pointers to receive events from ADP.
+
+   Description:
+    Defines the set of callback functions that ADP uses to generate events to
+    upper layer.
+
+   Remarks:
+    In case an event is to be ignored, setting its corresponding callback
+    function to NULL will lead to the event not being generated.
+*/
+typedef struct {
+    ADP_DATA_CFM_CALLBACK              dataConfirm;
+    ADP_DATA_IND_CALLBACK              dataIndication;
+    ADP_DISCOVERY_CFM_CALLBACK         discoveryConfirm;
+    ADP_DISCOVERY_IND_CALLBACK         discoveryIndication;
+    ADP_NETWORK_START_CFM_CALLBACK     networkStartConfirm;
+    ADP_NETWORK_JOIN_CFM_CALLBACK      networkJoinConfirm;
+    ADP_NETWORK_LEAVE_IND_CALLBACK     networkLeaveIndication;
+    ADP_NETWORK_LEAVE_CFM_CALLBACK     networkLeaveConfirm;
+    ADP_RESET_CFM_CALLBACK             resetConfirm;
+    ADP_SET_CFM_CALLBACK               setConfirm;
+    ADP_MAC_SET_CFM_CALLBACK           macSetConfirm;
+    ADP_GET_CFM_CALLBACK               getConfirm;
+    ADP_MAC_GET_CFM_CALLBACK           macGetConfirm;
+    ADP_LBP_CFM_CALLBACK               lbpConfirm;
+    ADP_LBP_IND_CALLBACK               lbpIndication;
+    ADP_ROUTE_DISCOVERY_CFM_CALLBACK   routeDiscoveryConfirm;
+    ADP_PATH_DISCOVERY_CFM_CALLBACK    pathDiscoveryConfirm;
+    ADP_NETWORK_STATUS_IND_CALLBACK    networkStatusIndication;
+    ADP_BUFFER_IND_CALLBACK            bufferIndication;
+    ADP_PREQ_IND_CALLBACK              preqIndication;
+    ADP_NON_VOLATILE_DATA_IND_CALLBACK nonVolatileDataIndication;
+    ADP_ROUTE_NOT_FOUND_IND_CALLBACK   routeNotFoundIndication;
+} ADP_NOTIFICATIONS;
 
 // *****************************************************************************
 /* ADP Initialization Data
@@ -62,6 +1344,12 @@ typedef struct
 } ADP_INIT;
 
 // *****************************************************************************
+// *****************************************************************************
+// Section: ADP Interface Routines
+// *****************************************************************************
+// *****************************************************************************
+
+// *****************************************************************************
 /* Function:
     SYS_MODULE_OBJ ADP_Initialize
     (
@@ -70,7 +1358,7 @@ typedef struct
     )
 
   Summary:
-    Initializes the ADP module for the specified Index.
+    Initializes the ADP module for the specified index.
 
   Description:
     This routine initializes the ADP module making it ready for clients
@@ -132,8 +1420,9 @@ SYS_MODULE_OBJ ADP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_INI
   Example:
     <code>
     // ...
+    ADP_INIT initData;
     SYS_MODULE_OBJ sysObjAdp;
-    sysObjAdp = ADP_Initialize(G3_MAC_WRP_INDEX_0, &initData);
+    sysObjAdp = ADP_Initialize(G3_ADP_INDEX_0, (SYS_MODULE_INIT *)&initData);
     // ...
 
     while (true)
@@ -149,593 +1438,954 @@ SYS_MODULE_OBJ ADP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_INI
 */
 void ADP_Tasks(SYS_MODULE_OBJ object);
 
-/**********************************************************************************************************************/
-/** Forward declaration
- **********************************************************************************************************************/
-struct TAdpNotifications;
+// *****************************************************************************
+/* Function:
+    void ADP_Init(ADP_NOTIFICATIONS* pNotifications, ADP_PLC_BAND band)
 
-/**********************************************************************************************************************/
-/** Use this function to initialize the ADP layer. The ADP layer should be initialized before doing any other operation.
- * The APIs cannot be mixed, if the stack is initialized in ADP mode then only the ADP functions can be used and if the
- * stack is initialized in MAC mode then only MAC functions can be used.
- * @param pNotifications Structure with callbacks used to notify ADP specific events (if NULL the layer is deinitialized)
- * @param band Working band (should be inline with the hardware)
- **********************************************************************************************************************/
-void AdpInitialize(struct TAdpNotifications *pNotifications, enum TAdpBand band);
+  Summary:
+    Initializes the ADP module data.
 
-/**********************************************************************************************************************/
-/** The AdpDataRequest primitive requests the transfer of an application PDU to another device or multiple devices.
- ***********************************************************************************************************************
- * @param u16NsduLength The size of the NSDU, in bytes; Up to 1280
- * @param pNsdu The NSDU to send; should be a valid IPv6 packet
- * @param u8NsduHandle The handle of the NSDU to transmit. This parameter is used to identify in the AdpDataConfirm
- *                     primitive which request it is concerned with. It can be randomly chosen by the application layer.
- * @param bDiscoverRoute If TRUE, a route discovery procedure will be performed prior to sending the frame if a route
- *                       to the destination is not available in the routing table. If FALSE, no route discovery is performed.
- * @param u8QualityOfService The requested quality of service (QoS) of the frame to send. Allowed values are:
- *				0x00 = normal priority
- *				0x01 = high priority
- **********************************************************************************************************************/
-void AdpDataRequest(uint16_t u16NsduLength, const uint8_t *pNsdu,
-  uint8_t u8NsduHandle, bool bDiscoverRoute, uint8_t u8QualityOfService);
+  Description:
+    This routine initializes the ADP data structures.
+    Callback handlers for event notification are set in this function.
+    In case MAC PLC layer is present, PLC band is specified here.
 
-/**********************************************************************************************************************/
-/** The AdpNoIPDataRequest primitive requests the transfer of an application PDU to another device 
- * or multiple devices providing a 6LowPAN 16-bit Destination Address.
- * PDU does not have to be an IPv6 packet, any protocol data can be sent using this primitive
- ***********************************************************************************************************************
- * @param u16ApduLength The size of the APDU, in bytes; Up to 1280
- * @param pApdu The APDU to send; can be any App protocol
- * @param u16DstAddr The Destination Short Address. Can be a unicast address, a 6LowPAN Group Address,
- *                   or the 6LowPAN BROADCAST ADDRESS (0x8001)
- * @param u8ApduHandle The handle of the APDU to transmit. This parameter is used to identify in the AdpDataConfirm
- *                     primitive which request it is concerned with. It can be randomly chosen by the application layer.
- * @param bDiscoverRoute If TRUE, a route discovery procedure will be performed prior to sending the frame if a route
- *                       to the destination is not available in the routing table. If FALSE, no route discovery is performed.
- * @param u8QualityOfService The requested quality of service (QoS) of the frame to send. Allowed values are:
- *				0x00 = normal priority
- *				0x01 = high priority
- **********************************************************************************************************************/
-void AdpNoIPDataRequest(uint16_t u16ApduLength, const uint8_t *pApdu,
-  uint16_t u16DstAddr, uint8_t u8ApduHandle, bool bDiscoverRoute, uint8_t u8QualityOfService);
+    The APIs cannot be mixed, if the stack is initialized in ADP mode then only
+    the ADP functions can be used and if the stack is initialized in MAC mode
+    then only MAC functions can be used.
 
-/**********************************************************************************************************************/
-/** The AdpDataConfirm primitive allows the upper layer to be notified of the completion of an AdpDataRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status code of a previous AdpDataRequest identified by its NsduHandle.
- * @param m_u8NsduHandle The handle of the NSDU confirmed by this primitive.
- **********************************************************************************************************************/
-struct TAdpDataConfirm {
-  uint8_t m_u8Status;
-  uint8_t m_u8NsduHandle;
-};
-typedef void (*AdpDataConfirm)(struct TAdpDataConfirm *pDataConfirm);
+  Precondition:
+    None.
 
-/**********************************************************************************************************************/
-/** The AdpDataIndication primitive is used to transfer received data from the adaptation sublayer to the upper layer.
- ***********************************************************************************************************************
- * @param m_u16NsduLength The size of the NSDU, in bytes; Up to 1280 bytes
- * @param m_pNsdu The received NSDU
- * @param m_u8LinkQualityIndicator The value of the link quality during reception of the frame.
- **********************************************************************************************************************/
-struct TAdpDataIndication {
-  uint16_t m_u16NsduLength;
-  const uint8_t *m_pNsdu;
-  uint8_t m_u8LinkQualityIndicator;
-};
-typedef void (*AdpDataIndication)(struct TAdpDataIndication *pDataIndication);
+  Parameters:
+    pNotifications - Structure with callbacks used to notify ADP specific events
 
-/**********************************************************************************************************************/
-/** The AdpDiscoveryRequest primitive allows the upper layer to scan for networks operating in its POS.
- ***********************************************************************************************************************
- * @param u8Duration The number of seconds the scan shall last.
- **********************************************************************************************************************/
-void AdpDiscoveryRequest(uint8_t u8Duration);
+    band           - Working band for PLC (should be inline with the hardware).
 
-/**********************************************************************************************************************/
-/** The AdpDiscoveryIndication primitive is generated by the ADP layer to notify the application about the discovery
- * of a new PAN coordinator or LBA
- ***********************************************************************************************************************
- * @param pPanDescriptor PAN descriptor contains information about the PAN
- **********************************************************************************************************************/
-typedef void (*AdpDiscoveryIndication)(struct TAdpPanDescriptor *pPanDescriptor);
+  Returns:
+    None.
 
-/**********************************************************************************************************************/
-/** The AdpDiscoveryConfirm primitive allows the upper layer to be notified of the completion of an AdpDiscoveryRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status of the scan request.
- **********************************************************************************************************************/
-typedef void (*AdpDiscoveryConfirm)(uint8_t m_u8Status);
+  Example:
+    <code>
+    
+    ADP_NOTIFICATIONS adpNotifications = {
+        .dataConfirm = appDataConfirm,
+        .dataIndication = appDataIndication,
+        ...
+        ...
+    };
 
-/**********************************************************************************************************************/
-/** The AdpNetworkStartRequest primitive allows the upper layer to request the starting of a new network. It shall
- * only be invoked by a device designated as the PAN coordinator during the factory process.
- ***********************************************************************************************************************
- * @param u16PanId The PANId of the network to create; determined at the application level
- **********************************************************************************************************************/
-void AdpNetworkStartRequest(uint16_t u16PanId);
+    ADP_Init(&adpNotifications, ADP_BAND_CENELEC_A);
+    </code>
 
-/**********************************************************************************************************************/
-/** The AdpNetworkStartConfirm primitive allows the upper layer to be notified of the completion of an
- * AdpNetworkStartRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status of the request.
- **********************************************************************************************************************/
-struct TAdpNetworkStartConfirm {
-  uint8_t m_u8Status;
-};
-typedef void (*AdpNetworkStartConfirm)(
-  struct TAdpNetworkStartConfirm *pNetworkStartConfirm);
+  Remarks:
+    This routine must be called before any other ADP API function, execpt
+    ADP_Initialize.
+*/
+void ADP_Init(ADP_NOTIFICATIONS* pNotifications, ADP_PLC_BAND band);
 
-/**********************************************************************************************************************/
-/** The AdpNetworkJoinRequest primitive allows the upper layer to join an existing network.
- ***********************************************************************************************************************
- * @param u16PanId The 16-bit PAN identifier of the network to join.
- * @param u16LbaAddress The 16-bit short address of the device acting as a LoWPAN bootstrap agent (relay)
- * @param u8MediaType The Media Type to use for frame exchange with LBA. Only used in Hybrid Profile.
- **********************************************************************************************************************/
-void AdpNetworkJoinRequest(uint16_t u16PanId, uint16_t u16LbaAddress, uint8_t u8MediaType);
+// *****************************************************************************
+/* Function:
+    void ADP_DataRequest(uint16_t nsduLength, const uint8_t *pNsdu,
+        uint8_t nsduHandle, bool discoverRoute, uint8_t qualityOfService);
 
-/**********************************************************************************************************************/
-/** The AdpNetworkJoinConfirm primitive allows the upper layer to be notified of the completion of an
- * AdpNetworkJoinRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status of the request.
- * @param m_u16NetworkAddress The 16-bit network address that was allocated to the device.
- * @param m_u16PanId The 16-bit address of the PAN of which the device is now a member.
- **********************************************************************************************************************/
-struct TAdpNetworkJoinConfirm {
-  uint8_t m_u8Status;
-  uint16_t m_u16NetworkAddress;
-  uint16_t m_u16PanId;
-};
-typedef void (*AdpNetworkJoinConfirm)(
-  struct TAdpNetworkJoinConfirm *pNetworkJoinConfirm);
+  Summary:
+    This primitive requests the transfer of a PDU to another device or multiple
+    devices.
 
-/**********************************************************************************************************************/
-/** The AdpNetworkLeaveRequest primitive allows a non-coordinator device to remove itself from the network.
- ***********************************************************************************************************************
- *
- **********************************************************************************************************************/
-void AdpNetworkLeaveRequest(void);
+  Description:
+    The ADP Data Request primitive is used to transfer data to to another device
+    or multiple devices in the G3 Network.
+    
+    Result is provided in the corresponding ADP Data Confirm callback.
 
-/**********************************************************************************************************************/
-/** The AdpNetworkLeaveConfirm primitive allows the upper layer to be notified of the completion of an
- * AdpNetworkLeaveRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status of the request.
- * @param m_ExtendedAddress The 64-bit network address of the device
- **********************************************************************************************************************/
-struct TAdpNetworkLeaveConfirm {
-  uint8_t m_u8Status;
-};
-typedef void (*AdpNetworkLeaveConfirm)(
-  struct TAdpNetworkLeaveConfirm *pLeaveConfirm);
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
 
-/**********************************************************************************************************************/
-/** The AdpNetworkLeaveIndication primitive is generated by the ADP layer of a non-coordinator device to inform
- * the upper layer that it has been unregistered from the network by the coordinator.
- ***********************************************************************************************************************
- *
- **********************************************************************************************************************/
-typedef void (*AdpNetworkLeaveIndication)(void);
+  Parameters:
+    nsduLength       - The size of the NSDU, in bytes; Up to 1280
 
-/**********************************************************************************************************************/
-/** The AdpResetRequest primitive performs a reset of the adaptation sublayer and allows the resetting of the MIB
- * attributes.
- ***********************************************************************************************************************
- *
- **********************************************************************************************************************/
-void AdpResetRequest(void);
+    pNsdu            - Pointer to NSDU to send; should be a valid IPv6 packet
 
-/**********************************************************************************************************************/
-/** The AdpResetConfirm primitive allows the upper layer to be notified of the completion of an AdpResetRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status of the request.
- **********************************************************************************************************************/
-struct TAdpResetConfirm {
-  uint8_t m_u8Status;
-};
-typedef void (*AdpResetConfirm)(struct TAdpResetConfirm *pResetConfirm);
+    nsduHandle       - The handle of the NSDU to transmit. This parameter is
+                       used to identify in the ADP Data Confirm primitive which
+                       request it is concerned with. It can be randomly chosen
+                       by the application layer.
 
-/**********************************************************************************************************************/
-/** The AdpGetRequest primitive allows the upper layer to get the value of an attribute from the ADP information base.
- ***********************************************************************************************************************
- * @param u32AttributeId The identifier of the ADP IB attribute to read.
- * @param u16AttributeIndex The index within the table of the specified IB attribute to read.
- **********************************************************************************************************************/
-void AdpGetRequest(uint32_t u32AttributeId, uint16_t u16AttributeIndex);
+    discoverRoute    - If true, a route discovery procedure will be performed
+                       prior to sending the frame if a route to the destination
+                       is not available in the routing table.
+                       If false, no route discovery is performed.
 
-/**********************************************************************************************************************/
-/** The AdpGetConfirm primitive allows the upper layer to be notified of the completion of an AdpGetRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status of the request.
- * @param m_u32AttributeId The identifier of the IB attribute read
- * @param m_u16AttributeIndex The index within the table of the specified IB attribute read.
- * @param m_u8AttributeLength The length of the value of the attribute read from the IB.
- * @param m_au8AttributeValue The value of the attribute read from the IB.
- **********************************************************************************************************************/
+    qualityOfService - The requested quality of service (QoS) of the frame to
+                       send. Allowed values are 0 (normal priority) and 1 (high
+                       priority).
 
-#define ADP_PIB_MAX_VALUE_LENGTH (64)
+  Returns:
+    None.
 
-struct TAdpGetConfirm {
-  uint8_t m_u8Status;
-  uint32_t m_u32AttributeId;
-  uint16_t m_u16AttributeIndex;
-  uint8_t m_u8AttributeLength;
-  uint8_t m_au8AttributeValue[ADP_PIB_MAX_VALUE_LENGTH];
-};
-typedef void (*AdpGetConfirm)(struct TAdpGetConfirm *pGetConfirm);
+  Example:
+    <code>
+    uint8_t nsdu[1280];
+    uint16_t nsduLength;
 
-/**********************************************************************************************************************/
-/** The AdpGetRequestSync primitive allows the upper layer to get the value of an attribute from the ADP information
- * synchronously.
- ***********************************************************************************************************************
- * @param u32AttributeId The identifier of the ADP IB attribute to read.
- * @param u16AttributeIndex The index within the table of the specified IB attribute to read.
- * @param pGetConfirm Get result.
- **********************************************************************************************************************/
-void AdpGetRequestSync(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
-  struct TAdpGetConfirm *pGetConfirm);
+    // ...
+    // Fill NSDU
+    // ...
+    
+    ADP_DataRequest(nsduLength, nsdu, 0, true, 0);
+    // Wait for Data Confirm
+    </code>
 
-/**********************************************************************************************************************/
-/** The AdpMacGetRequest primitive allows the upper layer to get the value of an attribute from the MAC information base.
- * The upper layer cannot access directly the MAC layer while ADP is running
- ***********************************************************************************************************************
- * @param u32AttributeId The identifier of the MAC IB attribute to read.
- * @param u16AttributeIndex The index within the table of the specified IB attribute to read.
- **********************************************************************************************************************/
-void AdpMacGetRequest(uint32_t u32AttributeId, uint16_t u16AttributeIndex);
+  Remarks:
+    None.
+*/
+void ADP_DataRequest(uint16_t nsduLength, const uint8_t *pNsdu,
+    uint8_t nsduHandle, bool discoverRoute, uint8_t qualityOfService);
 
-/**********************************************************************************************************************/
-/** The AdpMacGetConfirm primitive allows the upper layer to be notified of the completion of an AdpMacGetRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status of the scan request.
- * @param m_u32AttributeId The identifier of the IB attribute read
- * @param m_u16AttributeIndex The index within the table of the specified IB attribute read.
- * @param m_u8AttributeLength The length of the value of the attribute read from the IB.
- * @param m_au8AttributeValue The value of the attribute read from the IB.
- **********************************************************************************************************************/
+// *****************************************************************************
+/* Function:
+    void ADP_NoIPDataRequest(uint16_t apduLength, const uint8_t *pApdu,
+        uint16_t dstAddr, uint8_t apduHandle, bool discoverRoute,
+        uint8_t qualityOfService);
 
-#define ADP_MAC_PIB_MAX_VALUE_LENGTH (144)
+  Summary:
+    This primitive requests the transfer of a PDU to another device or multiple
+    devices providing a 6LowPAN 16-bit Destination Address.
 
-struct TAdpMacGetConfirm {
-  uint8_t m_u8Status;
-  uint32_t m_u32AttributeId;
-  uint16_t m_u16AttributeIndex;
-  uint8_t m_u8AttributeLength;
-  uint8_t m_au8AttributeValue[ADP_MAC_PIB_MAX_VALUE_LENGTH];
-};
-typedef void (*AdpMacGetConfirm)(struct TAdpMacGetConfirm *pGetConfirm);
+  Description:
+    The ADP Data Request primitive is used to transfer data to to another device
+    or multiple devices in the G3 Network, providing a 6LowPAN 16-bit
+    Destination Address. PDU does not have to be an IPv6 packet, any protocol
+    data can be sent using this primitive.
+    
+    Result is provided in the corresponding ADP Data Confirm callback.
 
-/**********************************************************************************************************************/
-/** The AdpMacGetRequestSync primitive allows the upper layer to get the value of an attribute from the MAC information
-* base synchronously. The upper layer cannot access directly the MAC layer while ADP is running.
-***********************************************************************************************************************
-* @param u32AttributeId The identifier of the ADP IB attribute to read.
-* @param u16AttributeIndex The index within the table of the specified IB attribute to read.
-* @param pGetConfirm Get result.
-**********************************************************************************************************************/
-void AdpMacGetRequestSync(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
-  struct TAdpMacGetConfirm *pGetConfirm);
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
 
-/**********************************************************************************************************************/
-/** The AdpSetRequest primitive allows the upper layer to set the value of an attribute in the ADP information base.
- ***********************************************************************************************************************
- * @param u32AttributeId The identifier of the ADP IB attribute set
- * @param u16AttributeIndex The index within the table of the specified IB attribute.
- * @param u8AttributeLength The length of the value of the attribute to set
- * @param pu8AttributeValue The value of the attribute to set
- **********************************************************************************************************************/
-void AdpSetRequest(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
-  uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue);
+  Parameters:
+    nsduLength       - The size of the APDU, in bytes; Up to 1280
 
-/**********************************************************************************************************************/
-/** The AdpSetConfirm primitive allows the upper layer to be notified of the completion of an AdpSetRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status of the scan request.
- * @param m_u32AttributeId The identifier of the IB attribute set.
- * @param m_u16AttributeIndex The index within the table of the specified IB attribute.
- **********************************************************************************************************************/
-struct TAdpSetConfirm {
-  uint8_t m_u8Status;
-  uint32_t m_u32AttributeId;
-  uint16_t m_u16AttributeIndex;
-};
-typedef void (*AdpSetConfirm)(struct TAdpSetConfirm *pSetConfirm);
+    pNsdu            - Pointer to APDU to send; can be any App protocol
 
-/**********************************************************************************************************************/
-/** The AdpSetRequestSync primitive allows the upper layer to set the value of an attribute in the ADP information base
-* synchronously
-***********************************************************************************************************************
-* @param u32AttributeId The identifier of the ADP IB attribute set
-* @param u16AttributeIndex The index within the table of the specified IB attribute.
-* @param u8AttributeLength The length of the value of the attribute to set
-* @param pu8AttributeValue The value of the attribute to set
-* @param pSetConfirm The set confirm
-**********************************************************************************************************************/
-void AdpSetRequestSync(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
-  uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue,
-  struct TAdpSetConfirm *pSetConfirm);
+    dstAddr          - The Destination Short Address. Can be a unicast address,
+                       a 6LowPAN Group Address, or the 6LowPAN BROADCAST ADDRESS
+                       (0x8001)
 
-/**********************************************************************************************************************/
-/** The AdpMacSetRequest primitive allows the upper layer to set the value of an attribute in the MAC information base.
-* The upper layer cannot access directly the MAC layer while ADP is running
-***********************************************************************************************************************
-* @param u32AttributeId The identifier of the ADP IB attribute set
-* @param u16AttributeIndex The index within the table of the specified IB attribute.
-* @param u8AttributeLength The length of the value of the attribute to set
-* @param pu8AttributeValue The value of the attribute to set
-**********************************************************************************************************************/
-void AdpMacSetRequest(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
-  uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue);
+    nsduHandle       - The handle of the APDU to transmit. This parameter is
+                       used to identify in the ADP Data Confirm primitive which
+                       request it is concerned with. It can be randomly chosen
+                       by the application layer.
 
-/**********************************************************************************************************************/
-/** The AdpMacSetConfirm primitive allows the upper layer to be notified of the completion of an AdpMacSetRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status of the scan request.
- * @param m_u32AttributeId The identifier of the IB attribute set.
- * @param m_u16AttributeIndex The index within the table of the specified IB attribute.
- **********************************************************************************************************************/
-struct TAdpMacSetConfirm {
-  uint8_t m_u8Status;
-  uint32_t m_u32AttributeId;
-  uint16_t m_u16AttributeIndex;
-};
-typedef void (*AdpMacSetConfirm)(struct TAdpMacSetConfirm *pSetConfirm);
+    discoverRoute    - If true, a route discovery procedure will be performed
+                       prior to sending the frame if a route to the destination
+                       is not available in the routing table.
+                       If false, no route discovery is performed.
 
-/**********************************************************************************************************************/
-/** The AdpMacSetRequestSync primitive allows the upper layer to set the value of an attribute in the MAC information
- * base synchronously. The upper layer cannot access directly the MAC layer while ADP is running.
- ***********************************************************************************************************************
- * @param u32AttributeId The identifier of the ADP IB attribute set
- * @param u16AttributeIndex The index within the table of the specified IB attribute.
- * @param u8AttributeLength The length of the value of the attribute to set
- * @param pu8AttributeValue The value of the attribute to set
- * @param pSetConfirm The set confirm
- **********************************************************************************************************************/
-void AdpMacSetRequestSync(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
-  uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue,
-  struct TAdpMacSetConfirm *pSetConfirm);
+    qualityOfService - The requested quality of service (QoS) of the frame to
+                       send. Allowed values are 0 (normal priority) and 1 (high
+                       priority).
 
-/**********************************************************************************************************************/
-/** The AdpNetworkStatusIndication primitive allows the next higher layer of a PAN coordinator or a coordinator to be
- * notified when a particular event occurs on the PAN.
- ***********************************************************************************************************************
- * @param m_u16PanId The 16-bit PAN identifier of the device from which the frame was received or to which the frame
- *    was being sent.
- * @param m_SrcDeviceAddress The individual device address of the entity from which the frame causing the error
- *    originated.
- * @param m_DstDeviceAddress The individual device address of the device for which the frame was intended.
- * @param m_u8Status The communications status.
- * @param m_u8SecurityLevel The security level purportedly used by the received frame.
- * @param m_u8KeyIndex The index of the key purportedly used by the originator of the received frame.
- **********************************************************************************************************************/
-struct TAdpNetworkStatusIndication {
-  uint16_t m_u16PanId;
-  struct TAdpAddress m_SrcDeviceAddress;
-  struct TAdpAddress m_DstDeviceAddress;
-  uint8_t m_u8Status;
-  uint8_t m_u8SecurityLevel;
-  uint8_t m_u8KeyIndex;
-  uint8_t m_u8MediaType;
-};
+  Returns:
+    None.
 
-typedef void (*AdpNetworkStatusIndication)(
-  struct TAdpNetworkStatusIndication *pNetworkStatusIndication);
+  Example:
+    <code>
+    uint8_t apdu[1280];
+    uint16_t apduLength;
 
-/**********************************************************************************************************************/
-/** The AdpBufferIndication primitive allows the next higher layer to be notified when the modem has reached its
- * capability limit to perform the next frame..
- ***********************************************************************************************************************
- * @param m_bBufferReady TRUE: modem is ready to receipt more data frame;
- *                       FALSE: modem is not ready, stop sending data frame.
- **********************************************************************************************************************/
-struct TAdpBufferIndication {
-  bool m_bBufferReady;
-};
+    // ...
+    // Fill NSDU
+    // ...
+    
+    ADP_NoIPDataRequest(apduLength, apdu, 0x0001, 0, true, 0);
+    // Wait for Data Confirm
+    </code>
 
-typedef void (*AdpBufferIndication)(struct TAdpBufferIndication *pBufferIndication);
+  Remarks:
+    None.
+*/
+void ADP_NoIPDataRequest(uint16_t apduLength, const uint8_t *pApdu,
+    uint16_t dstAddr, uint8_t apduHandle, bool discoverRoute,
+    uint8_t qualityOfService);
 
-/**********************************************************************************************************************/
-/** The AdpPREQIndication primitive allows the next higher layer to be notified when a PREQ frame is received
- * in unicast mode with Originator Address equal to Coordinator Address and with Destination Address equal to Device Address
- **********************************************************************************************************************/
-typedef void (*AdpPREQIndication)(void);
+// *****************************************************************************
+/* Function:
+    void ADP_DiscoveryRequest(uint8_t duration);
 
-/**********************************************************************************************************************/
-/** The AdpRouteDiscoveryRequest primitive allows the upper layer to initiate a route discovery.
- ***********************************************************************************************************************
- * @param u16DstAddr The short unicast destination address of the route discovery.
- * @param u8MaxHops This parameter indicates the maximum number of hops allowed for the route discovery (Range: 0x01 - 0x0E)
- **********************************************************************************************************************/
-void AdpRouteDiscoveryRequest(uint16_t u16DstAddr, uint8_t u8MaxHops);
+  Summary:
+    This primitive scans for networks operating in its POS.
 
-/**********************************************************************************************************************/
-/** The AdpRouteDiscoveryConfirm primitive allows the upper layer to be notified of the completion of a
- * AdpRouteDiscoveryRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status of the route discovery.
- **********************************************************************************************************************/
-struct TAdpRouteDiscoveryConfirm {
-  uint8_t m_u8Status;
-};
-typedef void (*AdpRouteDiscoveryConfirm)(
-  struct TAdpRouteDiscoveryConfirm *pRouteDiscoveryConfirm);
+  Description:
+    The ADP Discovery Request primitive allows the upper layer to scan for
+    networks operating in its POS.
+    
+    Result is provided in the corresponding ADP Discovery Confirm callback.
 
-/**********************************************************************************************************************/
-/** The AdpPathDiscoveryRequest primitive allows the upper layer to initiate a path discovery.
- ***********************************************************************************************************************
- * @param u16DstAddr The short unicast destination address of the path discovery.
- * @param u8MetricType The metric type to be used for the path discovery. (Range: 0x00 - 0x0F)
- **********************************************************************************************************************/
-void AdpPathDiscoveryRequest(uint16_t u16DstAddr, uint8_t u8MetricType);
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
 
-/**********************************************************************************************************************/
-/** The AdpPathDiscoveryConfirm primitive allows the upper layer to be notified of the completion of a
- * AdpPathDiscoveryRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status of the path discovery. (status can be INCOMPLETE and the other parameters contain the
- *				discovered path)
- * @param m_u16DstAddr The short unicast destination address of the path discovery.
- * @param m_u16Originator The originator of the path reply
- * @param m_u8PathMetricType Path metric type
- * @param m_u8ForwardHopsCount Number of path hops in the forward table
- * @param m_u8ReverseHopsCount Number of path hops in the reverse table
- * @param m_aForwardPath Table with the information of each hop in forward direction (according to m_u8ForwardHopsCount)
- * @param m_aReversePath Table with the information of each hop in reverse direction (according to m_u8ReverseHopsCount)
- **********************************************************************************************************************/
-struct TAdpPathDiscoveryConfirm {
-  uint8_t m_u8Status;
-  uint16_t m_u16DstAddr;
-  uint16_t m_u16OrigAddr;
-  uint8_t m_u8MetricType;
-  uint8_t m_u8ForwardHopsCount;
-  uint8_t m_u8ReverseHopsCount;
-  struct THopDescriptor m_aForwardPath[16];
-  struct THopDescriptor m_aReversePath[16];
-};
-typedef void (*AdpPathDiscoveryConfirm)(
-  struct TAdpPathDiscoveryConfirm *pPathDiscoveryConfirm);
+  Parameters:
+    duration - The number of seconds the scan shall last
 
-/**********************************************************************************************************************/
-/** The AdpLbpRequest primitive allows the upper layer of the client to send the LBP message to the server modem.
- ***********************************************************************************************************************
- * @param pDstAddr 16-bit address of LBA or LBD or 64 bit address (extended address of LBD)
- * @param u16NsduLength The size of the NSDU, in bytes
- * @param pNsdu The NSDU to send
- * @param u8NsduHandle The handle of the NSDU to transmit. This parameter is used to identify in the AdpLbpConfirm
- *                     primitive which request is concerned. It can be randomly chosen by the application layer.
- * @param u8MaxHops The number of times the frame will be repeated by network routers.
- * @param bDiscoveryRoute If TRUE, a route discovery procedure will be performed prior to sending the frame if a route
- *                        to the destination is not available in the routing table. If FALSE, no route discovery is performed.
- * @param u8QualityOfService The requested quality of service (QoS) of the frame to send. Allowed values are:
- *					0x00 = standard priority
- *					0x01 = high priority
- * @param bSecurityEnable If TRUE, this parameter enables the MAC layer security for sending the frame.
- **********************************************************************************************************************/
-void AdpLbpRequest(const struct TAdpAddress *pDstAddr, uint16_t u16NsduLength,
-  uint8_t *pNsdu, uint8_t u8NsduHandle, uint8_t u8MaxHops,
-  bool bDiscoveryRoute, uint8_t u8QualityOfService, bool bSecurityEnable);
+  Returns:
+    None.
 
-/**********************************************************************************************************************/
-/** The AdpLbpRequestExt primitive allows the LBP layer of the client to send the LBP message to the server modem.
-    This primitive extends the capabilities of AdpLbpRequest().
- ***********************************************************************************************************************
- * @param u8SrcAddressSize source address size (ADP_ADDRESS_16BITS or ADP_ADDRESS_64BITS)
- * @param pDstAddr 16-bit address of LBA or LBD or 64 bit address (extended address of LBD)
- * @param u16NsduLength The size of the NSDU, in bytes
- * @param pNsdu The NSDU to send
- * @param u8MaxHops The number of times the frame will be repeated by network routers.
- * @param bMulticast If TRUE, the frame will be sent as multicast.
- * @param bSecurityEnable If TRUE, this parameter enables the MAC layer security for sending the frame;
-                          otherwise auto will be used.
- * @param callback Callback function.
- **********************************************************************************************************************/
-void AdpLbpRequestExt(uint8_t u8SrcAddressSize, const struct TAdpAddress *pDstAddr,
-		uint16_t u16NsduLength, uint8_t *pNsdu,
-		bool bMulticast, /* = false */
-		bool bSecurityEnable,
-		ADP_Common_DataSend_Callback callback);
+  Example:
+    <code>
+    ADP_DiscoveryRequest(60);
+    // Wait for Discovery Confirm
+    </code>
 
-/**********************************************************************************************************************/
-/** The AdpLbpConfirm primitive primitive allows the upper layer to be notified of the completion of a AdpLbpRequest.
- ***********************************************************************************************************************
- * @param m_u8Status The status code of a previous AdpLbpRequest identified by its NsduHandle.
- * @param m_u8NsduHandle The handle of the NSDU confirmed by this primitive.
- **********************************************************************************************************************/
-struct TAdpLbpConfirm {
-  uint8_t m_u8Status;
-  uint8_t m_u8NsduHandle;
-};
-typedef void (*AdpLbpConfirm)(struct TAdpLbpConfirm *pLbpConfirm);
+  Remarks:
+    None.
+*/
+void ADP_DiscoveryRequest(uint8_t duration);
 
-/**********************************************************************************************************************/
-/** The AdpLbpIndication primitive is used to transfer a received LBP frame from the ADP layer to the upper layer.
- ***********************************************************************************************************************
- * @param m_u16SrcAddr Address of the LBA. When directly communicating with the LBD (using extended addressing), this
- *    field is set to 0xFFFF
- * @param m_u16NsduLength The size of the NSDU, in bytes; Range: 0 - 1280
- * @param m_pNsdu The NSDU received
- * @param m_u8LinkQualityIndicator The value of the link quality during reception of the frame.
- * @param m_bSecurityEnabled TRUE if the frame was received with a security level greater or equal to adpSecurityLevel,
- *		FALSE otherwise.
- **********************************************************************************************************************/
-struct TAdpLbpIndication {
-  uint16_t m_u16SrcAddr;
-  uint16_t m_u16NsduLength;
-  uint8_t *m_pNsdu;
-  uint8_t m_u8LinkQualityIndicator;
-  bool m_bSecurityEnabled;
-};
-typedef void (*AdpLbpIndication)(struct TAdpLbpIndication *pLbpIndication);
+// *****************************************************************************
+/* Function:
+    void ADP_NetworkStartRequest(uint16_t panId);
 
-/**********************************************************************************************************************/
-/** The AdpUpdNonVolatileDataIndication primitive allows the next higher layer to be notified when non-volatile stored
- * data must be updated to protect the system in case of critical failure.
- **********************************************************************************************************************/
-struct TAdpNonVolatileData {
-  uint32_t m_u32FrameCounter;
-  uint32_t m_u32FrameCounterRF;
-  uint16_t m_u16DiscoverSeqNumber;
-  uint8_t m_u8BroadcastSeqNumber;
-};
-typedef void (*AdpUpdNonVolatileDataIndication)(struct TAdpNonVolatileData *pNonVolatileData);
+  Summary:
+    This primitive requests the starting of a new network.
 
-/**********************************************************************************************************************/
-/** The AdpRouteNotFoundIndication primitive is used to indicate the upper layer that a route is not available
- ***********************************************************************************************************************
- * @param m_u16SrcAddr Address of the frame originator
- * @param m_u16DestAddr Address of the frame final destination.
- * @param m_u16DestAddr Address of the next hop to frame final destination.
- * @param m_u16NsduLength The size of the NSDU failed to be delivered, in bytes; Range: 0 - 1280.
- * @param m_pNsdu The NSDU failed to be delivered.
- **********************************************************************************************************************/
-struct TAdpRouteNotFoundIndication {
-  uint16_t m_u16SrcAddr;
-  uint16_t m_u16DestAddr;
-  uint16_t m_u16NextHopAddr;
-  uint16_t m_u16PreviousHopAddr;
-  uint16_t m_u16RouteCost;
-  uint8_t m_u8HopCount;
-  uint8_t m_u8WeakLinkCount;
-  bool m_bRouteJustBroken;
-  bool m_bCompressedHeader;
-  uint16_t m_u16NsduLength;
-  uint8_t *m_pNsdu;
-};
-typedef void (*AdpRouteNotFoundIndication)(struct TAdpRouteNotFoundIndication *pBrokenRouteIndication);
+  Description:
+    The ADP Network Start Request primitive allows the upper layer to request
+    the starting of a new network. It shall only be invoked by a device
+    designated as the PAN coordinator during the factory process.
+    
+    Result is provided in the corresponding ADP Network Start Confirm callback.
 
-/**********************************************************************************************************************/
-/**
- **********************************************************************************************************************/
-struct TAdpNotifications {
-  AdpDataConfirm fnctAdpDataConfirm;
-  AdpDataIndication fnctAdpDataIndication;
-  AdpDiscoveryConfirm fnctAdpDiscoveryConfirm;
-  AdpDiscoveryIndication fnctAdpDiscoveryIndication;
-  AdpNetworkStartConfirm fnctAdpNetworkStartConfirm;
-  AdpNetworkJoinConfirm fnctAdpNetworkJoinConfirm;
-  AdpNetworkLeaveIndication fnctAdpNetworkLeaveIndication;
-  AdpNetworkLeaveConfirm fnctAdpNetworkLeaveConfirm;
-  AdpResetConfirm fnctAdpResetConfirm;
-  AdpSetConfirm fnctAdpSetConfirm;
-  AdpMacSetConfirm fnctAdpMacSetConfirm;
-  AdpGetConfirm fnctAdpGetConfirm;
-  AdpMacGetConfirm fnctAdpMacGetConfirm;
-  AdpLbpConfirm fnctAdpLbpConfirm;
-  AdpLbpIndication fnctAdpLbpIndication;
-  AdpRouteDiscoveryConfirm fnctAdpRouteDiscoveryConfirm;
-  AdpPathDiscoveryConfirm fnctAdpPathDiscoveryConfirm;
-  AdpNetworkStatusIndication fnctAdpNetworkStatusIndication;
-  AdpBufferIndication fnctAdpBufferIndication;
-  AdpPREQIndication fnctAdpPREQIndication;
-  AdpUpdNonVolatileDataIndication fnctAdpUpdNonVolatileDataIndication;
-  AdpRouteNotFoundIndication fnctAdpRouteNotFoundIndication;
-};
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    panId - The PANId of the network to create; determined at the application
+            level
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_NetworkStartRequest(0x1234);
+    // Wait for Network Start Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_NetworkStartRequest(uint16_t panId);
+
+// *****************************************************************************
+/* Function:
+    void ADP_NetworkJoinRequest(uint16_t panId, uint16_t lbaAddress,
+        uint8_t mediaType);
+
+  Summary:
+    This primitive allows the upper layer to join an existing network.
+
+  Description:
+    The ADP Network Join Request primitive allows the upper layer to join an
+    existing network.
+    
+    Result is provided in the corresponding ADP Network Join Confirm callback.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    panId - The 16-bit PAN identifier of the network to join
+
+    lbaAddress - The 16-bit short address of the device acting as a LoWPAN
+                 bootstrap agent (relay)
+
+    mediaType  - The Media Type to use for frame exchange with LBA. Only used in
+                 Hybrid Profile.
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    App_DiscoveryIndication(ADP_PAN_DESCRIPTOR *panDescriptor)
+    {
+        uint8_t mediaType = MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF;
+
+        if (panDescriptor-> == MAC_WRP_MEDIA_TYPE_IND_RF)
+        {
+            mediaType = MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_PLC;
+        }
+
+        ADP_NetworkJoinRequest(panDescriptor->panId, panDescriptor->panId,
+            mediaType);
+        // Wait for Network Join Confirm    
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_NetworkJoinRequest(uint16_t panId, uint16_t lbaAddress,
+    uint8_t mediaType);
+
+// *****************************************************************************
+/* Function:
+    void ADP_NetworkLeaveRequest(void);
+
+  Summary:
+    This primitive allows to remove itself from the network.
+
+  Description:
+    The ADP Network Leave Request primitive allows a non-coordinator device to
+    remove itself from the network.
+    
+    Result is provided in the corresponding ADP Network Leave Confirm callback.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    None
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_NetworkLeaveRequest();
+    // Wait for Network Leave Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_NetworkLeaveRequest(void);
+
+// *****************************************************************************
+/* Function:
+    void ADP_ResetRequest(void);
+
+  Summary:
+    This primitive performs a reset of the adaptation sublayer.
+
+  Description:
+    The ADP Reset Request primitive performs a reset of the adaptation sublayer
+    and allows the resetting of the MIB attributes
+    
+    Result is provided in the corresponding ADP Reset Confirm callback.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    None
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_ResetRequest();
+    // Wait for Reset Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_ResetRequest(void);
+
+// *****************************************************************************
+/* Function:
+    void ADP_GetRequest(uint32_t attributeId, uint16_t attributeIndex);
+
+  Summary:
+    This primitive gets the value of an attribute from the ADP information base.
+
+  Description:
+    The ADP Get Request primitive allows the upper layer to get the value of an
+    attribute from the ADP information base.
+    
+    Result is provided in the corresponding ADP Get Confirm callback.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    attributeId    - The identifier of the ADP IB attribute to read
+
+    attributeIndex - The index within the table of the specified IB attribute to
+                     read
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_GetRequest(ADP_IB_SOFT_VERSION, 0);
+    // Wait for Get Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_GetRequest(uint32_t attributeId, uint16_t attributeIndex);
+
+// *****************************************************************************
+/* Function:
+    void ADP_GetRequestSync(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
+        ADP_GET_CFM_PARAMS* pGetConfirm);
+
+  Summary:
+    This primitive gets the value of an attribute from the ADP information base
+    synchronously.
+
+  Description:
+    The ADP Get Request primitive allows the upper layer to get the value of an
+    attribute from the ADP information base synchronously.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    attributeId    - The identifier of the ADP IB attribute to read
+
+    attributeIndex - The index within the table of the specified IB attribute to
+                     read
+
+    pGetConfirm    - Pointer to Get Confirm parameters
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_GET_CFM_PARAMS getConfirm;
+
+    ADP_GetRequestSync(ADP_IB_SOFT_VERSION, 0, &getConfirm);
+
+    // Check the result
+    if (getConfirm->status == G3_SUCCESS)
+    {
+        // Value is stored in getConfirm->attributeValue
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_GetRequestSync(uint32_t attributeId, uint16_t attributeIndex,
+    ADP_GET_CFM_PARAMS* pGetConfirm);
+
+// *****************************************************************************
+/* Function:
+    void ADP_MacGetRequest(uint32_t attributeId, uint16_t attributeIndex);
+
+  Summary:
+    This primitive gets the value of an attribute from the MAC information base.
+
+  Description:
+    The ADP MAC Get Request primitive allows the upper layer to get the value of
+    an attribute from the MAC information base. The upper layer cannot access
+    directly the MAC layer while ADP is running.
+    
+    Result is provided in the corresponding ADP MAC Get Confirm callback.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    attributeId    - The identifier of the MAC IB attribute to read
+
+    attributeIndex - The index within the table of the specified IB attribute to
+                     read
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_MacGetRequest(MAC_WRP_PIB_SHORT_ADDRESS, 0);
+    // Wait for MAC Get Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_MacGetRequest(uint32_t attributeId, uint16_t attributeIndex);
+
+// *****************************************************************************
+/* Function:
+    void ADP_MacGetRequestSync(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
+        ADP_MAC_GET_CFM_PARAMS* pGetConfirm);
+
+  Summary:
+    This primitive gets the value of an attribute from the MAC information base
+    synchronously.
+
+  Description:
+    The ADP MAC Get Request primitive allows the upper layer to get the value of an
+    attribute from the MAC information base synchronously.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    attributeId    - The identifier of the ADP IB attribute to read
+
+    attributeIndex - The index within the table of the specified IB attribute to
+                     read
+
+    pGetConfirm    - Pointer to Get Confirm parameters
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_MAC_GET_CFM_PARAMS getConfirm;
+
+    ADP_MacGetRequestSync(MAC_WRP_PIB_SHORT_ADDRESS, 0, &getConfirm);
+
+    // Check the result
+    if (getConfirm->status == G3_SUCCESS)
+    {
+        // Value is stored in getConfirm->attributeValue
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_MacGetRequestSync(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
+    ADP_MAC_GET_CFM_PARAMS* pGetConfirm);
+
+// *****************************************************************************
+/* Function:
+    void ADP_SetRequest(uint32_t attributeId, uint16_t attributeIndex,
+        uint8_t attributeLength, const uint8_t *pAttributeValue);
+
+  Summary:
+    This primitive set the value of an attribute in the ADP information base.
+
+  Description:
+    The ADP Set Request primitive allows the upper layer to set the value of an
+    attribute in the ADP information base.
+    
+    Result is provided in the corresponding ADP Set Confirm callback.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    attributeId     - The identifier of the ADP IB attribute to set
+
+    attributeIndex  - The index within the table of the specified IB attribute
+                      to write
+
+    attributeLength - The length of the value of the attribute to set
+
+    pAttributeValue - Pointer to the value of the attribute to set
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    uint8_t pAttributeValue[64];
+
+    pAttributeValue[0] = 44;
+    ADP_SetRequest(ADP_IB_LOW_LQI_VALUE, 0, 1, pAttributeValue);
+    // Wait for Set Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_SetRequest(uint32_t attributeId, uint16_t attributeIndex,
+    uint8_t attributeLength, const uint8_t *pAttributeValue);
+
+// *****************************************************************************
+/* Function:
+    void ADP_SetRequestSync(uint32_t attributeId, uint16_t attributeIndex,
+        uint8_t attributeLength, const uint8_t *pAttributeValue,
+        ADP_SET_CFM_PARAMS* pSetConfirm);
+
+  Summary:
+    This primitive set the value of an attribute in the ADP information base
+    synchronously.
+
+  Description:
+    The ADP Set Request primitive allows the upper layer to set the value of an
+    attribute in the ADP information base synchronously.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    attributeId     - The identifier of the ADP IB attribute to set
+
+    attributeIndex  - The index within the table of the specified IB attribute
+                      to write
+
+    attributeLength - The length of the value of the attribute to set
+
+    pAttributeValue - Pointer to the value of the attribute to set
+
+    pSetConfirm     - Pointer to Set Confirm parameters
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    uint8_t pAttributeValue[64];
+    ADP_SET_CFM_PARAMS setConfirm;
+
+    pAttributeValue[0] = 44;
+    ADP_SetRequestSync(ADP_IB_LOW_LQI_VALUE, 0, 1, pAttributeValue,
+        &setConfirm);
+
+    // Check the result
+    if (setConfirm->status == G3_SUCCESS)
+    {
+
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_SetRequestSync(uint32_t attributeId, uint16_t attributeIndex,
+    uint8_t attributeLength, const uint8_t *pAttributeValue,
+    ADP_SET_CFM_PARAMS* pSetConfirm);
+
+// *****************************************************************************
+/* Function:
+    void ADP_MacSetRequest(uint32_t attributeId, uint16_t attributeIndex,
+        uint8_t attributeLength, const uint8_t *pAttributeValue);
+
+  Summary:
+    This primitive set the value of an attribute in the MAC information base.
+
+  Description:
+    The ADP MAC Set Request primitive allows the upper layer to set the value of an
+    attribute in the MAC information base. The upper layer cannot access
+    directly the MAC layer while ADP is running.
+    
+    Result is provided in the corresponding ADP MAC Set Confirm callback.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    attributeId     - The identifier of the MAC IB attribute to set
+
+    attributeIndex  - The index within the table of the specified IB attribute
+                      to write
+
+    attributeLength - The length of the value of the attribute to set
+
+    pAttributeValue - Pointer to the value of the attribute to set
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    uint8_t pAttributeValue[144];
+
+    pAttributeValue[0] = 5;
+    ADP_MacSetRequest(MAC_WRP_PIB_MAX_BE, 0, 1, pAttributeValue);
+    // Wait for MAC Set Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_MacSetRequest(uint32_t attributeId, uint16_t attributeIndex,
+    uint8_t attributeLength, const uint8_t *pAttributeValue);
+
+// *****************************************************************************
+/* Function:
+    void ADP_MacSetRequestSync(uint32_t attributeId, uint16_t attributeIndex,
+        uint8_t attributeLength, const uint8_t *pAttributeValue,
+        ADP_SET_CFM_PARAMS* pSetConfirm);
+
+  Summary:
+    This primitive set the value of an attribute in the MAC information base
+    synchronously.
+
+  Description:
+    The ADP MAC Set Request primitive allows the upper layer to set the value of an
+    attribute in the MAC information base synchronously.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    attributeId     - The identifier of the MAC IB attribute to set
+
+    attributeIndex  - The index within the table of the specified IB attribute
+                      to write
+
+    attributeLength - The length of the value of the attribute to set
+
+    pAttributeValue - Pointer to the value of the attribute to set
+
+    pSetConfirm     - Pointer to Set Confirm parameters
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    uint8_t pAttributeValue[144];
+    ADP_SET_CFM_PARAMS setConfirm;
+
+    pAttributeValue[0] = 5;
+    ADP_MacSetRequestSync(MAC_WRP_PIB_MAX_BE, 0, 1, pAttributeValue,
+        &setConfirm);
+
+    // Check the result
+    if (setConfirm->status == G3_SUCCESS)
+    {
+
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_MacSetRequestSync(uint32_t attributeId, uint16_t attributeIndex,
+    uint8_t attributeLength, const uint8_t *pAttributeValue,
+    ADP_SET_CFM_PARAMS* pSetConfirm);
+
+// *****************************************************************************
+/* Function:
+    void ADP_RouteDiscoveryRequest(uint16_t dstAddr, uint8_t maxHops);
+
+  Summary:
+    This primitive allows the upper layer to initiate a route discovery.
+
+  Description:
+    The ADP Route Discovery Request primitive allows the upper layer to initiate
+    a route discovery.
+    
+    Result is provided in the corresponding ADP Route Discovery Confirm callback.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    dstAddr - The short unicast destination address of the route discovery
+
+    maxHops - This parameter indicates the maximum number of hops allowed for
+              the route discovery (Range: 0x01 - 0x0E)
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_RouteDiscoveryRequest(0x0001, 8);
+    // Wait for Route Discovery Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_RouteDiscoveryRequest(uint16_t dstAddr, uint8_t maxHops);
+
+
+// *****************************************************************************
+/* Function:
+    void ADP_PathDiscoveryRequest(uint16_t dstAddr, uint8_t metricType);
+
+  Summary:
+    This primitive allows the upper layer to initiate a path discovery.
+
+  Description:
+    The ADP Path Discovery Request primitive allows the upper layer to initiate
+    a path discovery.
+    
+    Result is provided in the corresponding ADP Path Discovery Confirm callback.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    dstAddr    - The short unicast destination address of the path discovery
+
+    metricType - The metric type to be used for the path discovery (Range:
+                 0x00 - 0x0F)
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_PathDiscoveryRequest(0x0001, 1);
+    // Wait for Path Discovery Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_PathDiscoveryRequest(uint16_t dstAddr, uint8_t metricType);
+
+// *****************************************************************************
+/* Function:
+    void ADP_DataRequest(uint16_t nsduLength, const uint8_t *pNsdu,
+        uint8_t nsduHandle, bool discoverRoute, uint8_t qualityOfService);
+
+  Summary:
+    This primitive allows the upper layer of the client to send the LBP message
+    to the server modem.
+
+  Description:
+    The ADP LBP Request primitive allows the upper layer of the client to send
+    the LBP message to the server modem.
+    
+    Result is provided in the corresponding ADP LBP Confirm callback.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    pDstAddr         - 16-bit address of LBA or LBD or 64 bit address (extended
+                       address of LBD)
+
+    nsduLength       - The size of the NSDU, in bytes; Up to 1280
+
+    pNsdu            - Pointer to NSDU to send
+
+    nsduHandle       - The handle of the NSDU to transmit. This parameter is
+                       used to identify in the ADP LBP Confirm primitive which
+                       request is concerned. It can be randomly chosen by the
+                       application layer.
+
+    maxHops          - The number of times the frame will be repeated by network
+                       routers
+
+    discoverRoute    - If true, a route discovery procedure will be performed
+                       prior to sending the frame if a route to the destination
+                       is not available in the routing table.
+                       If false, no route discovery is performed.
+
+    qualityOfService - The requested quality of service (QoS) of the frame to
+                       send. Allowed values are 0 (normal priority) and 1 (high
+                       priority).
+
+    bSecurityEnable  - If true, this parameter enables the MAC layer security
+                       for sending the frame.
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    uint8_t nsdu[1280];
+    uint16_t nsduLength;
+    ADP_ADDRESS destAddress;
+
+    // ...
+    // Fill NSDU
+    // ...
+
+    destAddress.addrSize = ADP_ADDRESS_16BITS;
+    destAddress.shortAddr = 0x0001;
+    
+    ADP_LbpRequest(&destAddress, nsduLength, nsdu, 0, 8, true, 0, true);
+    // Wait for LBP Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_LbpRequest(const ADP_ADDRESS *pDstAddr, uint16_t nsduLength,
+    uint8_t *pNsdu, uint8_t nsduHandle, uint8_t maxHops,
+    bool discoveryRoute, uint8_t qualityOfService, bool securityEnable);
+
+// *****************************************************************************
+/* Function:
+    void ADP_LbpRequestExt(uint8_t srcAddressSize, const ADP_ADDRESS *pDstAddr,
+        uint16_t nsduLength, uint8_t *pNsdu, bool multicast, bool securityEnable,
+        ADP_COMMON_DATA_SEND_CALLBACK callback);
+
+  Summary:
+    This primitive allows the upper layer of the client to send the LBP message
+    to the server modem.
+
+  Description:
+    The ADP LBP Request primitive allows the upper layer of the client to send
+    the LBP message to the server modem. This primitive extends the capabilities
+    of ADP_LbpRequest.
+    
+    Result is provided in the corresponding callback given as parameter.
+
+  Precondition:
+    ADP_Initialize and ADP_Init must have been called before.
+
+  Parameters:
+    srcAddressSize  - Source address size (ADP_ADDRESS_16BITS or
+                      ADP_ADDRESS_64BITS)
+
+    pDstAddr        - 16-bit address of LBA or LBD or 64 bit address (extended
+                      address of LBD)
+
+    nsduLength      - The size of the NSDU, in bytes; Up to 1280
+
+    pNsdu           - Pointer to NSDU to send
+
+    maxHops         - The number of times the frame will be repeated by network
+                      routers
+
+    multicast       - If true, the frame will be sent as multicast
+
+    bSecurityEnable - If true, this parameter enables the MAC layer security
+                      for sending the frame; otherwise auto will be used.
+
+    callback        - Callback function
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    void AppLbpExtConfirm(uint8_t status)
+    {
+
+    }
+
+    uint8_t nsdu[1280];
+    uint16_t nsduLength;
+    ADP_ADDRESS destAddress;
+
+    // ...
+    // Fill NSDU
+    // ...
+
+    destAddress.addrSize = ADP_ADDRESS_16BITS;
+    destAddress.shortAddr = 0x0001;
+    
+    ADP_LbpRequestExt(ADP_ADDRESS_16BITS, &destAddress, nsduLength, nsdu, 0,
+        false, true, AppLbpExtConfirm);
+    // Wait for LBP Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_LbpRequestExt(uint8_t srcAddressSize, const ADP_ADDRESS *pDstAddr,
+    uint16_t nsduLength, uint8_t *pNsdu, bool multicast, bool securityEnable,
+    ADP_COMMON_DATA_SEND_CALLBACK callback);
+
+//DOM-IGNORE-BEGIN
+#ifdef __cplusplus
+}
 #endif
+//DOM-IGNORE-END
 
-/**********************************************************************************************************************/
-/** @}
- **********************************************************************************************************************/
-
+#endif // #ifndef _ADP_H

@@ -64,9 +64,9 @@ void Routing_Reset(uint8_t u8Band)
 bool Routing_IsDisabled()
 {
 <#if LOADNG_ENABLE == true>
-  struct TAdpGetConfirm adpGetConfirm;
+  ADP_GET_CFM_PARAMS adpGetConfirm;
   RoutingGetMib(ADP_IB_DISABLE_DEFAULT_ROUTING, 0, &adpGetConfirm);
-  return (bool)adpGetConfirm.m_au8AttributeValue[0];
+  return (bool)adpGetConfirm.attributeValue[0];
 <#else>
   return true;
 </#if>
@@ -75,9 +75,9 @@ bool Routing_IsDisabled()
 bool Routing_IsAutoRREQDisabled()
 {
 <#if LOADNG_ENABLE == true>
-  struct TAdpGetConfirm adpGetConfirm;
+  ADP_GET_CFM_PARAMS adpGetConfirm;
   RoutingGetMib(ADP_IB_MANUF_DISABLE_AUTO_RREQ, 0, &adpGetConfirm);
-  return (bool)adpGetConfirm.m_au8AttributeValue[0];
+  return (bool)adpGetConfirm.attributeValue[0];
 <#else>
   return true;
 </#if>
@@ -86,9 +86,9 @@ bool Routing_IsAutoRREQDisabled()
 bool Routing_AdpDefaultCoordRouteEnabled()
 {
 <#if LOADNG_ENABLE == true>
-  struct TAdpGetConfirm adpGetConfirm;
+  ADP_GET_CFM_PARAMS adpGetConfirm;
   RoutingGetMib(ADP_IB_DEFAULT_COORD_ROUTE_ENABLED, 0, &adpGetConfirm);
-  return (bool)adpGetConfirm.m_au8AttributeValue[0];
+  return (bool)adpGetConfirm.attributeValue[0];
 <#else>
   return false;
 </#if>
@@ -97,9 +97,9 @@ bool Routing_AdpDefaultCoordRouteEnabled()
 uint8_t Routing_AdpRREPWait()
 {
 <#if LOADNG_ENABLE == true>
-  struct TAdpGetConfirm adpGetConfirm;
+  ADP_GET_CFM_PARAMS adpGetConfirm;
   RoutingGetMib(ADP_IB_RREP_WAIT, 0, &adpGetConfirm);
-  return adpGetConfirm.m_au8AttributeValue[0];
+  return adpGetConfirm.attributeValue[0];
 <#else>
   return 4;
 </#if>
@@ -109,9 +109,9 @@ uint16_t Routing_GetDiscoverRouteGlobalSeqNo()
 {
 <#if LOADNG_ENABLE == true>
   uint16_t u16Value;
-  struct TAdpGetConfirm adpGetConfirm;
+  ADP_GET_CFM_PARAMS adpGetConfirm;
   RoutingGetMib(ADP_IB_MANUF_DISCOVER_SEQUENCE_NUMBER, 0, &adpGetConfirm);
-  memcpy(&u16Value, &adpGetConfirm.m_au8AttributeValue, 2);
+  memcpy(&u16Value, &adpGetConfirm.attributeValue, 2);
   return u16Value;
 <#else>
   return 1;
@@ -121,7 +121,7 @@ uint16_t Routing_GetDiscoverRouteGlobalSeqNo()
 void Routing_SetDiscoverRouteGlobalSeqNo(uint16_t seqNo)
 {
 <#if LOADNG_ENABLE == true>
-  struct TAdpSetConfirm adpSetConfirm;
+  ADP_SET_CFM_PARAMS adpSetConfirm;
   RoutingSetMib(ADP_IB_MANUF_DISCOVER_SEQUENCE_NUMBER, 0, 2, (uint8_t *)&seqNo, &adpSetConfirm);
 </#if>
 }
@@ -129,7 +129,7 @@ void Routing_SetDiscoverRouteGlobalSeqNo(uint16_t seqNo)
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, struct TAdpGetConfirm *pGetConfirm)
+void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, ADP_GET_CFM_PARAMS* pGetConfirm)
 {
 <#if LOADNG_ENABLE == true>
   LOADNG_GetMib(u32AttributeId, u16AttributeIndex, pGetConfirm);
@@ -162,20 +162,20 @@ void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, struct T
     (u32AttributeId == ADP_IB_HIGH_LQI_VALUE) ||
     (u32AttributeId == ADP_IB_RLC_ENABLED) ||
     (u32AttributeId == ADP_IB_MANUF_ALL_NEIGHBORS_BLACKLISTED_COUNT)) {
-    pGetConfirm->m_u8Status = G3_INVALID_PARAMETER;
+    pGetConfirm->status = G3_INVALID_PARAMETER;
   }
   else if (u32AttributeId == ADP_IB_DISABLE_DEFAULT_ROUTING) {
-    pGetConfirm->m_u8AttributeLength = 1;
-    pGetConfirm->m_au8AttributeValue[0] = 1;   // Disabled by compilation
-    pGetConfirm->m_u8Status = G3_SUCCESS;
+    pGetConfirm->attributeLength = 1;
+    pGetConfirm->attributeValue[0] = 1;   // Disabled by compilation
+    pGetConfirm->status = G3_SUCCESS;
   }
   else if (u32AttributeId == ADP_IB_DEFAULT_COORD_ROUTE_ENABLED) {
-    pGetConfirm->m_u8AttributeLength = 1;
-    pGetConfirm->m_au8AttributeValue[0] = 0;   // Disabled by compilation
-    pGetConfirm->m_u8Status = G3_SUCCESS;
+    pGetConfirm->attributeLength = 1;
+    pGetConfirm->attributeValue[0] = 0;   // Disabled by compilation
+    pGetConfirm->status = G3_SUCCESS;
   }
   else {
-    pGetConfirm->m_u8Status = G3_UNSUPPORTED_ATTRIBUTE;
+    pGetConfirm->status = G3_UNSUPPORTED_ATTRIBUTE;
   }
 </#if>
 }
@@ -184,7 +184,7 @@ void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, struct T
 /**
  **********************************************************************************************************************/
 void RoutingSetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
-  uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue, struct TAdpSetConfirm *pSetConfirm)
+  uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue, ADP_SET_CFM_PARAMS* pSetConfirm)
 {
 <#if LOADNG_ENABLE == true>
   LOADNG_SetMib(u32AttributeId, u16AttributeIndex, u8AttributeLength, pu8AttributeValue, pSetConfirm);
@@ -216,16 +216,16 @@ void RoutingSetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
     (u32AttributeId == ADP_IB_RLC_ENABLED) ||
     (u32AttributeId == ADP_IB_MANUF_SET_PHASEDIFF_PREQ_PREP) ||
     (u32AttributeId == ADP_IB_MANUF_ALL_NEIGHBORS_BLACKLISTED_COUNT)) {
-    pSetConfirm->m_u8Status = G3_INVALID_PARAMETER;
+    pSetConfirm->status = G3_INVALID_PARAMETER;
   }
   else if (u32AttributeId == ADP_IB_DEFAULT_COORD_ROUTE_ENABLED) {
-    pSetConfirm->m_u8Status = G3_READ_ONLY;
+    pSetConfirm->status = G3_READ_ONLY;
   }
   else if (u32AttributeId == ADP_IB_DISABLE_DEFAULT_ROUTING) {
-    pSetConfirm->m_u8Status = G3_READ_ONLY;
+    pSetConfirm->status = G3_READ_ONLY;
   }
   else {
-    pSetConfirm->m_u8Status = G3_UNSUPPORTED_ATTRIBUTE;
+    pSetConfirm->status = G3_UNSUPPORTED_ATTRIBUTE;
   }
 </#if>
 }
@@ -367,10 +367,10 @@ uint16_t Routing_GetRouteAndMediaType(uint16_t u16DestinationAddress, uint8_t *p
 <#if LOADNG_ENABLE == true>
   return LOADNG_GetRouteAndMediaType(u16DestinationAddress, pu8MediaType);
 <#else>
-  struct TAdpMacGetConfirm adpMacGetConfirm;
+  ADP_MAC_GET_CFM_PARAMS adpMacGetConfirm;
   uint16_t u16AdpShortAddress;
-  AdpMacGetRequestSync(MAC_WRP_PIB_SHORT_ADDRESS, 0, &adpMacGetConfirm);
-  memcpy(&u16AdpShortAddress, &adpMacGetConfirm.m_au8AttributeValue, 2);
+  ADP_MacGetRequestSync(MAC_WRP_PIB_SHORT_ADDRESS, 0, &adpMacGetConfirm);
+  memcpy(&u16AdpShortAddress, &adpMacGetConfirm.attributeValue, 2);
   *pu8MediaType = 0;
   return u16AdpShortAddress;
 </#if>

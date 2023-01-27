@@ -29,10 +29,10 @@ uint8_t Routing_AdpRREPWait(void);
 uint16_t Routing_GetDiscoverRouteGlobalSeqNo(void);
 void Routing_SetDiscoverRouteGlobalSeqNo(uint16_t seqNo);
 
-void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, struct TAdpGetConfirm *pGetConfirm);
+void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, ADP_GET_CFM_PARAMS* pGetConfirm);
 
 void RoutingSetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
-  uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue, struct TAdpSetConfirm *pSetConfirm);
+  uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue, ADP_SET_CFM_PARAMS* pSetConfirm);
 
 struct TAdpRoutingTableEntry *Routing_AddRouteEntry(struct TAdpRoutingTableEntry *pNewEntry, bool *pbTableFull);
 struct TAdpRoutingTableEntry *Routing_GetRouteEntry(uint16_t u16DestinationAddress);

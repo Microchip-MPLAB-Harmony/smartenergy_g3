@@ -2770,13 +2770,13 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
 <#if MAC_RF_PRESENT == true>
             case MAC_WRP_PIB_DEVICE_TABLE_RF:
 </#if>
-                /* m_nPanId */
+                /* panId */
                 _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], pibValue->value);
                 serialRspLen += 2;
-                /* m_nShortAddress */
+                /* shortAddress */
                 _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], &pibValue->value[2]);
                 serialRspLen += 2;
-                /* m_au32FrameCounter */
+                /* frameCounter */
                 _Serial_memcpyToUsiEndianessUint32(&serialData[serialRspLen], &pibValue->value[4]);
                 serialRspLen += 4;
                 break;
@@ -2788,7 +2788,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
 <#if MAC_RF_PRESENT == true>
             case MAC_WRP_PIB_MANUF_MAC_INTERNAL_VERSION_RF:
 </#if>
-            /* Version */
+                /* Version */
                 serialData[serialRspLen++] = pibValue->value[0]; /* m_u8Major */
                 serialData[serialRspLen++] = pibValue->value[1]; /* m_u8Minor */
                 serialData[serialRspLen++] = pibValue->value[2]; /* m_u8Revision */

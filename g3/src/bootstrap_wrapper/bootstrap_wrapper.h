@@ -169,7 +169,7 @@ void BootstrapWrapper_ForceJoined(uint16_t u16ShortAddress,
 #if defined(__PLC_MAC__) && defined(__RF_MAC__)
 /** The BootstrapWrapper_JoinRequest primitive allows the upper layer to init the joining process.
  *  After calling BootstrapWrapper_JoinRequest(), the bootstrap module will create the joining message, and send it
- *  to the network using AdpLbpRequestExt() from ADP.
+ *  to the network using ADP_LbpRequestExt() from ADP.
  *   - fnctJoinConfirm callback will be called once the joining process ends.
  *   - fnctKickNotify callback will be called if the node has been kicked from the network.
  ***********************************************************************************************************************
@@ -185,7 +185,7 @@ void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, uint8_t u8MediaType,
 #else
 /** The BootstrapWrapper_JoinRequest primitive allows the upper layer to init the joining process.
  *  After calling BootstrapWrapper_JoinRequest(), the bootstrap module will create the joining message, and send it
- *  to the network using AdpLbpRequestExt() from ADP.
+ *  to the network using ADP_LbpRequestExt() from ADP.
  *   - fnctJoinConfirm callback will be called once the joining process ends.
  *   - fnctKickNotify callback will be called if the node has been kicked from the network.
  ***********************************************************************************************************************
@@ -207,7 +207,7 @@ void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, struct TAdpExtendedA
  * @param pMessageBuffer Pointer to message buffer.
  * @param bSecurityEnabled Flag indicating whether security is enabled.
  **********************************************************************************************************************/
-void BootstrapWrapper_ProcessMessage(const struct TAdpAddress *pSrcDeviceAddress, uint16_t u16MessageLength,
+void BootstrapWrapper_ProcessMessage(const ADP_ADDRESS *pSrcDeviceAddress, uint16_t u16MessageLength,
 		uint8_t *pMessageBuffer, bool bSecurityEnabled);
 
 /** The BootstrapWrapper_LeaveRequest primitive allows the upper layer to request the leave from the network.
@@ -215,7 +215,7 @@ void BootstrapWrapper_ProcessMessage(const struct TAdpAddress *pSrcDeviceAddress
  * @param pEUI64Address The EUI64 address of the node.
  * @param callback Callback to notify that the leave has been sent.
  **********************************************************************************************************************/
-void BootstrapWrapper_LeaveRequest(const struct TAdpExtendedAddress *pEUI64Address, ADP_Common_DataSend_Callback callback);
+void BootstrapWrapper_LeaveRequest(const struct TAdpExtendedAddress *pEUI64Address, ADP_COMMON_DATA_SEND_CALLBACK callback);
 
 #endif
 

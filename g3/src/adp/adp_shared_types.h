@@ -18,9 +18,9 @@
 #include "system/time/sys_time.h"
 
 /**********************************************************************************************************************/
-/** The ADP_Common_DataSend_Callback primitive reports the results of a ADP_Common_DataSend Request
+/** The ADP_COMMON_DATA_SEND_CALLBACK primitive reports the results of a ADP_Common_DataSend Request
  **********************************************************************************************************************/
-typedef void (*ADP_Common_DataSend_Callback)(uint8_t u8Status);
+typedef void (*ADP_COMMON_DATA_SEND_CALLBACK)(uint8_t status);
 
 /**********************************************************************************************************************/
 /** The MCPS-DATA.confirm primitive reports the results of a MCPS-DATA.request
@@ -30,8 +30,8 @@ typedef void (*AdpMac_Callback_DataConfirm)(uint8_t u8Status, void *pUserData);
 #pragma pack(push,1)
 
 struct TDataSendParameters {
-  struct TAdpAddress m_SrcDeviceAddress;
-  struct TAdpAddress m_DstDeviceAddress;
+  ADP_ADDRESS m_SrcDeviceAddress;
+  ADP_ADDRESS m_DstDeviceAddress;
   bool m_bDiscoverRoute;
   uint8_t m_u8Handle;
   uint8_t m_u8MaxHops;
@@ -49,7 +49,7 @@ struct TDataSendParameters {
   uint16_t m_u16DatagramTag;
   uint16_t m_u16DatagramSize;
   uint8_t m_u8NumRepairReSendAttemps;
-  ADP_Common_DataSend_Callback m_fnctCallback;
+  ADP_COMMON_DATA_SEND_CALLBACK m_fnctCallback;
   uint8_t m_u8MediaType;
 };
 
@@ -146,7 +146,7 @@ struct TAdpMac_NeighbourDescriptor {
 
 struct TAdpMac_DataRequest {
   uint8_t m_u8SrcAddrSize;
-  struct TAdpAddress m_DstDeviceAddress;
+  ADP_ADDRESS m_DstDeviceAddress;
   uint16_t m_u16MsduLength;
   uint8_t m_Msdu[400];
   uint8_t m_u8TxOptions;

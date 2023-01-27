@@ -108,13 +108,13 @@ bool LOADNG_IsInDestinationAddressSet(uint16_t u16Addr);
 /**********************************************************************************************************************/
 /** Returns LOADNG MIB value
  **********************************************************************************************************************/
-void LOADNG_GetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, struct TAdpGetConfirm *pGetConfirm);
+void LOADNG_GetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, ADP_GET_CFM_PARAMS* pGetConfirm);
 
 /**********************************************************************************************************************/
 /** Sets LOADNG MIB value
  **********************************************************************************************************************/
 void LOADNG_SetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
-  uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue, struct TAdpSetConfirm *pSetConfirm);
+  uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue, struct ADP_SET_CFM_PARAMS* pSetConfirm);
 
 /**********************************************************************************************************************/
 /** Adds node to blacklist for a given medium

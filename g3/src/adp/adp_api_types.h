@@ -19,17 +19,17 @@ struct TAdpExtendedAddress {
   uint8_t m_au8Value[8];
 };
 
-struct TAdpAddress {
-  uint8_t m_u8AddrSize; // ADP_ADDRESS_16BITS(2) or ADP_ADDRESS_64BITS(8)
+typedef struct {
+  uint8_t addrSize; // ADP_ADDRESS_16BITS(2) or ADP_ADDRESS_64BITS(8)
   union {
-    uint16_t m_u16ShortAddr;
+    uint16_t shortAddr;
     struct TAdpExtendedAddress m_ExtendedAddress;
   };
-};
+} ADP_ADDRESS;
 
-enum TAdpBand {
+typedef enum {
   ADP_BAND_CENELEC_A = 0, ADP_BAND_CENELEC_B = 1, ADP_BAND_FCC = 2, ADP_BAND_ARIB = 3
-};
+} ADP_PLC_BAND;
 
 /**********************************************************************************************************************/
 /** PAN descriptor structure specification
@@ -40,13 +40,13 @@ enum TAdpBand {
  * @param u16LbaAddress The 16 bit short address of a device in this PAN to be used as the LBA by the associating device.
  * @param u16RcCoord The estimated route cost from LBA to the coordinator.
  **********************************************************************************************************************/
-struct TAdpPanDescriptor {
+typedef struct {
   uint16_t m_u16PanId;
   uint8_t m_u8LinkQuality;
   uint16_t m_u16LbaAddress;
   uint16_t m_u16RcCoord;
   uint8_t m_u8MediaType;
-};
+} ADP_PAN_DESCRIPTOR;
 
 /**********************************************************************************************************************/
 /** Path discovery
@@ -60,7 +60,7 @@ struct TAdpPanDescriptor {
  * @param  m_u8Mtx Medium to which request is transmitted
  * @param  m_u8RsvBits Reserved Bits. Read from incoming frame to propagate them correctly
  **********************************************************************************************************************/
-struct THopDescriptor {
+typedef struct {
   uint16_t m_u16HopAddress;
   uint8_t m_u8Mns;
   uint8_t m_u8LinkCost;
@@ -68,7 +68,7 @@ struct THopDescriptor {
   uint8_t m_u8Mrx;
   uint8_t m_u8Mtx;
   uint8_t m_u8RsvBits;
-};
+} ADP_HOP_DESCRIPTOR;
 
 /**********************************************************************************************************************/
 /** Path discovery
@@ -92,8 +92,8 @@ struct TPathDescriptor {
   uint8_t m_u8MetricType;
   uint8_t m_u8ForwardHopsCount;
   uint8_t m_u8ReverseHopsCount;
-  struct THopDescriptor m_aForwardPath[16];
-  struct THopDescriptor m_aReversePath[16];
+  ADP_HOP_DESCRIPTOR m_aForwardPath[16];
+  ADP_HOP_DESCRIPTOR m_aReversePath[16];
 };
 
 // List of ADP supported MIB attributes.

@@ -49,12 +49,12 @@ void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, struct TAdpExtendedA
 }
 #endif
 
-void BootstrapWrapper_LeaveRequest(const struct TAdpExtendedAddress *pEUI64Address, ADP_Common_DataSend_Callback callback)
+void BootstrapWrapper_LeaveRequest(const struct TAdpExtendedAddress *pEUI64Address, ADP_COMMON_DATA_SEND_CALLBACK callback)
 {
 	LBP_LeaveRequest(pEUI64Address, callback);
 }
 
-void BootstrapWrapper_ProcessMessage(const struct TAdpAddress *pSrcDeviceAddress, uint16_t u16MessageLength,
+void BootstrapWrapper_ProcessMessage(const ADP_ADDRESS *pSrcDeviceAddress, uint16_t u16MessageLength,
 		uint8_t *pMessageBuffer, bool bSecurityEnabled)
 {
 	LBP_ProcessMessage(pSrcDeviceAddress, u16MessageLength, pMessageBuffer, bSecurityEnabled);
