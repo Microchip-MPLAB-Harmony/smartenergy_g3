@@ -50,7 +50,13 @@ struct TAdpBlacklistTableEntry {
   int32_t m_i32ValidTime;
 };
 
-struct TDiscoverRouteEntry {
+typedef struct TDiscoverRouteEntry_tag {
+  /* Pointer to the previous object of the queue */
+  struct TDiscoverRouteEntry_tag *prev;                
+    
+  /* Pointer to the next object of the queue */
+  struct TDiscoverRouteEntry_tag *next;     
+    
   // Callback called when the discovery is finished
   LOADNG_DiscoverRoute_Callback m_fcntCallback;
 
@@ -77,7 +83,7 @@ struct TDiscoverRouteEntry {
 
   // Discover route sequence number
   uint16_t m_u16SeqNo;
-};
+} TDiscoverRouteEntry;
 
 struct TDiscoverPath {
   uint16_t m_u16DstAddr;
@@ -85,9 +91,16 @@ struct TDiscoverPath {
   LOADNG_DiscoverPath_Callback m_fnctCallback;
   // Timer to control the discovery process if no response is received
   SYS_TIME_HANDLE m_Timer;
+  bool discoverPathTimerExpired;
 };
 
-struct TRRepGeneration {
+typedef struct TRRepGeneration_tag {
+  /* Pointer to the previous object of the queue */
+  struct TRRepGeneration_tag *prev;                
+    
+  /* Pointer to the next object of the queue */
+  struct TRRepGeneration_tag *next;   
+  
   uint16_t m_u16OrigAddr;   // RREQ originator (and final destination of RREP)
   uint16_t m_u16DstAddr;   // RREQ destination (and originator of RREP). Unused in SPEC-15
   uint16_t m_u16RREQSeqNum;   // RREQ Sequence number to be able to manage different RREQ from same node
@@ -96,9 +109,15 @@ struct TRRepGeneration {
   uint8_t m_bWaitingForAck;   // Flag to indicate entry is waiting for ACK, timer can be expired but RREP were not sent due to channel saturation
   SYS_TIME_HANDLE m_Timer;   // Timer to control the RREP sending
   uintptr_t m_pTimerUserData;  // User data recovered by timer expiration
-};
+} TRRepGeneration;
 
-struct TRReqForwarding {
+typedef struct TRReqForwarding_tag {
+  /* Pointer to the previous object of the queue */
+  struct TRReqForwarding_tag *prev;                
+    
+  /* Pointer to the next object of the queue */
+  struct TRReqForwarding_tag *next;   
+  
   uint16_t m_u16OrigAddr;   // RREQ originator
   uint16_t m_u16DstAddr;   // RREQ destination
   uint16_t m_u16SeqNum;   // RREQ Sequence number
@@ -111,7 +130,7 @@ struct TRReqForwarding {
   uint8_t m_u8RsvBits;   // Reserved bits
   uint8_t m_u8ClusterCounter;   // Cluster Counter
   SYS_TIME_HANDLE m_Timer;   // Timer to control the RREQ sending
-};
+} TRReqForwarding;
 
 struct TRouteCostParameters {
   enum EAdpMac_Modulation m_eModulation;
@@ -174,9 +193,9 @@ struct TRoutingTables {
    */
 
   PENDING_RREQ_TABLE_ELEMENT *m_PendingRREQTable;
-  struct TRRepGeneration *m_RRepGenerationTable;
-  struct TDiscoverRouteEntry *m_DiscoverRouteTable;
-  struct TRReqForwarding *m_RReqForwardingTable;
+  TRRepGeneration *m_RRepGenerationTable;
+  TDiscoverRouteEntry *m_DiscoverRouteTable;
+  TRReqForwarding *m_RReqForwardingTable;
 
   struct TAdpRoutingTableEntry *m_AdpRoutingTable;
   /**

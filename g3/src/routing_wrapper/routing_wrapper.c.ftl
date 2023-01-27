@@ -134,7 +134,7 @@ void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, struct T
 <#if LOADNG_ENABLE == true>
   LOADNG_GetMib(u32AttributeId, u16AttributeIndex, pGetConfirm);
 <#else>
-  LOG_DBG(Log("Get request. Attribute: %08X; Index: %u", u32AttributeId, u16AttributeIndex));
+  SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "Get request. Attribute: %08X; Index: %u \r\n", u32AttributeId, u16AttributeIndex);
   if ((u32AttributeId == ADP_IB_RREP_WAIT) ||
     (u32AttributeId == ADP_IB_ROUTING_TABLE) ||
     (u32AttributeId == ADP_IB_ROUTING_TABLE) ||
@@ -437,5 +437,15 @@ void Routing_RemoveBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType)
 {
 <#if LOADNG_ENABLE == true>
   LOADNG_RemoveBlacklistOnMedium(u16Addr, u8MediaType);
+</#if>
+}
+
+/**********************************************************************************************************************/
+/** Maintains Routing Wrapper State Machine
+ **********************************************************************************************************************/
+void Routing_Wrapper_Tasks(void)
+{
+<#if LOADNG_ENABLE == true>
+  LOADNG_Tasks();
 </#if>
 }

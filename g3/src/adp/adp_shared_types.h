@@ -69,17 +69,23 @@ struct TDataSend100 {
   uint8_t m_au8Data[101]; // payload size + extra data for headers + 1 extra byte needed for Lowpan IPv6 header (compressed or not)
 };
 
-struct TProcessQueueEntry {
+typedef struct TProcessQueueEntry_tag {
+  /* Pointer to the previous object of the queue */
+  struct TProcessQueueEntry_tag *prev;                
+    
+  /* Pointer to the next object of the queue */
+  struct TProcessQueueEntry_tag *next;   
+    
   struct TDataSendParameters *m_pSendParameters;
   uint8_t *m_pData;
   uint16_t m_u16DataSize;
   bool m_bProcessing;
   bool m_bDelayed;
-  struct TProcessQueueEntry *m_pNext;
+  struct TProcessQueueEntry_tag *m_pNext;
   int32_t m_i32DelayTime;
   int32_t m_i32ValidTime;
   SYS_TIME_HANDLE m_pFragTimer;
-};
+} TProcessQueueEntry;
 
 
 // The maximum number of fragments which can be used to receive a fragmented message

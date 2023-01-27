@@ -126,6 +126,45 @@ void LOADNG_AddBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType);
  **********************************************************************************************************************/
 void LOADNG_RemoveBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType);
 
+
+// *****************************************************************************
+/* Function:
+    void LOADNG_Tasks
+    (
+      void
+    )
+
+  Summary:
+    Maintains LOADng State Machine.
+
+  Description:
+    Maintains the LOADng State Machine.
+
+  Precondition:
+    None.
+
+  Parameters:
+    None.
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    // ...
+
+    while (true)
+    {
+        LOADNG_Tasks();
+    
+        // Do other tasks
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+void LOADNG_Tasks(void);
 #endif
 
 

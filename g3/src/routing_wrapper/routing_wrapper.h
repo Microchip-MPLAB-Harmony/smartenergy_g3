@@ -115,4 +115,43 @@ void Routing_AddBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType);
  **********************************************************************************************************************/
 void Routing_RemoveBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType);
 
+// *****************************************************************************
+/* Function:
+    void Routing_Wrapper_Tasks
+    (
+      void
+    )
+
+  Summary:
+    Maintains Routing Wrapper State Machine.
+
+  Description:
+    Maintains the Routing Wrapper State Machine.
+
+  Precondition:
+    None.
+
+  Parameters:
+    None.
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    // ...
+
+    while (true)
+    {
+        Routing_Wrapper_Tasks();
+    
+        // Do other tasks
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+void Routing_Wrapper_Tasks(void);
+
 #endif
