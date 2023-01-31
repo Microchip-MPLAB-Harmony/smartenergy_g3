@@ -35,7 +35,7 @@ void LOADNG_DiscoverPath(uint16_t u16DstAddr, uint8_t u8MetricType, LOADNG_Disco
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-void LOADNG_ProcessMessage(uint16_t u16MacSrcAddr, uint8_t u8MediaType, enum EAdpMac_Modulation eModulation, uint8_t u8ActiveTones,
+void LOADNG_ProcessMessage(uint16_t u16MacSrcAddr, uint8_t u8MediaType, ADP_MODULATION_PLC eModulation, uint8_t u8ActiveTones,
   uint8_t u8SubCarriers, uint8_t u8LQI, uint16_t u16MessageLength, uint8_t *pMessageBuffer);
 
 /**********************************************************************************************************************/

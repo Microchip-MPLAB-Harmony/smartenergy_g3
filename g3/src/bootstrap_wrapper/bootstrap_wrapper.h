@@ -162,7 +162,7 @@ void BootstrapWrapper_ForceJoinStatus(bool bJoined);
  * @param fnctKickNotify Callback to notify that the node has been kicked from the network.
  **********************************************************************************************************************/
 void BootstrapWrapper_ForceJoined(uint16_t u16ShortAddress,
-		struct TAdpExtendedAddress *pEUI64Address,
+		ADP_EXTENDED_ADDRESS *pEUI64Address,
 		BootstrapWrapper_JoinConfirm fnctJoinConfirm,
 		BootstrapWrapper_KickNotify fnctKickNotify);
 
@@ -179,7 +179,7 @@ void BootstrapWrapper_ForceJoined(uint16_t u16ShortAddress,
  * @param fnctJoinConfirm Callback to notify the join confirm.
  * @param fnctKickNotify Callback to notify that the node has been kicked from the network.
  **********************************************************************************************************************/
-void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, uint8_t u8MediaType, struct TAdpExtendedAddress *pEUI64Address,
+void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, uint8_t u8MediaType, ADP_EXTENDED_ADDRESS *pEUI64Address,
 		BootstrapWrapper_JoinConfirm fnctJoinConfirm,
 		BootstrapWrapper_KickNotify fnctKickNotify);
 #else
@@ -194,7 +194,7 @@ void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, uint8_t u8MediaType,
  * @param fnctJoinConfirm Callback to notify the join confirm.
  * @param fnctKickNotify Callback to notify that the node has been kicked from the network.
  **********************************************************************************************************************/
-void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, struct TAdpExtendedAddress *pEUI64Address,
+void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, ADP_EXTENDED_ADDRESS *pEUI64Address,
 		BootstrapWrapper_JoinConfirm fnctJoinConfirm,
 		BootstrapWrapper_KickNotify fnctKickNotify);
 #endif
@@ -215,7 +215,7 @@ void BootstrapWrapper_ProcessMessage(const ADP_ADDRESS *pSrcDeviceAddress, uint1
  * @param pEUI64Address The EUI64 address of the node.
  * @param callback Callback to notify that the leave has been sent.
  **********************************************************************************************************************/
-void BootstrapWrapper_LeaveRequest(const struct TAdpExtendedAddress *pEUI64Address, ADP_COMMON_DATA_SEND_CALLBACK callback);
+void BootstrapWrapper_LeaveRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address, ADP_COMMON_DATA_SEND_CALLBACK callback);
 
 #endif
 

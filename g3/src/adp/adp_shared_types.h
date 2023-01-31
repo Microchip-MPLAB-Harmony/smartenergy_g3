@@ -1,165 +1,347 @@
-/**********************************************************************************************************************/
-/** \addtogroup AdaptationSublayer
- * @{
- **********************************************************************************************************************/
+/*******************************************************************************
+  ADP Shared Types Header File
 
-/**********************************************************************************************************************/
-/** This file contains types shared by ADP and Routing libs.
- ***********************************************************************************************************************
- *
- * @file
- *
- **********************************************************************************************************************/
+  Company:
+    Microchip Technology Inc.
 
-#ifndef __ADP_SHARED_TYPES_H__
-#define __ADP_SHARED_TYPES_H__
+  File Name:
+    adp_shared_types.h
 
+  Summary:
+    ADP Shared Types Header File
+
+  Description:
+    The ADP provides a simple interface to manage the G3 Adaptation Layer. This
+    file provides shared types definition for the ADP and routing libraries.
+*******************************************************************************/
+
+//DOM-IGNORE-BEGIN
+/*******************************************************************************
+* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
+*
+* Subject to your compliance with these terms, you may use Microchip software
+* and any derivatives exclusively with Microchip products. It is your
+* responsibility to comply with third party license terms applicable to your
+* use of third party software (including open source software) that may
+* accompany Microchip software.
+*
+* THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+* EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+* WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+* PARTICULAR PURPOSE.
+*
+* IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
+* INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
+* WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
+* BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
+* FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
+* ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
+* THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+*******************************************************************************/
+//DOM-IGNORE-END
+
+#ifndef _ADP_SHARED_TYPES_H
+#define _ADP_SHARED_TYPES_H
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: File includes
+// *****************************************************************************
+// *****************************************************************************
 #include "adp_api_types.h"
 #include "system/time/sys_time.h"
 
-/**********************************************************************************************************************/
-/** The ADP_COMMON_DATA_SEND_CALLBACK primitive reports the results of a ADP_Common_DataSend Request
- **********************************************************************************************************************/
-typedef void (*ADP_COMMON_DATA_SEND_CALLBACK)(uint8_t status);
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus  // Provide C++ Compatibility
 
-/**********************************************************************************************************************/
-/** The MCPS-DATA.confirm primitive reports the results of a MCPS-DATA.request
- **********************************************************************************************************************/
-typedef void (*AdpMac_Callback_DataConfirm)(uint8_t u8Status, void *pUserData);
-
-#pragma pack(push,1)
-
-struct TDataSendParameters {
-  ADP_ADDRESS m_SrcDeviceAddress;
-  ADP_ADDRESS m_DstDeviceAddress;
-  bool m_bDiscoverRoute;
-  uint8_t m_u8Handle;
-  uint8_t m_u8MaxHops;
-  uint8_t m_u8DataType;
-  uint8_t m_u8OriginalDataType;
-  uint8_t m_u8QualityOfService;
-  uint8_t m_u8Security;
-  uint8_t m_u8BroadcastSeqNo;
-  bool m_bMeshHeaderNeeded;
-  bool m_bMulticast;
-  uint16_t m_u16DataLength;
-  uint16_t m_u16FragmentOffset;
-  uint16_t m_u16LastFragmentSize;
-  uint8_t m_u8BufferOffset;
-  uint16_t m_u16DatagramTag;
-  uint16_t m_u16DatagramSize;
-  uint8_t m_u8NumRepairReSendAttemps;
-  ADP_COMMON_DATA_SEND_CALLBACK m_fnctCallback;
-  uint8_t m_u8MediaType;
-};
-
-struct TDataSend1280 {
-  struct TDataSendParameters m_SendParameters;
-  uint8_t m_au8Data[1281]; // 1280 + 1 extra byte needed for Lowpan IPv6 header (compressed or not)
-  SYS_TIME_HANDLE m_fragTimer;
-};
-
-struct TDataSend400 {
-  struct TDataSendParameters m_SendParameters;
-  uint8_t m_au8Data[401]; // payload size + extra data for headers + 1 extra byte needed for Lowpan IPv6 header (compressed or not)
-};
-
-struct TDataSend100 {
-  struct TDataSendParameters m_SendParameters;
-  uint8_t m_au8Data[101]; // payload size + extra data for headers + 1 extra byte needed for Lowpan IPv6 header (compressed or not)
-};
-
-typedef struct TProcessQueueEntry_tag {
-  /* Pointer to the previous object of the queue */
-  struct TProcessQueueEntry_tag *prev;                
-    
-  /* Pointer to the next object of the queue */
-  struct TProcessQueueEntry_tag *next;   
-    
-  struct TDataSendParameters *m_pSendParameters;
-  uint8_t *m_pData;
-  uint16_t m_u16DataSize;
-  bool m_bProcessing;
-  bool m_bDelayed;
-  struct TProcessQueueEntry_tag *m_pNext;
-  int32_t m_i32DelayTime;
-  int32_t m_i32ValidTime;
-  SYS_TIME_HANDLE m_pFragTimer;
-} TProcessQueueEntry;
-
-
-// The maximum number of fragments which can be used to receive a fragmented message
-#define MAX_NUMBER_OF_FRAGMENTS 6
-
-struct TFragmentInfo {
-  uint16_t m_u16Offset;
-  uint16_t m_u16Size;
-};
-
-struct TLowpanFragmentedData {
-  uint16_t m_u16DatagramOrigin;
-  uint16_t m_u16DatagramTag;
-  uint16_t m_u16DatagramSize;
-  uint8_t m_au8Data[1281]; // 1280 max IPv6 packet + 1 byte IPv6 6Lowpan header
-  struct TFragmentInfo m_Fragments[MAX_NUMBER_OF_FRAGMENTS];
-  bool m_bWasCompressed;
-  /// Absolute time in milliseconds when the entry expires
-  int32_t m_i32ValidTime;
-};
-
-struct TUserDataRREQRREP {
-  uint8_t m_u8FrameType;
-  uint8_t m_u8MediaType;
-  uint16_t m_u16DstAddr;
-  void * m_pRREPGeneration;
-  void * m_pRouteEntry;
-};
-
-struct TUserDataPREQ {
-  uint16_t m_u16DstAddr;
-  uint16_t m_u16OrigAddr;
-  uint16_t m_u16NextHopAddr;
-  uint16_t m_u16RsvBits;
-  uint8_t m_u8MediaType;
-  uint8_t m_u8MetricType;
-  uint8_t m_u8ForwardHops;
-};
-
-struct TUserDataData {
-  void *m_generic_pointer;
-};
-
-union TUserDataUnion {
-  struct TUserDataRREQRREP m_sUserDataRREQRREP;
-  struct TUserDataPREQ m_sUserDataPREQ;
-  struct TUserDataData m_sUserDataData;
-  uint8_t auc_buffer[8];
-};
-
-struct TAdpMac_NeighbourDescriptor {
-  uint16_t m_u16ShortAddress;
-  enum EAdpMac_Modulation m_eModulation;
-  uint8_t m_u8ActiveTones;
-  uint8_t m_u8SubCarriers;
-  uint8_t m_u8Lqi;
-};
-
-struct TAdpMac_DataRequest {
-  uint8_t m_u8SrcAddrSize;
-  ADP_ADDRESS m_DstDeviceAddress;
-  uint16_t m_u16MsduLength;
-  uint8_t m_Msdu[400];
-  uint8_t m_u8TxOptions;
-  uint8_t m_u8QualityOfService;
-  uint8_t m_u8SecurityLevel;
-  uint8_t m_u8KeyIndex;
-  uint8_t m_u8MediaType;
-};
-
-#pragma pack(pop)
+    extern "C" {
 
 #endif
+// DOM-IGNORE-END
 
-/**********************************************************************************************************************/
-/** @}
- **********************************************************************************************************************/
+// *****************************************************************************
+// *****************************************************************************
+// Section: Macro Definitions
+// *****************************************************************************
+// *****************************************************************************
+
+// *****************************************************************************
+/* ADP Maximum Number of Fragments Definition
+
+   Summary:
+    Defines the maximum number of fragments which can be used to receive a
+    fragmented message.
+
+   Description:
+    This macro defines maximum number of fragments which can be used to receive
+    a fragmented message.
+
+   Remarks:
+    None.
+*/
+#define ADP_MAX_NUMBER_OF_FRAGMENTS 6
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Data Types
+// *****************************************************************************
+// *****************************************************************************
+
+// *****************************************************************************
+/* ADP Data Common Send Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Data Common Send Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Data
+    Common Send event handling callback function.
+
+    A client must register a pointer using the event handling function whose
+    function signature (parameter and return value types) matches the types
+    specified by this function pointer in order to receive Data Common Send
+    events back from module.
+
+  Parameters:
+    status - Data send result
+
+  Example:
+    <code>
+    App_DataSendCallback(uint8_t status)
+    {
+        // Check result
+        if (status == G3_SUCCESS)
+        {
+            
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_COMMON_DATA_SEND_CALLBACK)(uint8_t status);
+
+// *****************************************************************************
+/* ADP Data Send Parameters Definition
+
+   Summary:
+    Defines the structure of ADP Data Send parameters.
+
+   Description:
+    This data type defines the structure of ADP Data Send parameters. It used
+    internally by the ADP.
+
+   Remarks:
+    The client does not need to use this data type.
+*/
+typedef struct
+{
+    ADP_ADDRESS srcDeviceAddress;
+    ADP_ADDRESS dstDeviceAddress;
+    ADP_COMMON_DATA_SEND_CALLBACK callback;
+    uint16_t dataLength;
+    uint16_t fragmentOffset;
+    uint16_t lastFragmentSize;
+    uint16_t datagramTag;
+    uint16_t datagramSize;
+    bool discoverRoute;
+    uint8_t handle;
+    uint8_t maxHops;
+    uint8_t dataType;
+    uint8_t originalDataType;
+    uint8_t qualityOfService;
+    uint8_t security;
+    uint8_t broadcastSeqNo;
+    bool meshHeaderNeeded;
+    bool multicast;
+    uint8_t bufferOffset;
+    uint8_t numRepairReSendAttemps;
+    uint8_t mediaType;
+
+} ADP_DATA_SEND_PARAMS;
+
+// *****************************************************************************
+/* ADP 1280-byte Data Buffer Definition
+
+   Summary:
+    Defines the structure of ADP 1280-byte Data Send parameters and buffer.
+
+   Description:
+    This data type defines the structure of ADP 1280-byte Data Send parameters
+    and buffer. It used internally by the ADP library.
+
+   Remarks:
+    The client does not need to use this data type.
+*/
+typedef struct
+{
+    /* Data Send parameters */
+    ADP_DATA_SEND_PARAMS sendParameters;
+    
+    /* 1280 + 1 extra byte needed for 6LowPAN IPv6 header (compressed or not) */
+    uint8_t data[1281]; 
+
+    /* Fragmentation time handle */
+    SYS_TIME_HANDLE fragTimeHandle;
+
+} ADP_DATA_PARAMS_BUFFER_1280;
+
+// *****************************************************************************
+/* ADP 400-byte Data Buffer Definition
+
+   Summary:
+    Defines the structure of ADP 400-byte Data Send parameters and buffer.
+
+   Description:
+    This data type defines the structure of ADP 400-byte Data Send parameters
+    and buffer. It used internally by the ADP library.
+
+   Remarks:
+    The client does not need to use this data type.
+*/
+typedef struct
+{
+    /* Data Send parameters */
+    ADP_DATA_SEND_PARAMS sendParameters;
+
+    /* 400 + 1 extra byte needed for 6LowPAN IPv6 header (compressed or not) */
+    uint8_t data[401];
+
+} ADP_DATA_PARAMS_BUFFER_400;
+
+// *****************************************************************************
+/* ADP 100-byte Data Buffer Definition
+
+   Summary:
+    Defines the structure of ADP 400-byte Data Send parameters and buffer.
+
+   Description:
+    This data type defines the structure of ADP 400-byte Data Send parameters
+    and buffer. It used internally by the ADP library.
+
+   Remarks:
+    The client does not need to use this data type.
+*/
+typedef struct
+{
+    /* Data Send parameters */
+    ADP_DATA_SEND_PARAMS sendParameters;
+
+    /* 100 + 1 extra byte needed for 6LowPAN IPv6 header (compressed or not) */
+    uint8_t data[101];
+
+} ADP_DATA_PARAMS_BUFFER_100;
+
+// *****************************************************************************
+/* ADP Process Queue Entry Definition
+
+   Summary:
+    Defines the structure of ADP Process Queue entry.
+
+   Description:
+    This data type defines the structure of ADP Process Queue entry. It used
+    internally by the ADP library.
+
+   Remarks:
+    The client does not need to use this data type.
+*/
+typedef struct _ADP_PROCESS_QUEUE_ENTRY
+{
+    /* Pointer to the previous object of the queue */
+    struct _ADP_PROCESS_QUEUE_ENTRY* prev;                
+      
+    /* Pointer to the next object of the queue */
+    struct _ADP_PROCESS_QUEUE_ENTRY* next;   
+
+    /* Pointer to data send parameters */
+    ADP_DATA_SEND_PARAMS* pSendParameters;
+
+    /* Pointer to data buffer */
+    uint8_t* pData;
+
+    /* Send delay time in milliseconds */
+    int32_t delayTime;
+
+    /* Absolute time in milliseconds when the entry expires */
+    int32_t validTime;
+
+    /* Fragmentation time handle */
+    SYS_TIME_HANDLE fragTimeHandle;
+
+    /* Data size in bytes */
+    uint16_t dataSize;
+
+    /* Entry processing flag */
+    bool processing;
+
+    /* Delayed flag */
+    bool delayed;
+
+} ADP_PROCESS_QUEUE_ENTRY;
+
+// *****************************************************************************
+/* ADP 6LowPAN Fragment Information Definition
+
+   Summary:
+    Defines the structure of ADP 6LowPAN Fragment Information.
+
+   Description:
+    This data type defines the structure of ADP 6LowPAN Fragment Information.
+    It used internally by the ADP library.
+
+   Remarks:
+    The client does not need to use this data type.
+*/
+typedef struct
+{
+    uint16_t offset;
+    uint16_t size;
+
+} ADP_LOWPAN_FRAGMENT_INFO;
+
+// *****************************************************************************
+/* ADP 6LowPAN Fragmented Data Definition
+
+   Summary:
+    Defines the structure of ADP 6LowPAN Fragmented Data.
+
+   Description:
+    This data type defines the structure of ADP 6LowPAN Fragmented Data.
+    It used internally by the ADP library.
+
+   Remarks:
+    The client does not need to use this data type.
+*/
+typedef struct
+{
+    /* Fragments information */
+    ADP_LOWPAN_FRAGMENT_INFO fragments[ADP_MAX_NUMBER_OF_FRAGMENTS];
+
+    /* Absolute time in milliseconds when the entry expires */
+    int32_t validTime;
+
+    /* Datagram origin address */
+    uint16_t datagramOrigin;
+
+    /* Datagram tag */
+    uint16_t datagramTag;
+
+    /* Datagram size in bytes */
+    uint16_t datagramSize;
+
+    /* 1280 max IPv6 packet + 1 byte IPv6 6LowPAN header */
+    uint8_t data[1281];
+
+    /* Flag to indicate if header was compressed */
+    bool wasCompressed;
+    
+} ADP_LOWPAN_FRAGMENTED_DATA;
+
+//DOM-IGNORE-BEGIN
+#ifdef __cplusplus
+}
+#endif
+//DOM-IGNORE-END
+
+#endif // #ifndef _ADP_SHARED_TYPES_H

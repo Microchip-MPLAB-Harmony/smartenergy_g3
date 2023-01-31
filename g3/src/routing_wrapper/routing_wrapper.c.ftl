@@ -295,7 +295,7 @@ bool Routing_IsInDestinationAddressSet(uint16_t u16Addr)
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-void Routing_ProcessMessage(uint16_t u16MacSrcAddr, uint8_t u8MediaType, enum EAdpMac_Modulation eModulation, uint8_t u8ActiveTones, uint8_t u8Subcarriers, uint8_t u8LQI,
+void Routing_ProcessMessage(uint16_t u16MacSrcAddr, uint8_t u8MediaType, ADP_MODULATION_PLC eModulation, uint8_t u8ActiveTones, uint8_t u8Subcarriers, uint8_t u8LQI,
   uint16_t u16MessageLength, uint8_t *pMessageBuffer)
 {
 <#if LOADNG_ENABLE == true>

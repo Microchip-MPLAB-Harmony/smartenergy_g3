@@ -53,6 +53,7 @@
 
 #include "adp_shared_types.h"
 #include "adp_api_types.h"
+#include "../mac/mac_wrapper/mac_wrapper_defs.h"
 #include "system/system.h"
 
 // DOM-IGNORE-BEGIN
@@ -62,6 +63,26 @@
 
 #endif
 // DOM-IGNORE-END
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Macro Definitions
+// *****************************************************************************
+// *****************************************************************************
+
+// *****************************************************************************
+/* ADP LBP Maximum NSDU length
+
+   Summary:
+    Defines the maximum length of a LBP NSDU.
+
+   Description:
+    This macro defines the maximum length of a LBP NSDU.
+
+   Remarks:
+    None.
+*/
+#define ADP_LBP_MAX_NSDU_LENGTH   100
 
 // *****************************************************************************
 // *****************************************************************************
@@ -82,7 +103,8 @@
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* The status code (result) of a previous ADP Data Request */
     uint8_t status;
 
@@ -142,7 +164,8 @@ typedef void (*ADP_DATA_CFM_CALLBACK)(ADP_DATA_CFM_PARAMS* pDataCfm);
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* The received NSDU */
     const uint8_t* pNsdu;
 
@@ -322,7 +345,8 @@ typedef void (*ADP_NETWORK_START_CFM_CALLBACK)(uint8_t status);
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* The 16-bit network address that was allocated to the device */
     uint16_t networkAddress;
 
@@ -492,7 +516,8 @@ typedef void (*ADP_RESET_CFM_CALLBACK)(uint8_t status);
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* The identifier of the IB attribute set */
     uint32_t attributeId;
 
@@ -591,7 +616,8 @@ typedef void (*ADP_MAC_SET_CFM_CALLBACK)(ADP_SET_CFM_PARAMS* pSetCfm);
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* The identifier of the IB attribute read */
     uint32_t attributeId;
 
@@ -659,7 +685,8 @@ typedef void (*ADP_GET_CFM_CALLBACK)(ADP_GET_CFM_PARAMS* pGetCfm);
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* The identifier of the IB attribute read */
     uint32_t attributeId;
 
@@ -727,7 +754,8 @@ typedef void (*ADP_MAC_GET_CFM_CALLBACK)(ADP_MAC_GET_CFM_PARAMS* pGetCfm);
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* The status code of a previous ADP LBP Request */
     uint8_t status;
 
@@ -785,23 +813,23 @@ typedef void (*ADP_LBP_CFM_CALLBACK)(ADP_LBP_CFM_PARAMS* pLbpCfm);
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* The received NSDU */
     const uint8_t* pNsdu;
 
-    /* The size of the NSDU, in bytes; Up to 1280 bytes */
-    uint16_t nsduLength;
+    /* Source Address of the LBP frame. Short Address for LBA or LBS frames,
+     * extended for LBD. */
+    ADP_ADDRESS srcAddr;
 
-    /* Address of the LBA. When directly communicating with the LBD (using
-     * extended addressing), this field is set to 0xFFFF */
-    uint16_t srcAddr;
+    /* The size of the NSDU, in bytes; Up to ADP_LBP_MAX_NSDU_LENGTH bytes */
+    uint16_t nsduLength;
 
     /* The value of the link quality during reception of the frame */
     uint8_t linkQualityIndicator;
 
-    /* TRUE if the frame was received with a security level greater or equal
-     * to adpSecurityLevel, FALSE otherwise */
-    bool securityEnabled;
+    /* The Security Level of the received frame */
+    bool securityLevel;
 
 } ADP_LBP_IND_PARAMS;
 
@@ -893,7 +921,8 @@ typedef void (*ADP_ROUTE_DISCOVERY_CFM_CALLBACK)(uint8_t status);
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* The short unicast destination address of the path discovery */
     uint16_t dstAddr;
 
@@ -975,7 +1004,8 @@ typedef void (*ADP_PATH_DISCOVERY_CFM_CALLBACK)(ADP_PATH_DISCOVERY_CFM_PARAMS* p
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* The individual device address of the entity from which the frame causing
      * the error originated */
     ADP_ADDRESS srcDeviceAddress;
@@ -1122,7 +1152,8 @@ typedef void (*ADP_PREQ_IND_CALLBACK)(void);
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* MAC frame counter for PLC */
     uint32_t frameCounter;
 
@@ -1186,7 +1217,8 @@ typedef void (*ADP_NON_VOLATILE_DATA_IND_CALLBACK)(ADP_NON_VOLATILE_DATA_IND_PAR
    Remarks:
     None.
 */
-typedef struct {
+typedef struct
+{
     /* The NSDU failed to be delivered */
     const uint8_t* pNsdu;
 
@@ -1271,22 +1303,18 @@ typedef void (*ADP_ROUTE_NOT_FOUND_IND_CALLBACK)(ADP_ROUTE_NOT_FOUND_IND_PARAMS*
     In case an event is to be ignored, setting its corresponding callback
     function to NULL will lead to the event not being generated.
 */
-typedef struct {
+typedef struct
+{
     ADP_DATA_CFM_CALLBACK              dataConfirm;
     ADP_DATA_IND_CALLBACK              dataIndication;
     ADP_DISCOVERY_CFM_CALLBACK         discoveryConfirm;
     ADP_DISCOVERY_IND_CALLBACK         discoveryIndication;
     ADP_NETWORK_START_CFM_CALLBACK     networkStartConfirm;
-    ADP_NETWORK_JOIN_CFM_CALLBACK      networkJoinConfirm;
-    ADP_NETWORK_LEAVE_IND_CALLBACK     networkLeaveIndication;
-    ADP_NETWORK_LEAVE_CFM_CALLBACK     networkLeaveConfirm;
     ADP_RESET_CFM_CALLBACK             resetConfirm;
     ADP_SET_CFM_CALLBACK               setConfirm;
     ADP_MAC_SET_CFM_CALLBACK           macSetConfirm;
     ADP_GET_CFM_CALLBACK               getConfirm;
     ADP_MAC_GET_CFM_CALLBACK           macGetConfirm;
-    ADP_LBP_CFM_CALLBACK               lbpConfirm;
-    ADP_LBP_IND_CALLBACK               lbpIndication;
     ADP_ROUTE_DISCOVERY_CFM_CALLBACK   routeDiscoveryConfirm;
     ADP_PATH_DISCOVERY_CFM_CALLBACK    pathDiscoveryConfirm;
     ADP_NETWORK_STATUS_IND_CALLBACK    networkStatusIndication;
@@ -1295,6 +1323,26 @@ typedef struct {
     ADP_NON_VOLATILE_DATA_IND_CALLBACK nonVolatileDataIndication;
     ADP_ROUTE_NOT_FOUND_IND_CALLBACK   routeNotFoundIndication;
 } ADP_NOTIFICATIONS;
+
+// *****************************************************************************
+/* ADP Callback Notificatios to LBP Structure
+
+   Summary:
+    Set of event handler function pointers to receive events from ADP to LBP.
+
+   Description:
+    Defines the set of callback functions that ADP uses to generate events to
+    upper layer for LBP.
+
+   Remarks:
+    In case an event is to be ignored, setting its corresponding callback
+    function to NULL will lead to the event not being generated.
+*/
+typedef struct
+{
+    ADP_LBP_CFM_CALLBACK               lbpConfirm;
+    ADP_LBP_IND_CALLBACK               lbpIndication;
+} ADP_NOTIFICATIONS_TO_LBP;
 
 // *****************************************************************************
 /* ADP Initialization Data
@@ -1440,7 +1488,7 @@ void ADP_Tasks(SYS_MODULE_OBJ object);
 
 // *****************************************************************************
 /* Function:
-    void ADP_Init(ADP_NOTIFICATIONS* pNotifications, ADP_PLC_BAND band)
+    void ADP_Init(ADP_NOTIFICATIONS* pNotifications, MAC_WRP_BAND band)
 
   Summary:
     Initializes the ADP module data.
@@ -1475,14 +1523,51 @@ void ADP_Tasks(SYS_MODULE_OBJ object);
         ...
     };
 
-    ADP_Init(&adpNotifications, ADP_BAND_CENELEC_A);
+    ADP_Init(&adpNotifications, MAC_WRP_BAND_CENELEC_A);
     </code>
 
   Remarks:
     This routine must be called before any other ADP API function, execpt
     ADP_Initialize.
 */
-void ADP_Init(ADP_NOTIFICATIONS* pNotifications, ADP_PLC_BAND band);
+void ADP_Init(ADP_NOTIFICATIONS* pNotifications, MAC_WRP_BAND band);
+
+// *****************************************************************************
+/* Function:
+    void ADP_SetNotificationsToLbp(ADP_NOTIFICATIONS_TO_LBP* pNotifications);
+
+  Summary:
+    Sets ADP notifications to LBP.
+
+  Description:
+    This routine sets the ADP notifications to LBP. Callback handlers for event
+    notification are set in this function.
+
+  Precondition:
+    None.
+
+  Parameters:
+    pNotifications - Structure with callbacks used to notify ADP LBP specific
+                     events
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    
+    ADP_NOTIFICATIONS adpNotifications = {
+        .lbpConfirm = appLbpConfirm,
+        .lbpIndication = appLbpIndication
+    };
+
+    ADP_SetNotificationsToLbp(&adpNotifications);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_SetNotificationsToLbp(ADP_NOTIFICATIONS_TO_LBP* pNotifications);
 
 // *****************************************************************************
 /* Function:
@@ -1698,7 +1783,7 @@ void ADP_NetworkStartRequest(uint16_t panId);
   Parameters:
     panId - The 16-bit PAN identifier of the network to join
 
-    lbaAddress - The 16-bit short address of the device acting as a LoWPAN
+    lbaAddress - The 16-bit short address of the device acting as a 6LowPAN
                  bootstrap agent (relay)
 
     mediaType  - The Media Type to use for frame exchange with LBA. Only used in
@@ -2257,7 +2342,8 @@ void ADP_PathDiscoveryRequest(uint16_t dstAddr, uint8_t metricType);
     pDstAddr         - 16-bit address of LBA or LBD or 64 bit address (extended
                        address of LBD)
 
-    nsduLength       - The size of the NSDU, in bytes; Up to 1280
+    nsduLength       - The size of the NSDU, in bytes; limited to
+                       ADP_LBP_MAX_NSDU_LENGTH
 
     pNsdu            - Pointer to NSDU to send
 
@@ -2307,80 +2393,6 @@ void ADP_PathDiscoveryRequest(uint16_t dstAddr, uint8_t metricType);
 void ADP_LbpRequest(const ADP_ADDRESS *pDstAddr, uint16_t nsduLength,
     uint8_t *pNsdu, uint8_t nsduHandle, uint8_t maxHops,
     bool discoveryRoute, uint8_t qualityOfService, bool securityEnable);
-
-// *****************************************************************************
-/* Function:
-    void ADP_LbpRequestExt(uint8_t srcAddressSize, const ADP_ADDRESS *pDstAddr,
-        uint16_t nsduLength, uint8_t *pNsdu, bool multicast, bool securityEnable,
-        ADP_COMMON_DATA_SEND_CALLBACK callback);
-
-  Summary:
-    This primitive allows the upper layer of the client to send the LBP message
-    to the server modem.
-
-  Description:
-    The ADP LBP Request primitive allows the upper layer of the client to send
-    the LBP message to the server modem. This primitive extends the capabilities
-    of ADP_LbpRequest.
-    
-    Result is provided in the corresponding callback given as parameter.
-
-  Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
-
-  Parameters:
-    srcAddressSize  - Source address size (ADP_ADDRESS_16BITS or
-                      ADP_ADDRESS_64BITS)
-
-    pDstAddr        - 16-bit address of LBA or LBD or 64 bit address (extended
-                      address of LBD)
-
-    nsduLength      - The size of the NSDU, in bytes; Up to 1280
-
-    pNsdu           - Pointer to NSDU to send
-
-    maxHops         - The number of times the frame will be repeated by network
-                      routers
-
-    multicast       - If true, the frame will be sent as multicast
-
-    bSecurityEnable - If true, this parameter enables the MAC layer security
-                      for sending the frame; otherwise auto will be used.
-
-    callback        - Callback function
-
-  Returns:
-    None.
-
-  Example:
-    <code>
-    void AppLbpExtConfirm(uint8_t status)
-    {
-
-    }
-
-    uint8_t nsdu[1280];
-    uint16_t nsduLength;
-    ADP_ADDRESS destAddress;
-
-    // ...
-    // Fill NSDU
-    // ...
-
-    destAddress.addrSize = ADP_ADDRESS_16BITS;
-    destAddress.shortAddr = 0x0001;
-    
-    ADP_LbpRequestExt(ADP_ADDRESS_16BITS, &destAddress, nsduLength, nsdu, 0,
-        false, true, AppLbpExtConfirm);
-    // Wait for LBP Confirm
-    </code>
-
-  Remarks:
-    None.
-*/
-void ADP_LbpRequestExt(uint8_t srcAddressSize, const ADP_ADDRESS *pDstAddr,
-    uint16_t nsduLength, uint8_t *pNsdu, bool multicast, bool securityEnable,
-    ADP_COMMON_DATA_SEND_CALLBACK callback);
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

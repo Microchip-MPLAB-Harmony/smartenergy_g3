@@ -21,7 +21,7 @@ void BootstrapWrapper_ForceJoinStatus(bool bJoined)
 }
 
 void BootstrapWrapper_ForceJoined(uint16_t u16ShortAddress,
-		struct TAdpExtendedAddress *pEUI64Address,
+		ADP_EXTENDED_ADDRESS *pEUI64Address,
 		BootstrapWrapper_JoinConfirm fnctJoinConfirm,
 		BootstrapWrapper_KickNotify fnctKickNotify)
 {
@@ -34,14 +34,14 @@ void BootstrapWrapper_InitEapPsk(const struct TEapPskKey *pKey)
 }
 
 #if defined(__PLC_MAC__) && defined(__RF_MAC__)
-void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, uint8_t u8MediaType, struct TAdpExtendedAddress *pEUI64Address,
+void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, uint8_t u8MediaType, ADP_EXTENDED_ADDRESS *pEUI64Address,
 		BootstrapWrapper_JoinConfirm fnctJoinConfirm,
 		BootstrapWrapper_KickNotify fnctKickNotify)
 {
 	LBP_JoinRequest(m_u16LbaAddress, u8MediaType, pEUI64Address, fnctJoinConfirm, fnctKickNotify);
 }
 #else
-void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, struct TAdpExtendedAddress *pEUI64Address,
+void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, ADP_EXTENDED_ADDRESS *pEUI64Address,
 		BootstrapWrapper_JoinConfirm fnctJoinConfirm,
 		BootstrapWrapper_KickNotify fnctKickNotify)
 {
@@ -49,7 +49,7 @@ void BootstrapWrapper_JoinRequest(uint16_t m_u16LbaAddress, struct TAdpExtendedA
 }
 #endif
 
-void BootstrapWrapper_LeaveRequest(const struct TAdpExtendedAddress *pEUI64Address, ADP_COMMON_DATA_SEND_CALLBACK callback)
+void BootstrapWrapper_LeaveRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address, ADP_COMMON_DATA_SEND_CALLBACK callback)
 {
 	LBP_LeaveRequest(pEUI64Address, callback);
 }

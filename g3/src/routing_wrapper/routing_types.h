@@ -133,7 +133,7 @@ typedef struct TRReqForwarding_tag {
 } TRReqForwarding;
 
 struct TRouteCostParameters {
-  enum EAdpMac_Modulation m_eModulation;
+  ADP_MODULATION_PLC m_eModulation;
   uint8_t m_u8NumberOfActiveTones;
   uint8_t m_u8NumberOfSubCarriers;
   uint8_t m_u8LQI;
