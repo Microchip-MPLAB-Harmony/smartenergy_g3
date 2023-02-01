@@ -14,47 +14,47 @@
 /**********************************************************************************************************************/
 /** Internal variables
  **********************************************************************************************************************/
-struct TRoutingTables g_RoutingTables;
+ROUTING_TABLES g_RoutingTables;
 
 <#if LOADNG_ENABLE == true>
 struct TQueueElement g_PendingRREQTable[LOADNG_PENDING_RREQ_TABLE_SIZE];
 struct TRRepGeneration g_RRepGenerationTable[LOADNG_RREP_GEN_TABLE_SIZE];
-  struct TRReqForwarding g_RReqForwardingTable[LOADNG_RREQ_FORWARD_TABLE_SIZE];
+struct TRReqForwarding g_RReqForwardingTable[LOADNG_RREQ_FORWARD_TABLE_SIZE];
 struct TDiscoverRouteEntry g_DiscoverRouteTable[LOADNG_DISCOVER_ROUTE_TABLE_SIZE];
-struct TAdpRoutingTableEntry g_AdpRoutingTable[G3_ADP_ROUTING_TABLE_SIZE];
+ROUTING_TABLE_ENTRY g_AdpRoutingTable[G3_ADP_ROUTING_TABLE_SIZE];
 struct TAdpBlacklistTableEntry g_AdpBlacklistTable[G3_ADP_BLACKLIST_TABLE_SIZE];
-struct TAdpRoutingTableEntry g_AdpRoutingSet[G3_ADP_ROUTING_SET_SIZE];
+ROUTING_TABLE_ENTRY g_AdpRoutingSet[G3_ADP_ROUTING_SET_SIZE];
 uint16_t g_AdpDestinationAddressSet[G3_ADP_DESTINATION_ADDR_SET_SIZE];
 </#if>
 
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-void Routing_Reset(uint8_t u8Band)
+void Routing_Reset()
 {
 <#if LOADNG_ENABLE == true>
   // Store the table sizes, to make LoadNG library independent of table sizes.
-  g_RoutingTables.m_AdpRoutingTableSize = ADP_ROUTING_TABLE_SIZE;
-  g_RoutingTables.m_AdpBlacklistTableSize = ADP_BLACKLIST_TABLE_SIZE;
-  g_RoutingTables.m_AdpRoutingSetSize = ADP_ROUTING_SET_SIZE;
-  g_RoutingTables.m_AdpDestinationAddressSetSize = ADP_DESTINATION_ADDRESS_SET_TABLE_SIZE;
+  g_RoutingTables.adpRoutingTableSize = G3_ADP_ROUTING_TABLE_SIZE;
+  g_RoutingTables.adpBlacklistTableSize = G3_ADP_BLACKLIST_TABLE_SIZE;
+  g_RoutingTables.adpRoutingSetSize = G3_ADP_ROUTING_SET_SIZE;
+  g_RoutingTables.adpDestinationAddressSetSize = G3_ADP_DESTINATION_ADDR_SET_SIZE;
 
-  g_RoutingTables.m_PendingRREQTableSize = LOADNG_PENDING_RREQ_TABLE_SIZE;
-  g_RoutingTables.m_RRepGenerationTableSize = LOADNG_RREP_GENERATION_TABLE_SIZE;
-  g_RoutingTables.m_DiscoverRouteTableSize = LOADNG_DISCOVER_ROUTE_TABLE_SIZE;
-  g_RoutingTables.m_RReqForwardingTableSize = LOADNG_RREQ_FORWARDING_TABLE_SIZE;
+  g_RoutingTables.pendingRREQTableSize = LOADNG_PENDING_RREQ_TABLE_SIZE;
+  g_RoutingTables.rrepGenerationTableSize = LOADNG_RREP_GENERATION_TABLE_SIZE;
+  g_RoutingTables.discoverRouteTableSize = LOADNG_DISCOVER_ROUTE_TABLE_SIZE;
+  g_RoutingTables.rreqForwardingTableSize = LOADNG_RREQ_FORWARDING_TABLE_SIZE;
 
-  g_RoutingTables.m_AdpRoutingTable = g_AdpRoutingTable;
-  g_RoutingTables.m_AdpBlacklistTable = g_AdpBlacklistTable;
-  g_RoutingTables.m_AdpRoutingSet = g_AdpRoutingSet;
-  g_RoutingTables.m_AdpDestinationAddressSet = g_AdpDestinationAddressSet;
+  g_RoutingTables.adpRoutingTable = g_AdpRoutingTable;
+  g_RoutingTables.adpBlacklistTable = g_AdpBlacklistTable;
+  g_RoutingTables.adpRoutingSet = g_AdpRoutingSet;
+  g_RoutingTables.adpDestinationAddressSet = g_AdpDestinationAddressSet;
 
-  g_RoutingTables.m_PendingRREQTable = g_PendingRREQTable;
-  g_RoutingTables.m_RRepGenerationTable = g_RRepGenerationTable;
-  g_RoutingTables.m_DiscoverRouteTable = g_DiscoverRouteTable;
-  g_RoutingTables.m_RReqForwardingTable = g_RReqForwardingTable;
+  g_RoutingTables.pendingRREQTable = g_PendingRREQTable;
+  g_RoutingTables.rrepGenerationTable = g_RRepGenerationTable;
+  g_RoutingTables.discoverRouteTable = g_DiscoverRouteTable;
+  g_RoutingTables.rreqForwardingTable = g_RReqForwardingTable;
 
-  LOADNG_Reset(u8Band, &g_RoutingTables);
+  LOADNG_Reset(&g_RoutingTables);
 </#if>
 }
 
@@ -233,7 +233,7 @@ void RoutingSetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-void Routing_DiscoverPath(uint16_t u16DstAddr, uint8_t u8MetricType, LOADNG_DiscoverPath_Callback callback)
+void Routing_DiscoverPath(uint16_t u16DstAddr, uint8_t u8MetricType, ROUTING_WRP_DISCOVER_PATH_CALLBACK callback)
 {
 <#if LOADNG_ENABLE == true>
   if (!Routing_IsDisabled()) {
@@ -265,7 +265,7 @@ void Routing_DiscoverRoute(
   uint8_t u8MaxHops,
   bool bRepair,
   void *pUserData,
-  LOADNG_DiscoverRoute_Callback fnctDiscoverCallback
+  ROUTING_WRP_DISCOVER_ROUTE_CALLBACK fnctDiscoverCallback
   )
 {
 <#if LOADNG_ENABLE == true>
@@ -306,7 +306,7 @@ void Routing_ProcessMessage(uint16_t u16MacSrcAddr, uint8_t u8MediaType, ADP_MOD
 /**********************************************************************************************************************/
 /** Creates a new route
  **********************************************************************************************************************/
-struct TAdpRoutingTableEntry *Routing_AddRoute(uint16_t u16DstAddr, uint16_t u16NextHopAddr, uint8_t u8MediaType, bool *pbTableFull)
+ROUTING_TABLE_ENTRY *Routing_AddRoute(uint16_t u16DstAddr, uint16_t u16NextHopAddr, uint8_t u8MediaType, bool *pbTableFull)
 {
 <#if LOADNG_ENABLE == true>
   return LOADNG_AddRoute(u16DstAddr, u16NextHopAddr, u8MediaType, pbTableFull);
@@ -379,9 +379,9 @@ uint16_t Routing_GetRouteAndMediaType(uint16_t u16DestinationAddress, uint8_t *p
 /**********************************************************************************************************************/
 /** Inserts a route in the routing table
  **********************************************************************************************************************/
-struct TAdpRoutingTableEntry *Routing_AddRouteEntry(struct TAdpRoutingTableEntry *pNewEntry, bool *pbTableFull)
+ROUTING_TABLE_ENTRY *Routing_AddRouteEntry(ROUTING_TABLE_ENTRY *pNewEntry, bool *pbTableFull)
 {
-  struct TAdpRoutingTableEntry *pRet = 0L;
+  ROUTING_TABLE_ENTRY *pRet = 0L;
   *pbTableFull = false;
 <#if LOADNG_ENABLE == true>
   if (!Routing_IsDisabled()) {
@@ -394,9 +394,9 @@ struct TAdpRoutingTableEntry *Routing_AddRouteEntry(struct TAdpRoutingTableEntry
 /**********************************************************************************************************************/
 /** Gets a pointer to Route Entry. before calling this function, check if route exists (LOADNG_RouteExists)
  **********************************************************************************************************************/
-struct TAdpRoutingTableEntry *Routing_GetRouteEntry(uint16_t u16DestinationAddress)
+ROUTING_TABLE_ENTRY *Routing_GetRouteEntry(uint16_t u16DestinationAddress)
 {
-  struct TAdpRoutingTableEntry *pRet = 0L;
+  ROUTING_TABLE_ENTRY *pRet = 0L;
 <#if LOADNG_ENABLE == true>
   if (!Routing_IsDisabled()) {
     pRet = LOADNG_GetRouteEntry(u16DestinationAddress);

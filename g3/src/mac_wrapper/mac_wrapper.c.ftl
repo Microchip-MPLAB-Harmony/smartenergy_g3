@@ -2838,21 +2838,21 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
                 /* m_u16FlMax */
                 _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], pibValue->value);
                 serialRspLen += 2;
-                /* m_u8Band */
+                /* band */
                 serialData[serialRspLen++] = pibValue->value[2];
-                /* m_u8Tones */
+                /* tones */
                 serialData[serialRspLen++] = pibValue->value[3];
-                /* m_u8Carriers */
+                /* carriers */
                 serialData[serialRspLen++] = pibValue->value[4];
-                /* m_u8TonesInCarrier */
+                /* tonesInCarrier */
                 serialData[serialRspLen++] = pibValue->value[5];
-                /* m_u8FlBand */
+                /* flBand */
                 serialData[serialRspLen++] = pibValue->value[6];
-                /* m_u8MaxRsBlocks */
+                /* maxRsBlocks */
                 serialData[serialRspLen++] = pibValue->value[7];
-                /* m_u8TxCoefBits */
+                /* txCoefBits */
                 serialData[serialRspLen++] = pibValue->value[8];
-                /* m_u8PilotsFreqSpa */
+                /* pilotsFreqSpa */
                 serialData[serialRspLen++] = pibValue->value[9];
                 break;
 

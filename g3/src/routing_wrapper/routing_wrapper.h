@@ -16,7 +16,7 @@
 
 #include "adp.h"
 
-void Routing_Reset(uint8_t u8Band);
+void Routing_Reset(void);
 
 bool Routing_IsDisabled(void);
 
@@ -34,19 +34,19 @@ void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, ADP_GET_
 void RoutingSetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
   uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue, ADP_SET_CFM_PARAMS* pSetConfirm);
 
-struct TAdpRoutingTableEntry *Routing_AddRouteEntry(struct TAdpRoutingTableEntry *pNewEntry, bool *pbTableFull);
-struct TAdpRoutingTableEntry *Routing_GetRouteEntry(uint16_t u16DestinationAddress);
+ROUTING_TABLE_ENTRY *Routing_AddRouteEntry(ROUTING_TABLE_ENTRY *pNewEntry, bool *pbTableFull);
+ROUTING_TABLE_ENTRY *Routing_GetRouteEntry(uint16_t u16DestinationAddress);
 uint32_t Routing_GetRouteCount(void);
 
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-typedef void (*LOADNG_DiscoverPath_Callback)(uint8_t u8Status, ADP_PATH_DESCRIPTOR *pPathDescriptor);
+typedef void (*ROUTING_WRP_DISCOVER_PATH_CALLBACK)(uint8_t status, ADP_PATH_DESCRIPTOR *pPathDescriptor);
 
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-void Routing_DiscoverPath(uint16_t u16DstAddr, uint8_t u8MetricType, LOADNG_DiscoverPath_Callback callback);
+void Routing_DiscoverPath(uint16_t u16DstAddr, uint8_t u8MetricType, ROUTING_WRP_DISCOVER_PATH_CALLBACK callback);
 
 /**********************************************************************************************************************/
 /**
@@ -56,13 +56,13 @@ void Routing_NotifyRouteError(uint16_t u16DstAddr, uint16_t u16UnreachableAddres
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
-typedef void (*LOADNG_DiscoverRoute_Callback)(uint8_t u8Status, uint16_t u16DstAddr, uint16_t u16NextHop, void *pUserData);
+typedef void (*ROUTING_WRP_DISCOVER_ROUTE_CALLBACK)(uint8_t u8Status, uint16_t u16DstAddr, uint16_t u16NextHop, void *pUserData);
 
 /**********************************************************************************************************************/
 /**
  **********************************************************************************************************************/
 void Routing_DiscoverRoute(uint16_t u16DstAddr, uint8_t u8MaxHops, bool bRepair, void *pUserData,
-  LOADNG_DiscoverRoute_Callback fnctDiscoverCallback);
+  ROUTING_WRP_DISCOVER_ROUTE_CALLBACK fnctDiscoverCallback);
 
 /**********************************************************************************************************************/
 /**
@@ -98,7 +98,7 @@ uint16_t Routing_GetRouteAndMediaType(uint16_t u16DestinationAddress, uint8_t *p
 /**********************************************************************************************************************/
 /** Add new candidate route
  **********************************************************************************************************************/
-struct TAdpRoutingTableEntry *Routing_AddRoute(uint16_t u16DstAddr, uint16_t u16NextHopAddr, uint8_t u8MediaType, bool *pbTableFull);
+ROUTING_TABLE_ENTRY *Routing_AddRoute(uint16_t u16DstAddr, uint16_t u16NextHopAddr, uint8_t u8MediaType, bool *pbTableFull);
 
 /**********************************************************************************************************************/
 /** Returns true if the address is in the Destination Address Set (CCTT#183)

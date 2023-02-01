@@ -22,7 +22,7 @@
 #define RERR_CODE_NO_AVAILABLE_ROUTE   0
 #define RERR_CODE_HOP_LIMIT_EXCEEDED   1
 
-struct TAdpRoutingTableEntry {
+typedef struct {
   /// The 16 bit short link layer address of the final destination of a route
   uint16_t m_u16DstAddr;
   /// The 16 bit short link layer addresses of the next hop node to the destination
@@ -41,7 +41,7 @@ struct TAdpRoutingTableEntry {
 
   /// Absolute time in milliseconds when the entry expires
   int32_t m_i32ValidTime;
-};
+} ROUTING_TABLE_ENTRY;
 
 struct TAdpBlacklistTableEntry {
   uint16_t m_u16Addr;
@@ -58,7 +58,7 @@ typedef struct TDiscoverRouteEntry_tag {
   struct TDiscoverRouteEntry_tag *next;     
     
   // Callback called when the discovery is finished
-  LOADNG_DiscoverRoute_Callback m_fcntCallback;
+  ROUTING_WRP_DISCOVER_ROUTE_CALLBACK m_fcntCallback;
 
   // Final destination of the discover
   uint16_t m_u16DstAddr;
@@ -88,7 +88,7 @@ typedef struct TDiscoverRouteEntry_tag {
 struct TDiscoverPath {
   uint16_t m_u16DstAddr;
   // Callback called when the discovery is finished
-  LOADNG_DiscoverPath_Callback m_fnctCallback;
+  ROUTING_WRP_DISCOVER_PATH_CALLBACK m_fnctCallback;
   // Timer to control the discovery process if no response is received
   SYS_TIME_HANDLE m_Timer;
   bool discoverPathTimerExpired;
@@ -164,52 +164,55 @@ typedef struct _pending_rreq_table_element_tag
     void *userData;   
     
     /* Information about data type (optional information if needed) */
-    uint8_t dataType;                      
+    uint8_t dataType;
+
 } PENDING_RREQ_TABLE_ELEMENT;
 
-struct TRoutingTables {
-  uint8_t m_PendingRREQTableSize;
-  uint8_t m_RRepGenerationTableSize;
-  uint8_t m_DiscoverRouteTableSize;
-  uint8_t m_RReqForwardingTableSize;
-  /**
-   * Contains the length of the Routing table
-   */
-  uint16_t m_AdpRoutingTableSize;
-  /**
-   * Contains the length of the blacklisted neighbours table
-   */
-  uint8_t m_AdpBlacklistTableSize;
-  /**
-   * Contains the length of the routing set
-   */
-  uint16_t m_AdpRoutingSetSize;
-  /**
-   * Contains the size of the destination address set
-   */
-  uint16_t m_AdpDestinationAddressSetSize;
-  /**
-   * Contains the routing table
-   */
+typedef struct
+{
+    uint8_t pendingRREQTableSize;
+    uint8_t rrepGenerationTableSize;
+    uint8_t discoverRouteTableSize;
+    uint8_t rreqForwardingTableSize;
+    /**
+    * Contains the length of the Routing table
+    */
+    uint16_t adpRoutingTableSize;
+    /**
+    * Contains the length of the blacklisted neighbours table
+    */
+    uint8_t adpBlacklistTableSize;
+    /**
+    * Contains the length of the routing set
+    */
+    uint16_t adpRoutingSetSize;
+    /**
+    * Contains the size of the destination address set
+    */
+    uint16_t adpDestinationAddressSetSize;
+    /**
+    * Contains the routing table
+    */
 
-  PENDING_RREQ_TABLE_ELEMENT *m_PendingRREQTable;
-  TRRepGeneration *m_RRepGenerationTable;
-  TDiscoverRouteEntry *m_DiscoverRouteTable;
-  TRReqForwarding *m_RReqForwardingTable;
+    PENDING_RREQ_TABLE_ELEMENT* pendingRREQTable;
+    TRRepGeneration* rrepGenerationTable;
+    TDiscoverRouteEntry* discoverRouteTable;
+    TRReqForwarding* rreqForwardingTable;
 
-  struct TAdpRoutingTableEntry *m_AdpRoutingTable;
-  /**
-   * Contains the list of the blacklisted neighbours
-   */
-  struct TAdpBlacklistTableEntry *m_AdpBlacklistTable;
-  /**
-   * Contains the routing set
-   */
-  struct TAdpRoutingTableEntry *m_AdpRoutingSet;
-  /**
-   * Contains the list of destination addresses.
-   */
-  uint16_t *m_AdpDestinationAddressSet;
-};
+    ROUTING_TABLE_ENTRY* adpRoutingTable;
+    /**
+    * Contains the list of the blacklisted neighbours
+    */
+    struct TAdpBlacklistTableEntry* adpBlacklistTable;
+    /**
+    * Contains the routing set
+    */
+    ROUTING_TABLE_ENTRY* adpRoutingSet;
+    /**
+    * Contains the list of destination addresses.
+    */
+    uint16_t* adpDestinationAddressSet;
+
+} ROUTING_TABLES;
 #endif
 

@@ -48,9 +48,6 @@
 // Section: File includes
 // *****************************************************************************
 // *****************************************************************************
-#include <stdint.h>
-#include <stdbool.h>
-
 #include "adp_shared_types.h"
 #include "adp_api_types.h"
 #include "../mac/mac_wrapper/mac_wrapper_defs.h"
@@ -1508,7 +1505,7 @@ void ADP_Tasks(SYS_MODULE_OBJ object);
   Parameters:
     pNotifications - Structure with callbacks used to notify ADP specific events
 
-    band           - Working band for PLC (should be inline with the hardware).
+    band           - Working band for PLC (should be inline with the hardware)
 
   Returns:
     None.
@@ -1781,7 +1778,7 @@ void ADP_NetworkStartRequest(uint16_t panId);
     ADP_Initialize and ADP_Init must have been called before.
 
   Parameters:
-    panId - The 16-bit PAN identifier of the network to join
+    panId      - The 16-bit PAN identifier of the network to join
 
     lbaAddress - The 16-bit short address of the device acting as a 6LowPAN
                  bootstrap agent (relay)
@@ -1832,7 +1829,7 @@ void ADP_NetworkJoinRequest(uint16_t panId, uint16_t lbaAddress,
     ADP_Initialize and ADP_Init must have been called before.
 
   Parameters:
-    None
+    None.
 
   Returns:
     None.
@@ -1865,7 +1862,7 @@ void ADP_NetworkLeaveRequest(void);
     ADP_Initialize and ADP_Init must have been called before.
 
   Parameters:
-    None
+    None.
 
   Returns:
     None.
