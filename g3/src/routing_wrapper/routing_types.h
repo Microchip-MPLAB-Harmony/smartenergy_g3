@@ -1,164 +1,419 @@
-/**********************************************************************************************************************/
-/** \addtogroup AdaptationSublayer
- * @{
- **********************************************************************************************************************/
+/*******************************************************************************
+  Routing Types Header File
 
-/**********************************************************************************************************************/
-/** This file contains configuration definitions used to tune the memory usage of the Routing layer.
- ***********************************************************************************************************************
- *
- * @file
- *
- **********************************************************************************************************************/
+  Company:
+    Microchip Technology Inc.
 
-#ifndef __ROUTING_TYPES_H__
-#define __ROUTING_TYPES_H__
-
-#include "routing_wrapper.h"
-#include "stack/service/queue/srv_queue.h"
-#include "system/time/sys_time.h"
-#include "mac_wrapper.h"
-
-#define RERR_CODE_NO_AVAILABLE_ROUTE   0
-#define RERR_CODE_HOP_LIMIT_EXCEEDED   1
-
-typedef struct {
-  /// The 16 bit short link layer address of the final destination of a route
-  uint16_t m_u16DstAddr;
-  /// The 16 bit short link layer addresses of the next hop node to the destination
-  uint16_t m_u16NextHopAddr;
-
-  uint16_t m_u16SeqNo;
-  uint16_t m_u16RouteCost;
-  uint8_t m_u8HopCount : 4;
-  uint8_t m_u8WeakLinkCount : 4;
-
-  uint8_t m_u8ValidSeqNo : 1;
-  uint8_t m_u8Bidirectional : 1;
-  uint8_t m_u8RREPSent : 1;
-  uint8_t m_u8MetricType : 2;
-  uint8_t m_u8MediaType : 1;
-
-  /// Absolute time in milliseconds when the entry expires
-  int32_t m_i32ValidTime;
-} ROUTING_TABLE_ENTRY;
-
-struct TAdpBlacklistTableEntry {
-  uint16_t m_u16Addr;
-  uint8_t m_u8MediaType;
-  /// Absolute time in milliseconds when the entry expires
-  int32_t m_i32ValidTime;
-};
-
-typedef struct TDiscoverRouteEntry_tag {
-  /* Pointer to the previous object of the queue */
-  struct TDiscoverRouteEntry_tag *prev;                
-    
-  /* Pointer to the next object of the queue */
-  struct TDiscoverRouteEntry_tag *next;     
-    
-  // Callback called when the discovery is finished
-  ROUTING_WRP_DISCOVER_ROUTE_CALLBACK m_fcntCallback;
-
-  // Final destination of the discover
-  uint16_t m_u16DstAddr;
-
-  // Max hops parameter
-  uint8_t m_u8MaxHops;
-
-  // Repair route: true / false
-  bool m_bRepair;
-
-  // User data
-  void *m_pUserData;
-
-  // Timer to control the discovery process if no response is received
-  SYS_TIME_HANDLE m_Timer;
-  
-  // User data recovered by timer expiration
-  uintptr_t m_pTimerUserData;  
-
-  // Current try number
-  uint8_t m_u8Try;
-
-  // Discover route sequence number
-  uint16_t m_u16SeqNo;
-} TDiscoverRouteEntry;
-
-struct TDiscoverPath {
-  uint16_t m_u16DstAddr;
-  // Callback called when the discovery is finished
-  ROUTING_WRP_DISCOVER_PATH_CALLBACK m_fnctCallback;
-  // Timer to control the discovery process if no response is received
-  SYS_TIME_HANDLE m_Timer;
-  bool discoverPathTimerExpired;
-};
-
-typedef struct TRRepGeneration_tag {
-  /* Pointer to the previous object of the queue */
-  struct TRRepGeneration_tag *prev;                
-    
-  /* Pointer to the next object of the queue */
-  struct TRRepGeneration_tag *next;   
-  
-  uint16_t m_u16OrigAddr;   // RREQ originator (and final destination of RREP)
-  uint16_t m_u16DstAddr;   // RREQ destination (and originator of RREP). Unused in SPEC-15
-  uint16_t m_u16RREQSeqNum;   // RREQ Sequence number to be able to manage different RREQ from same node
-  uint8_t m_u8Flags;   // Flags received from RREQ
-  uint8_t m_u8MetricType;   // MetricType received from RREQ
-  uint8_t m_bWaitingForAck;   // Flag to indicate entry is waiting for ACK, timer can be expired but RREP were not sent due to channel saturation
-  SYS_TIME_HANDLE m_Timer;   // Timer to control the RREP sending
-  uintptr_t m_pTimerUserData;  // User data recovered by timer expiration
-} TRRepGeneration;
-
-typedef struct TRReqForwarding_tag {
-  /* Pointer to the previous object of the queue */
-  struct TRReqForwarding_tag *prev;                
-    
-  /* Pointer to the next object of the queue */
-  struct TRReqForwarding_tag *next;   
-  
-  uint16_t m_u16OrigAddr;   // RREQ originator
-  uint16_t m_u16DstAddr;   // RREQ destination
-  uint16_t m_u16SeqNum;   // RREQ Sequence number
-  uint16_t m_u16RouteCost;   // RREQ Route Cost
-  uint8_t m_u8Flags;   // Flags received from RREQ
-  uint8_t m_u8MetricType;   // MetricType received from RREQ
-  uint8_t m_u8HopLimit;   // Hop Limit received from RREQ
-  uint8_t m_u8HopCount;   // Hop Count left
-  uint8_t m_u8WeakLinkCount;   // RREQ Weak Link Count
-  uint8_t m_u8RsvBits;   // Reserved bits
-  uint8_t m_u8ClusterCounter;   // Cluster Counter
-  SYS_TIME_HANDLE m_Timer;   // Timer to control the RREQ sending
-} TRReqForwarding;
-
-struct TRouteCostParameters {
-  ADP_MODULATION_PLC m_eModulation;
-  uint8_t m_u8NumberOfActiveTones;
-  uint8_t m_u8NumberOfSubCarriers;
-  uint8_t m_u8LQI;
-};
-
-// *****************************************************************************
-/* Description of an element in the pending routing request table
+  File Name:
+    routing_types.h
 
   Summary:
-   Description of an element in the pending routing request table.
+    Routing Types Header File
 
   Description:
-    This structure contains the data stored in each element of the pending
-    routing request table.
+    The Routing Wrapper provides a simple interface to manage the Routing
+    Adaptation Layer. This file provides data types definition for Routing
+    Wrapper.
+*******************************************************************************/
+
+//DOM-IGNORE-BEGIN
+/*******************************************************************************
+* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
+*
+* Subject to your compliance with these terms, you may use Microchip software
+* and any derivatives exclusively with Microchip products. It is your
+* responsibility to comply with third party license terms applicable to your
+* use of third party software (including open source software) that may
+* accompany Microchip software.
+*
+* THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+* EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+* WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+* PARTICULAR PURPOSE.
+*
+* IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
+* INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
+* WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
+* BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
+* FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
+* ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
+* THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+*******************************************************************************/
+//DOM-IGNORE-END
+
+#ifndef _ROUTING_TYPES_H
+#define _ROUTING_TYPES_H
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: File includes
+// *****************************************************************************
+// *****************************************************************************
+#include "adp.h"
+#include "system/time/sys_time.h"
+
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus  // Provide C++ Compatibility
+
+    extern "C" {
+
+#endif
+// DOM-IGNORE-END
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Macro Definitions
+// *****************************************************************************
+// *****************************************************************************
+
+// *****************************************************************************
+/* RRER Code No Available Route
+
+   Summary:
+    Defines the error code when there is no available route.
+
+   Description:
+    This macro defines the error code when there is no available route to
+    destination.
+
+   Remarks:
+    None.
+*/
+#define RERR_CODE_NO_AVAILABLE_ROUTE   0
+
+// *****************************************************************************
+/* RRER Code Hop Limit Exceeded
+
+   Summary:
+    Defines the error code when hop limit is excided.
+
+   Description:
+    This macro defines the error code when hop limit is excided.
+
+   Remarks:
+    None.
+*/
+#define RERR_CODE_HOP_LIMIT_EXCEEDED   1
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Data Types
+// *****************************************************************************
+// *****************************************************************************
+
+// *****************************************************************************
+/* Routing Wrapper Discover Route Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Discover Route Event handler function.
+
+  Description:
+    This data type defines the required function signature for the Routing
+    Wrapper Discover Route event handling callback function.
+
+    A client must register a pointer using the event handling function whose
+    function signature (parameter and return value types) matches the types
+    specified by this function pointer in order to receive Discover Route
+    events back from module.
+
+  Parameters:
+    status    - Route Discovery result
+
+    dstAddr   - Final destination address
+
+    nextHop   - Address of next hop
+
+    pUserData - User data given when setting the callback
+
+  Example:
+    <code>
+    App_DiscoverRouteCallback(uint8_t status, uint16_t dstAddr,
+        uint16_t nextHop, void* pUserData)
+    {
+        // Check result
+        if (status == G3_SUCCESS)
+        {
+            
+        }
+    }
+    </code>
 
   Remarks:
     None.
 */
-typedef struct _pending_rreq_table_element_tag
+typedef void (*ROUTING_WRP_DISCOVER_ROUTE_CALLBACK)(uint8_t status,
+    uint16_t dstAddr, uint16_t nextHop, void* pUserData);
+
+// *****************************************************************************
+/* Routing Wrapper Discover Path Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Discover Path Event handler function.
+
+  Description:
+    This data type defines the required function signature for the Routing
+    Wrapper Discover Path event handling callback function.
+
+    A client must register a pointer using the event handling function whose
+    function signature (parameter and return value types) matches the types
+    specified by this function pointer in order to receive Discover Path
+    events back from module.
+
+  Parameters:
+    status          - Path Discovery result
+
+    pPathDescriptor - Pointer to path descriptor parameters
+
+  Example:
+    <code>
+    App_DiscoverPathCallback(uint8_t status,
+        ADP_PATH_DESCRIPTOR *pPathDescriptor)
+    {
+        // Check result
+        if (status == G3_SUCCESS)
+        {
+            
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ROUTING_WRP_DISCOVER_PATH_CALLBACK)(uint8_t status,
+    ADP_PATH_DESCRIPTOR *pPathDescriptor);
+
+// *****************************************************************************
+/* Routing Table Entry Definition
+
+   Summary:
+    Defines the structure of a Routing Table entry.
+
+   Description:
+    This data type defines the structure of a Routing Table entry.
+
+   Remarks:
+    None.
+*/
+typedef struct
+{
+    /* Absolute time in milliseconds when the entry expires */
+    int32_t validTime;
+
+    /* 16-bit short link layer address of the final destination of a route */
+    uint16_t dstAddr;
+
+    /* 16-bit short link layer address of the next hop node to the destination */
+    uint16_t nextHopAddr;
+
+    uint16_t seqNo;
+    uint16_t routeCost;
+    uint8_t hopCount : 4;
+    uint8_t weakLinkCount : 4;
+    uint8_t validSeqNo : 1;
+    uint8_t bidirectional : 1;
+    uint8_t rrepSent : 1;
+    uint8_t metricType : 2;
+    uint8_t mediaType : 1;
+  
+} ROUTING_TABLE_ENTRY;
+
+// *****************************************************************************
+/* Routing Blacklist Table Entry Definition
+
+   Summary:
+    Defines the structure of a Routing Blacklist Table entry.
+
+   Description:
+    This data type defines the structure of a Routing Blacklist Table entry. It
+    defines a blacklisted neighbour.
+
+   Remarks:
+    None.
+*/
+typedef struct
+{
+    /* Absolute time in milliseconds when the entry expires */
+    int32_t validTime;
+
+    /* Blacklisted 16-bit short link layer address */
+    uint16_t addr;
+
+    /* Blacklisted media type */
+    uint8_t mediaType;
+
+} ROUTING_BLACKLIST_ENTRY;
+
+// *****************************************************************************
+/* Route Discovery Table Entry Definition
+
+   Summary:
+    Defines the structure of a Route Discovery Table entry.
+
+   Description:
+    This data type defines the structure of a Route Discovery Table entry.
+
+   Remarks:
+    None.
+*/
+typedef struct _ROUTING_DISCOVER_ROUTE_ENTRY {
+    /* Pointer to the previous object of the queue */
+    struct _ROUTING_DISCOVER_ROUTE_ENTRY* prev;
+
+    /* Pointer to the next object of the queue */
+    struct _ROUTING_DISCOVER_ROUTE_ENTRY* next;
+      
+    /* Callback called when the discovery is finished */
+    ROUTING_WRP_DISCOVER_ROUTE_CALLBACK callback;
+
+    /* User data */
+    void* userData;
+
+    /* Timer to control the discovery process if no response is received */
+    SYS_TIME_HANDLE timeHandle;
+
+    /* Final destination of the discover */
+    uint16_t dstAddr;
+
+    /* Discover route sequence number */
+    uint16_t seqNo;
+
+    /* Maximum hops parameter */
+    uint8_t maxHops;
+
+    /* Repair route: true / false */
+    bool repair;
+
+    /* Current try number */
+    uint8_t tryCount;
+
+} ROUTING_DISCOVER_ROUTE_ENTRY;
+
+// *****************************************************************************
+/* Routing RREP Generation Table Entry Definition
+
+   Summary:
+    Defines the structure of a RREP Generation Table entry.
+
+   Description:
+    This data type defines the structure of a Routing RREP Generation Table
+    entry.
+
+   Remarks:
+    None.
+*/
+typedef struct _ROUTING_RREP_GENERATION_ENTRY {
+    /* Pointer to the previous object of the queue */
+    struct _ROUTING_RREP_GENERATION_ENTRY *prev;
+
+    /* Pointer to the next object of the queue */
+    struct _ROUTING_RREP_GENERATION_ENTRY *next;
+
+    /* Timer to control the RREP sending */
+    SYS_TIME_HANDLE timeHandle;
+
+    /* User data recovered by timer expiration */
+    uintptr_t timerUserData;
+
+    /* RREQ originator (and final destination of RREP) */
+    uint16_t origAddr;
+
+    /* RREQ destination (and originator of RREP). Unused in SPEC-15 */
+    uint16_t dstAddr;
+
+    /* RREQ Sequence number to be able to manage different RREQ from same node */
+    uint16_t rreqSeqNum;
+
+    /* Flags received from RREQ */
+    uint8_t flags;
+
+    /* MetricType received from RREQ */
+    uint8_t metricType;
+
+    /* Flag to indicate entry is waiting for ACK, timer can be expired but RREP
+     * were not sent due to channel saturation */
+    uint8_t waitingForAck;
+
+} ROUTING_RREP_GENERATION_ENTRY;
+
+// *****************************************************************************
+/* Routing RREQ Forwarding Table Entry Definition
+
+   Summary:
+    Defines the structure of a RREQ Forwarding Table entry.
+
+   Description:
+    This data type defines the structure of a Routing RREQ Forwarding Table
+    entry.
+
+   Remarks:
+    None.
+*/
+typedef struct _ROUTING_RREQ_FORWARDING_ENTRY {
+    /* Pointer to the previous object of the queue */
+    struct _ROUTING_RREQ_FORWARDING_ENTRY *prev;
+
+    /* Pointer to the next object of the queue */
+    struct _ROUTING_RREQ_FORWARDING_ENTRY *next;
+
+    /* Timer to control the RREQ sending */
+    SYS_TIME_HANDLE timeHandle;
+
+    /* RREQ originator */
+    uint16_t origAddr;
+
+    /* RREQ destination */
+    uint16_t dstAddr;
+
+    /* RREQ Sequence number */
+    uint16_t seqNum;
+
+    /* RREQ Route Cost */
+    uint16_t routeCost;
+
+    /* Flags received from RREQ */
+    uint8_t flags;
+
+    /* MetricType received from RREQ */
+    uint8_t metricType;
+
+    /* Hop Limit received from RREQ */
+    uint8_t hopLimit;
+
+    /* Hop Count left */
+    uint8_t hopCount;
+
+    /* RREQ Weak Link Count */
+    uint8_t weakLinkCount;
+
+    /* Reserved bits */
+    uint8_t rsvBits;
+
+    /* Cluster Counter */
+    uint8_t clusterCounter;
+
+} ROUTING_RREQ_FORWARDING_ENTRY;
+
+// *****************************************************************************
+/* Routing Pending RREQ Table Entry Definition
+
+  Summary:
+   Description of an element in the Pending RREQ Table.
+
+  Description:
+    This structure contains the data stored in each element of the Routing
+    Pending RREQ table.
+
+  Remarks:
+    None.
+*/
+typedef struct _ROUTING_RREQ_TABLE_ENTRY
 {
     /* Pointer to the previous object of the queue */
-    struct _pending_rreq_table_element_tag *prev;                
-    
+    struct _ROUTING_RREQ_TABLE_ENTRY *prev;
+
     /* Pointer to the next object of the queue */
-    struct _pending_rreq_table_element_tag *next;                
+    struct _ROUTING_RREQ_TABLE_ENTRY *next;
 
     /* Pointer to the used data */
     void *userData;   
@@ -166,53 +421,77 @@ typedef struct _pending_rreq_table_element_tag
     /* Information about data type (optional information if needed) */
     uint8_t dataType;
 
-} PENDING_RREQ_TABLE_ELEMENT;
+} ROUTING_PENDING_RREQ_ENTRY;
 
+// *****************************************************************************
+/* Routing TableS Definition
+
+   Summary:
+    Defines the structure of the Routing Tables.
+
+   Description:
+    This data type defines the structure of the Routing Tables. It defines the
+    pointers and sizes of the different tables.
+
+   Remarks:
+    None.
+*/
 typedef struct
 {
-    uint8_t pendingRREQTableSize;
-    uint8_t rrepGenerationTableSize;
-    uint8_t discoverRouteTableSize;
-    uint8_t rreqForwardingTableSize;
-    /**
-    * Contains the length of the Routing table
-    */
-    uint16_t adpRoutingTableSize;
-    /**
-    * Contains the length of the blacklisted neighbours table
-    */
-    uint8_t adpBlacklistTableSize;
-    /**
-    * Contains the length of the routing set
-    */
-    uint16_t adpRoutingSetSize;
-    /**
-    * Contains the size of the destination address set
-    */
-    uint16_t adpDestinationAddressSetSize;
-    /**
-    * Contains the routing table
-    */
-
-    PENDING_RREQ_TABLE_ELEMENT* pendingRREQTable;
-    TRRepGeneration* rrepGenerationTable;
-    TDiscoverRouteEntry* discoverRouteTable;
-    TRReqForwarding* rreqForwardingTable;
-
+    /* Pointer to the Routing Table */
     ROUTING_TABLE_ENTRY* adpRoutingTable;
-    /**
-    * Contains the list of the blacklisted neighbours
-    */
-    struct TAdpBlacklistTableEntry* adpBlacklistTable;
-    /**
-    * Contains the routing set
-    */
+
+    /* Pointer to the list of blacklisted neighbours */
+    ROUTING_BLACKLIST_ENTRY* adpBlacklistTable;
+
+    /* Pointer to the Routing Set */
     ROUTING_TABLE_ENTRY* adpRoutingSet;
-    /**
-    * Contains the list of destination addresses.
-    */
+    
+    /* Pointer to the list of destination addresses */
     uint16_t* adpDestinationAddressSet;
 
-} ROUTING_TABLES;
-#endif
+    /* Pointer to Pending RREQ Table */
+    ROUTING_PENDING_RREQ_ENTRY* pendingRREQTable;
 
+    /* Pointer to RREP Generation Table */
+    ROUTING_RREP_GENERATION_ENTRY* rrepGenerationTable;
+
+    /* Pointer to Route Discovery Table */
+    ROUTING_DISCOVER_ROUTE_ENTRY* discoverRouteTable;
+
+    /* Pointer to RREQ Forwarding Table */
+    ROUTING_RREQ_FORWARDING_ENTRY* rreqForwardingTable;
+
+    /* Number of entries in the Routing Table */
+    uint16_t adpRoutingTableSize;
+
+    /* Number of entries in the Routing Set */
+    uint16_t adpRoutingSetSize;
+
+    /* Number of entries in the Destination Address Set */
+    uint16_t adpDestinationAddressSetSize;
+
+    /* Number of entries in the list of blacklisted neighbours */
+    uint8_t adpBlacklistTableSize;
+
+    /* Number of entries in the Pending RREQ Table */
+    uint8_t pendingRREQTableSize;
+
+    /* Number of entries in the RREP Generation Table */
+    uint8_t rrepGenerationTableSize;
+
+    /* Number of entries in the Route Discovery Table */
+    uint8_t discoverRouteTableSize;
+
+    /* Number of entries in the RREQ Forwarding Table */
+    uint8_t rreqForwardingTableSize;
+
+} ROUTING_TABLES;
+
+//DOM-IGNORE-BEGIN
+#ifdef __cplusplus
+}
+#endif
+//DOM-IGNORE-END
+
+#endif // #ifndef _ROUTING_TYPES_H

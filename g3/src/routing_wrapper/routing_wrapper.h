@@ -1,123 +1,925 @@
-/**********************************************************************************************************************/
-/** \addtogroup AdaptationSublayer
- * @{
- **********************************************************************************************************************/
+/*******************************************************************************
+  Routing Wrapper Interface Header File
 
-/**********************************************************************************************************************/
-/** This file contains configuration definitions used to tune the memory usage of the Routing layer.
- ***********************************************************************************************************************
- *
- * @file
- *
- **********************************************************************************************************************/
+  Company:
+    Microchip Technology Inc.
 
-#ifndef __ROUTING_API_H__
-#define __ROUTING_API_H__
+  File Name:
+    routing_wrapper.h
 
-#include "adp.h"
+  Summary:
+    Routing Wrapper Interface Header File
 
-void Routing_Reset(void);
+  Description:
+    The Routing Wrapper provides a simple interface to manage the Routing
+    Adaptation Layer. This file provides the interface definition for Routing
+    Wrapper.
+*******************************************************************************/
 
-bool Routing_IsDisabled(void);
+//DOM-IGNORE-BEGIN
+/*******************************************************************************
+* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
+*
+* Subject to your compliance with these terms, you may use Microchip software
+* and any derivatives exclusively with Microchip products. It is your
+* responsibility to comply with third party license terms applicable to your
+* use of third party software (including open source software) that may
+* accompany Microchip software.
+*
+* THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+* EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+* WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+* PARTICULAR PURPOSE.
+*
+* IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
+* INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
+* WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
+* BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
+* FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
+* ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
+* THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+*******************************************************************************/
+//DOM-IGNORE-END
 
-bool Routing_IsAutoRREQDisabled(void);
+#ifndef _ROUTING_WRAPPER_H
+#define _ROUTING_WRAPPER_H
 
-bool Routing_AdpDefaultCoordRouteEnabled(void);
+// *****************************************************************************
+// *****************************************************************************
+// Section: File includes
+// *****************************************************************************
+// *****************************************************************************
+#include "routing_types.h"
 
-uint8_t Routing_AdpRREPWait(void);
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus  // Provide C++ Compatibility
 
-uint16_t Routing_GetDiscoverRouteGlobalSeqNo(void);
-void Routing_SetDiscoverRouteGlobalSeqNo(uint16_t seqNo);
+    extern "C" {
 
-void RoutingGetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex, ADP_GET_CFM_PARAMS* pGetConfirm);
+#endif
+// DOM-IGNORE-END
 
-void RoutingSetMib(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
-  uint8_t u8AttributeLength, const uint8_t *pu8AttributeValue, ADP_SET_CFM_PARAMS* pSetConfirm);
-
-ROUTING_TABLE_ENTRY *Routing_AddRouteEntry(ROUTING_TABLE_ENTRY *pNewEntry, bool *pbTableFull);
-ROUTING_TABLE_ENTRY *Routing_GetRouteEntry(uint16_t u16DestinationAddress);
-uint32_t Routing_GetRouteCount(void);
-
-/**********************************************************************************************************************/
-/**
- **********************************************************************************************************************/
-typedef void (*ROUTING_WRP_DISCOVER_PATH_CALLBACK)(uint8_t status, ADP_PATH_DESCRIPTOR *pPathDescriptor);
-
-/**********************************************************************************************************************/
-/**
- **********************************************************************************************************************/
-void Routing_DiscoverPath(uint16_t u16DstAddr, uint8_t u8MetricType, ROUTING_WRP_DISCOVER_PATH_CALLBACK callback);
-
-/**********************************************************************************************************************/
-/**
- **********************************************************************************************************************/
-void Routing_NotifyRouteError(uint16_t u16DstAddr, uint16_t u16UnreachableAddress, uint8_t u8ErrorCode);
-
-/**********************************************************************************************************************/
-/**
- **********************************************************************************************************************/
-typedef void (*ROUTING_WRP_DISCOVER_ROUTE_CALLBACK)(uint8_t u8Status, uint16_t u16DstAddr, uint16_t u16NextHop, void *pUserData);
-
-/**********************************************************************************************************************/
-/**
- **********************************************************************************************************************/
-void Routing_DiscoverRoute(uint16_t u16DstAddr, uint8_t u8MaxHops, bool bRepair, void *pUserData,
-  ROUTING_WRP_DISCOVER_ROUTE_CALLBACK fnctDiscoverCallback);
-
-/**********************************************************************************************************************/
-/**
- **********************************************************************************************************************/
-void Routing_ProcessMessage(uint16_t u16MacSrcAddr, uint8_t u8MediaType, ADP_MODULATION_PLC eModulation, uint8_t u8ActiveTones,
-  uint8_t u8SubCarriers, uint8_t u8LQI, uint16_t u16MessageLength, uint8_t *pMessageBuffer);
-
-/**********************************************************************************************************************/
-/** Refresh the valid time of the route
- **********************************************************************************************************************/
-void Routing_RefreshRoute(uint16_t u16DstAddr);
-
-/**********************************************************************************************************************/
-/**
- **********************************************************************************************************************/
-void Routing_AddCircularRoute(uint16_t m_u16LastCircularRouteAddress);
-
-/**********************************************************************************************************************/
-/**
- **********************************************************************************************************************/
-void Routing_DeleteRoute(uint16_t u16DstAddr);
-
-/**********************************************************************************************************************/
-/** returns true if route is known
- **********************************************************************************************************************/
-bool Routing_RouteExists(uint16_t u16DestinationAddress);
-
-/**********************************************************************************************************************/
-/** Before calling this function, check if route exists
- **********************************************************************************************************************/
-uint16_t Routing_GetRouteAndMediaType(uint16_t u16DestinationAddress, uint8_t *pu8MediaType);
-
-/**********************************************************************************************************************/
-/** Add new candidate route
- **********************************************************************************************************************/
-ROUTING_TABLE_ENTRY *Routing_AddRoute(uint16_t u16DstAddr, uint16_t u16NextHopAddr, uint8_t u8MediaType, bool *pbTableFull);
-
-/**********************************************************************************************************************/
-/** Returns true if the address is in the Destination Address Set (CCTT#183)
- **********************************************************************************************************************/
-bool Routing_IsInDestinationAddressSet(uint16_t u16Addr);
-
-/**********************************************************************************************************************/
-/** Adds node to blacklist for a given medium
- **********************************************************************************************************************/
-void Routing_AddBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType);
-
-/**********************************************************************************************************************/
-/** Removes a node from blacklist for a given medium
- **********************************************************************************************************************/
-void Routing_RemoveBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType);
+// *****************************************************************************
+// *****************************************************************************
+// Section: Routing Wrapper Interface Routines
+// *****************************************************************************
+// *****************************************************************************
 
 // *****************************************************************************
 /* Function:
-    void Routing_Wrapper_Tasks
+    void ROUTING_WRP_Reset(void);
+
+  Summary:
+    Resets the Routing Wrapper module data.
+
+  Description:
+    This routine initializes the Routing Wrapper data structures.
+
+  Precondition:
+    None.
+
+  Parameters:
+    None.
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ROUTING_WRP_Reset();
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_Reset(void);
+
+// *****************************************************************************
+/* Function:
+    bool ROUTING_WRP_IsDisabled(void);
+
+  Summary:
+    Checks if routing is disabled.
+
+  Description:
+    This routine allows to check if routing is disabled.
+
+  Precondition:
+    None.
+
+  Parameters:
+    None.
+
+  Returns:
+    Returns true if routing is disabled and false if it is enabled.
+
+  Example:
+    <code>
+    if (ROUTING_WRP_IsDisabled() == false)
+    {
+        // Routing is enabled
+    }
+    else
+    {
+
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+bool ROUTING_WRP_IsDisabled(void);
+
+// *****************************************************************************
+/* Function:
+    bool ROUTING_WRP_IsAutoRReqDisabled(void);
+
+  Summary:
+    Checks if Auto RREQ is disabled.
+
+  Description:
+    This routine allows to check if Automatic RREQ is disabled.
+
+  Precondition:
+    None.
+
+  Parameters:
+    None.
+
+  Returns:
+    Returns true if Auto RREQ is disabled and false if it is enabled.
+
+  Example:
+    <code>
+    if (ROUTING_WRP_IsAutoRReqDisabled() == false)
+    {
+        // Auto RREQ is enabled
+    }
+    else
+    {
+
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+bool ROUTING_WRP_IsAutoRReqDisabled(void);
+
+// *****************************************************************************
+/* Function:
+    bool ROUTING_WRP_IsDefaultCoordRouteEnabled(void);
+
+  Summary:
+    Checks if Default Coordinator Route is enabled.
+
+  Description:
+    This routine allows to check if Default Coordinator Route is enabled.
+
+  Precondition:
+    None.
+
+  Parameters:
+    None.
+
+  Returns:
+    Returns true if Default Coordinator Route is enabled and false if it is
+    disabled.
+
+  Example:
+    <code>
+    if (ROUTING_WRP_IsDefaultCoordRouteEnabled() == true)
+    {
+        // Default Coordinator Route is enabled
+    }
+    else
+    {
+
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+bool ROUTING_WRP_IsDefaultCoordRouteEnabled(void);
+
+// *****************************************************************************
+/* Function:
+    uint8_t ROUTING_WRP_GetRRepWait(void);
+
+  Summary:
+    Gets RREP wait time in seconds.
+
+  Description:
+    This routine allows to get the RREP wait time in seconds. It is the waiting
+    time before sending RREP.
+
+  Precondition:
+    None.
+
+  Parameters:
+    None.
+
+  Returns:
+    Returns the RREP wait time in seconds.
+
+  Example:
+    <code>
+    uint8_t rrepWait = ROUTING_WRP_GetRRepWait();
+    </code>
+
+  Remarks:
+    None.
+*/
+uint8_t ROUTING_WRP_GetRRepWait(void);
+
+// *****************************************************************************
+/* Function:
+    uint16_t ROUTING_WRP_GetDiscoverRouteGlobalSeqNo(void);
+
+  Summary:
+    Gets Discover Route global sequence number.
+
+  Description:
+    This routine allows to get the Discover Route global sequence number.
+
+  Precondition:
+    None.
+
+  Parameters:
+    None.
+
+  Returns:
+    Returns the Discover Route global sequence number.
+
+  Example:
+    <code>
+    uint16_t discoverSeqNo = ROUTING_WRP_GetDiscoverRouteGlobalSeqNo();
+    </code>
+
+  Remarks:
+    None.
+*/
+uint16_t ROUTING_WRP_GetDiscoverRouteGlobalSeqNo(void);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_SetDiscoverRouteGlobalSeqNo(uint16_t seqNo);
+
+  Summary:
+    Sets Discover Route global sequence number.
+
+  Description:
+    This routine allow to set the Discover Route global sequence number.
+
+  Precondition:
+    None.
+
+  Parameters:
+    seqNo - Sequence number to set
+
+  Returns:
+    Returns the Discover Route global sequence number.
+
+  Example:
+    <code>
+    ROUTING_WRP_SetDiscoverRouteGlobalSeqNo(0);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_SetDiscoverRouteGlobalSeqNo(uint16_t seqNo);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_DiscoverPath(uint16_t dstAddr, uint8_t metricType,
+        ROUTING_WRP_DISCOVER_PATH_CALLBACK callback);
+
+  Summary:
+    Discover path to a given destination address.
+
+  Description:
+    This primitive discovers a path to a given destination address. When path
+    discovery finishes a function is called back.
+
+  Precondition:
+    None.
+
+  Parameters:
+    dstAddr    - Path destination address
+
+    metricType - 
+
+    callback   - Pointer to function to call back when path discovery finishes
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    static void _PathDiscovery_Callback(uint8_t status,
+        ADP_PATH_DESCRIPTOR *pPathDescriptor)
+    {
+      
+    }
+
+    ROUTING_WRP_DiscoverPath(0x0001, 1, _PathDiscovery_Callback);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_DiscoverPath(uint16_t dstAddr, uint8_t metricType,
+    ROUTING_WRP_DISCOVER_PATH_CALLBACK callback);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_ProcessMessage(uint16_t macSrcAddr, uint8_t mediaType,
+        ADP_MODULATION_PLC modulation, uint8_t activeTones, uint8_t subCarriers,
+        uint8_t lqi, uint16_t messageLength, uint8_t *pMessageBuffer);
+
+  Summary:
+    Processes a received Routing message.
+
+  Description:
+    This routine processes a received Routing message.
+
+  Precondition:
+    None.
+
+  Parameters:
+    macSrcAddr     - MAC source address
+
+    mediaType      - Media type (PLC or RF) from which the message was received
+
+    modulation     - Computed modulation to communicate with the transmitter.
+                     Only relevant for PLC.
+
+    activeTones    - Computed number of active tones to communicate with the
+                     transmitter. Only relevant for PLC.
+
+    subCarriers    - Computed number of subcarriers to communicate with the
+                     transmitter. Only relevant for PLC.
+
+    lqi            - Link Quality Indicator of the received message
+
+    messageLength  - Message length in bytes
+
+    pMessageBuffer - Pointer to Routing message buffer
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    App_DataIndication(MAC_WRP_DATA_INDICATION_PARAMS *params)
+    {
+        // Check addressing
+        if (params->destPanId == myPanId)
+        {
+            if (params->destAddress.addressMode == MAC_WRP_ADDRESS_MODE_SHORT)
+            {
+                if (params->destAddress.shortAddress == myShortAddress)
+                {
+                    // Frame is for me
+                    uint16_t payloadLength = 0;
+                    uint8_t commandId = 0;
+                    uint8_t* pPayload = NULL;
+
+                    if (LoWPAN_Decode_EscHeader(params->msduLength,
+                        params->msdu, &commandId, &payloadLength, &pPayload))
+                    {
+                        if (commandId == COMMAND_LOADNG)
+                        {
+                            MAC_WRP_TONE_MASK toneMask;
+                            ADP_MODULATION_PLC modulation;
+                            uint8_t activeTones, subCarriers;
+
+                            modulation = _ConvertModulation(
+                                params->computedModulation,
+                                params->computedModulationScheme);
+
+                            activeTones = _ComputeActiveTones(
+                                &params->computedToneMap);
+
+                            subCarriers = _CalculateSubCarriers(
+                                &params->computedToneMap,
+                                &toneMask, params->computedModulationScheme);
+
+                          ROUTING_WRP_ProcessMessage(
+                              params->srcAddress.shortAddress,
+                              params->mediaType, modulation, activeTones,
+                              subCarriers, params->linkQuality,
+                              payloadLength, pPayload);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_ProcessMessage(uint16_t macSrcAddr, uint8_t mediaType,
+    ADP_MODULATION_PLC modulation, uint8_t activeTones, uint8_t subCarriers,
+    uint8_t lqi, uint16_t messageLength, uint8_t *pMessageBuffer);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_NotifyRouteError(uint16_t dstAddr, uint16_t unreachableAddress,
+        uint8_t errorCode);
+
+  Summary:
+    None.
+
+  Description:
+    None.
+
+  Precondition:
+    None.
+
+  Parameters:
+    dstAddr            - 
+
+    unreachableAddress - 
+
+    errorCode          -
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_NotifyRouteError(uint16_t dstAddr, uint16_t unreachableAddress,
+    uint8_t errorCode);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_DiscoverRoute(uint16_t dstAddr, uint8_t maxHops, bool repair,
+        void *pUserData, ROUTING_WRP_DISCOVER_ROUTE_CALLBACK callback);
+
+  Summary:
+    Discover route to a given destination address.
+
+  Description:
+    This primitive discovers a route to a given destination address. When route
+    discovery finishes a function is called back.
+
+  Precondition:
+    None.
+
+  Parameters:
+    dstAddr   - Destination address to discover the route
+
+    maxHops   - Maximum number of hops for the route
+
+    repair    - Route repair flag
+
+    pUserData - User data that is passed back in the callback
+
+    callback  - Pointer to function to call back when route discovery finishes
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    static void _RouteDiscovery_Callback(uint8_t status, uint16_t dstAddr,
+        uint16_t nextHop, void *pUserData)
+    {
+
+    }
+
+    ROUTING_WRP_DiscoverRoute(0x0001, 5, false, NULL, _RouteDiscovery_Callback);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_DiscoverRoute(uint16_t dstAddr, uint8_t maxHops, bool repair,
+    void *pUserData, ROUTING_WRP_DISCOVER_ROUTE_CALLBACK callback);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_RefreshRoute(uint16_t dstAddr);
+
+  Summary:
+    Refresh the valid time of the route.
+
+  Description:
+    This primitive refreshes the valid time of the route for a given destination
+    address. This function is called when a message is sent and confirmed by the
+    MAC layer (also set the bidirectional flag).
+
+  Precondition:
+    None.
+
+  Parameters:
+    dstAddr - Destination address of the route to refresh
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ROUTING_WRP_RefreshRoute(0x0001);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_RefreshRoute(uint16_t dstAddr);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_AddCircularRoute(uint16_t lastCircularRouteAddress);
+
+  Summary:
+    .
+
+  Description:
+    .
+
+  Precondition:
+    None.
+
+  Parameters:
+    lastCircularRouteAddress - 
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_AddCircularRoute(uint16_t lastCircularRouteAddress);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_DeleteRoute(uint16_t dstAddr);
+
+  Summary:
+    Deletes a route.
+
+  Description:
+    This primitive deletes a route for a given destination
+    address.
+
+  Precondition:
+    None.
+
+  Parameters:
+    dstAddr - Destination address of the route to delete
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ROUTING_WRP_DeleteRoute(0x0001);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_DeleteRoute(uint16_t dstAddr);
+
+// *****************************************************************************
+/* Function:
+    bool ROUTING_WRP_RouteExists(uint16_t destinationAddress);
+
+  Summary:
+    Check if a route exists.
+
+  Description:
+    This function allows to check if a route to a given destination address
+    exists.
+
+  Precondition:
+    None.
+
+  Parameters:
+    destinationAddress - Destination address to check
+
+  Returns:
+    Returns true if route is known and false otherwise.
+  
+  Example:
+    <code>
+    static void _RouteDiscovery_Callback(uint8_t status, uint16_t dstAddr,
+        uint16_t nextHop, void *pUserData)
+    {
+
+    }
+
+    if (ROUTING_WRP_RouteExists(0x0001) == true)
+    {
+        // Route is known
+    }
+    else
+    {
+        ROUTING_WRP_DiscoverRoute(0x0001, 5, false, NULL,
+            _RouteDiscovery_Callback);
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+bool ROUTING_WRP_RouteExists(uint16_t destinationAddress);
+
+// *****************************************************************************
+/* Function:
+    uint16_t ROUTING_WRP_GetRouteAndMediaType(uint16_t destinationAddress,
+        uint8_t* pMediaType);
+
+  Summary:
+    Gets route and media type for a given destination address.
+
+  Description:
+    This function allows to get the route and media type (PLC or RF) for a given
+    destination address.
+
+  Precondition:
+    None.
+
+  Parameters:
+    destinationAddress - Destination address to get route and media type
+
+    pMediaType         - Pointer to media type (result)
+
+  Returns:
+    Returns the next hop address.
+  
+  Example:
+    <code>
+    uint16_t nextHopAddr;
+    uint8_t mediaType;
+
+    if (ROUTING_WRP_RouteExists(0x0001) == true)
+    {
+        nextHopAddr = ROUTING_WRP_GetRouteAndMediaType(0x0001, &mediaType);
+    }
+    </code>
+
+  Remarks:
+    Before calling this function, check if route exists (ROUTING_WRP_RouteExists).
+*/
+uint16_t ROUTING_WRP_GetRouteAndMediaType(uint16_t destinationAddress,
+    uint8_t* pMediaType);
+
+// *****************************************************************************
+/* Function:
+    ROUTING_TABLE_ENTRY* ROUTING_WRP_AddRoute(uint16_t dstAddr,
+        uint16_t nextHopAddr, uint8_t mediaType, bool* pTableFull);
+
+  Summary:
+    Add new candidate route.
+
+  Description:
+    .
+
+  Precondition:
+    None.
+
+  Parameters:
+    dstAddr     - 
+
+    nextHopAddr -
+
+    mediaType   -
+
+    pTableFull  -
+
+  Returns:
+    .
+  
+  Example:
+    <code>
+    </code>
+
+  Remarks:
+    None.
+*/
+ROUTING_TABLE_ENTRY* ROUTING_WRP_AddRoute(uint16_t dstAddr,
+    uint16_t nextHopAddr, uint8_t mediaType, bool* pTableFull);
+
+
+// *****************************************************************************
+/* Function:
+    ROUTING_TABLE_ENTRY* ROUTING_WRP_GetRouteEntry(uint16_t destinationAddress);
+
+  Summary:
+    Gets a pointer to Route Entry.
+
+  Description:
+    .
+
+  Precondition:
+    None.
+
+  Parameters:
+    destinationAddress -
+
+  Returns:
+    .
+  
+  Example:
+    <code>
+    </code>
+
+  Remarks:
+    Before calling this function, check if route exists (ROUTING_WRP_RouteExists).
+*/
+ROUTING_TABLE_ENTRY* ROUTING_WRP_GetRouteEntry(uint16_t destinationAddress);
+
+// *****************************************************************************
+/* Function:
+    bool ROUTING_WRP_IsInDestinationAddressSet(uint16_t addr);
+
+  Summary:
+    .
+
+  Description:
+    Returns true if the address is in the Destination Address Set (CCTT#183).
+
+  Precondition:
+    None.
+
+  Parameters:
+    addr -
+
+  Returns:
+    .
+  
+  Example:
+    <code>
+    </code>
+
+  Remarks:
+    None.
+*/
+bool ROUTING_WRP_IsInDestinationAddressSet(uint16_t addr);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_GetMib(uint32_t attributeId, uint16_t attributeIndex,
+        ADP_GET_CFM_PARAMS* pGetConfirm);
+
+  Summary:
+    Gets Routing MIB value.
+
+  Description:
+    This function allows to get a Routing MIB value.
+
+  Precondition:
+    None.
+
+  Parameters:
+    attributeId    - The identifier of the Routing MIB attribute to read
+
+    attributeIndex - The index within the table of the specified MIB attribute
+                     to read
+
+    pGetConfirm    - Pointer to Get Confirm parameters (output).
+
+  Returns:
+    None.
+  
+  Example:
+    <code>
+    ADP_GET_CFM_PARAMS getConfirm;
+
+    ROUTING_WRP_GetMib(ADP_IB_DESTINATION_ADDRESS_SET, 0, &getConfirm);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_GetMib(uint32_t attributeId, uint16_t attributeIndex,
+    ADP_GET_CFM_PARAMS* pGetConfirm);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_SetMib(uint32_t attributeId, uint16_t attributeIndex,
+        uint8_t attributeLength, const uint8_t* pAttributeValue,
+        ADP_SET_CFM_PARAMS* pSetConfirm);
+
+  Summary:
+    Sets Routing MIB value.
+
+  Description:
+    .
+
+  Precondition:
+    None.
+
+  Parameters:
+    attributeId     - The identifier of the Routing MIB attribute to set
+
+    attributeIndex  - The index within the table of the specified MIB attribute
+                      to write
+
+    attributeLength - MIB attribute length in bytes
+
+    pAttributeValue - Pointer to MIB attribute value
+
+    pSetConfirm     - Pointer to Set Confirm parameters (output)
+
+  Returns:
+    None.
+  
+  Example:
+    <code>
+    uint8_t lowLqiValue = 44;
+    ADP_SET_CFM_PARAMS setConfirm;
+
+    ROUTING_WRP_SetMib(ADP_IB_LOW_LQI_VALUE, 0, 1, &lowLqiValue, &setConfirm);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_SetMib(uint32_t attributeId, uint16_t attributeIndex,
+    uint8_t attributeLength, const uint8_t* pAttributeValue,
+    ADP_SET_CFM_PARAMS* pSetConfirm);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_AddBlacklistOnMedium(uint16_t addr, uint8_t mediaType);
+
+  Summary:
+    Adds node to blacklist for a given medium.
+
+  Description:
+    This function allows to add a node to blacklist for a given medium.
+
+  Precondition:
+    None.
+
+  Parameters:
+    addr      - Node address to add to blacklist
+
+    mediaType - Medium (PLC or RF) to add to blacklist
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ROUTING_WRP_AddBlacklistOnMedium(0x0001, MAC_WRP_MEDIA_TYPE_IND_PLC);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_AddBlacklistOnMedium(uint16_t addr, uint8_t mediaType);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_RemoveBlacklistOnMedium(uint16_t addr, uint8_t mediaType);
+  Summary:
+    Removes a node from blacklist for a given medium.
+
+  Description:
+    This function removes a node from blacklist for a given medium.
+
+  Precondition:
+    None.
+
+  Parameters:
+    addr      - Node address to remove from blacklist
+
+    mediaType - Medium (PLC or RF) to remove from blacklist
+
+  Returns:
+    None.
+  
+  Example:
+    <code>
+    ROUTING_WRP_RemoveBlacklistOnMedium(0x0001, MAC_WRP_MEDIA_TYPE_IND_PLC);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ROUTING_WRP_RemoveBlacklistOnMedium(uint16_t addr, uint8_t mediaType);
+
+// *****************************************************************************
+/* Function:
+    void ROUTING_WRP_Tasks
     (
       void
     )
@@ -143,7 +945,7 @@ void Routing_RemoveBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType);
 
     while (true)
     {
-        Routing_Wrapper_Tasks();
+        ROUTING_WRP_Tasks();
     
         // Do other tasks
     }
@@ -152,6 +954,12 @@ void Routing_RemoveBlacklistOnMedium(uint16_t u16Addr, uint8_t u8MediaType);
   Remarks:
     None.
 */
-void Routing_Wrapper_Tasks(void);
+void ROUTING_WRP_Tasks(void);
 
+//DOM-IGNORE-BEGIN
+#ifdef __cplusplus
+}
 #endif
+//DOM-IGNORE-END
+
+#endif // #ifndef _ROUTING_WRAPPER_H

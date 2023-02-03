@@ -49,7 +49,6 @@
 // *****************************************************************************
 // *****************************************************************************
 #include "routing_types.h"
-#include "adp.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -310,7 +309,7 @@ void LOADNG_NotifyRouteError(uint16_t dstAddr, uint16_t unreachableAddress,
 
     }
 
-    Routing_DiscoverRoute(0x0001, 5, false, NULL, _RouteDiscovery_Callback);
+    LOADNG_DiscoverRoute(0x0001, 5, false, NULL, _RouteDiscovery_Callback);
     </code>
 
   Remarks:
@@ -328,7 +327,8 @@ void LOADNG_DiscoverRoute(uint16_t dstAddr, uint8_t maxHops, bool repair,
 
   Description:
     This primitive refreshes the valid time of the route for a given destination
-    address.
+    address. This function is called when a message is sent and confirmed by the
+    MAC layer (also set the bidirectional flag).
 
   Precondition:
     None.
@@ -409,34 +409,6 @@ void LOADNG_DeleteRoute(uint16_t dstAddr);
 
 // *****************************************************************************
 /* Function:
-    void LOADNG_DeleteRoutePosition(uint32_t position);
-
-  Summary:
-    .
-
-  Description:
-    .
-
-  Precondition:
-    None.
-
-  Parameters:
-    position - 
-
-  Returns:
-    None.
-
-  Example:
-    <code>
-    </code>
-
-  Remarks:
-    None.
-*/
-void LOADNG_DeleteRoutePosition(uint32_t position);
-
-// *****************************************************************************
-/* Function:
     bool LOADNG_RouteExists(uint16_t destinationAddress);
 
   Summary:
@@ -469,7 +441,7 @@ void LOADNG_DeleteRoutePosition(uint32_t position);
     }
     else
     {
-        Routing_DiscoverRoute(0x0001, 5, false, NULL, _RouteDiscovery_Callback);
+        LOADNG_DiscoverRoute(0x0001, 5, false, NULL, _RouteDiscovery_Callback);
     }
     </code>
 
@@ -503,6 +475,13 @@ bool LOADNG_RouteExists(uint16_t destinationAddress);
   
   Example:
     <code>
+    uint16_t nextHopAddr;
+    uint8_t mediaType;
+
+    if (LOADNG_RouteExists(0x0001) == true)
+    {
+        nextHopAddr = LOADNG_GetRouteAndMediaType(0x0001, &mediaType);
+    }
     </code>
 
   Remarks:
@@ -513,39 +492,7 @@ uint16_t LOADNG_GetRouteAndMediaType(uint16_t destinationAddress,
 
 // *****************************************************************************
 /* Function:
-    ROUTING_TABLE_ENTRY *LOADNG_AddRouteEntry(ROUTING_TABLE_ENTRY *pNewEntry,
-        bool *pTableFull);
-
-  Summary:
-    Inserts a route in the routing table.
-
-  Description:
-    .
-
-  Precondition:
-    None.
-
-  Parameters:
-    pNewEntry  - 
-
-    pTableFull -
-
-  Returns:
-    .
-  
-  Example:
-    <code>
-    </code>
-
-  Remarks:
-    None.
-*/
-ROUTING_TABLE_ENTRY *LOADNG_AddRouteEntry(ROUTING_TABLE_ENTRY *pNewEntry,
-    bool *pTableFull);
-
-// *****************************************************************************
-/* Function:
-    ROUTING_TABLE_ENTRY *LOADNG_AddRoute(uint16_t dstAddr, uint16_t nextHopAddr,
+    ROUTING_TABLE_ENTRY* LOADNG_AddRoute(uint16_t dstAddr, uint16_t nextHopAddr,
         uint8_t mediaType, bool *pTableFull);
 
   Summary:
@@ -576,12 +523,12 @@ ROUTING_TABLE_ENTRY *LOADNG_AddRouteEntry(ROUTING_TABLE_ENTRY *pNewEntry,
   Remarks:
     None.
 */
-ROUTING_TABLE_ENTRY *LOADNG_AddRoute(uint16_t dstAddr, uint16_t nextHopAddr,
+ROUTING_TABLE_ENTRY* LOADNG_AddRoute(uint16_t dstAddr, uint16_t nextHopAddr,
     uint8_t mediaType, bool *pTableFull);
 
 // *****************************************************************************
 /* Function:
-    ROUTING_TABLE_ENTRY *LOADNG_GetRouteEntry(uint16_t destinationAddress);
+    ROUTING_TABLE_ENTRY* LOADNG_GetRouteEntry(uint16_t destinationAddress);
 
   Summary:
     Gets a pointer to Route Entry.
@@ -605,35 +552,7 @@ ROUTING_TABLE_ENTRY *LOADNG_AddRoute(uint16_t dstAddr, uint16_t nextHopAddr,
   Remarks:
     Before calling this function, check if route exists (LOADNG_RouteExists).
 */
-ROUTING_TABLE_ENTRY *LOADNG_GetRouteEntry(uint16_t destinationAddress);
-
-// *****************************************************************************
-/* Function:
-    uint32_t LOADNG_GetRouteCount(void);
-
-  Summary:
-    Gets the route count.
-
-  Description:
-    .
-
-  Precondition:
-    None.
-
-  Parameters:
-    None.
-
-  Returns:
-    .
-  
-  Example:
-    <code>
-    </code>
-
-  Remarks:
-    None.
-*/
-uint32_t LOADNG_GetRouteCount(void);
+ROUTING_TABLE_ENTRY* LOADNG_GetRouteEntry(uint16_t destinationAddress);
 
 // *****************************************************************************
 /* Function:
@@ -850,4 +769,4 @@ void LOADNG_Tasks(void);
 #endif
 //DOM-IGNORE-END
 
-#endif  // #ifndef _ADP_H
+#endif // #ifndef _ADP_H

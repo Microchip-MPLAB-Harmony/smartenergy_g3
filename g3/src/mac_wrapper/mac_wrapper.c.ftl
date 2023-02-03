@@ -2835,7 +2835,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
                 break;
 
             case MAC_WRP_PIB_MANUF_BAND_INFORMATION:
-                /* m_u16FlMax */
+                /* flMax */
                 _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], pibValue->value);
                 serialRspLen += 2;
                 /* band */

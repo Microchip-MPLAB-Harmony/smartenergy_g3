@@ -50,7 +50,7 @@
 // *****************************************************************************
 #include "adp_shared_types.h"
 #include "adp_api_types.h"
-#include "../mac/mac_wrapper/mac_wrapper_defs.h"
+#include "stack/g3/mac/mac_wrapper/mac_wrapper_defs.h"
 #include "system/system.h"
 
 // DOM-IGNORE-BEGIN
