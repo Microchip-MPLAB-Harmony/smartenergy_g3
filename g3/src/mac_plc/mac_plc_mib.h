@@ -128,7 +128,6 @@ typedef struct
     uint32_t rxInvalidKeyCount;
     uint32_t rxWrongFCCount;
     uint32_t rxDecryptionErrorCount;
-    uint16_t lastFrameDurationPLC;
     bool plcDisable;
     bool plcAvailable;
 } MAC_PLC_MIB;

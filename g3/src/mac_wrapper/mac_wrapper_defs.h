@@ -1004,6 +1004,8 @@ typedef enum
     MAC_WRP_PHY_PARAM_LAST_MSG_LQI = 0x016C,
     /* RSSI value of the last received message. 16 bits. */
     MAC_WRP_PHY_PARAM_LAST_MSG_RSSI = 0x016D,
+    /* Duration in ms of the last received message. 16 bits. */
+    MAC_WRP_PHY_PARAM_LAST_MSG_DURATION = 0x016F,
     /* Success transmission of ACK packets. 16 bits. */
     MAC_WRP_PHY_PARAM_ACK_TX_CFM = 0x016E,
     /* Inform PHY layer about enabled modulations on TMR. 8 bits. */

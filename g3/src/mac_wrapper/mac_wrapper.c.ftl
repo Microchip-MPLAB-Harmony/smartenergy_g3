@@ -2940,6 +2940,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
 
                     case MAC_WRP_PHY_PARAM_LAST_MSG_RSSI:
                     case MAC_WRP_PHY_PARAM_ACK_TX_CFM:
+                    case MAC_WRP_PHY_PARAM_LAST_MSG_DURATION:
                         _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], pibValue->value);
                         serialRspLen += 2;
                         break;
@@ -3341,6 +3342,7 @@ void MAC_WRP_SerialParseSetRequest (
 
                 case MAC_WRP_PHY_PARAM_LAST_MSG_RSSI:
                 case MAC_WRP_PHY_PARAM_ACK_TX_CFM:
+                case MAC_WRP_PHY_PARAM_LAST_MSG_DURATION:
                     _Serial_memcpyFromUsiEndianessUint16(pibValue->value, pData);
                     break;
 
