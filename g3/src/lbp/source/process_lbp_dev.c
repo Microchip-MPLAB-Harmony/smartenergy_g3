@@ -55,12 +55,12 @@
 
 struct TLBPContextDev g_LbpContext;
 
-static struct TEapPskKey sEapPskKey = {
+static EAP_PSK_KEY sEapPskKey = {
 	{0xAB, 0x10, 0x34, 0x11, 0x45, 0x11, 0x1B, 0xC3, 0xC1, 0x2D, 0xE8, 0xFF, 0x11, 0x14, 0x22, 0x04}
 };
-static struct TEapPskNetworkAccessIdentifierP sIdP = {{0}};
+static EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P sIdP = {{0}};
 
-static struct TEapPskRand randP = {{0}};
+static EAP_PSK_RAND randP = {{0}};
 
 static uint8_t au8LbpBuffer[LBP_MAX_NSDU_LENGTH];
 
@@ -256,7 +256,7 @@ static uint16_t _GetMaxJoinWaitTime(void)
 	return u16MaxJoinWaitTime;
 }
 
-static void _GetIdP(struct TEapPskNetworkAccessIdentifierP *p_IdP)
+static void _GetIdP(EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P *p_IdP)
 {
 	struct TAdpMacGetConfirm getConfirm;
 	if (sIdP.m_u8Size == 0) {
@@ -657,9 +657,9 @@ static void _Leave_Callback(uint8_t u8Status)
 static void _Join_Process_Challenge_FirstMessage(const struct TAdpExtendedAddress *pEUI64Address,
 		uint8_t u8EAPIdentifier, uint16_t u16EAPDataLength, uint8_t *pEAPData)
 {
-	struct TEapPskRand randS;
-	struct TEapPskNetworkAccessIdentifierS idS;
-	struct TEapPskNetworkAccessIdentifierP idP;
+	EAP_PSK_RAND randS;
+	EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S idS;
+	EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P idP;
 	_GetIdP(&idP);
 
 	/* In order to detect if is a valid repetition we have to check the 2 elements carried by the first EAP-PSK message: RandS and IdS */
@@ -690,7 +690,7 @@ static void _Join_Process_Challenge_FirstMessage(const struct TAdpExtendedAddres
 			if (memcmp(&randP,
 					"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 16) != 0) {
 				memcpy(g_LbpContext.m_PskContext.m_RandP.m_au8Value,
-						&randP, sizeof(struct TEapPskRand));
+						&randP, sizeof(EAP_PSK_RAND));
 			} else {
 				/* initialize RandP with random content */
 				Random128(g_LbpContext.m_PskContext.m_RandP.m_au8Value);
@@ -743,7 +743,7 @@ static void _Join_Process_Challenge_ThirdMessage(uint16_t u16HeaderLength, uint8
 		const struct TAdpExtendedAddress *pEUI64Address, uint8_t u8EAPIdentifier, uint16_t u16EAPDataLength,
 		uint8_t *pEAPData)
 {
-	struct TEapPskRand randS;
+	EAP_PSK_RAND randS;
 	uint8_t u8PChannelResult = 0;
 	uint32_t u32Nonce = 0;
 	uint16_t u16PChannelDataLength = 0;
@@ -1309,22 +1309,22 @@ void LBP_SetNotificationsDev(struct TLbpNotificationsDev *pNotifications)
 /**
  **********************************************************************************************************************/
 void LBP_SetParamDev(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint8_t u8AttributeLen, const uint8_t *pu8AttributeValue,
-		struct TLbpSetParamConfirm *pSetConfirm)
+		LBP_SET_PARAM_CONFIRM *pSetConfirm)
 {
-	pSetConfirm->u32AttributeId = u32AttributeId;
-	pSetConfirm->u16AttributeIndex = u16AttributeIndex;
-	pSetConfirm->eStatus = LBP_STATUS_UNSUPPORTED_PARAMETER;
+	pSetConfirm->attributeId = u32AttributeId;
+	pSetConfirm->attributeIndex = u16AttributeIndex;
+	pSetConfirm->status = LBP_STATUS_UNSUPPORTED_PARAMETER;
 
 	switch (u32AttributeId) {
 	case LBP_IB_IDP:
-		if ((u8AttributeLen == NETWORK_ACCESS_IDENTIFIER_SIZE_P_ARIB) || 
-				(u8AttributeLen == NETWORK_ACCESS_IDENTIFIER_SIZE_P_CENELEC_FCC) || 
+		if ((u8AttributeLen == LBP_NETWORK_ACCESS_ID_SIZE_P_ARIB) || 
+				(u8AttributeLen == LBP_NETWORK_ACCESS_ID_SIZE_P_CENELEC_FCC) || 
 				(u8AttributeLen == 0)) { /* 0 to invalidate value */
 			sIdP.m_u8Size = u8AttributeLen;
 			memcpy(sIdP.m_au8Value, pu8AttributeValue, u8AttributeLen);
-			pSetConfirm->eStatus = LBP_STATUS_OK;
+			pSetConfirm->status = LBP_STATUS_OK;
 		} else {
-			pSetConfirm->eStatus = LBP_STATUS_INVALID_LENGTH;
+			pSetConfirm->status = LBP_STATUS_INVALID_LENGTH;
 		}
 
 		break;
@@ -1332,10 +1332,10 @@ void LBP_SetParamDev(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint8_
 	case LBP_IB_RANDP:
 		if (u8AttributeLen == 16) {
 			memcpy(randP.m_au8Value, pu8AttributeValue, 16);
-			pSetConfirm->eStatus = LBP_STATUS_OK;
+			pSetConfirm->status = LBP_STATUS_OK;
 		} else {
 			/* Wrong parameter size */
-			pSetConfirm->eStatus = LBP_STATUS_INVALID_LENGTH;
+			pSetConfirm->status = LBP_STATUS_INVALID_LENGTH;
 		}
 
 		break;
@@ -1344,10 +1344,10 @@ void LBP_SetParamDev(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint8_
 		if (u8AttributeLen == 16) {
 			memcpy(sEapPskKey.m_au8Value, pu8AttributeValue, 16);
 			EAP_PSK_Initialize(&sEapPskKey, &g_LbpContext.m_PskContext);
-			pSetConfirm->eStatus = LBP_STATUS_OK;
+			pSetConfirm->status = LBP_STATUS_OK;
 		} else {
 			/* Wrong parameter size */
-			pSetConfirm->eStatus = LBP_STATUS_INVALID_LENGTH;
+			pSetConfirm->status = LBP_STATUS_INVALID_LENGTH;
 		}
 
 		break;

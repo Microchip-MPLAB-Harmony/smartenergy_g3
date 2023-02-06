@@ -51,12 +51,12 @@
 
 /** EAP_PSK_Initialize computes KDK and AK from PSK secret
  **********************************************************************************************************************/
-void EAP_PSK_Initialize(const struct TEapPskKey *pKey, struct TEapPskContext *pPskContext)
+void EAP_PSK_Initialize(const EAP_PSK_KEY *pKey, EAP_PSK_CONTEXT *pPskContext)
 {
 	uint8_t au8Block[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 	uint8_t au8Res[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-	memset(pPskContext, 0, sizeof(struct TEapPskContext));
+	memset(pPskContext, 0, sizeof(EAP_PSK_CONTEXT));
 
 	/* Initialize the AES */
 	aes_wrapper_aes_init();
@@ -85,7 +85,7 @@ void EAP_PSK_Initialize(const struct TEapPskKey *pKey, struct TEapPskContext *pP
 
 /** The EAP_PSK_InitializeTEKMSK primitive is used to initialize the TEK key
  **********************************************************************************************************************/
-void EAP_PSK_InitializeTEKMSK(const struct TEapPskRand *pRandP, struct TEapPskContext *pPskContext)
+void EAP_PSK_InitializeTEKMSK(const EAP_PSK_RAND *pRandP, EAP_PSK_CONTEXT *pPskContext)
 {
 	uint8_t au8Res[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 	uint8_t u8Idx;
@@ -151,8 +151,8 @@ bool EAP_PSK_Decode_Message(uint16_t u16MessageLength, uint8_t *pMessage, uint8_
 
 /** The EAP_PSK_Decode_Message1 primitive is used to decode the first EAP-PSK message (T = 0)
  **********************************************************************************************************************/
-bool EAP_PSK_Decode_Message1(uint16_t u16MessageLength, uint8_t *pMessage, struct TEapPskRand *pRandS,
-		struct TEapPskNetworkAccessIdentifierS *pIdS)
+bool EAP_PSK_Decode_Message1(uint16_t u16MessageLength, uint8_t *pMessage, EAP_PSK_RAND *pRandS,
+		EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS)
 {
 	bool bRet = false;
 
@@ -172,9 +172,9 @@ bool EAP_PSK_Decode_Message1(uint16_t u16MessageLength, uint8_t *pMessage, struc
 
 /** The EAP_PSK_Encode_Message2 primitive is used to encode the second EAP-PSK message (type 1)
  **********************************************************************************************************************/
-uint16_t EAP_PSK_Encode_Message2(const struct TEapPskContext *pPskContext, uint8_t u8Identifier,
-		const struct TEapPskRand *pRandS, const struct TEapPskRand *pRandP, const struct TEapPskNetworkAccessIdentifierS *pIdS,
-		const struct TEapPskNetworkAccessIdentifierP *pIdP, uint16_t u16MemoryBufferLength, uint8_t *pMemoryBuffer)
+uint16_t EAP_PSK_Encode_Message2(const EAP_PSK_CONTEXT *pPskContext, uint8_t u8Identifier,
+		const EAP_PSK_RAND *pRandS, const EAP_PSK_RAND *pRandP, const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P *pIdP, uint16_t u16MemoryBufferLength, uint8_t *pMemoryBuffer)
 {
 	uint16_t u16Ret = 0;
 
@@ -183,8 +183,8 @@ uint16_t EAP_PSK_Encode_Message2(const struct TEapPskContext *pPskContext, uint8
 		int16_t ret;
 		/* compute first MacP = CMAC-AES-128(AK, IdP||IdS||RandS||RandP) */
 		uint8_t au8MacP[16];
-		uint8_t au8Seed[2 * member_size(struct TEapPskNetworkAccessIdentifierP, m_au8Value)
-		+ 2 * member_size(struct TEapPskRand, m_au8Value)];
+		uint8_t au8Seed[2 * member_size(EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P, m_au8Value)
+		+ 2 * member_size(EAP_PSK_RAND, m_au8Value)];
 		uint16_t u16SeedUsedSize = 0;
 
 		/* Initialize CMAC */
@@ -252,8 +252,8 @@ uint16_t EAP_PSK_Encode_Message2(const struct TEapPskContext *pPskContext, uint8
 
 /** The EAP_PSK_Decode_Message3 primitive is used to decode the third EAP-PSK message (type 2)
  **********************************************************************************************************************/
-bool EAP_PSK_Decode_Message3(uint16_t u16MessageLength, uint8_t *pMessage, const struct TEapPskContext *pPskContext,
-		uint16_t u16HeaderLength, uint8_t *pHeader, struct TEapPskRand *pRandS, uint32_t *pu32Nonce,
+bool EAP_PSK_Decode_Message3(uint16_t u16MessageLength, uint8_t *pMessage, const EAP_PSK_CONTEXT *pPskContext,
+		uint16_t u16HeaderLength, uint8_t *pHeader, EAP_PSK_RAND *pRandS, uint32_t *pu32Nonce,
 		uint8_t *pu8PChannelResult, uint16_t *pu16PChannelDataLength, uint8_t **pPChannelData)
 {
 	bool bRet = false;
@@ -265,8 +265,8 @@ bool EAP_PSK_Decode_Message3(uint16_t u16MessageLength, uint8_t *pMessage, const
 		memcpy(pRandS->m_au8Value, pMessage, sizeof(pRandS->m_au8Value));
 
 		/* verify MacS: MAC_S = CMAC-AES-128(AK, IdS||RandP) */
-		uint8_t au8Seed[member_size(struct TEapPskNetworkAccessIdentifierP, m_au8Value)
-		+ member_size(struct TEapPskRand, m_au8Value)];
+		uint8_t au8Seed[member_size(EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P, m_au8Value)
+		+ member_size(EAP_PSK_RAND, m_au8Value)];
 		uint16_t u16SeedUsedSize = 0;
 
 		/* Initialize CMAC */
@@ -376,8 +376,8 @@ bool EAP_PSK_Decode_Message3(uint16_t u16MessageLength, uint8_t *pMessage, const
 
 /** The EAP_PSK_Encode_Message4 primitive is used to encode the second EAP-PSK message (type 3)
  **********************************************************************************************************************/
-uint16_t EAP_PSK_Encode_Message4(const struct TEapPskContext *pPskContext, uint8_t u8Identifier,
-		const struct TEapPskRand *pRandS, uint32_t u32Nonce, uint8_t u8PChannelResult, uint16_t u16PChannelDataLength,
+uint16_t EAP_PSK_Encode_Message4(const EAP_PSK_CONTEXT *pPskContext, uint8_t u8Identifier,
+		const EAP_PSK_RAND *pRandS, uint32_t u32Nonce, uint8_t u8PChannelResult, uint16_t u16PChannelDataLength,
 		uint8_t *pPChannelData, uint16_t u16MemoryBufferLength, uint8_t *pMemoryBuffer)
 {
 	uint16_t u16Ret = 0;
@@ -502,8 +502,8 @@ uint16_t EAP_PSK_Encode_Message4(const struct TEapPskContext *pPskContext, uint8
  **********************************************************************************************************************/
 uint16_t EAP_PSK_Encode_Message1(
 		uint8_t u8Identifier,
-		const struct TEapPskRand *pRandS,
-		const struct TEapPskNetworkAccessIdentifierS *pIdS,
+		const EAP_PSK_RAND *pRandS,
+		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
 		uint16_t u16MemoryBufferLength,
 		uint8_t *pMemoryBuffer
 		)
@@ -544,10 +544,10 @@ bool EAP_PSK_Decode_Message2(
 		bool bAribBand,
 		uint16_t u16MessageLength,
 		uint8_t *pMessage,
-		const struct TEapPskContext *pPskContext,
-		const struct TEapPskNetworkAccessIdentifierS *pIdS,
-		struct TEapPskRand *pRandS,
-		struct TEapPskRand *pRandP
+		const EAP_PSK_CONTEXT *pPskContext,
+		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+		EAP_PSK_RAND *pRandS,
+		EAP_PSK_RAND *pRandP
 		)
 {
 	bool bRet = false;
@@ -562,22 +562,22 @@ bool EAP_PSK_Decode_Message2(
 	if (u16MessageLength >= uc_min_msg_length) { /* EAP header already removed */
 		uint8_t au8MacP[16];
 		uint8_t au8ExpectedMacP[16];
-		struct TEapPskNetworkAccessIdentifierP idP;
+		EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P idP;
 		int16_t ret;
 
 		if (bAribBand) {
 			/* In ARIB, ID_P can be range between 8 and 36 bytes, its length depends on the message length */
 			idP.m_u8Size = u16MessageLength - 48;
 			/* Maximum size is checked */
-			if (idP.m_u8Size > NETWORK_ACCESS_IDENTIFIER_MAX_SIZE_P) {
-				idP.m_u8Size = NETWORK_ACCESS_IDENTIFIER_MAX_SIZE_P;
+			if (idP.m_u8Size > LBP_NETWORK_ACCESS_ID_MAX_SIZE_P) {
+				idP.m_u8Size = LBP_NETWORK_ACCESS_ID_MAX_SIZE_P;
 			}
 		} else {
 			idP.m_u8Size = 8;
 		}
 
-		uint8_t au8Seed[NETWORK_ACCESS_IDENTIFIER_MAX_SIZE_P + NETWORK_ACCESS_IDENTIFIER_MAX_SIZE_S + 2 * member_size(struct TEapPskRand, m_au8Value)];
-		uint8_t au8Seed_size = idP.m_u8Size + pIdS->m_u8Size + 2 * member_size(struct TEapPskRand, m_au8Value);
+		uint8_t au8Seed[LBP_NETWORK_ACCESS_ID_MAX_SIZE_P + LBP_NETWORK_ACCESS_ID_MAX_SIZE_S + 2 * member_size(EAP_PSK_RAND, m_au8Value)];
+		uint8_t au8Seed_size = idP.m_u8Size + pIdS->m_u8Size + 2 * member_size(EAP_PSK_RAND, m_au8Value);
 
 		uint16_t u16DecodeOffset = 0;
 		uint16_t u16SeedOffset = 0;
@@ -643,11 +643,11 @@ bool EAP_PSK_Decode_Message2(
  *
  **********************************************************************************************************************/
 uint16_t EAP_PSK_Encode_Message3(
-		const struct TEapPskContext *pPskContext,
+		const EAP_PSK_CONTEXT *pPskContext,
 		uint8_t u8Identifier,
-		const struct TEapPskRand *pRandS,
-		const struct TEapPskRand *pRandP,
-		const struct TEapPskNetworkAccessIdentifierS *pIdS,
+		const EAP_PSK_RAND *pRandS,
+		const EAP_PSK_RAND *pRandP,
+		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
 		uint32_t u32Nonce,
 		uint8_t u8PChannelResult,
 		uint16_t u16PChannelDataLength,
@@ -668,8 +668,8 @@ uint16_t EAP_PSK_Encode_Message3(
 		uint8_t au8Nonce[16];
 		int16_t ret;
 
-		uint8_t au8Seed[NETWORK_ACCESS_IDENTIFIER_MAX_SIZE_S + member_size(struct TEapPskRand, m_au8Value)];
-		uint8_t au8Seed_size = pIdS->m_u8Size + member_size(struct TEapPskRand, m_au8Value);
+		uint8_t au8Seed[LBP_NETWORK_ACCESS_ID_MAX_SIZE_S + member_size(EAP_PSK_RAND, m_au8Value)];
+		uint8_t au8Seed_size = pIdS->m_u8Size + member_size(EAP_PSK_RAND, m_au8Value);
 
 		/* Initialize CMAC */
 		ret = cipher_wrapper_cipher_setup();
@@ -797,10 +797,10 @@ uint16_t EAP_PSK_Encode_Message3(
 bool EAP_PSK_Decode_Message4(
 		uint16_t u16MessageLength,
 		uint8_t *pMessage,
-		const struct TEapPskContext *pPskContext,
+		const EAP_PSK_CONTEXT *pPskContext,
 		uint16_t u16HeaderLength,
 		uint8_t *pHeader,
-		struct TEapPskRand *pRandS,
+		EAP_PSK_RAND *pRandS,
 		uint32_t *pu32Nonce,
 		uint8_t *pu8PChannelResult,
 		uint16_t *pu16PChannelDataLength,

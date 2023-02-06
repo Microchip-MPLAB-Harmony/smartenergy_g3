@@ -299,7 +299,7 @@ typedef struct
 
    Description:
     This enumeration identifies the list of available parameter information base
-    (PIB) attributes.
+    (PIB) attributes for the ADP.
 
    Remarks:
     None.

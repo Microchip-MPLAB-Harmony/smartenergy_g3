@@ -47,15 +47,18 @@
  ***********************************************************************************************************************
  *
  **********************************************************************************************************************/
-struct TEapPskNetworkAccessIdentifierP {
+typedef struct
+{
 	uint8_t m_u8Size;
-	uint8_t m_au8Value[NETWORK_ACCESS_IDENTIFIER_MAX_SIZE_P];
-};
+	uint8_t m_au8Value[LBP_NETWORK_ACCESS_ID_MAX_SIZE_P];
+} EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P;
 
-struct TEapPskNetworkAccessIdentifierS {
+typedef struct
+{
 	uint8_t m_u8Size;
-	uint8_t m_au8Value[NETWORK_ACCESS_IDENTIFIER_MAX_SIZE_S];
-};
+	uint8_t m_au8Value[LBP_NETWORK_ACCESS_ID_MAX_SIZE_S];
+
+} EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S;
 
 /**********************************************************************************************************************/
 
@@ -63,9 +66,11 @@ struct TEapPskNetworkAccessIdentifierS {
  ***********************************************************************************************************************
  *
  **********************************************************************************************************************/
-struct TEapPskKey {
+typedef struct
+{
 	uint8_t m_au8Value[16];
-};
+
+} EAP_PSK_KEY;
 
 /**********************************************************************************************************************/
 
@@ -73,9 +78,11 @@ struct TEapPskKey {
  ***********************************************************************************************************************
  *
  **********************************************************************************************************************/
-struct TEapPskMSK {
+typedef struct
+{
 	uint8_t m_au8Value[64];
-};
+
+} EAP_PSK_MSK;
 
 /**********************************************************************************************************************/
 
@@ -83,9 +90,11 @@ struct TEapPskMSK {
  ***********************************************************************************************************************
  *
  **********************************************************************************************************************/
-struct TEapPskRand {
+typedef struct
+{
 	uint8_t m_au8Value[16];
-};
+
+} EAP_PSK_RAND;
 
 /**********************************************************************************************************************/
 
@@ -93,15 +102,16 @@ struct TEapPskRand {
  ***********************************************************************************************************************
  *
  **********************************************************************************************************************/
-struct TEapPskContext {
-	struct TEapPskKey m_Kdk; /* Derivation key */
-	struct TEapPskKey m_Ak; /* Authentication key */
-	struct TEapPskKey m_Tek; /* Transient key */
-	struct TEapPskMSK m_Msk; /* Master Session key */
-	struct TEapPskNetworkAccessIdentifierS m_IdS;
-	struct TEapPskRand m_RandP;
-	struct TEapPskRand m_RandS;
-};
+typedef struct
+{
+	EAP_PSK_KEY m_Kdk; /* Derivation key */
+	EAP_PSK_KEY m_Ak; /* Authentication key */
+	EAP_PSK_KEY m_Tek; /* Transient key */
+	EAP_PSK_KEY m_Msk; /* Master Session key */
+	EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S m_IdS;
+	EAP_PSK_RAND m_RandP;
+	EAP_PSK_RAND m_RandS;
+} EAP_PSK_CONTEXT;
 
 /**********************************************************************************************************************/
 
@@ -164,7 +174,7 @@ struct TEapPskContext {
  * @param aesCtx The AES context structure
  * @param pContext OUT parameter; EAP-PSK context needed in other functions
  **********************************************************************************************************************/
-void EAP_PSK_Initialize(const struct TEapPskKey *pKey, struct TEapPskContext *pPskContext);
+void EAP_PSK_Initialize(const EAP_PSK_KEY *pKey, EAP_PSK_CONTEXT *pPskContext);
 
 /**********************************************************************************************************************/
 
@@ -174,7 +184,7 @@ void EAP_PSK_Initialize(const struct TEapPskKey *pKey, struct TEapPskContext *pP
  * @param aesCtx The AES context structure
  * @param pContext OUT parameter; EAP-PSK context needed in other functions
  **********************************************************************************************************************/
-void EAP_PSK_InitializeTEKMSK(const struct TEapPskRand *pRandP, struct TEapPskContext *pPskContext);
+void EAP_PSK_InitializeTEKMSK(const EAP_PSK_RAND *pRandP, EAP_PSK_CONTEXT *pPskContext);
 
 /**********************************************************************************************************************/
 
@@ -204,8 +214,8 @@ bool EAP_PSK_Decode_Message(uint16_t u16MessageLength, uint8_t *pMessage, uint8_
  * @param au8IdS OUT parameter; upon successful return contains the IdS parameter (8 byte EUI-64 address of server)
  * @return true if the message can be decoded; false otherwise
  **********************************************************************************************************************/
-bool EAP_PSK_Decode_Message1(uint16_t u16MessageLength, uint8_t *pMessage, struct TEapPskRand *pRandS,
-		struct TEapPskNetworkAccessIdentifierS *pIdS);
+bool EAP_PSK_Decode_Message1(uint16_t u16MessageLength, uint8_t *pMessage, EAP_PSK_RAND *pRandS,
+		EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS);
 
 /**********************************************************************************************************************/
 
@@ -222,9 +232,9 @@ bool EAP_PSK_Decode_Message1(uint16_t u16MessageLength, uint8_t *pMessage, struc
  *                      allocated; requested size being at least 62 bytes
  * @return encoded length or 0 if encoding failed
  **********************************************************************************************************************/
-uint16_t EAP_PSK_Encode_Message2(const struct TEapPskContext *pPskContext, uint8_t u8Identifier,
-		const struct TEapPskRand *pRandS, const struct TEapPskRand *pRandP, const struct TEapPskNetworkAccessIdentifierS *pIdS,
-		const struct TEapPskNetworkAccessIdentifierP *pIdP, uint16_t u16MemoryBufferLength, uint8_t *pMemoryBuffer);
+uint16_t EAP_PSK_Encode_Message2(const EAP_PSK_CONTEXT *pPskContext, uint8_t u8Identifier,
+		const EAP_PSK_RAND *pRandS, const EAP_PSK_RAND *pRandP, const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P *pIdP, uint16_t u16MemoryBufferLength, uint8_t *pMemoryBuffer);
 
 /**********************************************************************************************************************/
 
@@ -244,8 +254,8 @@ uint16_t EAP_PSK_Encode_Message2(const struct TEapPskContext *pPskContext, uint8
  * @param au8PrecGMK OUT parameter; upon successful return contains the 16 byte value of the preceding GMK
  * @return true if the message can be decoded; false otherwise
  **********************************************************************************************************************/
-bool EAP_PSK_Decode_Message3(uint16_t u16MessageLength, uint8_t *pMessage, const struct TEapPskContext *pPskContext,
-		uint16_t u16HeaderLength, uint8_t *pHeader, struct TEapPskRand *pRandS, uint32_t *pu32Nonce,
+bool EAP_PSK_Decode_Message3(uint16_t u16MessageLength, uint8_t *pMessage, const EAP_PSK_CONTEXT *pPskContext,
+		uint16_t u16HeaderLength, uint8_t *pHeader, EAP_PSK_RAND *pRandS, uint32_t *pu32Nonce,
 		uint8_t *pu8PChannelResult, uint16_t *pu16PChannelDataLength, uint8_t **pPChannelData);
 
 /**********************************************************************************************************************/
@@ -262,8 +272,8 @@ bool EAP_PSK_Decode_Message3(uint16_t u16MessageLength, uint8_t *pMessage, const
  *                      allocated; requested size being at least 62 bytes
  * @return encoded length or 0 if encoding failed
  **********************************************************************************************************************/
-uint16_t EAP_PSK_Encode_Message4(const struct TEapPskContext *pPskContext, uint8_t u8Identifier,
-		const struct TEapPskRand *pRandS, uint32_t u32Nonce, uint8_t u8PChannelResult, uint16_t u16PChannelDataLength,
+uint16_t EAP_PSK_Encode_Message4(const EAP_PSK_CONTEXT *pPskContext, uint8_t u8Identifier,
+		const EAP_PSK_RAND *pRandS, uint32_t u32Nonce, uint8_t u8PChannelResult, uint16_t u16PChannelDataLength,
 		uint8_t *pPChannelData, uint16_t u16MemoryBufferLength, uint8_t *pMemoryBuffer);
 
 /**********************************************************************************************************************/
@@ -287,8 +297,8 @@ uint16_t EAP_PSK_Encode_Message4(const struct TEapPskContext *pPskContext, uint8
  **********************************************************************************************************************/
 uint16_t EAP_PSK_Encode_Message1(
 		uint8_t u8Identifier,
-		const struct TEapPskRand *pRandS,
-		const struct TEapPskNetworkAccessIdentifierS *pIdS,
+		const EAP_PSK_RAND *pRandS,
+		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
 		uint16_t u16MemoryBufferLength,
 		uint8_t *pMemoryBuffer
 		);
@@ -307,10 +317,10 @@ bool EAP_PSK_Decode_Message2(
 		bool bAribBand,
 		uint16_t u16MessageLength,
 		uint8_t *pMessage,
-		const struct TEapPskContext *pPskContext,
-		const struct TEapPskNetworkAccessIdentifierS *pIdS,
-		struct TEapPskRand *pRandS, /* out */
-		struct TEapPskRand *pRandP /* out */
+		const EAP_PSK_CONTEXT *pPskContext,
+		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+		EAP_PSK_RAND *pRandS, /* out */
+		EAP_PSK_RAND *pRandP /* out */
 		);
 
 /**********************************************************************************************************************/
@@ -349,11 +359,11 @@ bool EAP_PSK_Decode_Message2(
  *
  **********************************************************************************************************************/
 uint16_t EAP_PSK_Encode_Message3(
-		const struct TEapPskContext *pPskContext,
+		const EAP_PSK_CONTEXT *pPskContext,
 		uint8_t u8Identifier,
-		const struct TEapPskRand *pRandS,
-		const struct TEapPskRand *pRandP,
-		const struct TEapPskNetworkAccessIdentifierS *pIdS,
+		const EAP_PSK_RAND *pRandS,
+		const EAP_PSK_RAND *pRandP,
+		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
 		uint32_t u32Nonce,
 		uint8_t u8PChannelResult,
 		uint16_t u16PChannelDataLength,
@@ -374,10 +384,10 @@ uint16_t EAP_PSK_Encode_Message3(
 bool EAP_PSK_Decode_Message4(
 		uint16_t u16MessageLength,
 		uint8_t *pMessage,
-		const struct TEapPskContext *pPskContext,
+		const EAP_PSK_CONTEXT *pPskContext,
 		uint16_t u16HeaderLength,
 		uint8_t *pHeader,
-		struct TEapPskRand *pRandS,
+		EAP_PSK_RAND *pRandS,
 		uint32_t *pu32Nonce,
 		uint8_t *pu8PChannelResult,
 		uint16_t *pu16PChannelDataLength,

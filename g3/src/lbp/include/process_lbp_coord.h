@@ -62,13 +62,13 @@ typedef struct {
 	uint8_t uc_tx_handle;
 	uint32_t ul_timeout;
 	uint8_t uc_tx_attemps;
-	struct TEapPskRand m_randS;
+	EAP_PSK_RAND m_randS;
 	uint32_t ul_nonce;
 	uint8_t uc_pending_confirms;
 	uint8_t uc_pending_tx_handler;
 	uint8_t auc_data[LBP_MAX_NSDU_LENGTH];
 	uint16_t us_data_length;
-	struct TEapPskContext m_PskContext;
+	EAP_PSK_CONTEXT m_PskContext;
 	uint8_t m_u8MediaType;
 	uint8_t m_u8DisableBackupMedium;
 } t_bootstrap_slot;
@@ -163,7 +163,7 @@ void LBP_activate_new_key(void);
  * @param pSetConfirm Result info of the Get operation.
  **********************************************************************************************************************/
 void LBP_SetParamCoord(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint8_t u8AttributeLen,
-		const uint8_t *pu8AttributeValue, struct TLbpSetParamConfirm *pSetConfirm);
+		const uint8_t *pu8AttributeValue, LBP_SET_PARAM_CONFIRM *pSetConfirm);
 
 #endif
 

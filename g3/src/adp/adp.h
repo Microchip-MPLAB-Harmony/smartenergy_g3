@@ -515,7 +515,7 @@ typedef void (*ADP_RESET_CFM_CALLBACK)(uint8_t status);
 */
 typedef struct
 {
-    /* The identifier of the IB attribute set */
+    /* The identifier of the IB attribute to set */
     uint32_t attributeId;
 
     /* The index within the table of the specified IB attribute */
