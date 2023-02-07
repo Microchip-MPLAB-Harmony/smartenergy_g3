@@ -124,6 +124,8 @@ uint16_t LBP_Encode_KickToLBD(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint16_
  *
  * @param u8MediaType Media Type to be encoded in LBP frame
  *
+ * @param u8DisableBackupMedium Disable Backup Medium flag to be encoded in LBP frame
+ *
  * @param u16BootStrappingDataLength Length of the bootstrapping data in bytes; the bootstrapping data should be pre-stored
  *                                   in the pMessageBuffer parameter
  *
@@ -135,7 +137,7 @@ uint16_t LBP_Encode_KickToLBD(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint16_
  *
  **********************************************************************************************************************/
 uint16_t LBP_Encode_JoiningRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint8_t u8MediaType,
-		uint16_t u16BootStrappingDataLength, uint16_t u16MessageLength, uint8_t *pMessageBuffer);
+		uint8_t u8DisableBackupMedium, uint16_t u16BootStrappingDataLength, uint16_t u16MessageLength, uint8_t *pMessageBuffer);
 
 /**********************************************************************************************************************/
 

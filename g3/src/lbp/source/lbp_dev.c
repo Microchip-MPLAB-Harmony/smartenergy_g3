@@ -65,6 +65,8 @@ struct TLBPContextDev {
 	EAP_PSK_CONTEXT m_PskContext;
 	/* Media Type to use between LBD and LBA. It is encoded in LBP frames */
 	uint8_t m_u8MediaType;
+	/* Disable Backup Flag, used to precise Media Type. It is encoded in LBP frames */
+	uint8_t m_u8DisableBackupFlag;
 	/* Available MAC layers */
 	enum EMacWrpAvailableMacLayers m_AvailableMacLayers;
 
@@ -738,7 +740,12 @@ static void _Join_Process_Challenge_FirstMessage(const ADP_EXTENDED_ADDRESS *pEU
 				u16MemoryBufferLength, pMemoryBuffer);
 
 		/* Encode now the LBP message */
-		u16RequestLength = LBP_Encode_JoiningRequest(pEUI64Address, g_LbpContext.m_u8MediaType, u16RequestLength, u16MemoryBufferLength, pMemoryBuffer);
+		if (_Joined()) {
+			/* Rekeying frame, set Media Type and Disable Backup to 0 */
+			u16RequestLength = LBP_Encode_JoiningRequest(pEUI64Address, 0, 0, u16RequestLength, u16MemoryBufferLength, pMemoryBuffer);
+		} else {
+			u16RequestLength = LBP_Encode_JoiningRequest(pEUI64Address, g_LbpContext.m_u8MediaType, g_LbpContext.m_u8DisableBackupFlag, u16RequestLength, u16MemoryBufferLength, pMemoryBuffer);
+		}
 
 		dstAddr.m_u8AddrSize = ADP_ADDRESS_16BITS;
 		dstAddr.m_u16ShortAddr = g_LbpContext.m_u16LbaAddress;
@@ -827,7 +834,7 @@ static void _Join_Process_Challenge_ThirdMessage(uint16_t u16HeaderLength, uint8
 
 			/* Encode now the LBP message */
 			u16RequestLength = LBP_Encode_JoiningRequest(&g_LbpContext.m_EUI64Address, g_LbpContext.m_u8MediaType,
-					u16RequestLength, u16MemoryBufferLength, pMemoryBuffer);
+					g_LbpContext.m_u8DisableBackupFlag, u16RequestLength, u16MemoryBufferLength, pMemoryBuffer);
 
 			dstAddr.m_u8AddrSize = ADP_ADDRESS_16BITS;
 			dstAddr.m_u16ShortAddr = g_LbpContext.m_u16LbaAddress;
@@ -1042,7 +1049,7 @@ static void _Join_Process_Accepted_Configuration(const ADP_EXTENDED_ADDRESS *pEU
 		memcpy(pMemoryBuffer, au8ParameterResult, u8ParameterResultLength);
 
 		/* Encode now the LBP message */
-		u16RequestLength = LBP_Encode_JoiningRequest(&g_LbpContext.m_EUI64Address, g_LbpContext.m_u8MediaType,
+		u16RequestLength = LBP_Encode_JoiningRequest(&g_LbpContext.m_EUI64Address, 0, 0,
 				u8ParameterResultLength, u16MemoryBufferLength, pMemoryBuffer);
 
 		dstAddr.m_u8AddrSize = ADP_ADDRESS_16BITS;
@@ -1106,8 +1113,8 @@ static void _JoinRequest(void)
 	g_LbpContext.m_u16JoiningShortAddress = 0xFFFF;
 
 	/* prepare and send the JoinRequest; no Bootstrapping data for the first request */
-	u16RequestLength = LBP_Encode_JoiningRequest(&g_LbpContext.m_EUI64Address, g_LbpContext.m_u8MediaType, 0, /* u16BootStrappingDataLength */
-			u16MemoryBufferLength, pMemoryBuffer);
+	u16RequestLength = LBP_Encode_JoiningRequest(&g_LbpContext.m_EUI64Address, g_LbpContext.m_u8MediaType,
+			g_LbpContext.m_u8DisableBackupFlag, 0, u16MemoryBufferLength, pMemoryBuffer);
 
 	dstAddr.m_u8AddrSize = ADP_ADDRESS_16BITS;
 	dstAddr.m_u16ShortAddr = g_LbpContext.m_u16LbaAddress;
@@ -1436,13 +1443,16 @@ void AdpNetworkJoinRequest(uint16_t u16PanId, uint16_t u16LbaAddress, uint8_t u8
 			g_LbpContext.m_u16LbaAddress = u16LbaAddress;
 			if (g_LbpContext.m_AvailableMacLayers == MAC_WRP_AVAILABLE_MAC_PLC) {
 				g_LbpContext.m_u8MediaType = (uint8_t)MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF;
+				g_LbpContext.m_u8DisableBackupFlag = 0;
 			}
 			else if (g_LbpContext.m_AvailableMacLayers == MAC_WRP_AVAILABLE_MAC_RF) {
 				g_LbpContext.m_u8MediaType = (uint8_t)MAC_WRP_MEDIA_TYPE_REQ_RF_BACKUP_PLC;
+				g_LbpContext.m_u8DisableBackupFlag = 0;
 			}
 			else {
 				// Hybrid Profile
 				g_LbpContext.m_u8MediaType = u8MediaType;
+				g_LbpContext.m_u8DisableBackupFlag = 1;
 			}
 			memcpy(&g_LbpContext.m_EUI64Address, &extendedAddress, ADP_ADDRESS_64BITS);
 			_SetExtendedAddress(&extendedAddress);

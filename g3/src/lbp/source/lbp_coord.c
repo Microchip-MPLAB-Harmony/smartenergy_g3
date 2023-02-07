@@ -518,7 +518,7 @@ void LBP_Rekey(uint16_t shortAddress, ADP_EXTENDED_ADDRESS *pEUI64Address, bool 
 
 	if (p_bs_slot) {
 		_initialize_bootstrap_message(p_bs_slot);
-		/* DISABLE_BACKUP_FLAG and MediaType set to 0x0 in Rekeying frames */
+		/* DisableBackupFlag and MediaType set to 0x0 in Rekeying frames */
 		p_bs_slot->m_u8DisableBackupMedium = 0;
 		p_bs_slot->m_u8MediaType = 0;
 		if (distribute) {
