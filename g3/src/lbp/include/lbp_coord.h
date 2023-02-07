@@ -245,7 +245,7 @@ void LBP_InitCoord(bool aribBand);
     This routine updates the slots that control bootstrap protocol.
 
   Precondition:
-    None.
+    LBP_InitCoord must have been called before.
 
   Parameters:
     None.
@@ -278,7 +278,7 @@ void LBP_UpdateBootstrapSlots(void);
     event notification are set in this function.
 
   Precondition:
-    None.
+    LBP_InitCoord must have been called before.
 
   Parameters:
     pNotifications - Structure with callbacks used to notify Coordinator LBP
@@ -314,7 +314,7 @@ void LBP_SetNotificationsCoord(LBP_NOTIFICATIONS_COORD* pNotifications);
     This routine allows the upper layer to remove a device from the network.
 
   Precondition:
-    None.
+    LBP_InitCoord must have been called before.
 
   Parameters:
     shortAddress  - The network address of device to be removed
@@ -350,7 +350,7 @@ bool LBP_KickDevice(uint16_t shortAddress, ADP_EXTENDED_ADDRESS* pEUI64Address);
     the network.
 
   Precondition:
-    None.
+    LBP_InitCoord must have been called before.
 
   Parameters:
     shortAddress  - The network address of device to be rekeyed
@@ -388,7 +388,7 @@ void LBP_Rekey(uint16_t shortAddress, ADP_EXTENDED_ADDRESS *pEUI64Address,
     module.
 
   Precondition:
-    None.
+    LBP_InitCoord must have been called before.
 
   Parameters:
     rekeyStart - Indicates whether rekey phase starts or finishes
@@ -418,7 +418,7 @@ void LBP_SetRekeyPhase(bool rekeyStart);
     process.
 
   Precondition:
-    None.
+    LBP_InitCoord must have been called before.
 
   Parameters:
     None.
@@ -450,7 +450,7 @@ void LBP_ActivateNewKey(void);
     IB.
 
   Precondition:
-    None.
+    LBP_InitCoord must have been called before.
 
   Parameters:
     attributeId     - LBP attribute identifier to set

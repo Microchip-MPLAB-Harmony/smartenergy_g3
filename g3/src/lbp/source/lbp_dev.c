@@ -1423,12 +1423,12 @@ void LBP_ForceRegister(ADP_EXTENDED_ADDRESS *pEUI64Address,
 
 /**
  **********************************************************************************************************************/
-void AdpNetworkJoinRequest(uint16_t u16PanId, uint16_t u16LbaAddress, uint8_t u8MediaType)
+void LBP_JoinRequest(uint16_t panId, uint16_t lbaAddress, uint8_t mediaType)
 {
 	ADP_EXTENDED_ADDRESS extendedAddress;
 	uint8_t u8Status = G3_INVALID_REQUEST;
 	
-	LOG_INFO(Log("AdpNetworkJoinRequest() PanID %04X Lba %04X MediaType %02X", u16PanId, u16LbaAddress, u8MediaType));
+	LOG_INFO(Log("AdpNetworkJoinRequest() PanID %04X Lba %04X MediaType %02X", panId, lbaAddress, mediaType));
 
 	// Get Available MAC layers
 	g_LbpContext.m_AvailableMacLayers = MacWrapperGetAvailableMacLayers();
@@ -1438,9 +1438,9 @@ void AdpNetworkJoinRequest(uint16_t u16PanId, uint16_t u16LbaAddress, uint8_t u8
 		if (AdpMac_GetExtendedAddressSync(&extendedAddress)) {
 			// Remember network info
 			_ForceJoinStatus(false); // Not joined
-			_SetPanId(u16PanId);
-			g_LbpContext.m_u16PanId = u16PanId;
-			g_LbpContext.m_u16LbaAddress = u16LbaAddress;
+			_SetPanId(panId);
+			g_LbpContext.m_u16PanId = panId;
+			g_LbpContext.m_u16LbaAddress = lbaAddress;
 			if (g_LbpContext.m_AvailableMacLayers == MAC_WRP_AVAILABLE_MAC_PLC) {
 				g_LbpContext.m_u8MediaType = (uint8_t)MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF;
 				g_LbpContext.m_u8DisableBackupFlag = 0;
@@ -1451,7 +1451,7 @@ void AdpNetworkJoinRequest(uint16_t u16PanId, uint16_t u16LbaAddress, uint8_t u8
 			}
 			else {
 				// Hybrid Profile
-				g_LbpContext.m_u8MediaType = u8MediaType;
+				g_LbpContext.m_u8MediaType = mediaType;
 				g_LbpContext.m_u8DisableBackupFlag = 1;
 			}
 			memcpy(&g_LbpContext.m_EUI64Address, &extendedAddress, ADP_ADDRESS_64BITS);
@@ -1478,7 +1478,7 @@ void AdpNetworkJoinRequest(uint16_t u16PanId, uint16_t u16LbaAddress, uint8_t u8
 
 /**
  **********************************************************************************************************************/
-void AdpNetworkLeaveRequest(void)
+void LBP_LeaveRequest(void)
 {
 	uint8_t u8Status = G3_SUCCESS;
 	struct TAdpNetworkLeaveConfirm leaveConfirm;

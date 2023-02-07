@@ -267,7 +267,7 @@ void LBP_InitDev(void);
     notification are set in this function.
 
   Precondition:
-    None.
+    LBP_InitDev must have been called before.
 
   Parameters:
     pNotifications - Structure with callbacks used to notify Device LBP
@@ -306,7 +306,7 @@ void LBP_SetNotificationsDev(LBP_NOTIFICATIONS_DEV *pNotifications);
     IB.
 
   Precondition:
-    None.
+    LBP_InitDev must have been called before.
 
   Parameters:
     attributeId     - LBP attribute identifier to set
@@ -356,7 +356,7 @@ void LBP_SetParamDev(uint32_t attributeId, uint16_t attributeIndex,
     the network without going through the bootstrap process.
 
   Precondition:
-    None.
+    LBP_InitDev must have been called before.
 
   Parameters:
     pEUI64Address - Pointer to EUI64 address of the node
@@ -383,6 +383,88 @@ void LBP_SetParamDev(uint32_t attributeId, uint16_t attributeIndex,
 */
 void LBP_ForceRegister(ADP_EXTENDED_ADDRESS *pEUI64Address,
     uint16_t shortAddress, uint16_t panId, ADP_GROUP_MASTER_KEY *pGMK);
+
+// *****************************************************************************
+/* Function:
+    void LBP_JoinRequest(uint16_t panId, uint16_t lbaAddress, uint8_t mediaType);
+
+  Summary:
+    This primitive allows the upper layer to join an existing network.
+
+  Description:
+    The LBP Join Request primitive allows the upper layer to join an existing
+    network.
+    
+    Result is provided in the corresponding LBP Join Confirm callback.
+
+  Precondition:
+    LBP_InitDev must have been called before.
+
+  Parameters:
+    panId      - The 16-bit PAN identifier of the network to join
+
+    lbaAddress - The 16-bit short address of the device acting as a 6LowPAN
+                 bootstrap agent (relay)
+
+    mediaType  - The Media Type to use for frame exchange with LBA. Only used in
+                 Hybrid Profile.
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    App_DiscoveryIndication(ADP_PAN_DESCRIPTOR *panDescriptor)
+    {
+        uint8_t mediaType = MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF;
+
+        if (panDescriptor-> == MAC_WRP_MEDIA_TYPE_IND_RF)
+        {
+            mediaType = MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_PLC;
+        }
+
+        LBP_JoinRequest(panDescriptor->panId, panDescriptor->panId, mediaType);
+        // Wait for Join Confirm    
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+void LBP_JoinRequest(uint16_t panId, uint16_t lbaAddress, uint8_t mediaType);
+
+// *****************************************************************************
+/* Function:
+    void LBP_LeaveRequest(void);
+
+  Summary:
+    This primitive allows to remove itself from the network.
+
+  Description:
+    The LBP Leave Request primitive allows a non-coordinator device to remove
+    itself from the network.
+    
+    Result is provided in the corresponding LBP Leave Confirm callback.
+
+  Precondition:
+    LBP_InitDev must have been called before.
+
+  Parameters:
+    None.
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    LBP_LeaveRequest();
+    // Wait for Leave Confirm
+    </code>
+
+  Remarks:
+    None.
+*/
+void LBP_LeaveRequest(void);
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
