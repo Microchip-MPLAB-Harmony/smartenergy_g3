@@ -259,7 +259,6 @@ void ROUTING_WRP_SetMib(uint32_t attributeId, uint16_t attributeIndex,
         (attributeId == ADP_IB_LOW_LQI_VALUE) ||
         (attributeId == ADP_IB_HIGH_LQI_VALUE) ||
         (attributeId == ADP_IB_RLC_ENABLED) ||
-        (attributeId == ADP_IB_MANUF_SET_PHASEDIFF_PREQ_PREP) ||
         (attributeId == ADP_IB_MANUF_ALL_NEIGHBORS_BLACKLISTED_COUNT))
     {
         pSetConfirm->status = G3_INVALID_PARAMETER;

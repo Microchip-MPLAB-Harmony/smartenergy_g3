@@ -687,11 +687,8 @@ typedef struct
     /* The size of the NSDU, in bytes; Up to ADP_LBP_MAX_NSDU_LENGTH bytes */
     uint16_t nsduLength;
 
-    /* The value of the link quality during reception of the frame */
-    uint8_t linkQualityIndicator;
-
     /* The Security Level of the received frame */
-    bool securityLevel;
+    uint8_t securityLevel;
 
 } ADP_LBP_IND_PARAMS;
 
