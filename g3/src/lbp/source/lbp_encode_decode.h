@@ -95,7 +95,7 @@
  * @return The size of the encoded data in buffer
  *
  **********************************************************************************************************************/
-uint16_t LBP_Encode_KickFromLBDRequest(const struct TAdpExtendedAddress *pEUI64Address, uint16_t u16MessageLength,
+uint16_t LBP_Encode_KickFromLBDRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint16_t u16MessageLength,
 		uint8_t *pMessageBuffer);
 
 /**********************************************************************************************************************/
@@ -112,7 +112,7 @@ uint16_t LBP_Encode_KickFromLBDRequest(const struct TAdpExtendedAddress *pEUI64A
  * @return The size of the encoded data in buffer
  *
  **********************************************************************************************************************/
-uint16_t LBP_Encode_KickToLBD(const struct TAdpExtendedAddress *pEUI64Address, uint16_t u16MessageLength,
+uint16_t LBP_Encode_KickToLBD(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint16_t u16MessageLength,
 		uint8_t *pMessageBuffer);
 
 /**********************************************************************************************************************/
@@ -134,7 +134,7 @@ uint16_t LBP_Encode_KickToLBD(const struct TAdpExtendedAddress *pEUI64Address, u
  * @return The size of the encoded data in buffer
  *
  **********************************************************************************************************************/
-uint16_t LBP_Encode_JoiningRequest(const struct TAdpExtendedAddress *pEUI64Address, uint8_t u8MediaType,
+uint16_t LBP_Encode_JoiningRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint8_t u8MediaType,
 		uint16_t u16BootStrappingDataLength, uint16_t u16MessageLength, uint8_t *pMessageBuffer);
 
 /**********************************************************************************************************************/
@@ -158,7 +158,7 @@ uint16_t LBP_Encode_JoiningRequest(const struct TAdpExtendedAddress *pEUI64Addre
  * @return The size of the encoded data in buffer
  *
  **********************************************************************************************************************/
-uint16_t LBP_Encode_ChallengeRequest(const struct TAdpExtendedAddress *pEUI64Address, uint8_t u8MediaType,
+uint16_t LBP_Encode_ChallengeRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint8_t u8MediaType,
 		uint8_t u8DisableBackupMedium, uint16_t u16BootStrappingDataLength, uint16_t u16MessageLength, uint8_t *pMessageBuffer);
 
 /**********************************************************************************************************************/
@@ -182,7 +182,7 @@ uint16_t LBP_Encode_ChallengeRequest(const struct TAdpExtendedAddress *pEUI64Add
  * @return The size of the encoded data in buffer
  *
  **********************************************************************************************************************/
-uint16_t LBP_Encode_AcceptedRequest(const struct TAdpExtendedAddress *pEUI64Address, uint8_t u8MediaType,
+uint16_t LBP_Encode_AcceptedRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint8_t u8MediaType,
 		uint8_t u8DisableBackupMedium, uint16_t u16BootStrappingDataLength, uint16_t u16MessageLength, uint8_t *pMessageBuffer);
 
 /**********************************************************************************************************************/
@@ -276,7 +276,7 @@ uint16_t LBP_EncodeDecline(uint8_t *p_ext_addr, uint8_t *pMessageBuffer, uint16_
  *
  **********************************************************************************************************************/
 bool LBP_Decode_Message(uint16_t u16MessageLength, uint8_t *pMessageBuffer, uint8_t *pu8MessageType,
-		struct TAdpExtendedAddress *pEUI64Address, uint16_t *pu16BootStrappingDataLength, uint8_t **pBootStrappingData);
+		ADP_EXTENDED_ADDRESS *pEUI64Address, uint16_t *pu16BootStrappingDataLength, uint8_t **pBootStrappingData);
 #endif
 
 /**********************************************************************************************************************/

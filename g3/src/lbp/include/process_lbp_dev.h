@@ -45,7 +45,7 @@
 struct TLbpNotificationsDev {
 	AdpNetworkJoinConfirm fnctJoinConfirm;
 	AdpNetworkLeaveConfirm fnctLeaveConfirm;
-	AdpNetworkLeaveIndication fnctLeaveIndication;
+	AdpNetworkLeaveIndication leaveIndication;
 };
 
 struct TLBPContextDev {
@@ -68,7 +68,7 @@ struct TLBPContextDev {
 	/* Number of pending message confirms */
 	uint8_t m_u8PendingConfirms;
 	/* EUI64 address of the device */
-	struct TAdpExtendedAddress m_EUI64Address;
+	ADP_EXTENDED_ADDRESS m_EUI64Address;
 	/* This parameter specifies the PAN ID: 0xFFFF means not connected to PAN */
 	uint16_t m_u16PanId;
 	/* 16-bit address for new device which is unique inside the PAN */
@@ -114,7 +114,7 @@ void LBP_SetParamDev(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint8_
  * @param u16PanId The 16-bit PAN Id to be set
  * @param pGMK Pointer to Group Master Key to set
  **********************************************************************************************************************/
-void LBP_ForceRegister(struct TAdpExtendedAddress *pEUI64Address, uint16_t u16ShortAddress, uint16_t u16PanId,
+void LBP_ForceRegister(ADP_EXTENDED_ADDRESS *pEUI64Address, uint16_t u16ShortAddress, uint16_t u16PanId,
 		struct TGroupMasterKey *pGMK);
 
 #endif

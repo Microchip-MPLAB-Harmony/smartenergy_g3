@@ -166,8 +166,8 @@ extern bool AdpMac_SecurityResetSync(void);
 extern bool AdpMac_DeleteGroupMasterKeySync(uint8_t u8KeyId);
 extern bool AdpMac_SetGroupMasterKeySync(const struct TGroupMasterKey *pMasterKey);
 extern bool AdpMac_SetShortAddressSync(uint16_t u16ShortAddress);
-extern bool AdpMac_GetExtendedAddressSync(struct TAdpExtendedAddress *pExtendedAddress);
-extern bool AdpMac_SetExtendedAddressSync(const struct TAdpExtendedAddress *pExtendedAddress);
+extern bool AdpMac_GetExtendedAddressSync(ADP_EXTENDED_ADDRESS *pExtendedAddress);
+extern bool AdpMac_SetExtendedAddressSync(const ADP_EXTENDED_ADDRESS *pExtendedAddress);
 extern bool AdpMac_SetPanIdSync(uint16_t u16PanId);
 
 /**
@@ -226,13 +226,13 @@ static bool _SetShortAddress(uint16_t u16ShortAddress)
 	return result;
 }
 
-static bool _SetExtendedAddress(struct TAdpExtendedAddress *pEUI64Address)
+static bool _SetExtendedAddress(ADP_EXTENDED_ADDRESS *pEUI64Address)
 {
 	struct TAdpSetConfirm setConfirm;
 	bool result = false;
 
 	// Set on ADP
-	AdpSetRequestSync(ADP_IB_MANUF_EXTENDED_ADDRESS, 0, sizeof(struct TAdpExtendedAddress), pEUI64Address->m_au8Value, &setConfirm);
+	AdpSetRequestSync(ADP_IB_MANUF_EXTENDED_ADDRESS, 0, sizeof(ADP_EXTENDED_ADDRESS), pEUI64Address->m_au8Value, &setConfirm);
 	if (setConfirm.m_u8Status == G3_SUCCESS) {
 		// Set on MAC
 		result = AdpMac_SetExtendedAddressSync(pEUI64Address);
@@ -603,8 +603,8 @@ static void _Kick_TimerExpired_Callback(struct TTimer *pTimer)
 	_SetShortAddress(0xFFFF);
 	_SetPanId(0xFFFF);
 
-	if (g_LbpContext.m_LbpNotifications.fnctLeaveIndication != NULL) {
-		g_LbpContext.m_LbpNotifications.fnctLeaveIndication();
+	if (g_LbpContext.m_LbpNotifications.leaveIndication != NULL) {
+		g_LbpContext.m_LbpNotifications.leaveIndication();
 	}
 }
 
@@ -654,7 +654,7 @@ static void _Leave_Callback(uint8_t u8Status)
  * This function is called internally (from this file) when the first EAP-PSK message is received
  *
  **********************************************************************************************************************/
-static void _Join_Process_Challenge_FirstMessage(const struct TAdpExtendedAddress *pEUI64Address,
+static void _Join_Process_Challenge_FirstMessage(const ADP_EXTENDED_ADDRESS *pEUI64Address,
 		uint8_t u8EAPIdentifier, uint16_t u16EAPDataLength, uint8_t *pEAPData)
 {
 	EAP_PSK_RAND randS;
@@ -740,7 +740,7 @@ static void _Join_Process_Challenge_FirstMessage(const struct TAdpExtendedAddres
  *
  **********************************************************************************************************************/
 static void _Join_Process_Challenge_ThirdMessage(uint16_t u16HeaderLength, uint8_t *pHeader,
-		const struct TAdpExtendedAddress *pEUI64Address, uint8_t u8EAPIdentifier, uint16_t u16EAPDataLength,
+		const ADP_EXTENDED_ADDRESS *pEUI64Address, uint8_t u8EAPIdentifier, uint16_t u16EAPDataLength,
 		uint8_t *pEAPData)
 {
 	EAP_PSK_RAND randS;
@@ -828,7 +828,7 @@ static void _Join_Process_Challenge_ThirdMessage(uint16_t u16HeaderLength, uint8
  * This function is called by the 6LoWPANProtocol when a LBP Challenge message is received
  *
  **********************************************************************************************************************/
-static void _Join_Process_Challenge(const struct TAdpExtendedAddress *pEUI64Address,
+static void _Join_Process_Challenge(const ADP_EXTENDED_ADDRESS *pEUI64Address,
 		uint16_t u16BootStrappingDataLength, uint8_t *pBootStrappingData)
 {
 	uint8_t u8Code = 0;
@@ -900,7 +900,7 @@ static void _Join_Process_Challenge(const struct TAdpExtendedAddress *pEUI64Addr
  * This function is called by the 6LoWPANProtocol when a LBP Accepted embedding an EAP message is received
  *
  **********************************************************************************************************************/
-static void _Join_Process_Accepted_EAP(const struct TAdpExtendedAddress *pEUI64Address,
+static void _Join_Process_Accepted_EAP(const ADP_EXTENDED_ADDRESS *pEUI64Address,
 		uint16_t u16BootStrappingDataLength, uint8_t *pBootStrappingData)
 {
 	uint8_t u8Code = 0;
@@ -986,7 +986,7 @@ static void _Join_Process_Accepted_EAP(const struct TAdpExtendedAddress *pEUI64A
  * This function is called by the 6LoWPANProtocol when a LBP Accepted embedding a Configuration message is received
  *
  **********************************************************************************************************************/
-static void _Join_Process_Accepted_Configuration(const struct TAdpExtendedAddress *pEUI64Address,
+static void _Join_Process_Accepted_Configuration(const ADP_EXTENDED_ADDRESS *pEUI64Address,
 		uint16_t u16BootStrappingDataLength, uint8_t *pBootStrappingData)
 {
 	UNUSED(pEUI64Address);
@@ -1034,7 +1034,7 @@ static void _Join_Process_Accepted_Configuration(const struct TAdpExtendedAddres
  * Accepted message can embed: EAP-Success or Configuration parameters
  *
  **********************************************************************************************************************/
-static void _Join_Process_Accepted(const struct TAdpExtendedAddress *pEUI64Address,
+static void _Join_Process_Accepted(const ADP_EXTENDED_ADDRESS *pEUI64Address,
 		uint16_t u16BootStrappingDataLength, uint8_t *pBootStrappingData)
 {
 	/* check the first byte of the Bootstrapping data in order to detect */
@@ -1097,7 +1097,7 @@ static void _JoinRequest(void)
 
 /**
  **********************************************************************************************************************/
-static void _LeaveRequest(const struct TAdpExtendedAddress *pEUI64Address)
+static void _LeaveRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address)
 {
 	struct TAdpAddress dstAddr;
 
@@ -1118,13 +1118,13 @@ static void _LeaveRequest(const struct TAdpExtendedAddress *pEUI64Address)
 
 /**
  **********************************************************************************************************************/
-static void _ForceJoined(uint16_t u16ShortAddress, uint16_t u16PanId, struct TAdpExtendedAddress *pEUI64Address)
+static void _ForceJoined(uint16_t u16ShortAddress, uint16_t u16PanId, ADP_EXTENDED_ADDRESS *pEUI64Address)
 {
 	struct TAdpNetworkJoinConfirm joinConfirm;
 
 	g_LbpContext.m_u16ShortAddress = u16ShortAddress;
 	g_LbpContext.m_u16PanId = u16PanId;
-	memcpy(&g_LbpContext.m_EUI64Address, pEUI64Address, sizeof(struct TAdpExtendedAddress));
+	memcpy(&g_LbpContext.m_EUI64Address, pEUI64Address, sizeof(ADP_EXTENDED_ADDRESS));
 	_SetBootState(STATE_BOOT_JOINED);
 	if (g_LbpContext.m_LbpNotifications.fnctJoinConfirm) {
 		joinConfirm.m_u8Status = G3_SUCCESS;
@@ -1160,7 +1160,7 @@ static void AdpLbpIndicationDev(struct TAdpLbpIndication *pLbpIndication)
 {
 	/* The coordinator will never get here as is handled by the application using LDB messages */
 	uint8_t pu8MessageType = 0;
-	struct TAdpExtendedAddress eui64Address;
+	ADP_EXTENDED_ADDRESS eui64Address;
 	uint16_t u16BootStrappingDataLength = 0;
 	uint8_t *pBootStrappingData = 0L;
 
@@ -1168,7 +1168,7 @@ static void AdpLbpIndicationDev(struct TAdpLbpIndication *pLbpIndication)
 			&pBootStrappingData)) {
 		/* if we are not the coordinator and we are in the network and this bootstrap message is not for us */
 		if (memcmp(&eui64Address, &g_LbpContext.m_EUI64Address,
-				sizeof(struct TAdpExtendedAddress)) != 0) {
+				sizeof(ADP_EXTENDED_ADDRESS)) != 0) {
 			if (_Joined()) {
 				/* LBA (agent): forward the message between server and device */
 				struct TAdpAddress dstAddr;
@@ -1178,7 +1178,7 @@ static void AdpLbpIndicationDev(struct TAdpLbpIndication *pLbpIndication)
 				if (pu8MessageType == LBP_JOINING) {
 					/* Check Src Address matches the one in LBP frame */
 					if (memcmp(&eui64Address, &pLbpIndication->m_pSrcAddr->m_ExtendedAddress,
-							sizeof(struct TAdpExtendedAddress)) == 0) {
+							sizeof(ADP_EXTENDED_ADDRESS)) == 0) {
 						/* Check frame coming from LBD is not secured */
 						if (pLbpIndication->m_u8SecurityLevel == MAC_WRP_SECURITY_LEVEL_NONE) {
 							/* relay to the server */
@@ -1362,7 +1362,7 @@ void LBP_SetParamDev(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint8_
 
 /**
  **********************************************************************************************************************/
-void LBP_ForceRegister(struct TAdpExtendedAddress *pEUI64Address, uint16_t u16ShortAddress, uint16_t u16PanId,
+void LBP_ForceRegister(ADP_EXTENDED_ADDRESS *pEUI64Address, uint16_t u16ShortAddress, uint16_t u16PanId,
 		struct TGroupMasterKey *pGMK)
 {
 	/* Set the information in G3 stack */
@@ -1386,7 +1386,7 @@ void LBP_ForceRegister(struct TAdpExtendedAddress *pEUI64Address, uint16_t u16Sh
  **********************************************************************************************************************/
 void AdpNetworkJoinRequest(uint16_t u16PanId, uint16_t u16LbaAddress, uint8_t u8MediaType)
 {
-	struct TAdpExtendedAddress extendedAddress;
+	ADP_EXTENDED_ADDRESS extendedAddress;
 	uint8_t u8Status = G3_INVALID_REQUEST;
 	
 	LOG_INFO(Log("AdpNetworkJoinRequest() PanID %04X Lba %04X MediaType %02X", u16PanId, u16LbaAddress, u8MediaType));

@@ -12,8 +12,8 @@
 
   Description:
     The LoWPAN Bootstrapping Protocol (LBP) provides a simple interface to
-	manage the G3 boostrap process Adaptation Layer. This file provides types
-	definition for the LBP.
+    manage the G3 boostrap process Adaptation Layer. This file provides types
+    definition for the LBP.
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
@@ -113,7 +113,7 @@
 
    Description:
     This macro defines the size in bytes size of the S network access identifier
-    for	ARIB band.
+    for ARIB band.
 
    Remarks:
     None.

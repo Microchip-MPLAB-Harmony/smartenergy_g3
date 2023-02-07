@@ -52,8 +52,45 @@
 
 #define UNUSED(v)          (void)(v)
 
+/* BOOTSTRAP_NUM_SLOTS defines the number of parallel bootstrap procedures that can be carried out */
+#define BOOTSTRAP_NUM_SLOTS 5
+#define BOOTSTRAP_MSG_MAX_RETRIES 1
+
 /* Set RandS to a fixed value (default is random) */
 /* #define FIXED_RAND_S */
+
+/* Status codes related to HostInterface processing */
+typedef enum
+{
+    BS_STATE_WAITING_JOINNING = 0,
+    BS_STATE_SENT_EAP_MSG_1,
+    BS_STATE_WAITING_EAP_MSG_2,
+    BS_STATE_SENT_EAP_MSG_3,
+    BS_STATE_WAITING_EAP_MSG_4,
+    BS_STATE_SENT_EAP_MSG_ACCEPTED,
+    BS_STATE_SENT_EAP_MSG_DECLINED,
+} LBP_SLOT_STATE;
+
+typedef struct
+{
+    LBP_SLOT_STATE e_state;
+    ADP_EXTENDED_ADDRESS m_LbdAddress;
+    uint16_t us_lba_src_addr;
+    uint16_t us_assigned_short_address;
+    uint8_t uc_tx_handle;
+    uint32_t ul_timeout;
+    uint8_t uc_tx_attemps;
+    EAP_PSK_RAND m_randS;
+    uint32_t ul_nonce;
+    uint8_t uc_pending_confirms;
+    uint8_t uc_pending_tx_handler;
+    uint8_t auc_data[LBP_MAX_NSDU_LENGTH];
+    uint16_t us_data_length;
+    EAP_PSK_CONTEXT m_PskContext;
+    uint8_t m_u8MediaType;
+    uint8_t m_u8DisableBackupMedium;
+
+} LBP_SLOT_PARAMS;
 
 static uint8_t u8NsduHandle = 0;
 static uint8_t u8MaxHops = 0;
@@ -75,9 +112,9 @@ static bool bAribBand;
 static uint8_t u8EAPIdentifier = 0;
 static bool bRekey;
 
-static struct TLbpNotificationsCoord lbpNotifications = {NULL};
+static LBP_NOTIFICATIONS_COORD lbpNotifications = {NULL};
 
-static t_bootstrap_slot bootstrap_slots[BOOTSTRAP_NUM_SLOTS];
+static LBP_SLOT_PARAMS bootstrap_slots[BOOTSTRAP_NUM_SLOTS];
 
 
 /**********************************************************************************************************************/
@@ -111,7 +148,7 @@ static bool _SetDeviceTypeCoord(void)
 
 /**
  **********************************************************************************************************************/
-static void _log_show_slot_status(t_bootstrap_slot *pSlot)
+static void _log_show_slot_status(LBP_SLOT_PARAMS *pSlot)
 {
 	LOG_DBG(Log(
 			"[BS] Updating slot with LBD_ADDR: %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X, \
@@ -148,7 +185,7 @@ static void  _init_bootstrap_slots(void)
 
 /**
  **********************************************************************************************************************/
-static t_bootstrap_slot *_get_bootstrap_slot_by_index(uint8_t uc_index)
+static LBP_SLOT_PARAMS *_get_bootstrap_slot_by_index(uint8_t uc_index)
 {
 	return &bootstrap_slots[uc_index];
 }
@@ -177,7 +214,7 @@ static void _set_keying_table(uint8_t u8KeyIndex, uint8_t *key)
 
 /**
  **********************************************************************************************************************/
-static uint8_t _process_accepted_GMK_activation(struct TAdpExtendedAddress *pLBPEUI64Address, t_bootstrap_slot *p_bs_slot)
+static uint8_t _process_accepted_GMK_activation(ADP_EXTENDED_ADDRESS *pLBPEUI64Address, LBP_SLOT_PARAMS *p_bs_slot)
 {
 	unsigned char *pMemoryBuffer = &p_bs_slot->auc_data[0];
 	unsigned short u16MemoryBufferLength = sizeof(p_bs_slot->auc_data);
@@ -220,7 +257,7 @@ static uint8_t _process_accepted_GMK_activation(struct TAdpExtendedAddress *pLBP
 
 /**
  **********************************************************************************************************************/
-static void _processJoining0(struct TAdpExtendedAddress *pLBPEUI64Address, t_bootstrap_slot *p_bs_slot)
+static void _processJoining0(ADP_EXTENDED_ADDRESS *pLBPEUI64Address, LBP_SLOT_PARAMS *p_bs_slot)
 {
 	uint8_t *pMemoryBuffer = &p_bs_slot->auc_data[0];
 	uint16_t u16MemoryBufferLength = sizeof(p_bs_slot->auc_data);
@@ -263,8 +300,8 @@ static void _processJoining0(struct TAdpExtendedAddress *pLBPEUI64Address, t_boo
  * \brief _processJoiningEAPT1.
  *
  */
-static bool _processJoiningEAPT1(struct TAdpExtendedAddress au8LBPEUI64Address, uint16_t u16EAPDataLength,
-		uint8_t *pEAPData, t_bootstrap_slot *p_bs_slot)
+static bool _processJoiningEAPT1(ADP_EXTENDED_ADDRESS au8LBPEUI64Address, uint16_t u16EAPDataLength,
+		uint8_t *pEAPData, LBP_SLOT_PARAMS *p_bs_slot)
 {
 	EAP_PSK_RAND randS;
 	EAP_PSK_RAND randP;
@@ -364,8 +401,8 @@ static bool _processJoiningEAPT1(struct TAdpExtendedAddress au8LBPEUI64Address, 
  * \brief _processJoiningEAPT3.
  *
  */
-static bool _processJoiningEAPT3(struct TAdpExtendedAddress au8LBPEUI64Address, uint8_t *pBootStrappingData, uint16_t u16EAPDataLength,
-		uint8_t *pEAPData, t_bootstrap_slot *p_bs_slot)
+static bool _processJoiningEAPT3(ADP_EXTENDED_ADDRESS au8LBPEUI64Address, uint8_t *pBootStrappingData, uint16_t u16EAPDataLength,
+		uint8_t *pEAPData, LBP_SLOT_PARAMS *p_bs_slot)
 {
 	EAP_PSK_RAND randS;
 	uint8_t u8PChannelResult = 0;
@@ -427,7 +464,7 @@ static bool _timeout_is_past(uint32_t ul_timeout_value)
 
 /**
  **********************************************************************************************************************/
-static void _initialize_bootstrap_message(t_bootstrap_slot *p_bs_slot)
+static void _initialize_bootstrap_message(LBP_SLOT_PARAMS *p_bs_slot)
 {
 	p_bs_slot->us_data_length = 0;
 	memset(p_bs_slot->auc_data, 0, sizeof(p_bs_slot->auc_data));
@@ -437,10 +474,10 @@ static void _initialize_bootstrap_message(t_bootstrap_slot *p_bs_slot)
 
 /**
  **********************************************************************************************************************/
-static t_bootstrap_slot *_get_bootstrap_slot_by_addr(uint8_t *p_eui64)
+static LBP_SLOT_PARAMS *_get_bootstrap_slot_by_addr(uint8_t *p_eui64)
 {
 	uint8_t uc_i;
-	t_bootstrap_slot *p_out_slot = NULL;
+	LBP_SLOT_PARAMS *p_out_slot = NULL;
 
 	/* Check if the lbd is already started */
 	for (uc_i = 0; uc_i < BOOTSTRAP_NUM_SLOTS; uc_i++) {
@@ -472,19 +509,19 @@ static t_bootstrap_slot *_get_bootstrap_slot_by_addr(uint8_t *p_eui64)
 
 /**
  **********************************************************************************************************************/
-void LBP_Rekey(uint16_t us_short_address, struct TAdpExtendedAddress *pEUI64Address, bool bDistribute)
+void LBP_Rekey(uint16_t shortAddress, ADP_EXTENDED_ADDRESS *pEUI64Address, bool distribute)
 {
 	struct TAdpAddress dstAddr;
 	uint8_t uc_handle;
 
-	t_bootstrap_slot *p_bs_slot = _get_bootstrap_slot_by_addr(pEUI64Address->m_au8Value);
+	LBP_SLOT_PARAMS *p_bs_slot = _get_bootstrap_slot_by_addr(pEUI64Address->m_au8Value);
 
 	if (p_bs_slot) {
 		_initialize_bootstrap_message(p_bs_slot);
 		/* DISABLE_BACKUP_FLAG and MediaType set to 0x0 in Rekeying frames */
 		p_bs_slot->m_u8DisableBackupMedium = 0;
 		p_bs_slot->m_u8MediaType = 0;
-		if (bDistribute) {
+		if (distribute) {
 			/* If re-keying in GMK distribution phase */
 			/* Send ADPM-LBP.Request(EAPReq(mes1)) to each registered device */
 			_processJoining0(pEUI64Address, p_bs_slot);
@@ -499,7 +536,7 @@ void LBP_Rekey(uint16_t us_short_address, struct TAdpExtendedAddress *pEUI64Addr
 
 		/* Send the previously prepared message */
 		dstAddr.m_u8AddrSize = ADP_ADDRESS_16BITS;
-		dstAddr.m_u16ShortAddr = us_short_address;
+		dstAddr.m_u16ShortAddr = shortAddress;
 
 		if (p_bs_slot->uc_pending_confirms > 0) {
 			p_bs_slot->uc_pending_tx_handler = p_bs_slot->uc_tx_handle;
@@ -526,16 +563,16 @@ void LBP_Rekey(uint16_t us_short_address, struct TAdpExtendedAddress *pEUI64Addr
 
 /**
  **********************************************************************************************************************/
-void LBP_SetRekeyPhase(bool bRekeyStart)
+void LBP_SetRekeyPhase(bool rekeyStart)
 {
-	bRekey = bRekeyStart;
+	bRekey = rekeyStart;
 }
 
 /**********************************************************************************************************************/
 
 /**
  **********************************************************************************************************************/
-void LBP_activate_new_key(void)
+void LBP_ActivateNewKey(void)
 {
 	uint8_t u8NewKeyIndex;
 
@@ -634,12 +671,12 @@ static void AdpLbpConfirmCoord(struct TAdpLbpConfirm *pLbpConfirm)
 {
 	uint8_t uc_i;
 
-	t_bootstrap_slot *p_current_slot = NULL;
+	LBP_SLOT_PARAMS *p_current_slot = NULL;
 
 	bool b_is_accepted_confirm = false;
 
 	for (uc_i = 0; uc_i < BOOTSTRAP_NUM_SLOTS; uc_i++) {
-		t_bootstrap_slot *p_slot = _get_bootstrap_slot_by_index(uc_i);
+		LBP_SLOT_PARAMS *p_slot = _get_bootstrap_slot_by_index(uc_i);
 
 		if (p_slot->uc_pending_confirms == 1 && pLbpConfirm->m_u8NsduHandle == p_slot->uc_tx_handle && p_slot->e_state != BS_STATE_WAITING_JOINNING) {
 			LOG_DBG(Log("[BS] AdpNotification_LbpConfirm (%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X).",
@@ -726,8 +763,8 @@ static void AdpLbpConfirmCoord(struct TAdpLbpConfirm *pLbpConfirm)
 
 	if (pLbpConfirm->m_u8Status == G3_SUCCESS && b_is_accepted_confirm) {
 		/* Upper layer indications */
-		if (lbpNotifications.fnctJoinCompleteIndication != NULL) {
-			lbpNotifications.fnctJoinCompleteIndication(p_current_slot->m_LbdAddress.m_au8Value, p_current_slot->us_assigned_short_address);
+		if (lbpNotifications.joinCompleteIndication != NULL) {
+			lbpNotifications.joinCompleteIndication(p_current_slot->m_LbdAddress.m_au8Value, p_current_slot->us_assigned_short_address);
 		}
 	}
 }
@@ -738,7 +775,7 @@ static void AdpLbpConfirmCoord(struct TAdpLbpConfirm *pLbpConfirm)
  **********************************************************************************************************************/
 static void AdpLbpIndicationCoord(struct TAdpLbpIndication *pLbpIndication)
 {
-	static struct TAdpExtendedAddress ext_address_in_process;
+	static ADP_EXTENDED_ADDRESS ext_address_in_process;
 	uint16_t u16OrigAddress;
 	uint8_t u8MessageType;
 	uint8_t *pBootStrappingData;
@@ -752,8 +789,8 @@ static void AdpLbpIndicationCoord(struct TAdpLbpIndication *pLbpIndication)
 	uint8_t u8TSubfield = 0;
 	uint16_t u16EAPDataLength = 0;
 	uint8_t *pEAPData = 0L;
-	struct TAdpExtendedAddress m_current_LbdAddress;
-	t_bootstrap_slot *p_bs_slot;
+	ADP_EXTENDED_ADDRESS m_current_LbdAddress;
+	LBP_SLOT_PARAMS *p_bs_slot;
 	uint8_t u8MediaType;
 	uint8_t u8DisableBackupMedium;
 
@@ -784,7 +821,7 @@ static void AdpLbpIndicationCoord(struct TAdpLbpIndication *pLbpIndication)
 	if (u16OrigAddress == 0xFFFF) {
 		/* Frame from LBD */
 		/* Originator address must be equal to the one in LBP frame */
-		if (memcmp(&m_current_LbdAddress, &pLbpIndication->m_pSrcAddr->m_ExtendedAddress, sizeof(struct TAdpExtendedAddress)) != 0) {
+		if (memcmp(&m_current_LbdAddress, &pLbpIndication->m_pSrcAddr->m_ExtendedAddress, sizeof(ADP_EXTENDED_ADDRESS)) != 0) {
 			return;
 		}
 		/* Frame type must be equal to JOINING */
@@ -824,8 +861,8 @@ static void AdpLbpIndicationCoord(struct TAdpLbpIndication *pLbpIndication)
 					p_bs_slot->m_u8DisableBackupMedium = u8DisableBackupMedium;
 					/* Check if the joining device is accepted */
 					u16AssignedAddress = 0xFFFF;
-					if (lbpNotifications.fnctJoinRequestIndication != NULL) {
-						lbpNotifications.fnctJoinRequestIndication(m_current_LbdAddress.m_au8Value, &u16AssignedAddress);
+					if (lbpNotifications.joinRequestIndication != NULL) {
+						lbpNotifications.joinRequestIndication(m_current_LbdAddress.m_au8Value, &u16AssignedAddress);
 					}
 					if (u16AssignedAddress == 0xFFFF) {
 						// Device rejected
@@ -962,8 +999,8 @@ static void AdpLbpIndicationCoord(struct TAdpLbpIndication *pLbpIndication)
 
 	/* Upper layer indications */
 	if (u8MessageType == LBP_KICK_FROM_LBD) {
-		if (lbpNotifications.fnctLeaveIndication != NULL) {
-			lbpNotifications.fnctLeaveIndication(u16OrigAddress);
+		if (lbpNotifications.leaveIndication != NULL) {
+			lbpNotifications.leaveIndication(u16OrigAddress);
 		}
 	}
 }
@@ -1005,7 +1042,7 @@ void LBP_InitCoord(bool aribBand)
 
 /**
  **********************************************************************************************************************/
-void LBP_SetNotificationsCoord(struct TLbpNotificationsCoord *pNotifications)
+void LBP_SetNotificationsCoord(LBP_NOTIFICATIONS_COORD *pNotifications)
 {
 	if (pNotifications != NULL) {
 		lbpNotifications = *pNotifications;
@@ -1016,7 +1053,7 @@ void LBP_SetNotificationsCoord(struct TLbpNotificationsCoord *pNotifications)
 
 /**
  **********************************************************************************************************************/
-bool LBP_KickDevice(uint16_t us_short_address, struct TAdpExtendedAddress *pEUI64Address)
+bool LBP_KickDevice(uint16_t shortAddress, ADP_EXTENDED_ADDRESS *pEUI64Address)
 {
 	struct TAdpAddress dstAddr;
 	uint8_t au8Data[10];
@@ -1024,7 +1061,7 @@ bool LBP_KickDevice(uint16_t us_short_address, struct TAdpExtendedAddress *pEUI6
 
 	/* Send KICK to the device */
 	dstAddr.m_u8AddrSize = ADP_ADDRESS_16BITS;
-	dstAddr.m_u16ShortAddr = us_short_address;
+	dstAddr.m_u16ShortAddr = shortAddress;
 
 	u16Length = LBP_Encode_KickToLBD(pEUI64Address, sizeof(au8Data), au8Data);
 
@@ -1049,18 +1086,18 @@ bool LBP_KickDevice(uint16_t us_short_address, struct TAdpExtendedAddress *pEUI6
 
 /**
  **********************************************************************************************************************/
-void LBP_SetParamCoord(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint8_t u8AttributeLen, const uint8_t *pu8AttributeValue,
+void LBP_SetParamCoord(uint32_t attributeId, uint16_t attributeIndex, uint8_t attributeLen, const uint8_t *pAttributeValue,
 		LBP_SET_PARAM_CONFIRM *pSetConfirm)
 {
-	pSetConfirm->attributeId = u32AttributeId;
-	pSetConfirm->attributeIndex = u16AttributeIndex;
+	pSetConfirm->attributeId = attributeId;
+	pSetConfirm->attributeIndex = attributeIndex;
 	pSetConfirm->status = LBP_STATUS_UNSUPPORTED_PARAMETER;
 
-	switch (u32AttributeId) {
+	switch (attributeId) {
 	case LBP_IB_IDS:
-		if ((u8AttributeLen == LBP_NETWORK_ACCESS_ID_SIZE_S_ARIB) || (u8AttributeLen == LBP_NETWORK_ACCESS_ID_SIZE_S_CENELEC_FCC)) {
-			sIdS.m_u8Size = u8AttributeLen;
-			memcpy(sIdS.m_au8Value, pu8AttributeValue, u8AttributeLen);
+		if ((attributeLen == LBP_NETWORK_ACCESS_ID_SIZE_S_ARIB) || (attributeLen == LBP_NETWORK_ACCESS_ID_SIZE_S_CENELEC_FCC)) {
+			sIdS.m_u8Size = attributeLen;
+			memcpy(sIdS.m_au8Value, pAttributeValue, attributeLen);
 			pSetConfirm->status = LBP_STATUS_OK;
 		} else {
 			pSetConfirm->status = LBP_STATUS_INVALID_LENGTH;
@@ -1069,8 +1106,8 @@ void LBP_SetParamCoord(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint
 		break;
 
 	case LBP_IB_PSK:
-		if (u8AttributeLen == 16) {
-			memcpy(sEapPskKey.m_au8Value, pu8AttributeValue, 16);
+		if (attributeLen == 16) {
+			memcpy(sEapPskKey.m_au8Value, pAttributeValue, 16);
 			pSetConfirm->status = LBP_STATUS_OK;
 		} else {
 			/* Wrong parameter size */
@@ -1080,11 +1117,11 @@ void LBP_SetParamCoord(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint
 		break;
 
 	case LBP_IB_GMK:
-		if (u8AttributeLen == 16) {
+		if (attributeLen == 16) {
 			/* Set GMK on LBP module */
-			memcpy(au8CurrGMK, pu8AttributeValue, 16);
+			memcpy(au8CurrGMK, pAttributeValue, 16);
 			/* Set key table on G3 stack using the new index and new GMK */
-			_set_keying_table(u16AttributeIndex, (uint8_t *)pu8AttributeValue);
+			_set_keying_table(attributeIndex, (uint8_t *)pAttributeValue);
 			pSetConfirm->status = LBP_STATUS_OK;
 		} else {
 			/* Wrong parameter size */
@@ -1094,8 +1131,8 @@ void LBP_SetParamCoord(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint
 		break;
 
 	case LBP_IB_REKEY_GMK:
-		if (u8AttributeLen == 16) {
-			memcpy(au8RekeyGMK, pu8AttributeValue, 16);
+		if (attributeLen == 16) {
+			memcpy(au8RekeyGMK, pAttributeValue, 16);
 			pSetConfirm->status = LBP_STATUS_OK;
 		} else {
 			/* Wrong parameter size */
@@ -1105,8 +1142,8 @@ void LBP_SetParamCoord(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint
 		break;
 
 	case LBP_IB_MSG_TIMEOUT:
-		if (u8AttributeLen == 2) {
-			u16MsgTimeoutSeconds = ((pu8AttributeValue[1] << 8) | pu8AttributeValue[0]);
+		if (attributeLen == 2) {
+			u16MsgTimeoutSeconds = ((pAttributeValue[1] << 8) | pAttributeValue[0]);
 			pSetConfirm->status = LBP_STATUS_OK;
 		} else {
 			/* Wrong parameter size */

@@ -52,21 +52,21 @@
  ***********************************************************************************************************************
  *
  **********************************************************************************************************************/
-uint16_t LBP_Encode_KickFromLBDRequest(const struct TAdpExtendedAddress *pEUI64Address, uint16_t u16MessageLength,
+uint16_t LBP_Encode_KickFromLBDRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint16_t u16MessageLength,
 		uint8_t *pMessageBuffer)
 {
 	uint16_t u16EncodedLength = 0;
 
 	/* check first if the message buffer size if enough */
-	if (u16MessageLength >= sizeof(struct TAdpExtendedAddress) + 2) {
+	if (u16MessageLength >= sizeof(ADP_EXTENDED_ADDRESS) + 2) {
 		/* start message encoding */
 		/* DISABLE_BACKUP_FLAG not set in Kick frames, MediaType set to 0x0 */
 		pMessageBuffer[0] = (LBP_KICK_FROM_LBD << 4);
 		pMessageBuffer[1] = 0; /* transaction id is reserved */
 
-		memcpy(&pMessageBuffer[2], pEUI64Address, sizeof(struct TAdpExtendedAddress));
+		memcpy(&pMessageBuffer[2], pEUI64Address, sizeof(ADP_EXTENDED_ADDRESS));
 
-		u16EncodedLength = sizeof(struct TAdpExtendedAddress) + 2;
+		u16EncodedLength = sizeof(ADP_EXTENDED_ADDRESS) + 2;
 	}
 
 	return u16EncodedLength;
@@ -78,7 +78,7 @@ uint16_t LBP_Encode_KickFromLBDRequest(const struct TAdpExtendedAddress *pEUI64A
  ***********************************************************************************************************************
  *
  **********************************************************************************************************************/
-uint16_t LBP_Encode_KickToLBD(const struct TAdpExtendedAddress *pEUI64Address, uint16_t u16MessageLength,
+uint16_t LBP_Encode_KickToLBD(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint16_t u16MessageLength,
 		uint8_t *pMessageBuffer)
 {
 	uint16_t u16EncodedLength = 0;
@@ -101,24 +101,24 @@ uint16_t LBP_Encode_KickToLBD(const struct TAdpExtendedAddress *pEUI64Address, u
 
 /** LBP_Encode_JoiningRequest
  **********************************************************************************************************************/
-uint16_t LBP_Encode_JoiningRequest(const struct TAdpExtendedAddress *pEUI64Address, uint8_t u8MediaType,
+uint16_t LBP_Encode_JoiningRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint8_t u8MediaType,
 		uint16_t u16BootStrappingDataLength, uint16_t u16MessageLength, uint8_t *pMessageBuffer)
 {
 	uint16_t u16EncodedLength = 0;
 
 	/* check first if the message buffer size if enough */
-	if (u16MessageLength >= u16BootStrappingDataLength + sizeof(struct TAdpExtendedAddress) + 2) {
+	if (u16MessageLength >= u16BootStrappingDataLength + sizeof(ADP_EXTENDED_ADDRESS) + 2) {
 		/* as the bootstrapping data is already in the message buffer, move it to its place */
 		/* after the A_LDB field */
-		memmove(&pMessageBuffer[sizeof(struct TAdpExtendedAddress) + 2], pMessageBuffer, u16BootStrappingDataLength);
+		memmove(&pMessageBuffer[sizeof(ADP_EXTENDED_ADDRESS) + 2], pMessageBuffer, u16BootStrappingDataLength);
 
 		/* start message encoding */
 		pMessageBuffer[0] = (LBP_JOINING << 4) | (u8MediaType << 3) | (DISABLE_BACKUP_FLAG << 2);
 		pMessageBuffer[1] = 0; /* transaction id is reserved */
 
-		memcpy(&pMessageBuffer[2], pEUI64Address, sizeof(struct TAdpExtendedAddress));
+		memcpy(&pMessageBuffer[2], pEUI64Address, sizeof(ADP_EXTENDED_ADDRESS));
 
-		u16EncodedLength = u16BootStrappingDataLength + sizeof(struct TAdpExtendedAddress) + 2;
+		u16EncodedLength = u16BootStrappingDataLength + sizeof(ADP_EXTENDED_ADDRESS) + 2;
 	}
 
 	return u16EncodedLength;
@@ -130,24 +130,24 @@ uint16_t LBP_Encode_JoiningRequest(const struct TAdpExtendedAddress *pEUI64Addre
  ***********************************************************************************************************************
  *
  **********************************************************************************************************************/
-uint16_t LBP_Encode_ChallengeRequest(const struct TAdpExtendedAddress *pEUI64Address, uint8_t u8MediaType,
+uint16_t LBP_Encode_ChallengeRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint8_t u8MediaType,
 		uint8_t u8DisableBackupMedium, uint16_t u16BootStrappingDataLength, uint16_t u16MessageLength, uint8_t *pMessageBuffer)
 {
 	uint16_t u16EncodedLength = 0;
 
 	/* check first if the message buffer size if enough */
-	if (u16MessageLength >= u16BootStrappingDataLength + sizeof(struct TAdpExtendedAddress) + 2) {
+	if (u16MessageLength >= u16BootStrappingDataLength + sizeof(ADP_EXTENDED_ADDRESS) + 2) {
 		/* as the bootstrapping data is already in the message buffer, move it to its place */
 		/* after the A_LDB field */
-		memmove(&pMessageBuffer[sizeof(struct TAdpExtendedAddress) + 2], pMessageBuffer, u16BootStrappingDataLength);
+		memmove(&pMessageBuffer[sizeof(ADP_EXTENDED_ADDRESS) + 2], pMessageBuffer, u16BootStrappingDataLength);
 
 		/* start message encoding */
 		pMessageBuffer[0] = (LBP_CHALLENGE << 4) | (u8MediaType << 3) | (u8DisableBackupMedium << 2);
 		pMessageBuffer[1] = 0; /* transaction id is reserved */
 
-		memcpy(&pMessageBuffer[2], pEUI64Address, sizeof(struct TAdpExtendedAddress));
+		memcpy(&pMessageBuffer[2], pEUI64Address, sizeof(ADP_EXTENDED_ADDRESS));
 
-		u16EncodedLength = u16BootStrappingDataLength + sizeof(struct TAdpExtendedAddress) + 2;
+		u16EncodedLength = u16BootStrappingDataLength + sizeof(ADP_EXTENDED_ADDRESS) + 2;
 	}
 
 	return u16EncodedLength;
@@ -159,13 +159,13 @@ uint16_t LBP_Encode_ChallengeRequest(const struct TAdpExtendedAddress *pEUI64Add
  ***********************************************************************************************************************
  *
  **********************************************************************************************************************/
-uint16_t LBP_Encode_AcceptedRequest(const struct TAdpExtendedAddress *pEUI64Address, uint8_t u8MediaType,
+uint16_t LBP_Encode_AcceptedRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address, uint8_t u8MediaType,
 		uint8_t u8DisableBackupMedium, uint16_t u16BootStrappingDataLength, uint16_t u16MessageLength, uint8_t *pMessageBuffer)
 {
 	uint16_t u16EncodedLength = 0;
 
 	/* check first if the message buffer size if enough */
-	if (u16MessageLength >= u16BootStrappingDataLength + sizeof(struct TAdpExtendedAddress) + 2) {
+	if (u16MessageLength >= u16BootStrappingDataLength + sizeof(ADP_EXTENDED_ADDRESS) + 2) {
 		/* as the bootstrapping data is already in the message buffer, move it to its place */
 		/* after the A_LDB field */
 		memmove(&pMessageBuffer[8 + 2], pMessageBuffer, u16BootStrappingDataLength);
@@ -174,9 +174,9 @@ uint16_t LBP_Encode_AcceptedRequest(const struct TAdpExtendedAddress *pEUI64Addr
 		pMessageBuffer[0] = (LBP_ACCEPTED << 4) | (u8MediaType << 3) | (u8DisableBackupMedium << 2);
 		pMessageBuffer[1] = 0; /* transaction id is reserved */
 
-		memcpy(&pMessageBuffer[2], pEUI64Address, sizeof(struct TAdpExtendedAddress));
+		memcpy(&pMessageBuffer[2], pEUI64Address, sizeof(ADP_EXTENDED_ADDRESS));
 
-		u16EncodedLength = u16BootStrappingDataLength + sizeof(struct TAdpExtendedAddress) + 2;
+		u16EncodedLength = u16BootStrappingDataLength + sizeof(ADP_EXTENDED_ADDRESS) + 2;
 	}
 
 	return u16EncodedLength;
@@ -256,17 +256,17 @@ uint16_t LBP_EncodeDecline(uint8_t *p_ext_addr, uint8_t *pMessageBuffer, uint16_
  *
  **********************************************************************************************************************/
 bool LBP_Decode_Message(uint16_t u16MessageLength, uint8_t *pMessageBuffer, uint8_t *pu8MessageType,
-		struct TAdpExtendedAddress *pEUI64Address, uint16_t *pu16BootStrappingDataLength, uint8_t **pBootStrappingData)
+		ADP_EXTENDED_ADDRESS *pEUI64Address, uint16_t *pu16BootStrappingDataLength, uint8_t **pBootStrappingData)
 {
 	bool bRet = false;
 
-	if (u16MessageLength >= 2 + sizeof(struct TAdpExtendedAddress)) {
+	if (u16MessageLength >= 2 + sizeof(ADP_EXTENDED_ADDRESS)) {
 		*pu8MessageType = ((pMessageBuffer[0] & 0xF0) >> 4);
 
-		memcpy(&pEUI64Address->m_au8Value, &pMessageBuffer[2], sizeof(struct TAdpExtendedAddress));
+		memcpy(&pEUI64Address->m_au8Value, &pMessageBuffer[2], sizeof(ADP_EXTENDED_ADDRESS));
 
-		*pBootStrappingData = &pMessageBuffer[2 + sizeof(struct TAdpExtendedAddress)];
-		*pu16BootStrappingDataLength = u16MessageLength - (2 + sizeof(struct TAdpExtendedAddress));
+		*pBootStrappingData = &pMessageBuffer[2 + sizeof(ADP_EXTENDED_ADDRESS)];
+		*pu16BootStrappingDataLength = u16MessageLength - (2 + sizeof(ADP_EXTENDED_ADDRESS));
 
 		bRet = true;
 	}
