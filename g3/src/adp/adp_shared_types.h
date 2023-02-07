@@ -338,6 +338,28 @@ typedef struct
     
 } ADP_LOWPAN_FRAGMENTED_DATA;
 
+// *****************************************************************************
+/* ADP Data Send Parameters Definition
+
+   Summary:
+    Defines the structure of ADP Group Master Key.
+
+   Description:
+    This data type defines the structure of ADP Group Master Key (GMK).
+
+   Remarks:
+    None.
+*/
+typedef struct
+{
+    /* The id of the key */
+    uint8_t keyId;
+
+    /* The key value */
+    uint8_t key[16];
+
+} ADP_GROUP_MASTER_KEY;
+
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
 }

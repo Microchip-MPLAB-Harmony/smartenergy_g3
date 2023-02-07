@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    process_lbp_coord.h
+    lbp_coord.h
 
   Summary:
     LBP Process for Coordinator Header File
@@ -41,8 +41,8 @@
 *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _PROCESS_LBP_COORD_H
-#define _PROCESS_LBP_COORD_H
+#ifndef _LBP_COORD_H
+#define _LBP_COORD_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -174,7 +174,7 @@ typedef void (*LBP_JOIN_COMPLETE_IND_CALLBACK)(uint8_t* pLbdAddress, uint16_t as
   Remarks:
     None.
 */
-typedef void (*LBP_LEAVE_IND_CALLBACK)(uint16_t networkAddress);
+typedef void (*LBP_COORD_LEAVE_IND_CALLBACK)(uint16_t networkAddress);
 
 // *****************************************************************************
 /* LBP Coordinator Callback Notificatios Structure
@@ -195,7 +195,7 @@ typedef struct
 {
     LBP_JOIN_REQUEST_IND_CALLBACK joinRequestIndication;
     LBP_JOIN_COMPLETE_IND_CALLBACK joinCompleteIndication;
-    LBP_LEAVE_IND_CALLBACK leaveIndication;
+    LBP_COORD_LEAVE_IND_CALLBACK leaveIndication;
 
 } LBP_NOTIFICATIONS_COORD;
 
@@ -434,6 +434,7 @@ void LBP_SetRekeyPhase(bool rekeyStart);
   Remarks:
     None.
 */
+void LBP_ActivateNewKey(void);
 
 // *****************************************************************************
 /* Function:
@@ -491,4 +492,4 @@ void LBP_SetParamCoord(uint32_t attributeId, uint16_t attributeIndex,
 #endif
 //DOM-IGNORE-END
 
-#endif // #ifndef _PROCESS_LBP_COORD_H
+#endif // #ifndef _LBP_COORD_H

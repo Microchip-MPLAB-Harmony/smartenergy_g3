@@ -53,6 +53,38 @@
 
 #define UNSET_KEY   0xFF
 
+struct TLBPContextDev {
+	/* Timer to control the join or rekey process if no response is received */
+	struct TTimer m_JoinTimer;
+	/* Timer to control the delay to reset G3 stack after a Kick is received */
+  	struct TTimer m_KickTimer;
+	/* information related to joining */
+	uint16_t m_u16LbaAddress;
+	uint16_t m_u16JoiningShortAddress;
+	/*  // keeps authentication context */
+	EAP_PSK_CONTEXT m_PskContext;
+	/* Media Type to use between LBD and LBA. It is encoded in LBP frames */
+	uint8_t m_u8MediaType;
+	/* Available MAC layers */
+	enum EMacWrpAvailableMacLayers m_AvailableMacLayers;
+
+	/* State of the bootstrap process */
+	uint8_t m_u8BootstrapState;
+	/* Number of pending message confirms */
+	uint8_t m_u8PendingConfirms;
+	/* EUI64 address of the device */
+	ADP_EXTENDED_ADDRESS m_EUI64Address;
+	/* This parameter specifies the PAN ID: 0xFFFF means not connected to PAN */
+	uint16_t m_u16PanId;
+	/* 16-bit address for new device which is unique inside the PAN */
+	uint16_t m_u16ShortAddress;
+	/* Holds the GMK keys */
+	ADP_GROUP_MASTER_KEY m_GroupMasterKey[2];
+
+	/* Upper layer notifications */
+	LBP_NOTIFICATIONS_DEV m_LbpNotifications;
+};
+
 struct TLBPContextDev g_LbpContext;
 
 static EAP_PSK_KEY sEapPskKey = {
@@ -164,7 +196,7 @@ static void _ForceJoinStatus(bool bJoined)
 extern bool AdpMac_SetRcCoordSync(uint16_t u16RcCoord);
 extern bool AdpMac_SecurityResetSync(void);
 extern bool AdpMac_DeleteGroupMasterKeySync(uint8_t u8KeyId);
-extern bool AdpMac_SetGroupMasterKeySync(const struct TGroupMasterKey *pMasterKey);
+extern bool AdpMac_SetGroupMasterKeySync(const ADP_GROUP_MASTER_KEY *pMasterKey);
 extern bool AdpMac_SetShortAddressSync(uint16_t u16ShortAddress);
 extern bool AdpMac_GetExtendedAddressSync(ADP_EXTENDED_ADDRESS *pExtendedAddress);
 extern bool AdpMac_SetExtendedAddressSync(const ADP_EXTENDED_ADDRESS *pExtendedAddress);
@@ -328,14 +360,14 @@ static bool _ProcessParameters(uint16_t u16DataLength, uint8_t *pData,
 	uint8_t u8ParameterMask = 0;
 
 	uint16_t u16ShortAddress = 0;
-	struct TGroupMasterKey gmk[2];
+	ADP_GROUP_MASTER_KEY gmk[2];
 	uint8_t u8KeyId;
 	uint8_t u8ActiveKeyId = 0;
 	uint8_t u8DeleteKeyId = 0;
 
 	// Invalidate gmk indices to further tell which one is written
-	gmk[0].m_u8KeyId = UNSET_KEY;
-	gmk[1].m_u8KeyId = UNSET_KEY;
+	gmk[0].keyId = UNSET_KEY;
+	gmk[1].keyId = UNSET_KEY;
 
 	/* bootstrapping data carries the configuration parameters: short address, gmk, gmk activation */
 	/* decode and process configuration parameters */
@@ -360,8 +392,8 @@ static bool _ProcessParameters(uint16_t u16DataLength, uint8_t *pData,
 				if (u8AttrLen == 17) {
 					u8KeyId = pAttrValue[0];
 					if ((u8KeyId == 0) || (u8KeyId == 1)) {
-						gmk[u8KeyId].m_u8KeyId = u8KeyId;
-						memcpy(gmk[u8KeyId].m_au8Key, &pAttrValue[1], 16);
+						gmk[u8KeyId].keyId = u8KeyId;
+						memcpy(gmk[u8KeyId].key, &pAttrValue[1], 16);
 						u8ParameterMask |= CONF_PARAM_GMK_MASK;
 					}
 					else {
@@ -375,8 +407,8 @@ static bool _ProcessParameters(uint16_t u16DataLength, uint8_t *pData,
 				/* id (1 byte): the Key Identifier of the active GMK */
 				if (u8AttrLen == 1) {
 					/* GMK to activate cannot be unset */
-					if ((g_LbpContext.m_GroupMasterKey[pAttrValue[0]].m_u8KeyId == UNSET_KEY) &&
-						(gmk[pAttrValue[0]].m_u8KeyId == UNSET_KEY)) {
+					if ((g_LbpContext.m_GroupMasterKey[pAttrValue[0]].keyId == UNSET_KEY) &&
+						(gmk[pAttrValue[0]].keyId == UNSET_KEY)) {
 						u8Result = RESULT_INVALID_PARAMETER_VALUE;
 					} else {
 						u8ActiveKeyId = pAttrValue[0];
@@ -442,15 +474,15 @@ static bool _ProcessParameters(uint16_t u16DataLength, uint8_t *pData,
 			}
 
 			if ((u8ParameterMask & CONF_PARAM_GMK_MASK) == CONF_PARAM_GMK_MASK) {
-				if (gmk[0].m_u8KeyId != UNSET_KEY) {
+				if (gmk[0].keyId != UNSET_KEY) {
 					g_LbpContext.m_GroupMasterKey[0] = gmk[0];
 					LOG_DBG(
-						LogBuffer(g_LbpContext.m_GroupMasterKey[0].m_au8Key, 16, "_ProcessParameters() New GMK (id=%u) ", g_LbpContext.m_GroupMasterKey[0].m_u8KeyId));
+						LogBuffer(g_LbpContext.m_GroupMasterKey[0].key, 16, "_ProcessParameters() New GMK (id=%u) ", g_LbpContext.m_GroupMasterKey[0].keyId));
 				}
-				if (gmk[1].m_u8KeyId != UNSET_KEY) {
+				if (gmk[1].keyId != UNSET_KEY) {
 					g_LbpContext.m_GroupMasterKey[1] = gmk[1];
 					LOG_DBG(
-						LogBuffer(g_LbpContext.m_GroupMasterKey[1].m_au8Key, 16, "_ProcessParameters() New GMK (id=%u) ", g_LbpContext.m_GroupMasterKey[1].m_u8KeyId));
+						LogBuffer(g_LbpContext.m_GroupMasterKey[1].key, 16, "_ProcessParameters() New GMK (id=%u) ", g_LbpContext.m_GroupMasterKey[1].keyId));
 				}
 			}
 
@@ -469,7 +501,7 @@ static bool _ProcessParameters(uint16_t u16DataLength, uint8_t *pData,
 			if ((u8ParameterMask & CONF_PARAM_GMK_REMOVAL_MASK) == CONF_PARAM_GMK_REMOVAL_MASK) {
 				if (AdpMac_DeleteGroupMasterKeySync(u8DeleteKeyId)) {
 					/* Mark key as deleted */
-					g_LbpContext.m_GroupMasterKey[u8DeleteKeyId].m_u8KeyId = UNSET_KEY;
+					g_LbpContext.m_GroupMasterKey[u8DeleteKeyId].keyId = UNSET_KEY;
 					LOG_ERR(Log("_ProcessParameters() GMK id %u was deleted!", u8DeleteKeyId));
 				} else {
 					LOG_ERR(Log("_ProcessParameters() Cannot delete GMK id: %u!", u8DeleteKeyId));
@@ -544,11 +576,11 @@ static void _Join_Confirm(uint8_t u8Status)
 		_SetPanId(0xFFFF);
 	}
 
-	if (g_LbpContext.m_LbpNotifications.fnctJoinConfirm) {
+	if (g_LbpContext.m_LbpNotifications.joinConfirm) {
 		joinConfirm.m_u8Status = u8Status;
 		joinConfirm.m_u16NetworkAddress = g_LbpContext.m_u16ShortAddress;
 		joinConfirm.m_u16PanId = g_LbpContext.m_u16PanId;
-		g_LbpContext.m_LbpNotifications.fnctJoinConfirm(&joinConfirm);
+		g_LbpContext.m_LbpNotifications.joinConfirm(&joinConfirm);
 	}
 }
 
@@ -639,9 +671,9 @@ static void _Leave_Callback(uint8_t u8Status)
 	_SetShortAddress(0xFFFF);
 	_SetPanId(0xFFFF);
 	
-	if (g_LbpContext.m_LbpNotifications.fnctLeaveConfirm) {
+	if (g_LbpContext.m_LbpNotifications.leaveConfirm) {
 		leaveConfirm.m_u8Status = u8Status;
-		g_LbpContext.m_LbpNotifications.fnctLeaveConfirm(&leaveConfirm);
+		g_LbpContext.m_LbpNotifications.leaveConfirm(&leaveConfirm);
 	}
 }
 
@@ -918,10 +950,10 @@ static void _Join_Process_Accepted_EAP(const ADP_EXTENDED_ADDRESS *pEUI64Address
 			/* set the encryption key into mac layer */
 			u8ActiveKeyId = _GetActiveKeyIndex();
 			LOG_INFO(
-				Log("NetworkJoin() Join / rekey process finish: Set the GMK encryption key %u into the MAC layer", g_LbpContext.m_GroupMasterKey[u8ActiveKeyId].m_u8KeyId));
+				Log("NetworkJoin() Join / rekey process finish: Set the GMK encryption key %u into the MAC layer", g_LbpContext.m_GroupMasterKey[u8ActiveKeyId].keyId));
 			// Check whether one or two keys have been received
-			if ((g_LbpContext.m_GroupMasterKey[0].m_u8KeyId != UNSET_KEY) &&
-				(g_LbpContext.m_GroupMasterKey[1].m_u8KeyId != UNSET_KEY)) {
+			if ((g_LbpContext.m_GroupMasterKey[0].keyId != UNSET_KEY) &&
+				(g_LbpContext.m_GroupMasterKey[1].keyId != UNSET_KEY)) {
 				// Both GMKs have to be set, acive index the second
 				if (u8ActiveKeyId == 0) {
 					bSetResult = AdpMac_SetGroupMasterKeySync(&g_LbpContext.m_GroupMasterKey[1]);
@@ -932,11 +964,11 @@ static void _Join_Process_Accepted_EAP(const ADP_EXTENDED_ADDRESS *pEUI64Address
 					bSetResult &= AdpMac_SetGroupMasterKeySync(&g_LbpContext.m_GroupMasterKey[1]);
 				}
 			}
-			else if (g_LbpContext.m_GroupMasterKey[0].m_u8KeyId != UNSET_KEY) {
+			else if (g_LbpContext.m_GroupMasterKey[0].keyId != UNSET_KEY) {
 				// GMK 0 has to be set
 				bSetResult = AdpMac_SetGroupMasterKeySync(&g_LbpContext.m_GroupMasterKey[0]);
 			}
-			else if (g_LbpContext.m_GroupMasterKey[1].m_u8KeyId != UNSET_KEY) {
+			else if (g_LbpContext.m_GroupMasterKey[1].keyId != UNSET_KEY) {
 				// GMK 1 has to be set
 				bSetResult = AdpMac_SetGroupMasterKeySync(&g_LbpContext.m_GroupMasterKey[1]);
 			}
@@ -1126,11 +1158,11 @@ static void _ForceJoined(uint16_t u16ShortAddress, uint16_t u16PanId, ADP_EXTEND
 	g_LbpContext.m_u16PanId = u16PanId;
 	memcpy(&g_LbpContext.m_EUI64Address, pEUI64Address, sizeof(ADP_EXTENDED_ADDRESS));
 	_SetBootState(STATE_BOOT_JOINED);
-	if (g_LbpContext.m_LbpNotifications.fnctJoinConfirm) {
+	if (g_LbpContext.m_LbpNotifications.joinConfirm) {
 		joinConfirm.m_u8Status = G3_SUCCESS;
 		joinConfirm.m_u16NetworkAddress = u16ShortAddress;
 		joinConfirm.m_u16PanId = u16PanId;
-		g_LbpContext.m_LbpNotifications.fnctJoinConfirm(&joinConfirm);
+		g_LbpContext.m_LbpNotifications.joinConfirm(&joinConfirm);
 	}
 }
 
@@ -1285,8 +1317,8 @@ void LBP_InitDev(void)
 	memset(&randP, 0, sizeof(randP));
 	memset(&g_LbpContext, 0, sizeof(g_LbpContext));
 	g_LbpContext.m_u16ShortAddress = 0xFFFF;
-	g_LbpContext.m_GroupMasterKey[0].m_u8KeyId = UNSET_KEY;
-	g_LbpContext.m_GroupMasterKey[1].m_u8KeyId = UNSET_KEY;
+	g_LbpContext.m_GroupMasterKey[0].keyId = UNSET_KEY;
+	g_LbpContext.m_GroupMasterKey[1].keyId = UNSET_KEY;
 	EAP_PSK_Initialize(&sEapPskKey, &g_LbpContext.m_PskContext);
 	
 	u8MaxHops = _GetAdpMaxHops();
@@ -1297,7 +1329,7 @@ void LBP_InitDev(void)
 
 /**
  **********************************************************************************************************************/
-void LBP_SetNotificationsDev(struct TLbpNotificationsDev *pNotifications)
+void LBP_SetNotificationsDev(LBP_NOTIFICATIONS_DEV *pNotifications)
 {
 	if (pNotifications != NULL) {
 		g_LbpContext.m_LbpNotifications = *pNotifications;
@@ -1362,22 +1394,22 @@ void LBP_SetParamDev(uint32_t u32AttributeId, uint16_t u16AttributeIndex, uint8_
 
 /**
  **********************************************************************************************************************/
-void LBP_ForceRegister(ADP_EXTENDED_ADDRESS *pEUI64Address, uint16_t u16ShortAddress, uint16_t u16PanId,
-		struct TGroupMasterKey *pGMK)
+void LBP_ForceRegister(ADP_EXTENDED_ADDRESS *pEUI64Address,
+    uint16_t shortAddress, uint16_t panId, ADP_GROUP_MASTER_KEY *pGMK)
 {
 	/* Set the information in G3 stack */
 	_SetExtendedAddress(pEUI64Address);
-	_SetPanId(u16PanId);
-	_SetShortAddress(u16ShortAddress);
+	_SetPanId(panId);
+	_SetShortAddress(shortAddress);
 	AdpMac_SetGroupMasterKeySync(pGMK);
 
-	LOG_DBG(Log("LBP_ForceRegister: ShortAddr: 0x%04X PanId: 0x%04X", u16ShortAddress, u16PanId));
+	LOG_DBG(Log("LBP_ForceRegister: ShortAddr: 0x%04X PanId: 0x%04X", shortAddress, panId));
 	LOG_DBG(LogBuffer(pEUI64Address->m_au8Value, 8, "LBP_ForceRegister: EUI64: "));
-	LOG_DBG(LogBuffer(pGMK->m_au8Key, 16, "LBP_ForceRegister: Key: "));
-	LOG_DBG(Log("LBP_ForceRegister: KeyIndex: %u", pGMK->m_u8KeyId));
+	LOG_DBG(LogBuffer(pGMK->key, 16, "LBP_ForceRegister: Key: "));
+	LOG_DBG(Log("LBP_ForceRegister: KeyIndex: %u", pGMK->keyId));
 
 	/* Force state in LBP */
-	_ForceJoined(u16ShortAddress, u16PanId, pEUI64Address);
+	_ForceJoined(shortAddress, panId, pEUI64Address);
 }
 
 /**********************************************************************************************************************/
@@ -1449,9 +1481,9 @@ void AdpNetworkLeaveRequest(void)
 	}
 
 	if (u8Status != G3_SUCCESS) {
-		if (g_LbpContext.m_LbpNotifications.fnctLeaveConfirm) {
+		if (g_LbpContext.m_LbpNotifications.leaveConfirm) {
 			leaveConfirm.m_u8Status = u8Status;
-			g_LbpContext.m_LbpNotifications.fnctLeaveConfirm(&leaveConfirm);
+			g_LbpContext.m_LbpNotifications.leaveConfirm(&leaveConfirm);
 		}
   }
 }
