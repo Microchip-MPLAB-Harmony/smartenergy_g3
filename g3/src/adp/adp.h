@@ -662,7 +662,7 @@ typedef struct
 */
 typedef void (*ADP_LBP_CFM_CALLBACK)(ADP_LBP_CFM_PARAMS* pLbpCfm);
 
-/ *****************************************************************************
+// *****************************************************************************
 /* ADP LBP Indication Parameters
 
    Summary:
@@ -852,7 +852,7 @@ typedef struct
 */
 typedef void (*ADP_PATH_DISCOVERY_CFM_CALLBACK)(ADP_PATH_DISCOVERY_CFM_PARAMS* pPathDiscoveryCfm);
 
-/ *****************************************************************************
+// *****************************************************************************
 /* ADP Network Status Indication Parameters
 
    Summary:
@@ -1152,7 +1152,7 @@ typedef struct
 typedef void (*ADP_ROUTE_NOT_FOUND_IND_CALLBACK)(ADP_ROUTE_NOT_FOUND_IND_PARAMS* pRouteNotFoundInd);
 
 // *****************************************************************************
-/* ADP Callback Notificatios Structure
+/* ADP Callback Notifications Structure
 
    Summary:
     Set of event handler function pointers to receive events from ADP.
@@ -1187,7 +1187,7 @@ typedef struct
 } ADP_NOTIFICATIONS;
 
 // *****************************************************************************
-/* ADP Callback Notificatios to LBP Structure
+/* ADP Callback Notifications to LBP Structure
 
    Summary:
     Set of event handler function pointers to receive events from ADP to LBP.

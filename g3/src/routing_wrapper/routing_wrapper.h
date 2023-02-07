@@ -67,7 +67,7 @@
 
 // *****************************************************************************
 /* Function:
-    void ROUTING_WRP_Reset(void);
+    void ROUTING_WRP_Reset(MAC_WRP_HANDLE macWrpHandle);
 
   Summary:
     Resets the Routing Wrapper module data.
@@ -79,20 +79,22 @@
     None.
 
   Parameters:
-    None.
+    macWrpHandle      Handler of the MAC Wrapper
 
   Returns:
     None.
 
   Example:
     <code>
-    ROUTING_WRP_Reset();
+    MAC_WRP_HANDLE macWrpHandle;
+    macWrpHandle = MAC_WRP_Open(G3_MAC_WRP_INDEX_0);
+    ROUTING_WRP_Reset(macWrpHandle);
     </code>
 
   Remarks:
     None.
 */
-void ROUTING_WRP_Reset(void);
+void ROUTING_WRP_Reset(MAC_WRP_HANDLE macWrpHandle);
 
 // *****************************************************************************
 /* Function:

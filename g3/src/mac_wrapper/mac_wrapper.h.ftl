@@ -50,6 +50,7 @@
 // *****************************************************************************
 
 #include "mac_wrapper_defs.h"
+#include "system/system.h"
 <#if MAC_SERIALIZATION_EN == true>
 #include "service/usi/srv_usi.h"
 </#if>

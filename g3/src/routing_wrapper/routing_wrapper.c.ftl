@@ -76,7 +76,7 @@ uint16_t routingWrpDestinationAddressSet[G3_ADP_DESTINATION_ADDR_SET_SIZE];
 // *****************************************************************************
 // *****************************************************************************
 
-void ROUTING_WRP_Reset()
+void ROUTING_WRP_Reset(MAC_WRP_HANDLE macWrpHandle)
 {
 <#if LOADNG_ENABLE == true>
     ROUTING_TABLES routingTables;
@@ -101,7 +101,7 @@ void ROUTING_WRP_Reset()
     routingTables.discoverRouteTable = routingWrpDiscoverRouteTable;
     routingTables.rreqForwardingTable = routingWrpRReqForwardingTable;
 
-    LOADNG_Reset(&routingTables);
+    LOADNG_Reset(&routingTables, MAC_WRP_HANDLE macWrpHandle);
 </#if>
 }
 

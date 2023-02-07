@@ -66,7 +66,7 @@
 
 // *****************************************************************************
 /* Function:
-    void LOADNG_Reset(uint8_t band, ROUTING_TABLES *routingTables);
+    void LOADNG_Reset(ROUTING_TABLES *routingTables, MAC_WRP_HANDLE macWrpHandle);
 
   Summary:
     Resets the LOADNG module data.
@@ -79,6 +79,7 @@
 
   Parameters:
     routingTables - Pointer to routing tables
+    macWrpHandle  - Handler to the MAC Wrapper
 
   Returns:
     None.
@@ -86,20 +87,23 @@
   Example:
     <code>
     ROUTING_TABLES routingTables;
+    MAC_WRP_HANDLE macWrpHandle;
 
     routingTables.adpRoutingTableSize = G3_ADP_ROUTING_TABLE_SIZE;
     routingTables.adpBlacklistTableSize = G3_ADP_BLACKLIST_TABLE_SIZE;
     routingTables.adpRoutingSetSize = G3_ADP_ROUTING_SET_SIZE;
     routingTables.adpDestinationAddressSetSize = G3_ADP_DESTINATION_ADDR_SET_SIZE;
+    
+    macWrpHandle = MAC_WRP_Open(G3_MAC_WRP_INDEX_0);
     ...
 
-    LOADNG_Reset(&routingTables);
+    LOADNG_Reset(&routingTables, macWrpHandle);
     </code>
 
   Remarks:
     None.
 */
-void LOADNG_Reset(ROUTING_TABLES *routingTables);
+void LOADNG_Reset(ROUTING_TABLES *routingTables, MAC_WRP_HANDLE macWrpHandle);
 
 // *****************************************************************************
 /* Function:
