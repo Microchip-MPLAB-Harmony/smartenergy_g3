@@ -36,12 +36,13 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "AdpApi.h"
-#include "AdpApiTypes.h"
+#include "adp.h"
+#include "adp_api_types.h"
 #include "mac_wrapper.h"
-#include "ProcessLbpCoord.h"
-#include "ProtoLbp.h"
-#include "LbpDefs.h"
+#include "eap_psk.h"
+#include "lbp_coord.h"
+#include "lbp_encode_decode.h"
+#include "lbp_defs.h"
 #include "conf_bs.h"
 #include "Random.h"
 #include "Timer.h"

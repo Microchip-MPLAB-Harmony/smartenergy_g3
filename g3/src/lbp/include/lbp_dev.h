@@ -50,7 +50,7 @@
 // *****************************************************************************
 // *****************************************************************************
 #include "system/time/sys_time.h"
-#include "eap_psk.h"
+#include "lbp_defs.h"
 #include "adp.h"
 #include "adp_shared_types.h"
 #include "mac_wrapper_defs.h"

@@ -36,15 +36,14 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "AdpApi.h"
-#include "AdpApiTypes.h"
-#include "ProcessLbpDev.h"
-#include "ProtoLbp.h"
-#include "LbpDefs.h"
+#include "adp.h"
+#include "adp_api_types.h"
+#include "lbp_dev.h"
+#include "lbp_encode_decode.h"
+#include "lbp_defs.h"
 #include "mac_wrapper.h"
-#include "RoutingApi.h"
+#include "routing_wrapper.h"
 #include "Random.h"
-#include "Timer.h"
 
 #define LOG_LEVEL LOG_LEVEL_ADP
 #include "Logger.h"
