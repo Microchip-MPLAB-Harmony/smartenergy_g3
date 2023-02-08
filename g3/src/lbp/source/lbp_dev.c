@@ -43,6 +43,7 @@
 #include "lbp_defs.h"
 #include "mac_wrapper.h"
 #include "routing_wrapper.h"
+#include "system/time/sys_time.h"
 #include "Random.h"
 
 #define LOG_LEVEL LOG_LEVEL_ADP
