@@ -548,7 +548,7 @@ static void _Rekey_TimerExpired_Callback(struct TTimer *pTimer)
 static void _Join_Confirm(uint8_t u8Status)
 {
 	uint8_t u8MediaType;
-	struct TAdpNetworkJoinConfirm joinConfirm;
+	LBP_ADP_NETWORK_JOIN_CFM_PARAMS joinConfirm;
 
 	LOG_INFO(Log("_Join_Confirm() Status: %u", u8Status));
 	Timer_Unregister(&g_LbpContext.m_JoinTimer);
@@ -578,11 +578,11 @@ static void _Join_Confirm(uint8_t u8Status)
 		_SetPanId(0xFFFF);
 	}
 
-	if (g_LbpContext.m_LbpNotifications.joinConfirm) {
-		joinConfirm.m_u8Status = u8Status;
-		joinConfirm.m_u16NetworkAddress = g_LbpContext.m_u16ShortAddress;
-		joinConfirm.m_u16PanId = g_LbpContext.m_u16PanId;
-		g_LbpContext.m_LbpNotifications.joinConfirm(&joinConfirm);
+	if (g_LbpContext.m_LbpNotifications.adpNetworkJoinConfirm) {
+		joinConfirm.status = u8Status;
+		joinConfirm.networkAddress = g_LbpContext.m_u16ShortAddress;
+		joinConfirm.panId = g_LbpContext.m_u16PanId;
+		g_LbpContext.m_LbpNotifications.adpNetworkJoinConfirm(&joinConfirm);
 	}
 }
 
@@ -637,8 +637,8 @@ static void _Kick_TimerExpired_Callback(struct TTimer *pTimer)
 	_SetShortAddress(0xFFFF);
 	_SetPanId(0xFFFF);
 
-	if (g_LbpContext.m_LbpNotifications.leaveIndication != NULL) {
-		g_LbpContext.m_LbpNotifications.leaveIndication();
+	if (g_LbpContext.m_LbpNotifications.adpNetworkLeaveIndication != NULL) {
+		g_LbpContext.m_LbpNotifications.adpNetworkLeaveIndication();
 	}
 }
 
@@ -663,8 +663,6 @@ static void _Kick_Notify(void)
 **********************************************************************************************************************/
 static void _Leave_Callback(uint8_t u8Status)
 {
-	struct TAdpNetworkLeaveConfirm leaveConfirm;
-
 	// Whatever the result, Reset Stack
 	AdpResetRequest();
 	_SetBootState(STATE_BOOT_NOT_JOINED);
@@ -673,9 +671,8 @@ static void _Leave_Callback(uint8_t u8Status)
 	_SetShortAddress(0xFFFF);
 	_SetPanId(0xFFFF);
 	
-	if (g_LbpContext.m_LbpNotifications.leaveConfirm) {
-		leaveConfirm.m_u8Status = u8Status;
-		g_LbpContext.m_LbpNotifications.leaveConfirm(&leaveConfirm);
+	if (g_LbpContext.m_LbpNotifications.adpNetworkLeaveConfirm) {
+		g_LbpContext.m_LbpNotifications.adpNetworkLeaveConfirm(u8Status);
 	}
 }
 
@@ -1159,17 +1156,17 @@ static void _LeaveRequest(const ADP_EXTENDED_ADDRESS *pEUI64Address)
  **********************************************************************************************************************/
 static void _ForceJoined(uint16_t u16ShortAddress, uint16_t u16PanId, ADP_EXTENDED_ADDRESS *pEUI64Address)
 {
-	struct TAdpNetworkJoinConfirm joinConfirm;
+	LBP_ADP_NETWORK_JOIN_CFM_PARAMS joinConfirm;
 
 	g_LbpContext.m_u16ShortAddress = u16ShortAddress;
 	g_LbpContext.m_u16PanId = u16PanId;
 	memcpy(&g_LbpContext.m_EUI64Address, pEUI64Address, sizeof(ADP_EXTENDED_ADDRESS));
 	_SetBootState(STATE_BOOT_JOINED);
-	if (g_LbpContext.m_LbpNotifications.joinConfirm) {
-		joinConfirm.m_u8Status = G3_SUCCESS;
-		joinConfirm.m_u16NetworkAddress = u16ShortAddress;
-		joinConfirm.m_u16PanId = u16PanId;
-		g_LbpContext.m_LbpNotifications.joinConfirm(&joinConfirm);
+	if (g_LbpContext.m_LbpNotifications.adpNetworkJoinConfirm) {
+		joinConfirm.status = G3_SUCCESS;
+		joinConfirm.networkAddress = u16ShortAddress;
+		joinConfirm.panId = u16PanId;
+		g_LbpContext.m_LbpNotifications.adpNetworkJoinConfirm(&joinConfirm);
 	}
 }
 
@@ -1423,7 +1420,7 @@ void LBP_ForceRegister(ADP_EXTENDED_ADDRESS *pEUI64Address,
 
 /**
  **********************************************************************************************************************/
-void LBP_JoinRequest(uint16_t panId, uint16_t lbaAddress, uint8_t mediaType)
+void LBP_AdpNetworkJoinRequest(uint16_t panId, uint16_t lbaAddress, uint8_t mediaType)
 {
 	ADP_EXTENDED_ADDRESS extendedAddress;
 	uint8_t u8Status = G3_INVALID_REQUEST;
@@ -1478,10 +1475,9 @@ void LBP_JoinRequest(uint16_t panId, uint16_t lbaAddress, uint8_t mediaType)
 
 /**
  **********************************************************************************************************************/
-void LBP_LeaveRequest(void)
+void LBP_AdpNetworkLeaveRequest(void)
 {
 	uint8_t u8Status = G3_SUCCESS;
-	struct TAdpNetworkLeaveConfirm leaveConfirm;
 
 	if (g_LbpContext.m_u8BootstrapState == STATE_BOOT_JOINED) {
 		_LeaveRequest(&g_LbpContext.m_EUI64Address);
@@ -1491,9 +1487,8 @@ void LBP_LeaveRequest(void)
 	}
 
 	if (u8Status != G3_SUCCESS) {
-		if (g_LbpContext.m_LbpNotifications.leaveConfirm) {
-			leaveConfirm.m_u8Status = u8Status;
-			g_LbpContext.m_LbpNotifications.leaveConfirm(&leaveConfirm);
+		if (g_LbpContext.m_LbpNotifications.adpNetworkLeaveConfirm) {
+			g_LbpContext.m_LbpNotifications.adpNetworkLeaveConfirm(u8Status);
 		}
   }
 }

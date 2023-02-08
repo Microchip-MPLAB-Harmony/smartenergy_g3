@@ -105,7 +105,8 @@
   Remarks:
     None.
 */
-typedef void (*LBP_JOIN_REQUEST_IND_CALLBACK)(uint8_t* pLbdAddress, uint16_t* pAssignedAddress);
+typedef void (*LBP_COORD_JOIN_REQUEST_IND_CALLBACK)(uint8_t* pLbdAddress,
+    uint16_t* pAssignedAddress);
 
 // *****************************************************************************
 /* LBP Join Complete Indication Event Handler Function Pointer
@@ -141,7 +142,8 @@ typedef void (*LBP_JOIN_REQUEST_IND_CALLBACK)(uint8_t* pLbdAddress, uint16_t* pA
   Remarks:
     None.
 */
-typedef void (*LBP_JOIN_COMPLETE_IND_CALLBACK)(uint8_t* pLbdAddress, uint16_t assignedAddress);
+typedef void (*LBP_COORD_JOIN_COMPLETE_IND_CALLBACK)(uint8_t* pLbdAddress,
+    uint16_t assignedAddress);
 
 // *****************************************************************************
 /* LBP Leave Indication Event Handler Function Pointer
@@ -193,8 +195,8 @@ typedef void (*LBP_COORD_LEAVE_IND_CALLBACK)(uint16_t networkAddress);
 */
 typedef struct
 {
-    LBP_JOIN_REQUEST_IND_CALLBACK joinRequestIndication;
-    LBP_JOIN_COMPLETE_IND_CALLBACK joinCompleteIndication;
+    LBP_COORD_JOIN_REQUEST_IND_CALLBACK joinRequestIndication;
+    LBP_COORD_JOIN_COMPLETE_IND_CALLBACK joinCompleteIndication;
     LBP_COORD_LEAVE_IND_CALLBACK leaveIndication;
 
 } LBP_NOTIFICATIONS_COORD;
