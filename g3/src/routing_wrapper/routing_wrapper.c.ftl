@@ -101,7 +101,7 @@ void ROUTING_WRP_Reset(MAC_WRP_HANDLE macWrpHandle)
     routingTables.discoverRouteTable = routingWrpDiscoverRouteTable;
     routingTables.rreqForwardingTable = routingWrpRReqForwardingTable;
 
-    LOADNG_Reset(&routingTables, MAC_WRP_HANDLE macWrpHandle);
+    LOADNG_Reset(&routingTables, macWrpHandle);
 </#if>
 }
 
