@@ -1,5 +1,5 @@
 /*******************************************************************************
-  LBP Process Coordinator Header File
+  LBP Coordinator Header File
 
   Company:
     Microchip Technology Inc.
@@ -8,7 +8,7 @@
     lbp_coord.h
 
   Summary:
-    LBP Process for Coordinator Header File
+    LBP for Coordinator Header File.
 
   Description:
     The LoWPAN Bootstrapping Protocol (LBP) provides a simple interface to

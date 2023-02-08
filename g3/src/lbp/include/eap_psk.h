@@ -1,45 +1,110 @@
-/**
- *
- * \file
- *
- * \brief LBP EAP-PSK Protocol implementation
- *
- * Copyright (c) 2023 Microchip Technology Inc. and its subsidiaries.
- *
- * \asf_license_start
- *
- * \page License
- *
- * Subject to your compliance with these terms, you may use Microchip
- * software and any derivatives exclusively with Microchip products.
- * It is your responsibility to comply with third party license terms applicable
- * to your use of third party software (including open source software) that
- * may accompany Microchip software.
- *
- * THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES,
- * WHETHER EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE,
- * INCLUDING ANY IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY,
- * AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT WILL MICROCHIP BE
- * LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, INCIDENTAL OR CONSEQUENTIAL
- * LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND WHATSOEVER RELATED TO THE
- * SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS BEEN ADVISED OF THE
- * POSSIBILITY OR THE DAMAGES ARE FORESEEABLE.  TO THE FULLEST EXTENT
- * ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN ANY WAY
- * RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
- * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
- *
- * \asf_license_stop
- *
- */
+/*******************************************************************************
+  LBP EAP-PSK Protocol Header File
 
-#ifndef __EAP_PSK_H__
-#define __EAP_PSK_H__
+  Company:
+    Microchip Technology Inc.
 
-#include <string.h>
-#include <stdbool.h>
-#include <stdint.h>
+  File Name:
+    eap_psk.h
 
-#include "LbpDefs.h"
+  Summary:
+    LBP EAP-PSK Protoco Header File.
+
+  Description:
+    The LoWPAN Bootstrapping Protocol (LBP) provides a simple interface to
+    manage the G3 boostrap process Adaptation Layer. This file provides the
+    interface to manage EAP-PSK protocol.
+*******************************************************************************/
+
+//DOM-IGNORE-BEGIN
+/*******************************************************************************
+* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
+*
+* Subject to your compliance with these terms, you may use Microchip software
+* and any derivatives exclusively with Microchip products. It is your
+* responsibility to comply with third party license terms applicable to your
+* use of third party software (including open source software) that may
+* accompany Microchip software.
+*
+* THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+* EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+* WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+* PARTICULAR PURPOSE.
+*
+* IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
+* INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
+* WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
+* BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
+* FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
+* ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
+* THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+*******************************************************************************/
+//DOM-IGNORE-END
+
+#ifndef _EAP_PSK_H
+#define _EAP_PSK_H
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: File includes
+// *****************************************************************************
+// *****************************************************************************
+#include "lbp_defs.h"
+
+// DOM-IGNORE-BEGIN
+#ifdef __cplusplus  // Provide C++ Compatibility
+
+    extern "C" {
+
+#endif
+// DOM-IGNORE-END
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Macro Definitions
+// *****************************************************************************
+// *****************************************************************************
+
+
+/** EAP message types
+ *
+ ***********************************************************************************************************************
+ *
+ * The value takes in account the 2 reserved bits (values are left shifted by 2 bits)
+ *
+ **********************************************************************************************************************/
+#define EAP_REQUEST 0x04
+#define EAP_RESPONSE 0x08
+#define EAP_SUCCESS 0x0C
+#define EAP_FAILURE 0x10
+
+/**********************************************************************************************************************/
+
+/** T-subfield types
+ *
+ ***********************************************************************************************************************
+ *
+ * 0 The first EAP-PSK message
+ * 1 The second EAP-PSK message
+ * 2 The third EAP-PSK message
+ * 3 The fourth EAP-PSK message
+ *
+ **********************************************************************************************************************/
+#define EAP_PSK_T0 (0x00 << 6)
+#define EAP_PSK_T1 (0x01 << 6)
+#define EAP_PSK_T2 (0x02 << 6)
+#define EAP_PSK_T3 (0x03 << 6)
+
+/**********************************************************************************************************************/
+
+/** P-Channel result field
+ *
+ ***********************************************************************************************************************
+ *
+ **********************************************************************************************************************/
+#define PCHANNEL_RESULT_CONTINUE 0x01
+#define PCHANNEL_RESULT_DONE_SUCCESS 0x02
+#define PCHANNEL_RESULT_DONE_FAILURE 0x03
 
 /**********************************************************************************************************************/
 
@@ -114,57 +179,6 @@ typedef struct
 } EAP_PSK_CONTEXT;
 
 /**********************************************************************************************************************/
-
-/** EAP-PSK message type
- *
- ***********************************************************************************************************************
- *
- * IANA allocated value
- *
- **********************************************************************************************************************/
-#define EAP_PSK_IANA_TYPE 0x2F
-
-/**********************************************************************************************************************/
-
-/** EAP message types
- *
- ***********************************************************************************************************************
- *
- * The value takes in account the 2 reserved bits (values are left shifted by 2 bits)
- *
- **********************************************************************************************************************/
-#define EAP_REQUEST 0x04
-#define EAP_RESPONSE 0x08
-#define EAP_SUCCESS 0x0C
-#define EAP_FAILURE 0x10
-
-/**********************************************************************************************************************/
-
-/** T-subfield types
- *
- ***********************************************************************************************************************
- *
- * 0 The first EAP-PSK message
- * 1 The second EAP-PSK message
- * 2 The third EAP-PSK message
- * 3 The forth EAP-PSK message
- *
- **********************************************************************************************************************/
-#define EAP_PSK_T0 (0x00 << 6)
-#define EAP_PSK_T1 (0x01 << 6)
-#define EAP_PSK_T2 (0x02 << 6)
-#define EAP_PSK_T3 (0x03 << 6)
-
-/**********************************************************************************************************************/
-
-/** P-Channel result field
- *
- ***********************************************************************************************************************
- *
- **********************************************************************************************************************/
-#define PCHANNEL_RESULT_CONTINUE 0x01
-#define PCHANNEL_RESULT_DONE_SUCCESS 0x02
-#define PCHANNEL_RESULT_DONE_FAILURE 0x03
 
 /**********************************************************************************************************************/
 
@@ -456,9 +470,11 @@ uint16_t EAP_PSK_Encode_GMK_Activation(
 		uint16_t u16MemoryBufferLength,
 		uint8_t *pMemoryBuffer
 		);
+
+//DOM-IGNORE-BEGIN
+#ifdef __cplusplus
+}
 #endif
+//DOM-IGNORE-END
 
-/**********************************************************************************************************************/
-
-/** @}
- **********************************************************************************************************************/
+#endif // #ifndef _EAP_PSK_H

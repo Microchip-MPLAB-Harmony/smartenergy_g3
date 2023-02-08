@@ -1,5 +1,5 @@
 /*******************************************************************************
-  LBP Process Device Header File
+  LBP Device Header File
 
   Company:
     Microchip Technology Inc.
@@ -8,7 +8,7 @@
     lbp_dev.h
 
   Summary:
-    LBP Process for Device Header File
+    LBP for Device Header File.
 
   Description:
     The LoWPAN Bootstrapping Protocol (LBP) provides a simple interface to

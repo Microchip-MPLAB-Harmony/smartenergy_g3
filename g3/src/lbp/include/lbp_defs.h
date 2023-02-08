@@ -8,7 +8,7 @@
     lbp_defs.h
 
   Summary:
-    LBP definitions Header File
+    LBP definitions Header File.
 
   Description:
     The LoWPAN Bootstrapping Protocol (LBP) provides a simple interface to
