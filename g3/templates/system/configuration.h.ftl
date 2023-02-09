@@ -45,4 +45,11 @@
 #define LOADNG_RREQ_FORWARD_TABLE_SIZE   ${g3_adapt_config.LOADNG_RREQ_FORWARDING_TABLE_SIZE}
 #define LOADNG_DISCOVER_ROUTE_TABLE_SIZE ${g3_adapt_config.LOADNG_DISCOVER_ROUTE_TABLE_SIZE}
 </#if>
+<#if g3_adapt_config.ADP_SERIALIZATION_EN == true>
+
+/* ADP Serialization Identification */
+#define G3_ADP_SERIAL_INDEX_0            0
+#define G3_ADP_SERIAL_INSTANCES_NUMBER   1
+#define G3_ADP_SERIAL_USI_INDEX          ${g3_adapt_config.ADP_SERIALIZATION_USI_INSTANCE}
+</#if>
 </#if>

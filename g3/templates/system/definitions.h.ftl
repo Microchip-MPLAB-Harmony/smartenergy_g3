@@ -16,4 +16,7 @@
 #include "stack/g3/adaptation/adp.h"
 #include "stack/g3/adaptation/adp_api_types.h"
 #include "stack/g3/adaptation/adp_shared_types.h"
+<#if g3_adapt_config.ADP_SERIALIZATION_EN == true>
+#include "stack/g3/adaptation/adp_serial.h"
+</#if>
 </#if>

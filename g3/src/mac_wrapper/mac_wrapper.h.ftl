@@ -757,7 +757,7 @@ typedef void (*MAC_WRP_CommStatusIndication)(MAC_WRP_COMM_STATUS_INDICATION_PARA
     Initializes the MAC Wrapper module for the specified Index.
 
   Description:
-    This routine initializes the MAC Wrappermodule making it ready for clients
+    This routine initializes the MAC Wrapper module making it ready for clients
     to open and use.
 
   Precondition:
