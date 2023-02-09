@@ -124,6 +124,20 @@ def instantiateComponent(g3ConfigAdaptComponent):
     g3FragmentedTransferTableSize.setMin(1)
     g3FragmentedTransferTableSize.setMax(16)
 
+    g3AdpSerializationEnable = g3ConfigAdaptComponent.createBooleanSymbol("ADP_SERIALIZATION_EN", None)
+    g3AdpSerializationEnable.setLabel("Enable ADP and LBP Serialization")
+    g3AdpSerializationEnable.setDescription("Enable/disable ADP and LBP serialization through USI")
+    g3AdpSerializationEnable.setDefaultValue(False)
+
+    g3AdpSerializationUsiInstance = g3ConfigAdaptComponent.createIntegerSymbol("ADP_SERIALIZATION_USI_INSTANCE", g3AdpSerializationEnable)
+    g3AdpSerializationUsiInstance.setLabel("USI Instance")
+    g3AdpSerializationUsiInstance.setDescription("USI instance used for ADP and LBP serialization")
+    g3AdpSerializationUsiInstance.setDefaultValue(0)
+    g3AdpSerializationUsiInstance.setMax(0)
+    g3AdpSerializationUsiInstance.setMin(0)
+    g3AdpSerializationUsiInstance.setVisible(False)
+    g3AdpSerializationUsiInstance.setDependencies(showUsiInstance, ["ADP_SERIALIZATION_EN"])
+
     ############################################################################
     #### Code Generation ####
     ############################################################################
@@ -152,11 +166,41 @@ def instantiateComponent(g3ConfigAdaptComponent):
     routingWrapperSource.setType("SOURCE")
     routingWrapperSource.setMarkup(True)
 
+    #### ADP Serialization Files #################################################
+    adpSerialHeader = g3ConfigAdaptComponent.createFileSymbol("G3_ADP_SERIAL_HEADER", None)
+    adpSerialHeader.setSourcePath("g3/src/adp_serial/adp_serial.h")
+    adpSerialHeader.setOutputName("adp_serial.h")
+    adpSerialHeader.setDestPath("stack/g3/adaptation")
+    adpSerialHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    adpSerialHeader.setType("HEADER")
+    adpSerialHeader.setEnabled(False)
+    adpSerialHeader.setDependencies(setEnabledFileSymbol, ["ADP_SERIALIZATION_EN"])
+
+    adpSerialSource = g3ConfigAdaptComponent.createFileSymbol("G3_ADP_SERIAL_SOURCE", None)
+    adpSerialSource.setSourcePath("g3/src/adp_serial/adp_serial.c")
+    adpSerialSource.setOutputName("adp_serial.c")
+    adpSerialSource.setDestPath("stack/g3/adaptation")
+    adpSerialSource.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    adpSerialSource.setType("SOURCE")
+    adpSerialSource.setEnabled(False)
+    adpSerialSource.setDependencies(setEnabledFileSymbol, ["ADP_SERIALIZATION_EN"])
+
 #def finalizeComponent(g3ConfigAdaptComponent):
 
 def showSymbol(symbol, event):
     # Show/hide configuration symbol depending on parent enabled/disabled
     symbol.setVisible(event["value"])
+
+def showUsiInstance(symbol, event):
+    symbol.setVisible(event["value"])
+
+    if (event["value"] == True):
+        usiInstances = filter(lambda k: "srv_usi_" in k, Database.getActiveComponentIDs())
+        symbol.setMax(len(usiInstances) - 1)
+
+def setEnabledFileSymbol(symbol, event):
+    # Enable/disable file symbol depending on parent enabled/disabled
+    symbol.setEnabled(event["value"])
 
 def g3LOADngEnable(symbol, event):
     #g3AdaptGroup = Database.findGroup("ADAPTATION LAYER")
