@@ -1630,7 +1630,7 @@ void ADP_NetworkStartRequest(uint16_t panId);
 
   Description:
     The ADP Reset Request primitive performs a reset of the adaptation sublayer
-    and allows the resetting of the MIB attributes
+    and allows the resetting of the MIB attributes.
     
     Result is provided in the corresponding ADP Reset Confirm callback.
 
@@ -2055,7 +2055,6 @@ void ADP_MacSetRequestSync(uint32_t attributeId, uint16_t attributeIndex,
     None.
 */
 void ADP_RouteDiscoveryRequest(uint16_t dstAddr, uint8_t maxHops);
-
 
 // *****************************************************************************
 /* Function:
