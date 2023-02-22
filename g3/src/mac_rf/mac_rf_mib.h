@@ -183,7 +183,6 @@ typedef struct
     uint32_t securityFailureCountRF;
     uint32_t duplicateFrameCountRF;
     uint32_t rxSuccessCountRF;
-    uint32_t nackCountRF;
     uint32_t txDataPacketCountRF;
     uint32_t rxDataPacketCountRF;
     uint32_t txCmdPacketCountRF;
@@ -273,7 +272,6 @@ typedef enum
     MAC_PIB_SECURITY_FAILURE_COUNT_RF = 0x0000020F,
     MAC_PIB_DUPLICATE_FRAME_COUNT_RF = 0x00000210,
     MAC_PIB_RX_SUCCESS_COUNT_RF = 0x00000211,
-    MAC_PIB_NACK_COUNT_RF = 0x00000212,
     MAC_PIB_USE_ENHANCED_BEACON_RF = 0x00000213,
     MAC_PIB_EB_HEADER_IE_LIST_RF = 0x00000214,
     MAC_PIB_EB_PAYLOAD_IE_LIST_RF = 0x00000215,
