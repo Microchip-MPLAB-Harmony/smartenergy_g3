@@ -921,6 +921,44 @@ void ROUTING_WRP_RemoveBlacklistOnMedium(uint16_t addr, uint8_t mediaType);
 
 // *****************************************************************************
 /* Function:
+    bool ROUTING_WRP_IsRouterTo(uint16_t addr);
+
+  Summary:
+    Returns true if node acts as a Router to addr.
+
+  Description:
+    Returns true if node is part of a LOADng route to addr.
+
+  Precondition:
+    None.
+
+  Parameters:
+    addr - Destination address.
+
+  Returns:
+    True if node acts as a Router to addr. Otherwise False.
+  
+  Example:
+    <code>
+    destAddr = extractDestinationFromPacket(pkt);
+
+    if (ROUTING_WRP_IsRouterTo(destAddr))
+    {
+      // Do router duties...
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+ 
+/**********************************************************************************************************************/
+/** Returns true if node has a Route to u16Addr, to its next hop, and to any other node
+ **********************************************************************************************************************/
+bool ROUTING_WRP_IsRouterTo(uint16_t addr);
+
+// *****************************************************************************
+/* Function:
     void ROUTING_WRP_Tasks
     (
       void

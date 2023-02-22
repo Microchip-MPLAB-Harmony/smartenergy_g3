@@ -215,6 +215,7 @@ typedef struct
     uint8_t rrepSent : 1;
     uint8_t metricType : 2;
     uint8_t mediaType : 1;
+    uint8_t isRouter : 1;
   
 } ROUTING_TABLE_ENTRY;
 

@@ -862,6 +862,7 @@ typedef enum
     MAC_WRP_PIB_ADAPTIVE_POWER_STEP_RF = 0x00000227, /* 8 bits */
     MAC_WRP_PIB_ADAPTIVE_POWER_HIGH_BOUND_RF = 0x00000228, /* 8 bits */
     MAC_WRP_PIB_ADAPTIVE_POWER_LOW_BOUND_RF = 0x00000229, /* 8 bits */
+    MAC_WRP_PIB_POS_RECENT_ENTRIES_RF = 0x0000022A, /* 16 bits */
     /* Manufacturer specific */
     /* Resets the device table upon a GMK activation. 8 bits (bool) */
     MAC_WRP_PIB_MANUF_SECURITY_RESET_RF = 0x08000203,
@@ -925,6 +926,8 @@ typedef enum
     MAC_WRP_PIB_MANUF_RF_IFACE_AVAILABLE = 0x08000221,
     /* Last PLC frame duration in ms. 16 bits. */
     MAC_WRP_PIB_MANUF_LAST_FRAME_DURATION_RF = 0x08000222,
+    /* Minimum LQI to consider a neighbour for Trickle. 8 bits. */
+    MAC_WRP_PIB_MANUF_TRICKLE_MIN_LQI_RF = 0x08000223,
     /* Gets or sets a parameter in Phy layer. Index will be used to contain PHY parameter ID */
     MAC_WRP_PIB_MANUF_PHY_PARAM_RF = 0x08000220
 } MAC_WRP_PIB_ATTRIBUTE;

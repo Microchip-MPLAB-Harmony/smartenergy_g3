@@ -217,8 +217,8 @@ typedef struct
     uint8_t maxCsmaBackoffsRF;
     uint8_t maxFrameRetriesRF;
     uint8_t minBeRF;
-    uint8_t operatingModeRF; // Fixed in this spec version
-    uint16_t channelNumberRF; // Fixed in this spec version
+    uint8_t operatingModeRF;
+    uint16_t channelNumberRF;
     uint8_t dutyCycleUsageRF;
     uint16_t dutyCyclePeriodRF;
     uint16_t dutyCycleLimitRF;
@@ -228,6 +228,7 @@ typedef struct
     uint32_t ackConfirmWaitTimeRF;
     uint32_t dataConfirmWaitTimeRF;
     uint16_t lastFrameDurationRF;
+    uint16_t posRecentEntriesRF;
     bool disablePhyRF;
     bool rfAvailable;
     uint8_t frequencyBandRF;
@@ -236,6 +237,7 @@ typedef struct
     uint8_t adaptivePowerHighBoundRF;
     uint8_t adaptivePowerLowBoundRF;
     uint8_t beaconRandomizationWindowLength;
+    uint8_t trickleMinLQIRF;
 } MAC_RF_MIB;
 
 // *****************************************************************************
@@ -292,6 +294,7 @@ typedef enum
     MAC_PIB_ADAPTIVE_POWER_STEP_RF = 0x00000227,
     MAC_PIB_ADAPTIVE_POWER_HIGH_BOUND_RF = 0x00000228,
     MAC_PIB_ADAPTIVE_POWER_LOW_BOUND_RF = 0x00000229,
+    MAC_PIB_POS_RECENT_ENTRIES_RF = 0x0000022A,
 
     // Manufacturer specific
     // Resets the device table upon a GMK activation.
@@ -356,6 +359,8 @@ typedef enum
     MAC_PIB_MANUF_RF_IFACE_AVAILABLE = 0x08000221,
     // Last PLC frame duration in ms. 16 bits.
     MAC_PIB_MANUF_LAST_FRAME_DURATION_RF = 0x08000222,
+    // Minimum LQI to consider a neighbour for Trickle
+    MAC_PIB_MANUF_TRICKLE_MIN_LQI_RF = 0x08000223,
     // Gets or sets a parameter in Phy layer. Index will be used to contain PHY parameter ID
     MAC_PIB_MANUF_PHY_PARAM_RF = 0x08000220
 } MAC_RF_PIB_ATTRIBUTE;

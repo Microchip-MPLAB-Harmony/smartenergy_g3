@@ -366,6 +366,7 @@ static bool _macWrpIsSharedAttribute(MAC_WRP_PIB_ATTRIBUTE attribute)
         (attribute == MAC_WRP_PIB_PROMISCUOUS_MODE) ||
         (attribute == MAC_WRP_PIB_SHORT_ADDRESS) ||
         (attribute == MAC_WRP_PIB_POS_TABLE_ENTRY_TTL) ||
+        (attribute == MAC_WRP_PIB_POS_RECENT_ENTRY_THRESHOLD) ||
         (attribute == MAC_WRP_PIB_RC_COORD) ||
         (attribute == MAC_WRP_PIB_KEY_TABLE))
     {
@@ -2604,6 +2605,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
             /* 8-bit IBs */
             case MAC_WRP_PIB_PROMISCUOUS_MODE:
             case MAC_WRP_PIB_POS_TABLE_ENTRY_TTL:
+            case MAC_WRP_PIB_POS_RECENT_ENTRY_THRESHOLD:
             case MAC_WRP_PIB_MANUF_PLC_IFACE_AVAILABLE:
             case MAC_WRP_PIB_MANUF_RF_IFACE_AVAILABLE:
 <#if MAC_PLC_PRESENT == true>
@@ -2627,7 +2629,6 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
             case MAC_WRP_PIB_CENELEC_LEGACY_MODE:
             case MAC_WRP_PIB_FCC_LEGACY_MODE:
             case MAC_WRP_PIB_BROADCAST_MAX_CW_ENABLE:
-            case MAC_WRP_PIB_POS_RECENT_ENTRY_THRESHOLD:
             case MAC_WRP_PIB_PLC_DISABLE:
             case MAC_WRP_PIB_MANUF_FORCED_MOD_SCHEME:
             case MAC_WRP_PIB_MANUF_FORCED_MOD_TYPE:
@@ -2690,6 +2691,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
             case MAC_WRP_PIB_DUTY_CYCLE_PERIOD_RF:
             case MAC_WRP_PIB_DUTY_CYCLE_LIMIT_RF:
             case MAC_WRP_PIB_MANUF_POS_TABLE_COUNT_RF:
+            case MAC_WRP_PIB_POS_RECENT_ENTRIES_RF:
 </#if>
                 _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], pibValue);
                 serialRspLen += 2;
@@ -3062,6 +3064,7 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
         /* 8-bit IBs */
         case MAC_WRP_PIB_PROMISCUOUS_MODE:
         case MAC_WRP_PIB_POS_TABLE_ENTRY_TTL:
+        case MAC_WRP_PIB_POS_RECENT_ENTRY_THRESHOLD:
         case MAC_WRP_PIB_MANUF_PLC_IFACE_AVAILABLE:
         case MAC_WRP_PIB_MANUF_RF_IFACE_AVAILABLE:
 <#if MAC_PLC_PRESENT == true>
@@ -3081,7 +3084,6 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
         case MAC_WRP_PIB_K:
         case MAC_WRP_PIB_MIN_CW_ATTEMPTS:
         case MAC_WRP_PIB_BROADCAST_MAX_CW_ENABLE:
-        case MAC_WRP_PIB_POS_RECENT_ENTRY_THRESHOLD:
         case MAC_WRP_PIB_PLC_DISABLE:
         case MAC_WRP_PIB_MANUF_FORCED_MOD_SCHEME:
         case MAC_WRP_PIB_MANUF_FORCED_MOD_TYPE:
@@ -3130,6 +3132,7 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
         case MAC_WRP_PIB_DUTY_CYCLE_PERIOD_RF:
         case MAC_WRP_PIB_DUTY_CYCLE_LIMIT_RF:
         case MAC_WRP_PIB_MANUF_POS_TABLE_COUNT_RF:
+        case MAC_WRP_PIB_POS_RECENT_ENTRIES_RF:
 </#if>
             _Serial_memcpyFromUsiEndianessUint16(pibValue->value, pData);
             break;

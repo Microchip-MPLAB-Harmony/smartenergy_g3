@@ -493,9 +493,11 @@ static void _StringifyGetConfirm(ADP_GET_CFM_PARAMS* pGetCfm)
             case ADP_IB_DEFAULT_COORD_ROUTE_ENABLED:
             case ADP_IB_DISABLE_DEFAULT_ROUTING:
             case ADP_IB_TRICKLE_DATA_ENABLED:
-            case ADP_IB_TRICKLE_MIN_LQI_VALUE:
+            case ADP_IB_TRICKLE_LQI_THRESHOLD_LOW:
+            case ADP_IB_TRICKLE_LQI_THRESHOLD_LOW_RF:
+            case ADP_IB_TRICKLE_LQI_THRESHOLD_HIGH:
+            case ADP_IB_TRICKLE_LQI_THRESHOLD_HIGH_RF:
             case ADP_IB_TRICKLE_STEP:
-            case ADP_IB_TRICKLE_FACTOR_I_MAX:
             case ADP_IB_TRICKLE_MAX_KI:
             case ADP_IB_TRICKLE_ADAPTIVE_I_MIN:
             case ADP_IB_TRICKLE_ADAPTIVE_KI:
@@ -968,9 +970,11 @@ static ADP_SERIAL_STATUS _ParseAdpSetRequest(uint8_t* pData)
         case ADP_IB_DEFAULT_COORD_ROUTE_ENABLED:
         case ADP_IB_DISABLE_DEFAULT_ROUTING:
         case ADP_IB_TRICKLE_DATA_ENABLED:
-        case ADP_IB_TRICKLE_MIN_LQI_VALUE:
+        case ADP_IB_TRICKLE_LQI_THRESHOLD_LOW:
+        case ADP_IB_TRICKLE_LQI_THRESHOLD_LOW_RF:
+        case ADP_IB_TRICKLE_LQI_THRESHOLD_HIGH:
+        case ADP_IB_TRICKLE_LQI_THRESHOLD_HIGH_RF:
         case ADP_IB_TRICKLE_STEP:
-        case ADP_IB_TRICKLE_FACTOR_I_MAX:
         case ADP_IB_TRICKLE_MAX_KI:
         case ADP_IB_TRICKLE_ADAPTIVE_I_MIN:
         case ADP_IB_TRICKLE_ADAPTIVE_KI:

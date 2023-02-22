@@ -220,6 +220,7 @@ typedef struct
     MAC_SECURITY_KEY keyTable[MAC_KEY_TABLE_ENTRIES];
     uint16_t rcCoord;
     uint8_t posTableEntryTtl;
+    uint8_t posRecentEntryThreshold;
     bool coordinator;
 } MAC_COMMON_MIB;
 

@@ -64,6 +64,7 @@ static const MAC_COMMON_MIB macMibCommonDefaults = {
     {{0}}, // keyTable
     0xFFFF, // rcCoord: set RC_COORD to its maximum value of 0xFFFF
     255, // posTableEntryTtl
+    120, // posRecentEntryThreshold
     false, // coordinator
 };
 
@@ -244,6 +245,25 @@ static MAC_STATUS _macPibSetPOSTableEntryTtl(const MAC_PIB_VALUE *pibValue)
     return status;
 }
 
+static MAC_STATUS _macPibGetPOSRecentEntryThreshold(MAC_PIB_VALUE *pibValue)
+{
+    pibValue->length = sizeof(macMibCommon.posRecentEntryThreshold);
+    memcpy(pibValue->value, &macMibCommon.posRecentEntryThreshold, pibValue->length);
+    return MAC_STATUS_SUCCESS;
+}
+
+static MAC_STATUS _macPibSetPOSRecentEntryThreshold(const MAC_PIB_VALUE *pibValue)
+{
+    MAC_STATUS status = MAC_STATUS_SUCCESS;
+    if (pibValue->length == sizeof(macMibCommon.posRecentEntryThreshold)) {
+        memcpy(&macMibCommon.posRecentEntryThreshold, pibValue->value, pibValue->length);
+    }
+    else {
+        status = MAC_STATUS_INVALID_PARAMETER;
+    }
+    return status;
+}
+
 MAC_STATUS MAC_COMMON_GetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_t index, MAC_PIB_VALUE *pibValue)
 {
     MAC_STATUS status;
@@ -273,6 +293,9 @@ MAC_STATUS MAC_COMMON_GetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
             break;
         case MAC_COMMON_PIB_POS_TABLE_ENTRY_TTL:
             status = _macPibGetPOSTableEntryTtl(pibValue);
+            break;
+        case MAC_COMMON_PIB_POS_RECENT_ENTRY_THRESHOLD:
+            status = _macPibGetPOSRecentEntryThreshold(pibValue);
             break;
         case MAC_COMMON_PIB_KEY_TABLE:
             status = MAC_STATUS_UNAVAILABLE_KEY;
@@ -359,6 +382,16 @@ MAC_STATUS MAC_COMMON_SetRequestSync(MAC_COMMON_PIB_ATTRIBUTE attribute, uint16_
             if (status == MAC_STATUS_SUCCESS)
             {
                 /* Ignore result, as it depends on availability of PLC interface, which may be unavailable */
+                MAC_PLC_MIB_SetAttributeSync(attribute, index, pibValue);
+            }
+</#if>
+            break;
+        case MAC_COMMON_PIB_POS_RECENT_ENTRY_THRESHOLD:
+            status = _macPibSetPOSRecentEntryThreshold(pibValue);
+<#if MAC_PLC_PRESENT == true>
+            if (status == MAC_STATUS_SUCCESS)
+            {
+                /* Ignore result as it depends on availability of PLC interface, which may be unavailable */
                 MAC_PLC_MIB_SetAttributeSync(attribute, index, pibValue);
             }
 </#if>
