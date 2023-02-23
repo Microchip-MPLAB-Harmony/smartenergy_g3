@@ -357,8 +357,11 @@ typedef struct _ROUTING_RREQ_FORWARDING_ENTRY {
     /* Pointer to the next object of the queue */
     struct _ROUTING_RREQ_FORWARDING_ENTRY *next;
 
-    /* Timer to control the RREQ sending */
-    SYS_TIME_HANDLE timeHandle;
+    /* Timer to control the RREQ sending on PLC */
+    SYS_TIME_HANDLE timeHandlePLC;
+
+    /* Timer to control the RREQ sending on RF */
+    SYS_TIME_HANDLE timeHandleRF;
 
     /* RREQ originator */
     uint16_t origAddr;
@@ -390,8 +393,11 @@ typedef struct _ROUTING_RREQ_FORWARDING_ENTRY {
     /* Reserved bits */
     uint8_t rsvBits;
 
-    /* Cluster Counter */
-    uint8_t clusterCounter;
+    /* PLC Cluster Counter */
+    uint8_t clusterCounterPLC;
+
+    /* RF Cluster Counter */
+    uint8_t clusterCounterRF;
 
 } ROUTING_RREQ_FORWARDING_ENTRY;
 
