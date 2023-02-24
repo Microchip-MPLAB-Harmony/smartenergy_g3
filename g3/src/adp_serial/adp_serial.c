@@ -492,6 +492,10 @@ static void _StringifyGetConfirm(ADP_GET_CFM_PARAMS* pGetCfm)
             case ADP_IB_ACTIVE_KEY_INDEX:
             case ADP_IB_DEFAULT_COORD_ROUTE_ENABLED:
             case ADP_IB_DISABLE_DEFAULT_ROUTING:
+            case ADP_IB_RREQ_JITTER_LOW_LQI:
+            case ADP_IB_RREQ_JITTER_HIGH_LQI:
+            case ADP_IB_RREQ_JITTER_LOW_LQI_RF:
+            case ADP_IB_RREQ_JITTER_HIGH_LQI_RF:
             case ADP_IB_TRICKLE_DATA_ENABLED:
             case ADP_IB_TRICKLE_LQI_THRESHOLD_LOW:
             case ADP_IB_TRICKLE_LQI_THRESHOLD_LOW_RF:
@@ -501,6 +505,12 @@ static void _StringifyGetConfirm(ADP_GET_CFM_PARAMS* pGetCfm)
             case ADP_IB_TRICKLE_MAX_KI:
             case ADP_IB_TRICKLE_ADAPTIVE_I_MIN:
             case ADP_IB_TRICKLE_ADAPTIVE_KI:
+            case ADP_IB_CLUSTER_TRICKLE_ENABLED:
+            case ADP_IB_CLUSTER_MIN_LQI:
+            case ADP_IB_CLUSTER_MIN_LQI_RF:
+            case ADP_IB_CLUSTER_TRICKLE_K:
+            case ADP_IB_CLUSTER_TRICKLE_K_RF:
+            case ADP_IB_CLUSTER_RREQ_ROUTE_COST_DEVIATION:
             case ADP_IB_MANUF_IPV6_HEADER_COMPRESSION:
             case ADP_IB_MANUF_BROADCAST_SEQUENCE_NUMBER:
             case ADP_IB_MANUF_FORCED_NO_ACK_REQUEST:
@@ -531,8 +541,14 @@ static void _StringifyGetConfirm(ADP_GET_CFM_PARAMS* pGetCfm)
             case ADP_IB_ROUTING_TABLE_ENTRY_TTL:
             case ADP_IB_BLACKLIST_TABLE_ENTRY_TTL:
             case ADP_IB_MAX_JOIN_WAIT_TIME:
+            case ADP_IB_DELAY_LOW_LQI:
+            case ADP_IB_DELAY_HIGH_LQI:
+            case ADP_IB_DELAY_LOW_LQI_RF:
+            case ADP_IB_DELAY_HIGH_LQI_RF:
             case ADP_IB_DESTINATION_ADDRESS_SET:
             case ADP_IB_TRICKLE_I_MIN:
+            case ADP_IB_CLUSTER_TRICKLE_I:
+            case ADP_IB_CLUSTER_TRICKLE_I_RF:
             case ADP_IB_MANUF_REASSEMBY_TIMER:
             case ADP_IB_MANUF_DATAGRAM_TAG:
             case ADP_IB_MANUF_DISCOVER_SEQUENCE_NUMBER: /* ADP_IB_MANUF_DISCOVER_ROUTE_GLOBAL_SEQ_NUM */
@@ -970,6 +986,10 @@ static ADP_SERIAL_STATUS _ParseAdpSetRequest(uint8_t* pData)
         case ADP_IB_ACTIVE_KEY_INDEX:
         case ADP_IB_DEFAULT_COORD_ROUTE_ENABLED:
         case ADP_IB_DISABLE_DEFAULT_ROUTING:
+        case ADP_IB_RREQ_JITTER_LOW_LQI:
+        case ADP_IB_RREQ_JITTER_HIGH_LQI:
+        case ADP_IB_RREQ_JITTER_LOW_LQI_RF:
+        case ADP_IB_RREQ_JITTER_HIGH_LQI_RF:
         case ADP_IB_TRICKLE_DATA_ENABLED:
         case ADP_IB_TRICKLE_LQI_THRESHOLD_LOW:
         case ADP_IB_TRICKLE_LQI_THRESHOLD_LOW_RF:
@@ -979,6 +999,12 @@ static ADP_SERIAL_STATUS _ParseAdpSetRequest(uint8_t* pData)
         case ADP_IB_TRICKLE_MAX_KI:
         case ADP_IB_TRICKLE_ADAPTIVE_I_MIN:
         case ADP_IB_TRICKLE_ADAPTIVE_KI:
+        case ADP_IB_CLUSTER_TRICKLE_ENABLED:
+        case ADP_IB_CLUSTER_MIN_LQI:
+        case ADP_IB_CLUSTER_MIN_LQI_RF:
+        case ADP_IB_CLUSTER_TRICKLE_K:
+        case ADP_IB_CLUSTER_TRICKLE_K_RF:
+        case ADP_IB_CLUSTER_RREQ_ROUTE_COST_DEVIATION:
         case ADP_IB_MANUF_IPV6_HEADER_COMPRESSION:
         case ADP_IB_MANUF_BROADCAST_SEQUENCE_NUMBER:
         case ADP_IB_MANUF_FORCED_NO_ACK_REQUEST:
@@ -1005,8 +1031,14 @@ static ADP_SERIAL_STATUS _ParseAdpSetRequest(uint8_t* pData)
         case ADP_IB_ROUTING_TABLE_ENTRY_TTL:
         case ADP_IB_BLACKLIST_TABLE_ENTRY_TTL:
         case ADP_IB_MAX_JOIN_WAIT_TIME:
+        case ADP_IB_DELAY_LOW_LQI:
+        case ADP_IB_DELAY_HIGH_LQI:
+        case ADP_IB_DELAY_LOW_LQI_RF:
+        case ADP_IB_DELAY_HIGH_LQI_RF:
         case ADP_IB_DESTINATION_ADDRESS_SET:
         case ADP_IB_TRICKLE_I_MIN:
+        case ADP_IB_CLUSTER_TRICKLE_I:
+        case ADP_IB_CLUSTER_TRICKLE_I_RF:
         case ADP_IB_MANUF_REASSEMBY_TIMER:
         case ADP_IB_MANUF_DATAGRAM_TAG:
         case ADP_IB_MANUF_DISCOVER_SEQUENCE_NUMBER: /* ADP_IB_MANUF_DISCOVER_ROUTE_GLOBAL_SEQ_NUM */

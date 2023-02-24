@@ -2625,6 +2625,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
             case MAC_WRP_PIB_MANUF_ENABLE_MAC_SNIFFER:
             case MAC_WRP_PIB_MANUF_RETRIES_LEFT_TO_FORCE_ROBO:
             case MAC_WRP_PIB_MANUF_SLEEP_MODE:
+            case MAC_WRP_PIB_MANUF_TRICKLE_MIN_LQI:
 </#if>
 <#if MAC_RF_PRESENT == true>
             case MAC_WRP_PIB_DSN_RF:
@@ -2654,6 +2655,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
             case MAC_WRP_PIB_MANUF_LNG_FRAME_RECEIVED_RF:
             case MAC_WRP_PIB_MANUF_BCN_FRAME_RECEIVED_RF:
             case MAC_WRP_PIB_MANUF_ENABLE_MAC_SNIFFER_RF:
+            case MAC_WRP_PIB_MANUF_TRICKLE_MIN_LQI_RF:
 </#if>
                 serialData[serialRspLen++] = pibValue[0];
                 break;
@@ -2668,6 +2670,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
             case MAC_WRP_PIB_MANUF_MAX_MAC_PAYLOAD_SIZE:
             case MAC_WRP_PIB_MANUF_NEIGHBOUR_TABLE_COUNT:
             case MAC_WRP_PIB_MANUF_POS_TABLE_COUNT:
+            case MAC_WRP_PIB_MANUF_LAST_FRAME_DURATION_PLC:
 </#if>
 <#if MAC_RF_PRESENT == true>
             case MAC_WRP_PIB_CHANNEL_NUMBER_RF:
@@ -2675,6 +2678,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
             case MAC_WRP_PIB_DUTY_CYCLE_LIMIT_RF:
             case MAC_WRP_PIB_MANUF_POS_TABLE_COUNT_RF:
             case MAC_WRP_PIB_POS_RECENT_ENTRIES_RF:
+            case MAC_WRP_PIB_MANUF_LAST_FRAME_DURATION_RF:
 </#if>
                 _Serial_memcpyToUsiEndianessUint16(&serialData[serialRspLen], pibValue);
                 serialRspLen += 2;
@@ -3078,6 +3082,7 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
         case MAC_WRP_PIB_MANUF_ENABLE_MAC_SNIFFER:
         case MAC_WRP_PIB_MANUF_RETRIES_LEFT_TO_FORCE_ROBO:
         case MAC_WRP_PIB_MANUF_SLEEP_MODE:
+        case MAC_WRP_PIB_MANUF_TRICKLE_MIN_LQI:
 </#if>
 <#if MAC_RF_PRESENT == true>
         case MAC_WRP_PIB_DSN_RF:
@@ -3100,6 +3105,7 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
         case MAC_WRP_PIB_MANUF_LNG_FRAME_RECEIVED_RF:
         case MAC_WRP_PIB_MANUF_BCN_FRAME_RECEIVED_RF:
         case MAC_WRP_PIB_MANUF_ENABLE_MAC_SNIFFER_RF:
+        case MAC_WRP_PIB_MANUF_TRICKLE_MIN_LQI_RF:
 </#if>
             pibValue->value[0] = *pData;
             break;
@@ -3110,12 +3116,14 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
         case MAC_WRP_PIB_RC_COORD:
 <#if MAC_PLC_PRESENT == true>
         case MAC_WRP_PIB_POS_RECENT_ENTRIES:
+        case MAC_WRP_PIB_MANUF_LAST_FRAME_DURATION_PLC:
 </#if>
 <#if MAC_RF_PRESENT == true>
         case MAC_WRP_PIB_DUTY_CYCLE_PERIOD_RF:
         case MAC_WRP_PIB_DUTY_CYCLE_LIMIT_RF:
         case MAC_WRP_PIB_MANUF_POS_TABLE_COUNT_RF:
         case MAC_WRP_PIB_POS_RECENT_ENTRIES_RF:
+        case MAC_WRP_PIB_MANUF_LAST_FRAME_DURATION_RF:
 </#if>
             _Serial_memcpyFromUsiEndianessUint16(pibValue->value, pData);
             break;
