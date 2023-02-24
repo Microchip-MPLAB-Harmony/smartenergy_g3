@@ -2209,44 +2209,27 @@ void MAC_WRP_DataRequest(MAC_WRP_HANDLE handle, MAC_WRP_DATA_REQUEST_PARAMS *drP
         memcpy(dataReqEntry->backupBuffer, drParams->msdu, drParams->msduLength);
     }
 
-    /* Different handling for Broadcast and Unicast requests */
-    if ((drParams->destAddress.addressMode == MAC_WRP_ADDRESS_MODE_SHORT) &&
-        (drParams->destAddress.shortAddress == MAC_WRP_SHORT_ADDRESS_BROADCAST))
+    switch (dataReqEntry->dataReqMediaType)
     {
-        /* Broadcast */
-        /* Overwrite MediaType to both */
-        dataReqEntry->dataReqMediaType = MAC_WRP_MEDIA_TYPE_REQ_BOTH;
-        /* Set control variable */
-        dataReqEntry->waitingSecondConfirm = false;
-        /* Request on both Media */
-        MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
-        MAC_RF_DataRequest(&dataReqEntry->dataReqParams);
-    }
-    else
-    {
-        /* Unicast */
-        switch (dataReqEntry->dataReqMediaType)
-        {
-            case MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF:
-            case MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP:
-                MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
-                break;
-            case MAC_WRP_MEDIA_TYPE_REQ_RF_BACKUP_PLC:
-            case MAC_WRP_MEDIA_TYPE_REQ_RF_NO_BACKUP:
-                MAC_RF_DataRequest(&dataReqEntry->dataReqParams);
-                break;
-            case MAC_WRP_MEDIA_TYPE_REQ_BOTH:
-                /* Set control variable */
-                dataReqEntry->waitingSecondConfirm = false;
-                /* Request on both Media */
-                MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
-                MAC_RF_DataRequest(&dataReqEntry->dataReqParams);
-                break;
-            default: /* PLC only */
-                dataReqEntry->dataReqMediaType = MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP;
-                MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
-                break;
-        }
+        case MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF:
+        case MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP:
+            MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
+            break;
+        case MAC_WRP_MEDIA_TYPE_REQ_RF_BACKUP_PLC:
+        case MAC_WRP_MEDIA_TYPE_REQ_RF_NO_BACKUP:
+            MAC_RF_DataRequest(&dataReqEntry->dataReqParams);
+            break;
+        case MAC_WRP_MEDIA_TYPE_REQ_BOTH:
+            /* Set control variable */
+            dataReqEntry->waitingSecondConfirm = false;
+            /* Request on both Media */
+            MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
+            MAC_RF_DataRequest(&dataReqEntry->dataReqParams);
+            break;
+        default: /* PLC only */
+            dataReqEntry->dataReqMediaType = MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP;
+            MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
+            break;
     }
 <#elseif MAC_PLC_PRESENT == true>
     MAC_PLC_DataRequest(&dataReqEntry->dataReqParams);
