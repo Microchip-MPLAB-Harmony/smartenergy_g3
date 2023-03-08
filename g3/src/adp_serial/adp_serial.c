@@ -82,7 +82,6 @@ typedef enum
     ADP_SERIAL_MSG_ADP_MAC_SET_REQUEST,
     ADP_SERIAL_MSG_ADP_MAC_GET_REQUEST,
     ADP_SERIAL_MSG_ADP_NO_IP_DATA_REQUEST,
-    ADP_SERIAL_MSG_LBP_SET_REQUEST,
 
     /* ADP response/indication messages */
     ADP_SERIAL_MSG_ADP_DATA_CONFIRM = 30,
@@ -107,7 +106,19 @@ typedef enum
     ADP_SERIAL_MSG_ADP_PREQ_INDICATION,
     ADP_SERIAL_MSG_ADP_UPD_NON_VOLATILE_DATA_INDICATION,
     ADP_SERIAL_MSG_ADP_ROUTE_NOT_FOUND_INDICATION,
-    ADP_SERIAL_MSG_LBP_SET_CONFIRM,
+
+    ADP_SERIAL_MSG_LBP_SET_REQUEST = 60,
+    ADP_SERIAL_MSG_LBP_DEV_FORCE_REGISTER,
+    ADP_SERIAL_MSG_LBP_COORD_KICK_DEVICE,
+    ADP_SERIAL_MSG_LBP_COORD_REKEY,
+    ADP_SERIAL_MSG_LBP_COORD_SET_REKEY_PHASE,
+    ADP_SERIAL_MSG_LBP_COORD_ACTIVATE_NEW_KEY,
+    ADP_SERIAL_MSG_LBP_COORD_SHORT_ADDRESS_ASSIGN,
+
+    ADP_SERIAL_MSG_LBP_SET_CONFIRM = 70,
+    ADP_SERIAL_MSG_LBP_COORD_JOIN_REQUEST_INDICATION,
+    ADP_SERIAL_MSG_LBP_COORD_JOIN_COMPLETE_INDICATION,
+    ADP_SERIAL_MSG_LBP_COORD_LEAVE_INDICATION,
 
 } ADP_SERIAL_MSG_ID;
 
@@ -740,10 +751,52 @@ static void _StringifyPathDiscoveryConfirm(ADP_PATH_DISCOVERY_CFM_PARAMS* pPathD
     SRV_USI_Send_Message(adpSerialUsiHandle, SRV_USI_PROT_ID_ADP_G3, adpSerialRspBuffer, serialRspLen);
 }
 
+static void _StringifyLbpCoordJoinRequestIndication(uint8_t* pLbdAddress)
+{
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    adpSerialRspBuffer[serialRspLen++] = ADP_SERIAL_MSG_LBP_COORD_JOIN_REQUEST_INDICATION;
+    memcpy(&adpSerialRspBuffer[serialRspLen], pLbdAddress, 8);
+    serialRspLen += 8;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(adpSerialUsiHandle, SRV_USI_PROT_ID_ADP_G3, adpSerialRspBuffer, serialRspLen);
+}
+
+static void _StringifyLbpCoordJoinCompleteIndication(uint8_t* pLbdAddress, uint16_t assignedAddress)
+{
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    adpSerialRspBuffer[serialRspLen++] = ADP_SERIAL_MSG_LBP_COORD_JOIN_COMPLETE_INDICATION;
+    memcpy(&adpSerialRspBuffer[serialRspLen], pLbdAddress, 8);
+    serialRspLen += 8;
+    adpSerialRspBuffer[serialRspLen++] = (uint8_t) (assignedAddress >> 8);
+    adpSerialRspBuffer[serialRspLen++] = (uint8_t) assignedAddress;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(adpSerialUsiHandle, SRV_USI_PROT_ID_ADP_G3, adpSerialRspBuffer, serialRspLen);
+}
+
+static void _StringifyLbpCoordLeaveIndication(uint16_t networkAddress)
+{
+    uint8_t serialRspLen = 0;
+
+    /* Fill serial response buffer */
+    adpSerialRspBuffer[serialRspLen++] = ADP_SERIAL_MSG_LBP_COORD_LEAVE_INDICATION;
+    adpSerialRspBuffer[serialRspLen++] = (uint8_t) (networkAddress >> 8);
+    adpSerialRspBuffer[serialRspLen++] = (uint8_t) networkAddress;
+
+    /* Send through USI */
+    SRV_USI_Send_Message(adpSerialUsiHandle, SRV_USI_PROT_ID_ADP_G3, adpSerialRspBuffer, serialRspLen);
+}
+
 static ADP_SERIAL_STATUS _ParseInitialize(uint8_t* pData)
 {
     ADP_NOTIFICATIONS adpNotifications;
     LBP_NOTIFICATIONS_DEV lbpDevNotifications;
+    LBP_NOTIFICATIONS_COORD lbpCoordNotifications;
     MAC_WRP_BAND band;
 
     /* Parse initialize message */
@@ -778,6 +831,10 @@ static ADP_SERIAL_STATUS _ParseInitialize(uint8_t* pData)
     if (adpSerialCoord == true)
     {
         LBP_InitCoord(adpSerialAribBand);
+        lbpCoordNotifications.joinRequestIndication = _StringifyLbpCoordJoinRequestIndication;
+        lbpCoordNotifications.joinCompleteIndication = _StringifyLbpCoordJoinCompleteIndication;
+        lbpCoordNotifications.leaveIndication = _StringifyLbpCoordLeaveIndication;
+        LBP_SetNotificationsCoord(&lbpCoordNotifications);
     }
     else
     {
@@ -1402,6 +1459,136 @@ static ADP_SERIAL_STATUS _ParseLbpSetRequest(uint8_t* pData)
     return ADP_SERIAL_STATUS_SUCCESS;
 }
 
+static ADP_SERIAL_STATUS _ParseLbpDevForceRegister(uint8_t* pData)
+{
+    ADP_EXTENDED_ADDRESS* pEUI64Address;
+    ADP_GROUP_MASTER_KEY* pGMK;
+    uint16_t shortAddress, panId;
+
+    if ((adpSerialInitialized == false) || (adpSerialCoord == true))
+    {
+        /* ADP not initialized or initialized as coordinator */
+        return ADP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Parse LBP device force register message */
+    pEUI64Address = (ADP_EXTENDED_ADDRESS*) pData;
+    pData += 8;
+    shortAddress = ((uint16_t) *pData++) << 8;
+    shortAddress += (uint16_t) *pData++;
+    panId = ((uint16_t) *pData++) << 8;
+    panId += (uint16_t) *pData++;
+    pGMK = (ADP_GROUP_MASTER_KEY*) pData;
+
+    /* Send force register to LBP device */
+    LBP_ForceRegister(pEUI64Address, shortAddress, panId, pGMK);
+
+    return ADP_SERIAL_STATUS_SUCCESS;
+}
+
+static ADP_SERIAL_STATUS _ParseLbpCoordKickDevice(uint8_t* pData)
+{
+    ADP_EXTENDED_ADDRESS* pEUI64Address;
+    uint16_t shortAddress;
+
+    if ((adpSerialInitialized == false) || (adpSerialCoord == false))
+    {
+        /* ADP not initialized or initialized as device */
+        return ADP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Parse LBP coordinator kick device message */
+    shortAddress = ((uint16_t) *pData++) << 8;
+    shortAddress += (uint16_t) *pData++;
+    pEUI64Address = (ADP_EXTENDED_ADDRESS*) pData;
+
+    /* Send kick device to LBP coordinator */
+    LBP_KickDevice(shortAddress, pEUI64Address);
+
+    return ADP_SERIAL_STATUS_SUCCESS;
+}
+
+static ADP_SERIAL_STATUS _ParseLbpCoordRekey(uint8_t* pData)
+{
+    ADP_EXTENDED_ADDRESS* pEUI64Address;
+    uint16_t shortAddress;
+    bool distribute;
+
+    if ((adpSerialInitialized == false) || (adpSerialCoord == false))
+    {
+        /* ADP not initialized or initialized as device */
+        return ADP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Parse LBP coordinator rekey message */
+    shortAddress = ((uint16_t) *pData++) << 8;
+    shortAddress += (uint16_t) *pData++;
+    pEUI64Address = (ADP_EXTENDED_ADDRESS*) pData;
+    pData += 8;
+    distribute = (bool) *pData;
+
+    /* Send rekey to LBP coordinator */
+    LBP_Rekey(shortAddress, pEUI64Address, distribute);
+
+    return ADP_SERIAL_STATUS_SUCCESS;
+}
+
+static ADP_SERIAL_STATUS _ParseLbpCoordSetRekeyPhase(uint8_t* pData)
+{
+    bool rekeyStart;
+
+    if ((adpSerialInitialized == false) || (adpSerialCoord == false))
+    {
+        /* ADP not initialized or initialized as device */
+        return ADP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Parse LBP coordinator set rekey phase message */
+    rekeyStart = (bool) *pData;
+
+    /* Send set rekey phase to LBP coordinator */
+    LBP_SetRekeyPhase(rekeyStart);
+
+    return ADP_SERIAL_STATUS_SUCCESS;
+}
+
+static ADP_SERIAL_STATUS _ParseLbpCoordActivateNewKey(uint8_t* pData)
+{
+    if ((adpSerialInitialized == false) || (adpSerialCoord == false))
+    {
+        /* ADP not initialized or initialized as device */
+        return ADP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Send activate new key to LBP coordinator */
+    LBP_activate_new_key();
+
+    return ADP_SERIAL_STATUS_SUCCESS;
+}
+
+static ADP_SERIAL_STATUS _ParseLbpCoordShortAddressAssign(uint8_t* pData)
+{
+    ADP_EXTENDED_ADDRESS* pEUI64Address;
+    uint16_t assignedAddress;
+
+    if ((adpSerialInitialized == false) || (adpSerialCoord == false))
+    {
+        /* ADP not initialized or initialized as device */
+        return ADP_SERIAL_STATUS_NOT_ALLOWED;
+    }
+
+    /* Parse LBP coordinator short address assign message */
+    pEUI64Address = (ADP_EXTENDED_ADDRESS*) pData;
+    pData += 8;
+    assignedAddress = ((uint16_t) *pData++) << 8;
+    assignedAddress += (uint16_t) *pData;
+
+    /* Send short address assign to LBP coordinator */
+    LBP_ShortAddressAssign(pEUI64Address, assignedAddress);
+
+    return ADP_SERIAL_STATUS_SUCCESS;
+}
+
 static void _Callback_UsiAdpProtocol(uint8_t* pData, size_t length)
 {
     uint8_t command;
@@ -1414,7 +1601,7 @@ static void _Callback_UsiAdpProtocol(uint8_t* pData, size_t length)
     }
 
     /* Process received message */
-    command = (*pData++) & 0x3F;
+    command = (*pData++) & 0x7F;
 
     switch (command)
     {
@@ -1478,6 +1665,30 @@ static void _Callback_UsiAdpProtocol(uint8_t* pData, size_t length)
             status = _ParseLbpSetRequest(pData);
             break;
 
+        case ADP_SERIAL_MSG_LBP_DEV_FORCE_REGISTER:
+            status = _ParseLbpDevForceRegister(pData);
+            break;
+
+        case ADP_SERIAL_MSG_LBP_COORD_KICK_DEVICE:
+            status = _ParseLbpCoordKickDevice(pData);
+            break;
+
+        case ADP_SERIAL_MSG_LBP_COORD_REKEY:
+            status = _ParseLbpCoordRekey(pData);
+            break;
+
+        case ADP_SERIAL_MSG_LBP_COORD_SET_REKEY_PHASE:
+            status = _ParseLbpCoordSetRekeyPhase(pData);
+            break;
+
+        case ADP_SERIAL_MSG_LBP_COORD_ACTIVATE_NEW_KEY:
+            status = _ParseLbpCoordActivateNewKey(pData);
+            break;
+
+        case ADP_SERIAL_MSG_LBP_COORD_SHORT_ADDRESS_ASSIGN:
+            status = _ParseLbpCoordShortAddressAssign(pData);
+            break;
+
         default:
             break;
     }
@@ -1527,5 +1738,11 @@ void ADP_SERIAL_Tasks(SYS_MODULE_OBJ object)
         /* Open USI instance for MAC serialization and register callback */
         adpSerialUsiHandle = SRV_USI_Open(G3_ADP_SERIAL_USI_INDEX);
         SRV_USI_CallbackRegister(adpSerialUsiHandle, SRV_USI_PROT_ID_ADP_G3, _Callback_UsiAdpProtocol);
+    }
+
+    if ((adpSerialInitialized == true) && (adpSerialCoord == true))
+    {
+        /* LBP coordinator tasks */
+        LBP_UpdateBootstrapSlots();
     }
 }

@@ -960,7 +960,7 @@ static void _Callback_UsiMacProtocol(uint8_t* pData, size_t length)
     }
 
     /* Process received message */
-    command = (*pData++) & 0x3F;
+    command = (*pData++) & 0x7F;
 
     switch(command)
     {
