@@ -88,25 +88,24 @@
     pLbdAddress      - Pointer to Extended Address of device willing to Join the
                        network
 
-    pAssignedAddress - Pointer to the 16-bit address to be assigned to joining
-                       device. Set to 0xFFFF to reject the joining device.
-
   Example:
     <code>
-    App_JoinRequestIndication(uint8_t* pLbdAddress, uint16_t* pAssignedAddress)
+    App_JoinRequestIndication(uint8_t* pLbdAddress)
     {
+        uint16_t assignedAddress;
+
         // Check extended address
 
         // Assign 16-bit address
-        *pAssignedAddress = 0x0001;
+        assignedAddress = 0x0001;
+        LBP_ShortAddressAssign(pLbdAddress, assignedAddress);
     }
     </code>
 
   Remarks:
     None.
 */
-typedef void (*LBP_COORD_JOIN_REQUEST_IND_CALLBACK)(uint8_t* pLbdAddress,
-    uint16_t* pAssignedAddress);
+typedef void (*LBP_COORD_JOIN_REQUEST_IND_CALLBACK)(uint8_t* pLbdAddress);
 
 // *****************************************************************************
 /* LBP Join Complete Indication Event Handler Function Pointer
@@ -487,6 +486,48 @@ void LBP_ActivateNewKey(void);
 void LBP_SetParamCoord(uint32_t attributeId, uint16_t attributeIndex,
     uint8_t attributeLen, const uint8_t *pAttributeValue,
     LBP_SET_PARAM_CONFIRM *pSetConfirm);
+
+// *****************************************************************************
+/* Function:
+    void LBP_ShortAddressAssign(uint8_t *pExtAddress, uint16_t assignedAddress);
+
+  Summary:
+    Assigns a short address to a device willing to join.
+
+  Description:
+    This primitive allows the upper layer to assign a short address to a device
+    willing to join.
+
+  Precondition:
+    LBP_InitCoord must have been called before.
+
+  Parameters:
+    pExtAddress     - Pointer to the extended address of device willing to join
+
+    assignedAddress - The network address to be assigned. Set to 0xFFFF to
+                      reject device.
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    App_JoinRequestIndication(uint8_t* pLbdAddress)
+    {
+        uint16_t assignedAddress;
+
+        // Check extended address
+
+        // Assign 16-bit address
+        assignedAddress = 0x0001;
+        LBP_ShortAddressAssign(pLbdAddress, assignedAddress);
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+void LBP_ShortAddressAssign(uint8_t *pExtAddress, uint16_t assignedAddress);
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

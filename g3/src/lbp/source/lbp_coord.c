@@ -112,6 +112,7 @@ static const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S sIdSCenFcc = {LBP_NETWORK_ACCES
 static bool bAribBand;
 static uint8_t u8EAPIdentifier = 0;
 static bool bRekey;
+static uint16_t u16InternalAssignedAddress = 0;
 
 static LBP_NOTIFICATIONS_COORD lbpNotifications = {NULL};
 
@@ -776,12 +777,10 @@ static void AdpLbpConfirmCoord(struct TAdpLbpConfirm *pLbpConfirm)
  **********************************************************************************************************************/
 static void AdpLbpIndicationCoord(struct TAdpLbpIndication *pLbpIndication)
 {
-	static ADP_EXTENDED_ADDRESS ext_address_in_process;
 	uint16_t u16OrigAddress;
 	uint8_t u8MessageType;
 	uint8_t *pBootStrappingData;
 	uint16_t u16BootStrappingDataLength;
-	uint16_t u16AssignedAddress;
 	struct TAdpAddress dstAddr;
 
 	/* Embedded EAP message */
@@ -860,30 +859,21 @@ static void AdpLbpIndicationCoord(struct TAdpLbpIndication *pLbpIndication)
 					/* Set Media Type and Disable backup flag from incoming LBP frame on Slot */
 					p_bs_slot->m_u8MediaType = u8MediaType;
 					p_bs_slot->m_u8DisableBackupMedium = u8DisableBackupMedium;
-					/* Check if the joining device is accepted */
-					u16AssignedAddress = 0xFFFF;
+					/* Store information to be used in Address Assign function */
+					p_bs_slot->us_lba_src_addr = u16OrigAddress;
+					memcpy(p_bs_slot->m_LbdAddress.m_au8Value, m_current_LbdAddress.m_au8Value,
+							sizeof(m_current_LbdAddress.m_au8Value));
+					/* Check with upper layer if the joining device is accepted */
 					if (lbpNotifications.joinRequestIndication != NULL) {
-						lbpNotifications.joinRequestIndication(m_current_LbdAddress.m_au8Value, &u16AssignedAddress);
+						lbpNotifications.joinRequestIndication(m_current_LbdAddress.m_au8Value);
 					}
-					if (u16AssignedAddress == 0xFFFF) {
-						// Device rejected
-						p_bs_slot->us_data_length = LBP_EncodeDecline(m_current_LbdAddress.m_au8Value, &p_bs_slot->auc_data[0], sizeof(p_bs_slot->auc_data),
-							u8EAPIdentifier, p_bs_slot->m_u8MediaType, p_bs_slot->m_u8DisableBackupMedium);
-						p_bs_slot->e_state = BS_STATE_SENT_EAP_MSG_DECLINED;
-						u8EAPIdentifier++;
-						memcpy(p_bs_slot->m_LbdAddress.m_au8Value, m_current_LbdAddress.m_au8Value,
-								sizeof(m_current_LbdAddress.m_au8Value));
-						LOG_DBG(Log("[BS] Slot updated to BS_STATE_SENT_EAP_MSG_DECLINED"));
-					} else {
-						p_bs_slot->us_lba_src_addr = u16OrigAddress;
-						p_bs_slot->us_assigned_short_address = u16AssignedAddress;
-						memcpy(ext_address_in_process.m_au8Value, m_current_LbdAddress.m_au8Value,
-								sizeof(m_current_LbdAddress.m_au8Value));
-						memcpy(p_bs_slot->m_LbdAddress.m_au8Value, m_current_LbdAddress.m_au8Value,
-								sizeof(m_current_LbdAddress.m_au8Value));
-						_processJoining0(&m_current_LbdAddress, p_bs_slot);
-						p_bs_slot->e_state = BS_STATE_SENT_EAP_MSG_1;
-						LOG_DBG(Log("[BS] Slot updated to BS_STATE_SENT_EAP_MSG_1"));
+					else {
+						/* If there is no configured callback, assign addresses sequentially */
+						u16InternalAssignedAddress++;
+						LBP_ShortAddressAssign(m_current_LbdAddress.m_au8Value, u16InternalAssignedAddress);
+					}
+					/* Exit function, response will be sent on Address Assign function */
+					return;
 				}
 				} else {
 					LOG_DBG(Log("[BS] Repeated message processing Joining, silently ignored "));
@@ -1156,5 +1146,64 @@ void LBP_SetParamCoord(uint32_t attributeId, uint16_t attributeIndex, uint8_t at
 	default:
 		/* Unknown LBP parameter */
 		break;
+	}
+}
+
+/**********************************************************************************************************************/
+
+/**
+ **********************************************************************************************************************/
+void LBP_ShortAddressAssign(uint8_t *pExtAddress, uint16_t assignedAddress)
+{
+	t_bootstrap_slot *p_bs_slot;
+	struct TAdpAddress dstAddr;
+	
+	/* Get slot from extended address*/
+	p_bs_slot = _get_bootstrap_slot_by_addr(pExtAddress);
+
+	if (p_bs_slot) {
+		if (assignedAddress == 0xFFFF) {
+			// Device rejected
+			p_bs_slot->us_data_length = LBP_EncodeDecline(p_bs_slot->m_LbdAddress.m_au8Value, &p_bs_slot->auc_data[0], sizeof(p_bs_slot->auc_data),
+				u8EAPIdentifier, p_bs_slot->m_u8MediaType, p_bs_slot->m_u8DisableBackupMedium);
+			p_bs_slot->e_state = BS_STATE_SENT_EAP_MSG_DECLINED;
+			u8EAPIdentifier++;
+			LOG_DBG(Log("[BS] Slot updated to BS_STATE_SENT_EAP_MSG_DECLINED"));
+		} else {
+			p_bs_slot->us_assigned_short_address = assignedAddress;
+			_processJoining0(&p_bs_slot->m_LbdAddress, p_bs_slot);
+			p_bs_slot->e_state = BS_STATE_SENT_EAP_MSG_1;
+			LOG_DBG(Log("[BS] Slot updated to BS_STATE_SENT_EAP_MSG_1"));
+		}
+		
+		if (p_bs_slot->us_data_length > 0) {
+			if (p_bs_slot->us_lba_src_addr == 0xFFFF) {
+				dstAddr.m_u8AddrSize = ADP_ADDRESS_64BITS;
+				memcpy(dstAddr.m_ExtendedAddress.m_au8Value, p_bs_slot->m_LbdAddress.m_au8Value, 8);
+			} else {
+				dstAddr.m_u8AddrSize = ADP_ADDRESS_16BITS;
+				dstAddr.m_u16ShortAddr = p_bs_slot->us_lba_src_addr;
+			}
+
+			if (p_bs_slot->uc_pending_confirms > 0) {
+				p_bs_slot->uc_pending_tx_handler = p_bs_slot->uc_tx_handle;
+			}
+
+			p_bs_slot->uc_tx_handle = _get_next_nsdu_handler();
+			p_bs_slot->ul_timeout = oss_get_up_time_ms() + 1000 * u16MsgTimeoutSeconds;
+			p_bs_slot->uc_tx_attemps = 0;
+			p_bs_slot->uc_pending_confirms++;
+
+			_log_show_slot_status(p_bs_slot);
+			LOG_DBG(Log("[BS] AdpLbpRequest Called, handler: %d ", p_bs_slot->uc_tx_handle));
+			AdpLbpRequest((struct TAdpAddress const *)&dstAddr, /* Destination address */
+					p_bs_slot->us_data_length,                  /* NSDU length */
+					&p_bs_slot->auc_data[0],                    /* NSDU */
+					p_bs_slot->uc_tx_handle,                    /* NSDU handle */
+					u8MaxHops,                                  /* Max. Hops */
+					true,                                       /* Discover route */
+					0,                                          /* QoS */
+					false);                                     /* Security enable */
+		}
 	}
 }
