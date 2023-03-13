@@ -137,7 +137,7 @@ typedef enum {
     PAL_PLC_STATUS_BUSY = SYS_STATUS_BUSY,
     PAL_PLC_STATUS_READY = SYS_STATUS_READY,
     PAL_PLC_STATUS_ERROR = SYS_STATUS_ERROR,
-    PAL_PLC_STATUS_INVALID_OBJECT = SYS_STATUS_ERROR_EXTENDED - 1,         
+    PAL_PLC_STATUS_INVALID_OBJECT = SYS_STATUS_ERROR_EXTENDED - 1,
 } PAL_PLC_STATUS;
 
 // *****************************************************************************
