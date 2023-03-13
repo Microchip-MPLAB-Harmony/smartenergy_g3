@@ -1393,6 +1393,41 @@ void ADP_Init(ADP_NOTIFICATIONS* pNotifications, MAC_WRP_BAND band);
 
 // *****************************************************************************
 /* Function:
+    SYS_STATUS ADP_Status(void)
+
+  Summary:
+    The ADP_Status primitive retrieves the Status of G3 ADP layer.
+
+  Description:
+    This primitive is intended to be called before using G3 ADP layer to ensure
+    they are ready to be used.
+
+  Precondition:
+    ADP_Init routine must have been called before.
+
+  Parameters:
+    None
+
+  Returns:
+    Status of G3 MAC layer(s) as a SYS_STATUS code.
+
+  Example:
+    <code>
+    SYS_STATUS status;
+    status = ADP_Status();
+    if (status == SYS_STATUS_READY)
+    {
+        // ADP is ready to be used
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+SYS_STATUS ADP_Status(void);
+
+// *****************************************************************************
+/* Function:
     void ADP_SetNotificationsToLbp(ADP_NOTIFICATIONS_TO_LBP* pNotifications);
 
   Summary:
