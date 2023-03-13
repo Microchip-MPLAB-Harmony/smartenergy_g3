@@ -2114,13 +2114,23 @@ void MAC_WRP_Init(MAC_WRP_HANDLE handle, MAC_WRP_INIT *init)
 SYS_STATUS MAC_WRP_Status(void)
 {
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
-    if ((MAC_PLC_Status() == SYS_STATUS_READY) || (MAC_RF_Status() == SYS_STATUS_READY))
+    SYS_STATUS plcStatus = MAC_PLC_Status();
+    SYS_STATUS rfStatus = MAC_RF_Status();
+    if ((plcStatus == SYS_STATUS_UNINITIALIZED) || (rfStatus == SYS_STATUS_UNINITIALIZED))
+    {
+        return SYS_STATUS_UNINITIALIZED;
+    }
+    if ((plcStatus == SYS_STATUS_BUSY) || (rfStatus == SYS_STATUS_BUSY))
+    {
+        return SYS_STATUS_BUSY;
+    }
+    else if ((plcStatus == SYS_STATUS_READY) || (rfStatus == SYS_STATUS_READY))
     {
         return SYS_STATUS_READY;
     }
     else
     {
-        return SYS_STATUS_BUSY;
+        return SYS_STATUS_ERROR;
     }
 <#elseif MAC_PLC_PRESENT == true>
     return MAC_PLC_Status();

@@ -68,15 +68,9 @@ static const MAC_COMMON_MIB macMibCommonDefaults = {
     false, // coordinator
 };
 
-static bool alreadyInitialized = false;
-
 void MAC_COMMON_Init(void)
 {
-    if (!alreadyInitialized)
-    {
-        alreadyInitialized = true;
-        macMibCommon = macMibCommonDefaults;
-    }
+    macMibCommon = macMibCommonDefaults;
 }
 
 void MAC_COMMON_Reset(void)
