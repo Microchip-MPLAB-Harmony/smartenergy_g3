@@ -49,7 +49,6 @@
 #include <string.h>
 #include "adp_serial.h"
 #include "configuration.h"
-#include "adp.h"
 #include "lbp_dev.h"
 #include "lbp_coord.h"
 #include "stack/g3/mac/mac_wrapper/mac_wrapper.h"
@@ -152,6 +151,9 @@ static bool adpSerialAribBand;
 /* ADP initialized flag */
 static bool adpSerialInitialized;
 
+/* ADP Serial notifications */
+static ADP_SERIAL_NOTIFICATIONS adpSerialNotifications;
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: File Scope Functions
@@ -240,7 +242,10 @@ static void _StringifyPreqIndication(void)
 
 static void _StoreNonVolatileDataIndication(ADP_NON_VOLATILE_DATA_IND_PARAMS* pNonVolatileDataInd)
 {
-    /* TODO: Store non-volatile data */
+    if (adpSerialNotifications.nonVolatileDataIndication != NULL)
+    {
+        adpSerialNotifications.nonVolatileDataIndication(pNonVolatileDataInd);
+    }
 }
 
 static void _StringifyRouteNotFoundIndication(ADP_ROUTE_NOT_FOUND_IND_PARAMS* pRouteNotFoundInd)
@@ -826,8 +831,6 @@ static ADP_SERIAL_STATUS _ParseInitialize(uint8_t* pData)
 
     ADP_Init(&adpNotifications, band);
 
-    /* TODO: Set Extended Address */
-
     if (adpSerialCoord == true)
     {
         LBP_InitCoord(adpSerialAribBand);
@@ -845,7 +848,24 @@ static ADP_SERIAL_STATUS _ParseInitialize(uint8_t* pData)
         LBP_SetNotificationsDev(&lbpDevNotifications);
     }
 
-    /* TODO: Load non-volatile data */
+    if (adpSerialNotifications.setEUI64NonVolatileData != NULL)
+    {
+        ADP_SET_CFM_PARAMS setConfirm;
+        ADP_EXTENDED_ADDRESS eui64;
+        ADP_NON_VOLATILE_DATA_IND_PARAMS nonVolatileData;
+
+        /* Call upper layer to obtain EUI64 and non-volatile data */
+        adpSerialNotifications.setEUI64NonVolatileData(&eui64, &nonVolatileData);
+
+        /* Set Extended Address (EUI64) */
+        ADP_SetRequestSync(ADP_IB_MANUF_EXTENDED_ADDRESS, 0, 8, eui64.value, &setConfirm);
+
+        /* Set non-volatile data */
+        ADP_MacSetRequestSync(MAC_WRP_PIB_FRAME_COUNTER, 0, 4, &nonVolatileData.frameCounter, &setConfirm);
+        ADP_MacSetRequestSync(MAC_WRP_PIB_FRAME_COUNTER_RF, 0, 4, &nonVolatileData.frameCounterRF, &setConfirm);
+        ADP_SetRequestSync(ADP_IB_MANUF_DISCOVER_SEQUENCE_NUMBER, 0, 2, &nonVolatileData.discoverSeqNumber, &setConfirm);
+        ADP_SetRequestSync(ADP_IB_MANUF_BROADCAST_SEQUENCE_NUMBER, 0, 1, &nonVolatileData.broadcastSeqNumber, &setConfirm);
+    }
 
     adpSerialInitialized = true;
     return ADP_SERIAL_STATUS_SUCCESS;
@@ -1721,6 +1741,8 @@ SYS_MODULE_OBJ ADP_SERIAL_Initialize (
     /* Initialize variables */
     adpSerialUsiHandle = SRV_USI_HANDLE_INVALID;
     adpSerialInitialized = false;
+    adpSerialNotifications.setEUI64NonVolatileData = NULL;
+    adpSerialNotifications.nonVolatileDataIndication = NULL;
 
     return (SYS_MODULE_OBJ) G3_ADP_SERIAL_INDEX_0; 
 }
@@ -1745,4 +1767,9 @@ void ADP_SERIAL_Tasks(SYS_MODULE_OBJ object)
         /* LBP coordinator tasks */
         LBP_UpdateBootstrapSlots();
     }
+}
+
+void ADP_SERIAL_SetNotifications(ADP_SERIAL_NOTIFICATIONS* pNotifications)
+{
+    adpSerialNotifications = *pNotifications;
 }

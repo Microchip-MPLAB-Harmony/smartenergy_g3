@@ -1414,7 +1414,7 @@ void ADP_Init(ADP_NOTIFICATIONS* pNotifications, MAC_WRP_BAND band);
 
   Example:
     <code>
-    ADP_NOTIFICATIONS adpNotifications = {
+    ADP_NOTIFICATIONS_TO_LBP adpNotifications = {
         .lbpConfirm = appLbpConfirm,
         .lbpIndication = appLbpIndication
     };

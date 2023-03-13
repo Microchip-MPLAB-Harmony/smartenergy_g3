@@ -49,7 +49,7 @@
 // Section: File includes
 // *****************************************************************************
 // *****************************************************************************
-#include "system/system.h"
+#include "adp.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -61,7 +61,81 @@
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: MAC Wrapper Interface Routines
+// Section: Data Types
+// *****************************************************************************
+// *****************************************************************************
+
+// *****************************************************************************
+/* ADP Serial Set EUI64 and Non-volatile Data Event Handler Function Pointer
+
+  Summary:
+    Pointer to a Set EUI64 and Non-volatile Data Event handler function.
+
+  Description:
+    This data type defines the required function signature for the ADP Serial
+    Set EUI64 and Non-volatile Data event handling callback function. The ADP
+    Serial Set EUI64 and non-volatile Data primitive allows the next higher
+    layer to be notified when EUI64 (Extended Address) and non-volatile data
+    should be set, after initializing ADP.
+
+    A client must register a pointer using the event handling function whose
+    function signature (parameter and return value types) matches the types
+    specified by this function pointer in order to receive Set EUI64 and
+    Non-volatile Data events back from module.
+
+  Parameters:
+    pEUI64              - Pointer to store the EUI64 (Extended Address)
+    pNonVolatileDataInd - Pointer to store non-volatile data
+
+  Example:
+    <code>
+    App_SetEUI64NonVolatileData (
+        ADP_EXTENDED_ADDRESS* pEUI64,
+        ADP_NON_VOLATILE_DATA_IND_PARAMS* pNonVolatileData
+    )
+    {
+        ADP_EXTENDED_ADDRESS eui64;
+        ADP_NON_VOLATILE_DATA_IND_PARAMS nonVolatileData;
+
+        // Get Extended Address. Must be unique for each device.
+        // Load non-volatile data
+
+        memcpy(pEUI64->value, eui64.value, 8);
+        memcpy(pNonVolatileData, &nonVolatileData, sizeof(nonVolatileData));
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+typedef void (*ADP_SERIAL_SET_EUI64_NON_VOLATILE_DATA_CALLBACK) (
+    ADP_EXTENDED_ADDRESS* pEUI64,
+    ADP_NON_VOLATILE_DATA_IND_PARAMS* pNonVolatileData
+);
+
+// *****************************************************************************
+/* ADP Serial Callback Notifications Structure
+
+   Summary:
+    Set of event handler function pointers to receive events from ADP Serial.
+
+   Description:
+    Defines the set of callback functions that ADP Serial uses to generate
+    events to upper layer.
+
+   Remarks:
+    In case an event is to be ignored, setting its corresponding callback
+    function to NULL will lead to the event not being generated.
+*/
+typedef struct
+{
+    ADP_SERIAL_SET_EUI64_NON_VOLATILE_DATA_CALLBACK setEUI64NonVolatileData;
+    ADP_NON_VOLATILE_DATA_IND_CALLBACK              nonVolatileDataIndication;
+} ADP_SERIAL_NOTIFICATIONS;
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: ADP Serial Interface Routines
 // *****************************************************************************
 // *****************************************************************************
 
@@ -152,6 +226,42 @@ SYS_MODULE_OBJ ADP_SERIAL_Initialize (
     called by the system's tasks routine (SYS_Tasks).
 */
 void ADP_SERIAL_Tasks(SYS_MODULE_OBJ object);
+
+// *****************************************************************************
+/* Function:
+    void ADP_SERIAL_SetNotifications(ADP_SERIAL_NOTIFICATIONS* pNotifications);
+
+  Summary:
+    Sets ADP Serial notifications.
+
+  Description:
+    This routine sets the ADP Serial notifications. Callback handlers for event
+    notification are set in this function.
+
+  Precondition:
+    None.
+
+  Parameters:
+    pNotifications - Structure with callbacks used to notify ADP Serial specific
+                     events
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_SERIAL_NOTIFICATIONS adpSerialNotifications = {
+        .setEUI64 = appSetEUI64,
+        .nonVolatileDataIndication = appNonVolatileDataIndication
+    };
+
+    ADP_SERIAL_SetNotifications(&adpSerialNotifications);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_SERIAL_SetNotifications(ADP_SERIAL_NOTIFICATIONS* pNotifications);
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
