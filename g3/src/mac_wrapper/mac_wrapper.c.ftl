@@ -380,7 +380,6 @@ static bool _macWrpIsSharedAttribute(MAC_WRP_PIB_ATTRIBUTE attribute)
     }
 }
 
-<#if MAC_SERIALIZATION_EN == true>
 static void _Serial_memcpyToUsiEndianessUint32(uint8_t* pDst, uint8_t* pSrc)
 {
     uint32_t aux;
@@ -425,6 +424,7 @@ static void _Serial_memcpyFromUsiEndianessUint16(uint8_t* pDst, uint8_t* pSrc)
     memcpy(pDst, (uint8_t *)&aux, 2);
 }
 
+<#if MAC_SERIALIZATION_EN == true>
 static void _Serial_StringifyMsgStatus(MAC_WRP_SERIAL_STATUS status, MAC_WRP_SERIAL_MSG_ID command)
 {
     uint8_t serialRspLen = 0;
@@ -2536,7 +2536,7 @@ MAC_WRP_AVAILABLE_MAC_LAYERS MAC_WRP_GetAvailableMacLayers(MAC_WRP_HANDLE handle
 </#if>
 }
 
-uint32_t MAC_WRP_SerialParseGetRequest(uint8_t* pData, uint16_t* index);
+uint32_t MAC_WRP_SerialParseGetRequest(uint8_t* pData, uint16_t* index)
 {
     uint32_t attribute;
     uint16_t attrIndexAux;
@@ -2796,7 +2796,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
                 serialData[serialRspLen++] = (uint8_t) (pNeighbourEntry->tmrValidTime >> 8);
                 serialData[serialRspLen++] = (uint8_t) pNeighbourEntry->tmrValidTime;
                 /* Length has to be incremented by 2 due to bitfields in the entry are serialized in separate fields */
-                serialData[7] = pibValue->length + 2;
+                serialData[7] = pibLength + 2;
                 break;
 
             case MAC_WRP_PIB_POS_TABLE:

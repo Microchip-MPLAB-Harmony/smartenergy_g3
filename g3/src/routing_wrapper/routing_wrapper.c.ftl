@@ -87,17 +87,17 @@ void ROUTING_WRP_Reset(MAC_WRP_HANDLE macWrpHandle)
     routingTables.adpRoutingSetSize = G3_ADP_ROUTING_SET_SIZE;
     routingTables.adpDestinationAddressSetSize = G3_ADP_DESTINATION_ADDR_SET_SIZE;
     routingTables.pendingRREQTableSize = LOADNG_PENDING_RREQ_TABLE_SIZE;
-    routingTables.rrepGenerationTableSize = LOADNG_RREP_GENERATION_TABLE_SIZE;
+    routingTables.rrepGenerationTableSize = LOADNG_RREP_GEN_TABLE_SIZE;
     routingTables.discoverRouteTableSize = LOADNG_DISCOVER_ROUTE_TABLE_SIZE;
-    routingTables.rreqForwardingTableSize = LOADNG_RREQ_FORWARDING_TABLE_SIZE;
+    routingTables.rreqForwardingTableSize = LOADNG_RREQ_FORWARD_TABLE_SIZE;
 
     /* Store pointers to tables */
     routingTables.adpRoutingTable = routingWrpRoutingTable;
     routingTables.adpBlacklistTable = routingWrpBlacklistTable;
     routingTables.adpRoutingSet = routingWrpRoutingSet;
     routingTables.adpDestinationAddressSet = routingWrpDestinationAddressSet;
-    routingTables.pendingRREQTable = g_PendingRREQTable;
-    routingTables.rrepGenerationTable = g_RRepGenerationTable;
+    routingTables.pendingRREQTable = routingWrpPendingRReqTable;
+    routingTables.rrepGenerationTable = routingWrpRRepGenerationTable;
     routingTables.discoverRouteTable = routingWrpDiscoverRouteTable;
     routingTables.rreqForwardingTable = routingWrpRReqForwardingTable;
 

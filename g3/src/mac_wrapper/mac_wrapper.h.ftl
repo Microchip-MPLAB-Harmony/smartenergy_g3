@@ -1326,13 +1326,13 @@ typedef struct
     MAC_WRP_HANDLERS macWrpHandlers;
     /* Mac Wrapper instance handle */
     MAC_WRP_HANDLE macWrpHandle;
+    /* PIB serialization debug set length */
+    uint16_t debugSetLength;
 <#if MAC_SERIALIZATION_EN == true>
     /* Mac Serialization handle */
     MAC_WRP_HANDLE macSerialHandle;
     /* USI handle for MAC serialization */
     SRV_USI_HANDLE usiHandle;
-    /* PIB serialization debug set length */
-    uint16_t debugSetLength;
     /* Flag to indicate initialize through serial interface */
     bool serialInitialize;
     /* Flag to indicate reset request through serial interface */
