@@ -493,6 +493,8 @@ typedef struct
     
     bool restartMib;
 
+    bool coordinator;
+
 <#if G3_PAL_PLC_PVDD_MONITOR == true> 
     bool pvddMonTxEnable;
 
@@ -878,6 +880,38 @@ PAL_PLC_PIB_RESULT PAL_PLC_GetMacRtPib(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pi
     None.
 */
 PAL_PLC_PIB_RESULT PAL_PLC_SetMacRtPib(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pibObj);
+
+// *****************************************************************************
+/* Function:
+    void PAL_PLC_SetCoordinator(PAL_PLC_HANDLE handle)
+
+  Summary:
+    Allows a client to configure the PLC driver as coordinator.
+
+  Description:
+    This routine configures the PLC driver as coordinator.
+
+  Precondition:
+    PAL_PLC_HandleGet must have been called to obtain a valid PAL PLC handle.
+
+  Parameters:
+    None.
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    // 'palPlcHandle', returned from the PAL_PLC_HandleGet
+    
+    PAL_PLC_SetCoordinator(palPlcHandle);
+
+    </code>
+
+  Remarks:
+    None.
+*/
+void PAL_PLC_SetCoordinator(PAL_PLC_HANDLE handle);
  
 #endif // #ifndef _PAL_PLC_H
 /*******************************************************************************

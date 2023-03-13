@@ -215,20 +215,6 @@ static void _palPlcSetInitialConfiguration ( void )
     /* Apply PLC coupling configuration */
     SRV_PCOUP_Set_Config(palPlcData.drvG3MacRtHandle, palPlcData.plcBranch);
 
-    /* Force Transmission to VLO mode by default in order to maximize signal level in any case */
-    /* Disable auto-detect mode */
-    palPlcData.plcPIB.pib = MAC_RT_PIB_MANUF_PHY_PARAM;
-    palPlcData.plcPIB.index = PHY_PIB_CFG_AUTODETECT_IMPEDANCE;
-    palPlcData.plcPIB.length = 1;
-    palPlcData.plcPIB.pData[0] = 0;
-    DRV_G3_MACRT_PIBSet(palPlcData.drvG3MacRtHandle, &palPlcData.plcPIB);
-
-    /* Set VLO mode */
-    palPlcData.plcPIB.index = PHY_PIB_CFG_IMPEDANCE;
-    palPlcData.plcPIB.length = 1;
-    palPlcData.plcPIB.pData[0] = 2;
-    DRV_G3_MACRT_PIBSet(palPlcData.drvG3MacRtHandle, &palPlcData.plcPIB);
-
 <#if G3_PAL_PLC_MAC_SNIFFER_EN == true> 
     /* Enable MAC Sniffer */
     palPlcData.plcPIB.pib = MAC_RT_PIB_MANUF_ENABLE_MAC_SNIFFER;
@@ -355,6 +341,12 @@ static void _palPlcInitCallback(bool initResult)
         {
             /* Set MIB backup info to the MAC RT driver */
             _palPlcSetMibBackupInfo();
+
+            if (palPlcData.coordinator)
+            {
+                /* Restore coordinator configuration */
+                DRV_G3_MACRT_SetCoordinator(palPlcData.drvG3MacRtHandle);
+            }
         }
 
 <#if G3_PAL_PLC_PHY_SNIFFER_EN == true>         
@@ -371,11 +363,6 @@ static void _palPlcInitCallback(bool initResult)
             /* Open USI */
             palPlcData.usiHandler = SRV_USI_Open(PAL_PLC_PHY_SNIFFER_USI_INSTANCE);
         }
-
-</#if>
-<#if G3_PAL_PLC_COORDINATOR_EN == true>   
-        /* Enable Coordinator capabilities */
-        DRV_G3_MACRT_SetCoordinator(palPlcData.drvG3MacRtHandle);
 
 </#if>
         /* Enable PLC Transmission */
@@ -434,6 +421,7 @@ SYS_MODULE_OBJ PAL_PLC_Initialize(const SYS_MODULE_INDEX index,
     palPlcData.initHandlers = palInit->macRtHandlers;
     palPlcData.plcBand = palInit->macRtBand;
     palPlcData.restartMib = palInit->initMIB;
+    palPlcData.coordinator = false;
     
     /* Clear exceptions statistics */
     palPlcData.statsErrorUnexpectedKey = 0;
@@ -643,4 +631,16 @@ PAL_PLC_PIB_RESULT PAL_PLC_SetMacRtPib(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pi
     }
             
     return result;
+}
+
+void PAL_PLC_SetCoordinator(PAL_PLC_HANDLE handle)
+{
+    if (handle != (PAL_PLC_HANDLE)&palPlcData)
+    {
+        return;
+    }
+
+    /* Enable Coordinator capabilities */
+    DRV_G3_MACRT_SetCoordinator(palPlcData.drvG3MacRtHandle);
+    palPlcData.coordinator = true;
 }

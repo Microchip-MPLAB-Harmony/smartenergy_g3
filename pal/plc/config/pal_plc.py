@@ -71,11 +71,6 @@ def instantiateComponent(g3PalPlcComponent):
     g3PalPlcMacSnifferEnable.setDefaultValue(False)
     g3PalPlcMacSnifferEnable.setHelp(g3_pal_plc_helpkeyword)
 
-    g3PalPlcCoordinator = g3PalPlcComponent.createBooleanSymbol("G3_PAL_PLC_COORDINATOR_EN", None)
-    g3PalPlcCoordinator.setLabel("Coordinator Role")
-    g3PalPlcCoordinator.setDefaultValue(False)
-    g3PalPlcCoordinator.setHelp(g3_pal_plc_helpkeyword)
-
     g3PalPlcPVDDMonitor = g3PalPlcComponent.createBooleanSymbol("G3_PAL_PLC_PVDD_MONITOR", None)
     g3PalPlcPVDDMonitor.setLabel("PVDD Monitor")
     g3PalPlcPVDDMonitor.setDefaultValue(False)
