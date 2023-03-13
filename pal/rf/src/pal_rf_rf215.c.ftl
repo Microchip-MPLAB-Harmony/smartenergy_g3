@@ -227,23 +227,26 @@ SYS_MODULE_OBJ PAL_RF_Initialize(const SYS_MODULE_INDEX index,
 {
     PAL_RF_INIT *palInit = (PAL_RF_INIT *)init;
 
+    /* Check Single instance */
+    if (index != PAL_RF_PHY_INDEX)
+    {
+        return SYS_MODULE_OBJ_INVALID;
+    }
+
+    /* Check previously initialized */
+    if (palRfData.status != PAL_RF_STATUS_UNINITIALIZED)
+    {
+        return SYS_MODULE_OBJ_INVALID;
+    }
+
     palRfData.rfPhyHandlers.palRfDataIndication = palInit->rfPhyHandlers.palRfDataIndication;
     palRfData.rfPhyHandlers.palRfTxConfirm = palInit->rfPhyHandlers.palRfTxConfirm;
 
     palRfData.rfPhyModScheme = FSK_FEC_OFF;
+    palRfData.status = SYS_STATUS_BUSY;
+    palRfData.drvRfPhyHandle = DRV_HANDLE_INVALID;
 
-    if (palRfData.status == PAL_RF_STATUS_DEINITIALIZED)
-    {
-        _palRfInitCallback(0, SYS_STATUS_READY);
-    }
-    else
-    {
-        palRfData.status = SYS_STATUS_BUSY;
-
-        palRfData.drvRfPhyHandle = DRV_HANDLE_INVALID;
-
-        DRV_RF215_ReadyStatusCallbackRegister(DRV_RF215_INDEX_0, _palRfInitCallback, 0);
-    }
+    DRV_RF215_ReadyStatusCallbackRegister(DRV_RF215_INDEX_0, _palRfInitCallback, 0);
 
     return (SYS_MODULE_OBJ)PAL_RF_PHY_INDEX;
 }
@@ -263,7 +266,7 @@ PAL_RF_STATUS PAL_RF_Status(SYS_MODULE_OBJ object)
 {
     if (object != (SYS_MODULE_OBJ)PAL_RF_PHY_INDEX)
     {
-        return SYS_STATUS_ERROR;
+        return PAL_RF_STATUS_INVALID_OBJECT;
     }
     
     return palRfData.status;
@@ -276,11 +279,10 @@ void PAL_RF_Deinitialize(SYS_MODULE_OBJ object)
         return;
     }
     
-    palRfData.status = PAL_RF_STATUS_DEINITIALIZED;
+    palRfData.status = PAL_RF_STATUS_UNINITIALIZED;
     
     DRV_RF215_Close((DRV_HANDLE)palRfData.drvRfPhyHandle);
-    palRfData.drvRfPhyHandle = DRV_HANDLE_INVALID;
-    
+    palRfData.drvRfPhyHandle = DRV_HANDLE_INVALID;    
 }
  
 PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData, 
