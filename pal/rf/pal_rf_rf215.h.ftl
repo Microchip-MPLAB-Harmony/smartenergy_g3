@@ -500,21 +500,16 @@ SYS_MODULE_OBJ PAL_RF_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_
 
   Returns:
     PAL_RF_STATUS_READY          - Indicates that the module is initialized and is
-                                  ready to accept new requests from the clients.
+                                  ready to accept new requests from the client.
 
     PAL_RF_STATUS_BUSY           - Indicates that the module is busy with a
-                                  previous requests from the clients. However,
-                                  depending on the configured queue size for
-                                  transmit and receive, it may be able to queue
-                                  a new request.
+                                  previous initialization request from the client.
 
     PAL_RF_STATUS_ERROR          - Indicates that the module is in an error state.
                                   Any value less than SYS_STATUS_ERROR is
                                   also an error state.
 
     PAL_RF_STATUS_UNINITIALIZED  - Indicates that the module is not initialized.
-
-    PAL_RF_STATUS_DEINITIALIZED  - Indicates that the module has been deinitialized. 
                                 
   Example:
     <code>
