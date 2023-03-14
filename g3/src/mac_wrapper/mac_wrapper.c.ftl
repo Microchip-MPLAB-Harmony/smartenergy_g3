@@ -769,7 +769,7 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseDataRequest(uint8_t* pData)
     MAC_WRP_DATA_REQUEST_PARAMS drParams;
     uint8_t srcAddrLen, dstAddrLen;
 
-    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    if (MAC_WRP_Status() != SYS_STATUS_READY)
     {
         /* MAC Wrapper not initialized */
         return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
@@ -836,7 +836,7 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseGetRequest(uint8_t* pData)
     MAC_WRP_STATUS getStatus;
     uint8_t serialRspLen = 0;
 
-    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    if (MAC_WRP_Status() != SYS_STATUS_READY)
     {
         /* MAC Wrapper not initialized */
         return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
@@ -866,7 +866,7 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseSetRequest(uint8_t* pData)
     MAC_WRP_STATUS setStatus;
     uint8_t serialRspLen = 0;
 
-    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    if (MAC_WRP_Status() != SYS_STATUS_READY)
     {
         /* MAC Wrapper not initialized */
         return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
@@ -891,7 +891,7 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseResetRequest(uint8_t* pData)
 {
     MAC_WRP_RESET_REQUEST_PARAMS rrParams;
 
-    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    if (MAC_WRP_Status() != SYS_STATUS_READY)
     {
         /* MAC Wrapper not initialized */
         return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
@@ -911,7 +911,7 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseScanRequest(uint8_t* pData)
 {
     MAC_WRP_SCAN_REQUEST_PARAMS srParams;
 
-    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    if (MAC_WRP_Status() != SYS_STATUS_READY)
     {
         /* MAC Wrapper not initialized */
         return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
@@ -931,7 +931,7 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseStartRequest(uint8_t* pData)
 {
     MAC_WRP_START_REQUEST_PARAMS srParams;
 
-    if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
+    if (MAC_WRP_Status() != SYS_STATUS_READY)
     {
         /* MAC Wrapper not initialized */
         return MAC_WRP_SERIAL_STATUS_NOT_ALLOWED;
@@ -1977,10 +1977,6 @@ MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index)
 {
     // Single instance allowed
     if (index >= G3_MAC_WRP_INSTANCES_NUMBER)
-    {
-        return MAC_WRP_HANDLE_INVALID;
-    }
-    else if (macWrpData.state != MAC_WRP_STATE_NOT_READY)
     {
         return MAC_WRP_HANDLE_INVALID;
     }
