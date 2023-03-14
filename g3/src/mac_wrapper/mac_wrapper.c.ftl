@@ -996,7 +996,7 @@ static void _Callback_UsiMacProtocol(uint8_t* pData, size_t length)
             break;
     }
 
-    /* Initialize doesn't have Confirm so send status.
+    /* Initialize doesn't have confirm so send status if already initialized.
      * Other messages all have confirm. Send status only if there is a processing error */
     if ((status != MAC_WRP_SERIAL_STATUS_SUCCESS) ||
             ((command == MAC_WRP_SERIAL_MSG_MAC_INITIALIZE) && (macWrpData.serialInitialize == false)))
@@ -2004,13 +2004,11 @@ void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
         SRV_USI_CallbackRegister(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, _Callback_UsiMacProtocol);
     }
 
-    if (macWrpData.serialInitialize == true)
+    if ((macWrpData.serialInitialize == true) && (MAC_WRP_Status() == SYS_STATUS_READY))
     {
-        if (MAC_WRP_Status() == SYS_STATUS_READY)
-        {
-            macWrpData.serialInitialize = false;
-            _Serial_StringifyMsgStatus(MAC_WRP_SERIAL_STATUS_SUCCESS, MAC_WRP_SERIAL_MSG_MAC_INITIALIZE);
-        }
+        /* Send MAC initialization confirm */
+        macWrpData.serialInitialize = false;
+        _Serial_StringifyMsgStatus(MAC_WRP_SERIAL_STATUS_SUCCESS, MAC_WRP_SERIAL_MSG_MAC_INITIALIZE);
     }
 
 </#if>
