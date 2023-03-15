@@ -61,12 +61,43 @@
 #include "../mac_rf/mac_rf.h"
 </#if>
 #include "service/log_report/srv_log_report.h"
+<#if MAC_SERIALIZATION_EN == true>
+#include "service/usi/srv_usi.h"
+</#if>
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Types
 // *****************************************************************************
 // *****************************************************************************
+
+typedef struct
+{
+    /* State of the MAC Wrapper module */
+    MAC_WRP_STATE state;
+    /* Callbacks */
+    MAC_WRP_HANDLERS macWrpHandlers;
+    /* Mac Wrapper instance handle */
+    MAC_WRP_HANDLE macWrpHandle;
+    /* PIB serialization debug set length */
+    uint16_t debugSetLength;
+<#if MAC_SERIALIZATION_EN == true>
+    /* Mac Serialization handle */
+    MAC_WRP_HANDLE macSerialHandle;
+    /* USI handle for MAC serialization */
+    SRV_USI_HANDLE usiHandle;
+    /* Flag to indicate initialize through serial interface */
+    bool serialInitialize;
+    /* Flag to indicate reset request through serial interface */
+    bool serialResetRequest;
+    /* Flag to indicate start request through serial interface */
+    bool serialStartRequest;
+    /* Flag to indicate scan request through serial interface */
+    bool serialScanRequest;
+</#if>
+    /* Flag to indicate scan request in progress */
+    bool scanRequestInProgress;
+} MAC_WRP_DATA;
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
 /* Buffer size to store data to be sent as Mac Data Request */
@@ -742,21 +773,13 @@ static MAC_WRP_SERIAL_STATUS _Serial_ParseInitialize(uint8_t* pData)
 {
     if (macWrpData.state == MAC_WRP_STATE_NOT_READY)
     {
-        MAC_WRP_INIT macWrpInit;
+        MAC_WRP_BAND plcBand;
 
         /* Parse initialize message */
-        macWrpInit.plcBand = *pData;
+        plcBand = *pData;
 
-        /* Initialize MAC Wrapper if it has not been initialized yet */
-        macWrpInit.macWrpHandlers.beaconNotifyIndicationCallback = NULL;
-        macWrpInit.macWrpHandlers.commStatusIndicationCallback = NULL;
-        macWrpInit.macWrpHandlers.dataConfirmCallback = NULL;
-        macWrpInit.macWrpHandlers.dataIndicationCallback = NULL;
-        macWrpInit.macWrpHandlers.resetConfirmCallback = NULL;
-        macWrpInit.macWrpHandlers.scanConfirmCallback = NULL;
-        macWrpInit.macWrpHandlers.snifferIndicationCallback = NULL;
-        macWrpInit.macWrpHandlers.startConfirmCallback = NULL;
-        MAC_WRP_Init(macWrpData.macSerialHandle, &macWrpInit);
+        /* Open MAC Wrapper if it has not been opened yet */
+        MAC_WRP_Open(G3_MAC_WRP_INDEX_0, plcBand);
 
         macWrpData.serialInitialize = true;
     }
@@ -1946,7 +1969,7 @@ static void _Callback_MacRfMacSnifferIndication(MAC_SNIFFER_INDICATION_PARAMS *s
 // *****************************************************************************
 // *****************************************************************************
 
-SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_INIT * const init)
+SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index)
 {
     /* Validate the request */
     if (index >= G3_MAC_WRP_INSTANCES_NUMBER)
@@ -1965,6 +1988,7 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
     macWrpData.serialStartRequest = false;
 </#if>
     macWrpData.scanRequestInProgress = false;
+    memset(&macWrpData.macWrpHandlers, 0, sizeof(MAC_WRP_HANDLERS));
     for (uint8_t index = 0; index < MAC_WRP_DATA_REQ_QUEUE_SIZE; index++)
     {
         dataReqQueue[index].used = false;
@@ -1973,22 +1997,101 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
     return (SYS_MODULE_OBJ)0; 
 }
 
-MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index)
+MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index, MAC_WRP_BAND plcBand)
 {
-    // Single instance allowed
+<#if MAC_PLC_PRESENT == true>
+    MAC_PLC_INIT plcInitData;
+</#if>
+<#if MAC_RF_PRESENT == true>
+    MAC_RF_INIT rfInitData;
+</#if>
+
+    /* Single instance allowed */
     if (index >= G3_MAC_WRP_INSTANCES_NUMBER)
     {
         return MAC_WRP_HANDLE_INVALID;
     }
 
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
+    /* Set default HyAL variables */
+    hyalData = hyalDataDefaults;
+
+</#if>
+<#if MAC_PLC_PRESENT == true>
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Open: Initializing PLC MAC...");
+
+    plcInitData.macPlcHandlers.macPlcDataConfirm = _Callback_MacPlcDataConfirm;
+    plcInitData.macPlcHandlers.macPlcDataIndication = _Callback_MacPlcDataIndication;
+    plcInitData.macPlcHandlers.macPlcResetConfirm = _Callback_MacPlcResetConfirm;
+    plcInitData.macPlcHandlers.macPlcBeaconNotifyIndication = _Callback_MacPlcBeaconNotify;
+    plcInitData.macPlcHandlers.macPlcScanConfirm = _Callback_MacPlcScanConfirm;
+    plcInitData.macPlcHandlers.macPlcStartConfirm = _Callback_MacPlcStartConfirm;
+    plcInitData.macPlcHandlers.macPlcCommStatusIndication = _Callback_MacPlcCommStatusIndication;
+    plcInitData.macPlcHandlers.macPlcMacSnifferIndication = _Callback_MacPlcMacSnifferIndication;
+
+    memset(macPlcDeviceTable, 0, sizeof(macPlcDeviceTable));
+
+    macPlcTables.macPlcDeviceTableSize = MAC_MAX_DEVICE_TABLE_ENTRIES_PLC;
+    macPlcTables.macPlcDeviceTable = macPlcDeviceTable;
+
+    plcInitData.macPlcTables = &macPlcTables;
+    plcInitData.plcBand = (MAC_PLC_BAND) plcBand;
+    /* Get PAL index from configuration header */
+    plcInitData.palPlcIndex = PAL_PLC_PHY_INDEX;
+
+    MAC_PLC_Init(&plcInitData);
+
+</#if>
+<#if MAC_RF_PRESENT == true>
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Open: Initializing RF MAC...");
+
+    rfInitData.macRfHandlers.macRfDataConfirm = _Callback_MacRfDataConfirm;
+    rfInitData.macRfHandlers.macRfDataIndication = _Callback_MacRfDataIndication;
+    rfInitData.macRfHandlers.macRfResetConfirm = _Callback_MacRfResetConfirm;
+    rfInitData.macRfHandlers.macRfBeaconNotifyIndication = _Callback_MacRfBeaconNotify;
+    rfInitData.macRfHandlers.macRfScanConfirm = _Callback_MacRfScanConfirm;
+    rfInitData.macRfHandlers.macRfStartConfirm = _Callback_MacRfStartConfirm;
+    rfInitData.macRfHandlers.macRfCommStatusIndication = _Callback_MacRfCommStatusIndication;
+    rfInitData.macRfHandlers.macRfMacSnifferIndication = _Callback_MacRfMacSnifferIndication;
+
+    memset(macRfPOSTable, 0, sizeof(macRfPOSTable));
+    memset(macRfDeviceTable, 0, sizeof(macRfDeviceTable));
+    memset(macRfDsnTable, 0, sizeof(macRfDsnTable));
+
+    macRfTables.macRfDeviceTableSize = MAC_MAX_DEVICE_TABLE_ENTRIES_RF;
+    macRfTables.macRfDsnTableSize = MAC_MAX_DSN_TABLE_ENTRIES_RF;
+    macRfTables.macRfPosTableSize = MAC_MAX_POS_TABLE_ENTRIES_RF;
+    macRfTables.macRfPosTable = macRfPOSTable;
+    macRfTables.macRfDeviceTable = macRfDeviceTable;
+    macRfTables.macRfDsnTable = macRfDsnTable;
+
+    rfInitData.macRfTables = &macRfTables;
+    /* Get PAL index from configuration header */
+    rfInitData.palRfIndex = PAL_RF_PHY_INDEX;
+
+    MAC_RF_Init(&rfInitData);
+
+</#if>
+    MAC_COMMON_Init();
+
+    macWrpData.state = MAC_WRP_STATE_IDLE;
+
     return macWrpData.macWrpHandle;
+}
+
+void MAC_WRP_SetCallbacks(MAC_WRP_HANDLE handle, MAC_WRP_HANDLERS* handlers)
+{
+    if ((handle == macWrpData.macWrpHandle) && (handlers != NULL))
+    {
+        macWrpData.macWrpHandlers = *handlers;
+    }
 }
 
 void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
 {
-    if (object != (SYS_MODULE_OBJ)0)
+    if (object != (SYS_MODULE_OBJ) 0)
     {
-        // Invalid object
+        /* Invalid object */
         return;
     }
 
@@ -2016,93 +2119,6 @@ void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
 <#else>
     SRV_TIME_MANAGEMENT_GetMsCounter(); // Just to avoid counter overflow
 </#if>
-}
-
-void MAC_WRP_Init(MAC_WRP_HANDLE handle, MAC_WRP_INIT *init)
-{
-<#if MAC_PLC_PRESENT == true>
-    MAC_PLC_INIT plcInitData;
-</#if>
-<#if MAC_RF_PRESENT == true>
-    MAC_RF_INIT rfInitData;
-</#if>
-
-    /* Validate the request */
-<#if MAC_SERIALIZATION_EN == true>
-    if ((handle != macWrpData.macWrpHandle) && (handle != macWrpData.macSerialHandle))
-<#else>
-    if (handle != macWrpData.macWrpHandle)
-</#if>
-    {
-        return;
-    }
-
-    /* Set init data */
-    macWrpData.macWrpHandlers = init->macWrpHandlers;
-
-<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
-    // Set default HyAL variables
-    hyalData = hyalDataDefaults;
-
-</#if>
-<#if MAC_PLC_PRESENT == true>
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Init: Initializing PLC MAC...");
-
-    plcInitData.macPlcHandlers.macPlcDataConfirm = _Callback_MacPlcDataConfirm;
-    plcInitData.macPlcHandlers.macPlcDataIndication = _Callback_MacPlcDataIndication;
-    plcInitData.macPlcHandlers.macPlcResetConfirm = _Callback_MacPlcResetConfirm;
-    plcInitData.macPlcHandlers.macPlcBeaconNotifyIndication = _Callback_MacPlcBeaconNotify;
-    plcInitData.macPlcHandlers.macPlcScanConfirm = _Callback_MacPlcScanConfirm;
-    plcInitData.macPlcHandlers.macPlcStartConfirm = _Callback_MacPlcStartConfirm;
-    plcInitData.macPlcHandlers.macPlcCommStatusIndication = _Callback_MacPlcCommStatusIndication;
-    plcInitData.macPlcHandlers.macPlcMacSnifferIndication = _Callback_MacPlcMacSnifferIndication;
-
-    memset(macPlcDeviceTable, 0, sizeof(macPlcDeviceTable));
-
-    macPlcTables.macPlcDeviceTableSize = MAC_MAX_DEVICE_TABLE_ENTRIES_PLC;
-    macPlcTables.macPlcDeviceTable = macPlcDeviceTable;
-
-    plcInitData.macPlcTables = &macPlcTables;
-    plcInitData.plcBand = (MAC_PLC_BAND)init->plcBand;
-    // Get PAL index from configuration header
-    plcInitData.palPlcIndex = PAL_PLC_PHY_INDEX;
-
-    MAC_PLC_Init(&plcInitData);
-
-</#if>
-<#if MAC_RF_PRESENT == true>
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Init: Initializing RF MAC...");
-
-    rfInitData.macRfHandlers.macRfDataConfirm = _Callback_MacRfDataConfirm;
-    rfInitData.macRfHandlers.macRfDataIndication = _Callback_MacRfDataIndication;
-    rfInitData.macRfHandlers.macRfResetConfirm = _Callback_MacRfResetConfirm;
-    rfInitData.macRfHandlers.macRfBeaconNotifyIndication = _Callback_MacRfBeaconNotify;
-    rfInitData.macRfHandlers.macRfScanConfirm = _Callback_MacRfScanConfirm;
-    rfInitData.macRfHandlers.macRfStartConfirm = _Callback_MacRfStartConfirm;
-    rfInitData.macRfHandlers.macRfCommStatusIndication = _Callback_MacRfCommStatusIndication;
-    rfInitData.macRfHandlers.macRfMacSnifferIndication = _Callback_MacRfMacSnifferIndication;
-
-    memset(macRfPOSTable, 0, sizeof(macRfPOSTable));
-    memset(macRfDeviceTable, 0, sizeof(macRfDeviceTable));
-    memset(macRfDsnTable, 0, sizeof(macRfDsnTable));
-
-    macRfTables.macRfDeviceTableSize = MAC_MAX_DEVICE_TABLE_ENTRIES_RF;
-    macRfTables.macRfDsnTableSize = MAC_MAX_DSN_TABLE_ENTRIES_RF;
-    macRfTables.macRfPosTableSize = MAC_MAX_POS_TABLE_ENTRIES_RF;
-    macRfTables.macRfPosTable = macRfPOSTable;
-    macRfTables.macRfDeviceTable = macRfDeviceTable;
-    macRfTables.macRfDsnTable = macRfDsnTable;
-
-    rfInitData.macRfTables = &macRfTables;
-    // Get PAL index from configuration header
-    rfInitData.palRfIndex = PAL_RF_PHY_INDEX;
-
-    MAC_RF_Init(&rfInitData);
-
-</#if>
-    MAC_COMMON_Init();
-
-    macWrpData.state = MAC_WRP_STATE_IDLE;
 }
 
 SYS_STATUS MAC_WRP_Status(void)

@@ -22,15 +22,6 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 -->
-// <editor-fold defaultstate="collapsed" desc="G3 MAC Wrapper Initialization Data">
-
-/* G3 MAC Wrapper Initialization Data */
-SYS_MODULE_INIT g3MacWraperInitData = {
-    /* Init data not used, set default field */
-    .value = 0,
-};
-
-// </editor-fold>
 <#if (g3_adapt_config)??>
 // <editor-fold defaultstate="collapsed" desc="G3 ADP Initialization Data">
 /* G3 ADP Buffers and Queues */

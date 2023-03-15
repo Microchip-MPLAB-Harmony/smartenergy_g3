@@ -24,7 +24,7 @@
 -->
 
     /* Initialize G3 MAC Wrapper Instance */
-    sysObj.g3MacWrapper = MAC_WRP_Initialize(G3_MAC_WRP_INDEX_0, &g3MacWraperInitData);
+    sysObj.g3MacWrapper = MAC_WRP_Initialize(G3_MAC_WRP_INDEX_0);
 <#if (g3_adapt_config)??>
 
     /* Initialize G3 ADP Instance */
