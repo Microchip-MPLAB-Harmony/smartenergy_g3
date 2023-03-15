@@ -32,6 +32,6 @@
 <#if g3_adapt_config.ADP_SERIALIZATION_EN == true>
 
     /* Initialize G3 ADP Serialization Instance */
-    sysObj.g3AdpSerial = ADP_SERIAL_Initialize(G3_ADP_SERIAL_INDEX_0, &g3AdpSerialInitData);
+    sysObj.g3AdpSerial = ADP_SERIAL_Initialize(G3_ADP_SERIAL_INDEX_0);
 </#if>
 </#if>

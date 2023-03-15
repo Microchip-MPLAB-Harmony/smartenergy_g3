@@ -1714,10 +1714,7 @@ static void _Callback_UsiAdpProtocol(uint8_t* pData, size_t length)
 // *****************************************************************************
 // *****************************************************************************
 
-SYS_MODULE_OBJ ADP_SERIAL_Initialize (
-    const SYS_MODULE_INDEX index,
-    const SYS_MODULE_INIT * const init
-)
+SYS_MODULE_OBJ ADP_SERIAL_Initialize(const SYS_MODULE_INDEX index)
 {
     /* Validate the request */
     if (index >= G3_ADP_SERIAL_INSTANCES_NUMBER)

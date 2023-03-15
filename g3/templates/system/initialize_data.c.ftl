@@ -65,16 +65,4 @@ ADP_INIT g3AdpInitData = {
 };
 
 // </editor-fold>
-<#if g3_adapt_config.ADP_SERIALIZATION_EN == true>
-
-// <editor-fold defaultstate="collapsed" desc="ADP Serialization Initialization Data">
-
-/* G3 ADP Serialization Initialization Data */
-SYS_MODULE_INIT g3AdpSerialInitData = {
-    /* Init data not used, set default field */
-    .value = 0,
-};
-
-// </editor-fold>
-</#if>
 </#if>
