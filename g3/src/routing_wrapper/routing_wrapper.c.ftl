@@ -421,7 +421,7 @@ void ROUTING_WRP_RemoveBlacklistOnMedium(uint16_t addr, uint8_t mediaType)
 </#if>
 }
 
-bool Routing_IsRouterTo(uint16_t addr)
+bool ROUTING_WRP_IsRouterTo(uint16_t addr)
 {
 <#if LOADNG_ENABLE == true>
     return LOADNG_IsRouterTo(addr);
