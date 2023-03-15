@@ -1166,6 +1166,7 @@ typedef struct
 {
     ADP_DATA_CFM_CALLBACK              dataConfirm;
     ADP_DATA_IND_CALLBACK              dataIndication;
+    ADP_BUFFER_IND_CALLBACK            bufferIndication;
 } ADP_DATA_NOTIFICATIONS;
 
 // *****************************************************************************
@@ -1196,7 +1197,6 @@ typedef struct
     ADP_ROUTE_DISCOVERY_CFM_CALLBACK   routeDiscoveryConfirm;
     ADP_PATH_DISCOVERY_CFM_CALLBACK    pathDiscoveryConfirm;
     ADP_NETWORK_STATUS_IND_CALLBACK    networkStatusIndication;
-    ADP_BUFFER_IND_CALLBACK            bufferIndication;
     ADP_PREQ_IND_CALLBACK              preqIndication;
     ADP_NON_VOLATILE_DATA_IND_CALLBACK nonVolatileDataIndication;
     ADP_ROUTE_NOT_FOUND_IND_CALLBACK   routeNotFoundIndication;
@@ -1463,7 +1463,8 @@ SYS_STATUS ADP_Status(void);
     <code>
     ADP_DATA_NOTIFICATIONS adpNotifications = {
         .dataConfirm = appDataConfirm,
-        .dataIndication = appDataIndication
+        .dataIndication = appDataIndication,
+        .bufferIndication = appBufferIndication,
     };
 
     ADP_SetDataNotifications(&adpNotifications);
@@ -1498,21 +1499,20 @@ void ADP_SetDataNotifications(ADP_DATA_NOTIFICATIONS* pNotifications);
   Example:
     <code>
     ADP_MANAGEMENT_NOTIFICATIONS adpNotifications = {
-        discoveryConfirm = appDiscoveryConfirm,
-        discoveryIndication = appDiscoveryIndication,
-        networkStartConfirm = NULL, // not used
-        resetConfirm = NULL, // not used
-        setConfirm = NULL, // not used
-        macSetConfirm = NULL, // not used
-        getConfirm = NULL, // not used
-        macGetConfirm = NULL, // not used
-        routeDiscoveryConfirm = appRouteConfirm,
-        pathDiscoveryConfirm = appPathConfirm,
-        networkStatusIndication = appNetworkStatusIndication,
-        bufferIndication = appBufferIndication,
-        preqIndication = NULL, // not used
-        nonVolatileDataIndication = appNonVolatileDataIndication,
-        routeNotFoundIndication = appRouteNotFoundIndication
+        .discoveryConfirm = appDiscoveryConfirm,
+        .discoveryIndication = appDiscoveryIndication,
+        .networkStartConfirm = NULL, // not used
+        .resetConfirm = NULL, // not used
+        .setConfirm = NULL, // not used
+        .macSetConfirm = NULL, // not used
+        .getConfirm = NULL, // not used
+        .macGetConfirm = NULL, // not used
+        .routeDiscoveryConfirm = appRouteConfirm,
+        .pathDiscoveryConfirm = appPathConfirm,
+        .networkStatusIndication = appNetworkStatusIndication,
+        .preqIndication = NULL, // not used
+        .nonVolatileDataIndication = appNonVolatileDataIndication,
+        .routeNotFoundIndication = appRouteNotFoundIndication
     };
 
     ADP_SetManagementNotifications(&adpNotifications);

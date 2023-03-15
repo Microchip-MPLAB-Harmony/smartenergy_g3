@@ -816,6 +816,7 @@ static ADP_SERIAL_STATUS _ParseInitialize(uint8_t* pData)
     /* Set ADP Data callbacks */
     adpDataNotifications.dataConfirm = _StringifyDataConfirm;
     adpDataNotifications.dataIndication = _StringifyDataIndication;
+    adpDataNotifications.bufferIndication = _StringifyBufferIndication;
     ADP_SetDataNotifications(&adpDataNotifications);
 
     /* Set ADP Management callbacks */
@@ -831,7 +832,6 @@ static ADP_SERIAL_STATUS _ParseInitialize(uint8_t* pData)
     adpMngNotifications.routeDiscoveryConfirm = _StringifyRouteDiscoveryConfirm;
     adpMngNotifications.pathDiscoveryConfirm = _StringifyPathDiscoveryConfirm;
     adpMngNotifications.networkStatusIndication = _StringifyNetworkStatusIndication;
-    adpMngNotifications.bufferIndication = _StringifyBufferIndication;
     adpMngNotifications.preqIndication = _StringifyPreqIndication;
     adpMngNotifications.nonVolatileDataIndication = _StoreNonVolatileDataIndication;
     adpMngNotifications.routeNotFoundIndication = _StringifyRouteNotFoundIndication;
