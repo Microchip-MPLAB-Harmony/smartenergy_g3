@@ -1149,14 +1149,14 @@ typedef struct
 typedef void (*ADP_ROUTE_NOT_FOUND_IND_CALLBACK)(ADP_ROUTE_NOT_FOUND_IND_PARAMS* pRouteNotFoundInd);
 
 // *****************************************************************************
-/* ADP Callback Notifications Structure
+/* ADP Data Callback Notifications Structure
 
    Summary:
-    Set of event handler function pointers to receive events from ADP.
+    Set of event handler function pointers to receive data events from ADP.
 
    Description:
-    Defines the set of callback functions that ADP uses to generate events to
-    upper layer.
+    Defines the set of callback functions that ADP uses to generate data events
+    to upper layer.
 
    Remarks:
     In case an event is to be ignored, setting its corresponding callback
@@ -1166,6 +1166,25 @@ typedef struct
 {
     ADP_DATA_CFM_CALLBACK              dataConfirm;
     ADP_DATA_IND_CALLBACK              dataIndication;
+} ADP_DATA_NOTIFICATIONS;
+
+// *****************************************************************************
+/* ADP Management Callback Notifications Structure
+
+   Summary:
+    Set of event handler function pointers to receive management events from
+    ADP.
+
+   Description:
+    Defines the set of callback functions that ADP uses to generate management
+    events to upper layer.
+
+   Remarks:
+    In case an event is to be ignored, setting its corresponding callback
+    function to NULL will lead to the event not being generated.
+*/
+typedef struct
+{
     ADP_DISCOVERY_CFM_CALLBACK         discoveryConfirm;
     ADP_DISCOVERY_IND_CALLBACK         discoveryIndication;
     ADP_NETWORK_START_CFM_CALLBACK     networkStartConfirm;
@@ -1181,7 +1200,7 @@ typedef struct
     ADP_PREQ_IND_CALLBACK              preqIndication;
     ADP_NON_VOLATILE_DATA_IND_CALLBACK nonVolatileDataIndication;
     ADP_ROUTE_NOT_FOUND_IND_CALLBACK   routeNotFoundIndication;
-} ADP_NOTIFICATIONS;
+} ADP_MANAGEMENT_NOTIFICATIONS;
 
 // *****************************************************************************
 /* ADP Callback Notifications to LBP Structure
@@ -1347,14 +1366,15 @@ void ADP_Tasks(SYS_MODULE_OBJ object);
 
 // *****************************************************************************
 /* Function:
-    void ADP_Init(ADP_NOTIFICATIONS* pNotifications, MAC_WRP_BAND band)
+    void ADP_Open(MAC_WRP_BAND band)
 
   Summary:
-    Initializes the ADP module data.
+    Opens the ADP module and starts the process that makes it ready for clients
+    to use.
 
   Description:
-    This routine initializes the ADP data structures.
-    Callback handlers for event notification are set in this function.
+    This routine opens the ADP module, initializes the ADP data structures and
+    starts the process that makes it ready for clients to use.
     In case MAC PLC layer is present, PLC band is specified here.
 
     The APIs cannot be mixed, if the stack is initialized in ADP mode then only
@@ -1365,8 +1385,6 @@ void ADP_Tasks(SYS_MODULE_OBJ object);
     None.
 
   Parameters:
-    pNotifications - Structure with callbacks used to notify ADP specific events
-
     band           - Working band for PLC (should be inline with the hardware)
 
   Returns:
@@ -1374,22 +1392,16 @@ void ADP_Tasks(SYS_MODULE_OBJ object);
 
   Example:
     <code>
-    
-    ADP_NOTIFICATIONS adpNotifications = {
-        .dataConfirm = appDataConfirm,
-        .dataIndication = appDataIndication,
-        ...
-        ...
-    };
-
-    ADP_Init(&adpNotifications, MAC_WRP_BAND_CENELEC_A);
+    ADP_Open(MAC_WRP_BAND_CENELEC_A);
     </code>
 
   Remarks:
     This routine must be called before any other ADP API function, execpt
     ADP_Initialize.
+    After calling this function, ADP_Status must be used to check if it is ready
+    before calling any other ADP API function.
 */
-void ADP_Init(ADP_NOTIFICATIONS* pNotifications, MAC_WRP_BAND band);
+void ADP_Open(MAC_WRP_BAND band);
 
 // *****************************************************************************
 /* Function:
@@ -1403,7 +1415,7 @@ void ADP_Init(ADP_NOTIFICATIONS* pNotifications, MAC_WRP_BAND band);
     they are ready to be used.
 
   Precondition:
-    ADP_Init routine must have been called before.
+    None.
 
   Parameters:
     None
@@ -1425,6 +1437,91 @@ void ADP_Init(ADP_NOTIFICATIONS* pNotifications, MAC_WRP_BAND band);
     None.
 */
 SYS_STATUS ADP_Status(void);
+
+// *****************************************************************************
+/* Function:
+    void ADP_SetDataNotifications(ADP_DATA_NOTIFICATIONS* pNotifications);
+
+  Summary:
+    Sets ADP data notifications.
+
+  Description:
+    This routine sets the ADP data notifications. Callback handlers for event
+    notification are set in this function.
+
+  Precondition:
+    None.
+
+  Parameters:
+    pNotifications - Structure with callbacks used to notify ADP data specific
+                     events
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_DATA_NOTIFICATIONS adpNotifications = {
+        .dataConfirm = appDataConfirm,
+        .dataIndication = appDataIndication
+    };
+
+    ADP_SetDataNotifications(&adpNotifications);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_SetDataNotifications(ADP_DATA_NOTIFICATIONS* pNotifications);
+
+// *****************************************************************************
+/* Function:
+    void ADP_SetManagementNotifications(ADP_MANAGEMENT_NOTIFICATIONS* pNotifications);
+
+  Summary:
+    Sets ADP management notifications.
+
+  Description:
+    This routine sets the ADP management notifications. Callback handlers for event
+    notification are set in this function.
+
+  Precondition:
+    None.
+
+  Parameters:
+    pNotifications - Structure with callbacks used to notify ADP management
+                     specific events
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_MANAGEMENT_NOTIFICATIONS adpNotifications = {
+        discoveryConfirm = appDiscoveryConfirm,
+        discoveryIndication = appDiscoveryIndication,
+        networkStartConfirm = NULL, // not used
+        resetConfirm = NULL, // not used
+        setConfirm = NULL, // not used
+        macSetConfirm = NULL, // not used
+        getConfirm = NULL, // not used
+        macGetConfirm = NULL, // not used
+        routeDiscoveryConfirm = appRouteConfirm,
+        pathDiscoveryConfirm = appPathConfirm,
+        networkStatusIndication = appNetworkStatusIndication,
+        bufferIndication = appBufferIndication,
+        preqIndication = NULL, // not used
+        nonVolatileDataIndication = appNonVolatileDataIndication,
+        routeNotFoundIndication = appRouteNotFoundIndication
+    };
+
+    ADP_SetManagementNotifications(&adpNotifications);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_SetManagementNotifications(ADP_MANAGEMENT_NOTIFICATIONS* pNotifications);
 
 // *****************************************************************************
 /* Function:
@@ -1478,7 +1575,7 @@ void ADP_SetNotificationsToLbp(ADP_NOTIFICATIONS_TO_LBP* pNotifications);
     Result is provided in the corresponding ADP Data Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     nsduLength       - The size of the NSDU, in bytes; Up to 1280
@@ -1540,7 +1637,7 @@ void ADP_DataRequest(uint16_t nsduLength, const uint8_t *pNsdu,
     Result is provided in the corresponding ADP Data Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     nsduLength       - The size of the APDU, in bytes; Up to 1280
@@ -1602,7 +1699,7 @@ void ADP_NoIPDataRequest(uint16_t apduLength, const uint8_t *pApdu,
     Result is provided in the corresponding ADP Discovery Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     duration - The number of seconds the scan shall last
@@ -1636,7 +1733,7 @@ void ADP_DiscoveryRequest(uint8_t duration);
     Result is provided in the corresponding ADP Network Start Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     panId - The PANId of the network to create; determined at the application
@@ -1670,7 +1767,7 @@ void ADP_NetworkStartRequest(uint16_t panId);
     Result is provided in the corresponding ADP Reset Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     None.
@@ -1703,7 +1800,7 @@ void ADP_ResetRequest(void);
     Result is provided in the corresponding ADP Get Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     attributeId    - The identifier of the ADP IB attribute to read
@@ -1739,7 +1836,7 @@ void ADP_GetRequest(uint32_t attributeId, uint16_t attributeIndex);
     attribute from the ADP information base synchronously.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     attributeId    - The identifier of the ADP IB attribute to read
@@ -1786,7 +1883,7 @@ void ADP_GetRequestSync(uint32_t attributeId, uint16_t attributeIndex,
     Result is provided in the corresponding ADP MAC Get Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     attributeId    - The identifier of the MAC IB attribute to read
@@ -1822,7 +1919,7 @@ void ADP_MacGetRequest(uint32_t attributeId, uint16_t attributeIndex);
     attribute from the MAC information base synchronously.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     attributeId    - The identifier of the ADP IB attribute to read
@@ -1869,7 +1966,7 @@ void ADP_MacGetRequestSync(uint32_t u32AttributeId, uint16_t u16AttributeIndex,
     Result is provided in the corresponding ADP Set Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     attributeId     - The identifier of the ADP IB attribute to set
@@ -1914,7 +2011,7 @@ void ADP_SetRequest(uint32_t attributeId, uint16_t attributeIndex,
     attribute in the ADP information base synchronously.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     attributeId     - The identifier of the ADP IB attribute to set
@@ -1970,7 +2067,7 @@ void ADP_SetRequestSync(uint32_t attributeId, uint16_t attributeIndex,
     Result is provided in the corresponding ADP MAC Set Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     attributeId     - The identifier of the MAC IB attribute to set
@@ -2015,7 +2112,7 @@ void ADP_MacSetRequest(uint32_t attributeId, uint16_t attributeIndex,
     attribute in the MAC information base synchronously.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     attributeId     - The identifier of the MAC IB attribute to set
@@ -2069,7 +2166,7 @@ void ADP_MacSetRequestSync(uint32_t attributeId, uint16_t attributeIndex,
     Result is provided in the corresponding ADP Route Discovery Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     dstAddr - The short unicast destination address of the route discovery
@@ -2105,7 +2202,7 @@ void ADP_RouteDiscoveryRequest(uint16_t dstAddr, uint8_t maxHops);
     Result is provided in the corresponding ADP Path Discovery Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     dstAddr    - The short unicast destination address of the path discovery
@@ -2143,7 +2240,7 @@ void ADP_PathDiscoveryRequest(uint16_t dstAddr, uint8_t metricType);
     Result is provided in the corresponding ADP LBP Confirm callback.
 
   Precondition:
-    ADP_Initialize and ADP_Init must have been called before.
+    ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
     pDstAddr         - 16-bit address of LBA or LBD or 64 bit address (extended

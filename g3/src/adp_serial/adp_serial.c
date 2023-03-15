@@ -799,38 +799,45 @@ static void _StringifyLbpCoordLeaveIndication(uint16_t networkAddress)
 
 static ADP_SERIAL_STATUS _ParseInitialize(uint8_t* pData)
 {
-    ADP_NOTIFICATIONS adpNotifications;
+    ADP_DATA_NOTIFICATIONS adpDataNotifications;
+    ADP_MANAGEMENT_NOTIFICATIONS adpMngNotifications;
     LBP_NOTIFICATIONS_DEV lbpDevNotifications;
     LBP_NOTIFICATIONS_COORD lbpCoordNotifications;
-    MAC_WRP_BAND band;
+    MAC_WRP_BAND band;    
 
     /* Parse initialize message */
     band = (MAC_WRP_BAND) pData[0];
     adpSerialAribBand = (bool) (band == ADP_BAND_ARIB);
     adpSerialCoord = (bool) (pData[1] != 0);
 
-    /* Initialize ADP */
-    adpNotifications.dataConfirm = _StringifyDataConfirm;
-    adpNotifications.dataIndication = _StringifyDataIndication;
-    adpNotifications.discoveryConfirm = _StringifyDiscoveryConfirm;
-    adpNotifications.discoveryIndication = _StringifyDiscoveryIndication;
-    adpNotifications.networkStartConfirm = _StringifyNetworkStartConfirm;
-    adpNotifications.resetConfirm = _StringifyResetConfirm;
-    adpNotifications.setConfirm = _StringifySetConfirm;
-    adpNotifications.getConfirm = _StringifyGetConfirm;
-    adpNotifications.macSetConfirm = NULL;
-    adpNotifications.getConfirm = _StringifyGetConfirm;
-    adpNotifications.macGetConfirm = NULL;
-    adpNotifications.routeDiscoveryConfirm = _StringifyRouteDiscoveryConfirm;
-    adpNotifications.pathDiscoveryConfirm = _StringifyPathDiscoveryConfirm;
-    adpNotifications.networkStatusIndication = _StringifyNetworkStatusIndication;
-    adpNotifications.bufferIndication = _StringifyBufferIndication;
-    adpNotifications.preqIndication = _StringifyPreqIndication;
-    adpNotifications.nonVolatileDataIndication = _StoreNonVolatileDataIndication;
-    adpNotifications.routeNotFoundIndication = _StringifyRouteNotFoundIndication;
+    /* Open ADP */
+    ADP_Open(band);
 
-    ADP_Init(&adpNotifications, band);
+    /* Set ADP Data callbacks */
+    adpDataNotifications.dataConfirm = _StringifyDataConfirm;
+    adpDataNotifications.dataIndication = _StringifyDataIndication;
+    ADP_SetDataNotifications(&adpDataNotifications);
 
+    /* Set ADP Management callbacks */
+    adpMngNotifications.discoveryConfirm = _StringifyDiscoveryConfirm;
+    adpMngNotifications.discoveryIndication = _StringifyDiscoveryIndication;
+    adpMngNotifications.networkStartConfirm = _StringifyNetworkStartConfirm;
+    adpMngNotifications.resetConfirm = _StringifyResetConfirm;
+    adpMngNotifications.setConfirm = _StringifySetConfirm;
+    adpMngNotifications.getConfirm = _StringifyGetConfirm;
+    adpMngNotifications.macSetConfirm = NULL;
+    adpMngNotifications.getConfirm = _StringifyGetConfirm;
+    adpMngNotifications.macGetConfirm = NULL;
+    adpMngNotifications.routeDiscoveryConfirm = _StringifyRouteDiscoveryConfirm;
+    adpMngNotifications.pathDiscoveryConfirm = _StringifyPathDiscoveryConfirm;
+    adpMngNotifications.networkStatusIndication = _StringifyNetworkStatusIndication;
+    adpMngNotifications.bufferIndication = _StringifyBufferIndication;
+    adpMngNotifications.preqIndication = _StringifyPreqIndication;
+    adpMngNotifications.nonVolatileDataIndication = _StoreNonVolatileDataIndication;
+    adpMngNotifications.routeNotFoundIndication = _StringifyRouteNotFoundIndication;
+    ADP_SetManagementNotifications(&adpMngNotifications);
+
+    /* Initialize LBP in device or coordinator mode */
     if (adpSerialCoord == true)
     {
         LBP_InitCoord(adpSerialAribBand);
@@ -1786,5 +1793,8 @@ void ADP_SERIAL_Tasks(SYS_MODULE_OBJ object)
 
 void ADP_SERIAL_SetNotifications(ADP_SERIAL_NOTIFICATIONS* pNotifications)
 {
-    adpSerialNotifications = *pNotifications;
+    if (pNotifications != NULL)
+    {
+        adpSerialNotifications = *pNotifications;
+    }
 }
