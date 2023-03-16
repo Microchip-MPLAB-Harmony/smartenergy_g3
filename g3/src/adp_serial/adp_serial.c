@@ -684,11 +684,6 @@ static void _StringifyGetConfirm(ADP_GET_CFM_PARAMS* pGetCfm)
                 serialRspLen += 2;
                 break;
 
-            case ADP_IB_MANUF_EXTENDED_ADDRESS:
-                memcpy(adpSerialRspBuffer, pGetCfm->attributeValue, 8);
-                serialRspLen += 8;
-                break;            
-
             case ADP_IB_SNIFFER_MODE:
                 /* TODO */
                 break;
@@ -1223,10 +1218,6 @@ static ADP_SERIAL_STATUS _ParseAdpSetRequest(uint8_t* pData)
         case ADP_IB_MANUF_HYBRID_PROFILE:
         case ADP_IB_MANUF_LAST_PHASEDIFF:
             /* G3_READ_ONLY */
-            break;
-
-        case ADP_IB_MANUF_EXTENDED_ADDRESS:
-            memcpy(attributeValue, pData, 8);
             break;
 
         case ADP_IB_SNIFFER_MODE:
@@ -1771,7 +1762,7 @@ void ADP_SERIAL_Tasks(SYS_MODULE_OBJ object)
             adpSerialNotifications.setEUI64NonVolatileData(&eui64, &nonVolatileData);
 
             /* Set Extended Address (EUI64) */
-            ADP_SetRequestSync(ADP_IB_MANUF_EXTENDED_ADDRESS, 0, 8, eui64.value, &setConfirm);
+            ADP_MacSetRequestSync(MAC_WRP_PIB_MANUF_EXTENDED_ADDRESS, 0, 8, eui64.value, &setConfirm);
 
             /* Set non-volatile data */
             ADP_MacSetRequestSync(MAC_WRP_PIB_FRAME_COUNTER, 0, 4, &nonVolatileData.frameCounter, &setConfirm);

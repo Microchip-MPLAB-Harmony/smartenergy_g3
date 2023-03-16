@@ -260,21 +260,6 @@ static bool _SetShortAddress(uint16_t u16ShortAddress)
 	return result;
 }
 
-static bool _SetExtendedAddress(ADP_EXTENDED_ADDRESS *pEUI64Address)
-{
-	struct TAdpSetConfirm setConfirm;
-	bool result = false;
-
-	// Set on ADP
-	AdpSetRequestSync(ADP_IB_MANUF_EXTENDED_ADDRESS, 0, sizeof(ADP_EXTENDED_ADDRESS), pEUI64Address->m_au8Value, &setConfirm);
-	if (setConfirm.m_u8Status == G3_SUCCESS) {
-		// Set on MAC
-		result = AdpMac_SetExtendedAddressSync(pEUI64Address);
-	}
-
-	return result;
-}
-
 static void _SetActiveKeyIndex(uint8_t index)
 {
 	struct TAdpSetConfirm setConfirm;
@@ -1402,7 +1387,7 @@ void LBP_ForceRegister(ADP_EXTENDED_ADDRESS *pEUI64Address,
     uint16_t shortAddress, uint16_t panId, ADP_GROUP_MASTER_KEY *pGMK)
 {
 	/* Set the information in G3 stack */
-	_SetExtendedAddress(pEUI64Address);
+	AdpMac_SetExtendedAddressSync(pEUI64Address);
 	_SetPanId(panId);
 	_SetShortAddress(shortAddress);
 	AdpMac_SetGroupMasterKeySync(pGMK);
@@ -1452,7 +1437,6 @@ void LBP_AdpNetworkJoinRequest(uint16_t panId, uint16_t lbaAddress, uint8_t medi
 				g_LbpContext.m_u8DisableBackupFlag = 1;
 			}
 			memcpy(&g_LbpContext.m_EUI64Address, &extendedAddress, ADP_ADDRESS_64BITS);
-			_SetExtendedAddress(&extendedAddress);
 
 			LOG_DBG(LogBuffer(g_LbpContext.m_EUI64Address.m_au8Value, 8, "ExtendedAddress: "));
 
