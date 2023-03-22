@@ -171,17 +171,20 @@ static void _palRfTxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CONF
     }
 
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
-    // Get payload symbols in the received message
+    // Get payload symbols in the transmitted message
     DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_TX_PAY_SYMBOLS,
             &rfPayloadSymbols);
 
-    // Serialize received RF message
+    // Serialize transmitted RF message
     pRfSnifferData = SRV_RSNIFFER_SerialCfmMessage(cfmObj, txHandle,
             &palRfData.rfPhyConfig, rfPayloadSymbols, &rfSnifferDataSize);
 
-    // Send through USI
-    SRV_USI_Send_Message(palRfData.srvUsiHandler, SRV_USI_PROT_ID_SNIFF_G3,
-            pRfSnifferData, rfSnifferDataSize);
+    if ((pRfSnifferData != NULL) && (rfSnifferDataSize != 0))
+    {
+        // Send through USI
+        SRV_USI_Send_Message(palRfData.srvUsiHandler, SRV_USI_PROT_ID_SNIFF_G3,
+                pRfSnifferData, rfSnifferDataSize);
+    }
 </#if>
 }
 
@@ -324,7 +327,12 @@ PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
     }
     
     rfPhyTxReqHandle = DRV_RF215_TxRequest(palRfData.drvRfPhyHandle, &txReqObj, &txResult);
-    
+
+<#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
+    // Prepare transmission request in sniffer service
+    SRV_RSNIFFER_SetTxMessage(&txReqObj, rfPhyTxReqHandle);
+
+</#if>
     if (rfPhyTxReqHandle == DRV_RF215_TX_HANDLE_INVALID)
     {
         DRV_RF215_TX_CONFIRM_OBJ cfmObj;
