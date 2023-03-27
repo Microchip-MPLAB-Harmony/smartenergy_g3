@@ -419,7 +419,7 @@ typedef enum
 } ADP_PIB_ATTRIBUTE;
 
 // *****************************************************************************
-/* ADP Status Definition
+/* ADP Result Definition
 
    Summary:
     Identifies the list of errors returned by the ADP.
@@ -487,6 +487,29 @@ typedef enum
 
     /* Error internal */
     G3_ERROR_INTERNAL = 0xFF
+
+} ADP_RESULT;
+
+// *****************************************************************************
+/* ADP Status Definition
+
+   Summary:
+    Identifies the current status/state of the ADP.
+
+   Description:
+    This enumeration identifies the current status/state of the ADP.
+
+   Remarks:
+    None.
+*/
+typedef enum
+{
+    /* Success */
+    ADP_STATUS_UNINITIALIZED = SYS_STATUS_UNINITIALIZED,
+    ADP_STATUS_BUSY = SYS_STATUS_BUSY,
+    ADP_STATUS_READY = SYS_STATUS_READY,
+    ADP_STATUS_LBP_CONNECTED = SYS_STATUS_READY_EXTENDED + 1,
+    ADP_STATUS_ERROR = SYS_STATUS_ERROR,
 
 } ADP_STATUS;
 

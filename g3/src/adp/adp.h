@@ -106,7 +106,7 @@ typedef struct
     uint8_t status;
 
     /* The handle of the NSDU confirmed by this primitive */
-    uint8_t nsduHandle;
+    uintptr_t nsduHandle;
 
 } ADP_DATA_CFM_PARAMS;
 
@@ -622,7 +622,7 @@ typedef struct
     uint8_t status;
 
     /* The handle of the NSDU confirmed by this primitive */
-    uint8_t nsduHandle;
+    uintptr_t nsduHandle;
 
 } ADP_LBP_CFM_PARAMS;
 
@@ -1405,7 +1405,7 @@ void ADP_Open(MAC_WRP_BAND band);
 
 // *****************************************************************************
 /* Function:
-    SYS_STATUS ADP_Status(void)
+    ADP_STATUS ADP_Status(void)
 
   Summary:
     The ADP_Status primitive retrieves the Status of G3 ADP layer.
@@ -1421,13 +1421,13 @@ void ADP_Open(MAC_WRP_BAND band);
     None
 
   Returns:
-    Status of G3 MAC layer(s) as a SYS_STATUS code.
+    Status of G3 ADP layer(s) as a ADP_STATUS code.
 
   Example:
     <code>
-    SYS_STATUS status;
+    ADP_STATUS status;
     status = ADP_Status();
-    if (status == SYS_STATUS_READY)
+    if (status == ADP_STATUS_READY)
     {
         // ADP is ready to be used
     }
@@ -1436,7 +1436,37 @@ void ADP_Open(MAC_WRP_BAND band);
   Remarks:
     None.
 */
-SYS_STATUS ADP_Status(void);
+ADP_STATUS ADP_Status(void);
+
+// *****************************************************************************
+/* Function:
+    void ADP_SetLBPStatusConnection(bool lbpConnected)
+
+  Summary:
+    The ADP_SetLBPStatusConnection primitive sets the LBP status connection.
+
+  Description:
+    This primitive is intended to be called from LBP module to inform ADP of the
+    availability of the G3 Network.
+
+  Precondition:
+    lbpConnected           - Flag to update the status of the G3 Network connection
+
+  Parameters:
+    None
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    ADP_SetLBPStatusConnection(true);
+    </code>
+
+  Remarks:
+    None.
+*/
+void ADP_SetLBPStatusConnection(bool lbpConnected);
 
 // *****************************************************************************
 /* Function:
@@ -1562,7 +1592,7 @@ void ADP_SetNotificationsToLbp(ADP_NOTIFICATIONS_TO_LBP* pNotifications);
 // *****************************************************************************
 /* Function:
     void ADP_DataRequest(uint16_t nsduLength, const uint8_t *pNsdu,
-        uint8_t nsduHandle, bool discoverRoute, uint8_t qualityOfService);
+        uintptr_t nsduHandle, bool discoverRoute, uint8_t qualityOfService);
 
   Summary:
     This primitive requests the transfer of a PDU to another device or multiple
@@ -1616,12 +1646,12 @@ void ADP_SetNotificationsToLbp(ADP_NOTIFICATIONS_TO_LBP* pNotifications);
     None.
 */
 void ADP_DataRequest(uint16_t nsduLength, const uint8_t *pNsdu,
-    uint8_t nsduHandle, bool discoverRoute, uint8_t qualityOfService);
+    uintptr_t nsduHandle, bool discoverRoute, uint8_t qualityOfService);
 
 // *****************************************************************************
 /* Function:
     void ADP_NoIPDataRequest(uint16_t apduLength, const uint8_t *pApdu,
-        uint16_t dstAddr, uint8_t apduHandle, bool discoverRoute,
+        uint16_t dstAddr, uintptr_t apduHandle, bool discoverRoute,
         uint8_t qualityOfService);
 
   Summary:
@@ -1640,15 +1670,15 @@ void ADP_DataRequest(uint16_t nsduLength, const uint8_t *pNsdu,
     ADP_Initialize and ADP_Open must have been called before.
 
   Parameters:
-    nsduLength       - The size of the APDU, in bytes; Up to 1280
+    apduLength       - The size of the APDU, in bytes; Up to 1280
 
-    pNsdu            - Pointer to APDU to send; can be any App protocol
+    pApdu            - Pointer to APDU to send; can be any App protocol
 
     dstAddr          - The Destination Short Address. Can be a unicast address,
                        a 6LowPAN Group Address, or the 6LowPAN BROADCAST ADDRESS
                        (0x8001)
 
-    nsduHandle       - The handle of the APDU to transmit. This parameter is
+    apduHandle       - The handle of the APDU to transmit. This parameter is
                        used to identify in the ADP Data Confirm primitive which
                        request it is concerned with. It can be randomly chosen
                        by the application layer.
@@ -1682,7 +1712,7 @@ void ADP_DataRequest(uint16_t nsduLength, const uint8_t *pNsdu,
     None.
 */
 void ADP_NoIPDataRequest(uint16_t apduLength, const uint8_t *pApdu,
-    uint16_t dstAddr, uint8_t apduHandle, bool discoverRoute,
+    uint16_t dstAddr, uintptr_t apduHandle, bool discoverRoute,
     uint8_t qualityOfService);
 
 // *****************************************************************************
@@ -2226,8 +2256,9 @@ void ADP_PathDiscoveryRequest(uint16_t dstAddr, uint8_t metricType);
 
 // *****************************************************************************
 /* Function:
-    void ADP_DataRequest(uint16_t nsduLength, const uint8_t *pNsdu,
-        uint8_t nsduHandle, bool discoverRoute, uint8_t qualityOfService);
+  void ADP_LbpRequest(const ADP_ADDRESS *pDstAddr, uint16_t nsduLength,
+        uint8_t *pNsdu, uintptr_t nsduHandle, uint8_t maxHops,
+        bool discoveryRoute, uint8_t qualityOfService, bool securityEnable);
 
   Summary:
     This primitive allows the upper layer of the client to send the LBP message
@@ -2295,7 +2326,7 @@ void ADP_PathDiscoveryRequest(uint16_t dstAddr, uint8_t metricType);
     None.
 */
 void ADP_LbpRequest(const ADP_ADDRESS *pDstAddr, uint16_t nsduLength,
-    uint8_t *pNsdu, uint8_t nsduHandle, uint8_t maxHops,
+    uint8_t *pNsdu, uintptr_t nsduHandle, uint8_t maxHops,
     bool discoveryRoute, uint8_t qualityOfService, bool securityEnable);
 
 //DOM-IGNORE-BEGIN
