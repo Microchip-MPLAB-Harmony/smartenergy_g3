@@ -55,7 +55,6 @@ def loadModule():
     g3AdpComponent.addDependency("adp_bootstrap_dependency", "Bootstrap", True, True)
     g3AdpComponent.addDependency("adp_mac_wrapper_dependency", "MAC Wrapper", True, True)
     g3AdpComponent.addDependency("adp_srv_random_dependency", "Random", True, True)
-    g3AdpComponent.addDependency("adp_srv_queue_dependency", "Queue", True, True)
     g3AdpComponent.addDependency("adp_srv_log_report_dependency", "Log Report", True, True)
     g3AdpComponent.addDependency("adp_sys_time_dependency", "SYS_TIME", True, True)
     g3AdpComponent.addDependency("adp_srv_timemgmt_dependency", "Time Management", True, True)
