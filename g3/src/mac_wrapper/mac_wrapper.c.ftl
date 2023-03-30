@@ -283,7 +283,7 @@ static MAC_WRP_DATA_REQ_ENTRY *_getFreeDataReqEntry(void)
         {
             found = &dataReqQueue[index];
             dataReqQueue[index].used = true;
-            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_getFreeDataReqEntry() Found free data request entry on index %u", index);
+            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_getFreeDataReqEntry() Found free data request entry on index %u\r\n", index);
             break;
         }
     }
@@ -302,7 +302,7 @@ static MAC_WRP_DATA_REQ_ENTRY *_getDataReqEntryByHandle(uint8_t handle)
             (dataReqQueue[index].dataReqParams.msduHandle == handle))
         {
             found = &dataReqQueue[index];
-            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_getDataReqEntryByHandle() Found matching data request entry on index %u, Handle: 0x%02X", index, handle);
+            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_getDataReqEntryByHandle() Found matching data request entry on index %u, Handle: 0x%02X\r\n", index, handle);
             break;
         }
     }
@@ -1044,7 +1044,7 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
     bool sendConfirm = false;
 </#if>
 
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacPlcDataConfirm() Handle: 0x%02X Status: %u", dcParams->msduHandle, (uint8_t)dcParams->status);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacPlcDataConfirm() Handle: 0x%02X Status: %u\r\n", dcParams->msduHandle, (uint8_t)dcParams->status);
 
     /* Get Data Request entry matching confirm */
     matchingDataReq = _getDataReqEntryByHandle(dcParams->msduHandle);
@@ -1052,7 +1052,7 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
     /* Avoid unmached handling */
     if (matchingDataReq == NULL)
     {
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_ERROR, "_Callback_MacPlcDataConfirm() Confirm does not match any previous request!!");
+        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_ERROR, "_Callback_MacPlcDataConfirm() Confirm does not match any previous request!!\r\n");
         return;
     }
 
@@ -1076,11 +1076,11 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                 if (matchingDataReq->dataReqParams.destAddress.addressMode == MAC_ADDRESS_MODE_EXTENDED)
                 {
                     status = MAC_WRP_STATUS_SUCCESS;
-                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Extended Address Dest allows backup medium");
+                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Extended Address Dest allows backup medium\r\n");
                 }
                 else
                 {
-                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Look for RF POS Table entry for %0004X", matchingDataReq->dataReqParams.destAddress.shortAddress);
+                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Look for RF POS Table entry for %0004X\r\n", matchingDataReq->dataReqParams.destAddress.shortAddress);
                     status = (MAC_WRP_STATUS) MAC_RF_GetRequestSync(MAC_PIB_MANUF_POS_TABLE_ELEMENT_RF, 
                             matchingDataReq->dataReqParams.destAddress.shortAddress, &pibValue);
                 }
@@ -1089,14 +1089,14 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                 if (status == MAC_WRP_STATUS_SUCCESS)
                 {
                     /* Try on backup medium */
-                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Try RF as Backup Medium");
+                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Try RF as Backup Medium\r\n");
                     /* Set Msdu pointer to backup buffer, as current pointer is no longer valid */
                     matchingDataReq->dataReqParams.msdu = matchingDataReq->backupBuffer;
                     MAC_RF_DataRequest(&matchingDataReq->dataReqParams);
                 }
                 else
                 {
-                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "No POS entry found, discard backup medium");
+                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "No POS entry found, discard backup medium\r\n");
                     /* Fill Media Type */
                     dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
                     /* Send confirm to upper layer */
@@ -1145,7 +1145,7 @@ static void _Callback_MacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
         case MAC_WRP_MEDIA_TYPE_REQ_RF_NO_BACKUP:
             /* PLC confirm not expected on RF_NO_BACKUP request. Ignore it */
             matchingDataReq->used = false;
-            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_ERROR, "_Callback_MacPlcDataConfirm() called from a MEDIA_TYPE_REQ_RF_NO_BACKUP request!!");
+            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_ERROR, "_Callback_MacPlcDataConfirm() called from a MEDIA_TYPE_REQ_RF_NO_BACKUP request!!\r\n");
             break;
         default: /* PLC only */
             /* Fill Media Type */
@@ -1233,7 +1233,7 @@ static void _Callback_MacPlcDataIndication(MAC_DATA_INDICATION_PARAMS *diParams)
 
 static void _Callback_MacPlcResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacPlcResetConfirm: Status: %u", rcParams->status);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacPlcResetConfirm: Status: %u\r\n", rcParams->status);
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_RESET_CONFIRM_PARAMS resetConfirmParams;
@@ -1305,7 +1305,7 @@ static void _Callback_MacPlcResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
 
 static void _Callback_MacPlcBeaconNotify(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bnParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacPlcBeaconNotify: Pan ID: %04X", bnParams->panDescriptor.panId);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacPlcBeaconNotify: Pan ID: %04X\r\n", bnParams->panDescriptor.panId);
 
     MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS notifyIndicationParams;
 
@@ -1324,7 +1324,7 @@ static void _Callback_MacPlcBeaconNotify(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bn
 
 static void _Callback_MacPlcScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacPlcScanConfirm: Status: %u", scParams->status);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacPlcScanConfirm: Status: %u\r\n", scParams->status);
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_SCAN_CONFIRM_PARAMS scanConfirmParams;
@@ -1395,7 +1395,7 @@ static void _Callback_MacPlcScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
 
 static void _Callback_MacPlcStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacPlcStartConfirm: Status: %u", scParams->status);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacPlcStartConfirm: Status: %u\r\n", scParams->status);
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_START_CONFIRM_PARAMS startConfirmParams;
@@ -1467,7 +1467,7 @@ static void _Callback_MacPlcStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
 
 static void _Callback_MacPlcCommStatusIndication(MAC_COMM_STATUS_INDICATION_PARAMS *csParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacPlcCommStatusIndication: Status: %u", csParams->status);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacPlcCommStatusIndication: Status: %u\r\n", csParams->status);
 
     MAC_WRP_COMM_STATUS_INDICATION_PARAMS commStatusIndicationParams;
 
@@ -1509,7 +1509,7 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
     bool sendConfirm = false;
 </#if>
 
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacRfDataConfirm() Handle: 0x%02X Status: %u", dcParams->msduHandle, (uint8_t)dcParams->status);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacRfDataConfirm() Handle: 0x%02X Status: %u\r\n", dcParams->msduHandle, (uint8_t)dcParams->status);
 
     /* Get Data Request entry matching confirm */
     matchingDataReq = _getDataReqEntryByHandle(dcParams->msduHandle);
@@ -1517,7 +1517,7 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
     /* Avoid unmached handling */
     if (matchingDataReq == NULL)
     {
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_ERROR, "_Callback_MacRfDataConfirm() Confirm does not match any previous request!!");
+        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_ERROR, "_Callback_MacRfDataConfirm() Confirm does not match any previous request!!\r\n");
         return;
     }
 
@@ -1546,11 +1546,11 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                 if (matchingDataReq->dataReqParams.destAddress.addressMode == MAC_ADDRESS_MODE_EXTENDED)
                 {
                     status = MAC_WRP_STATUS_SUCCESS;
-                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Extended Address Dest allows backup medium");
+                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Extended Address Dest allows backup medium\r\n");
                 }
                 else
                 {
-                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Look for PLC POS Table entry for %0004X", matchingDataReq->dataReqParams.destAddress.shortAddress);
+                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Look for PLC POS Table entry for %0004X\r\n", matchingDataReq->dataReqParams.destAddress.shortAddress);
                     status = (MAC_WRP_STATUS) MAC_PLC_GetRequestSync(MAC_PIB_MANUF_POS_TABLE_ELEMENT, 
                             matchingDataReq->dataReqParams.destAddress.shortAddress, &pibValue);
                 }
@@ -1559,14 +1559,14 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
                 if (status == MAC_WRP_STATUS_SUCCESS)
                 {
                     /* Try on backup medium */
-                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Try PLC as Backup Medium");
+                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "Try PLC as Backup Medium\r\n");
                     /* Set Msdu pointer to backup buffer, as current pointer is no longer valid */
                     matchingDataReq->dataReqParams.msdu = matchingDataReq->backupBuffer;
                     MAC_PLC_DataRequest(&matchingDataReq->dataReqParams);
                 }
                 else
                 {
-                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "No POS entry found, discard backup medium");
+                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "No POS entry found, discard backup medium\r\n");
                     /* Fill Media Type */
                     dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
                     /* Send confirm to upper layer */
@@ -1604,7 +1604,7 @@ static void _Callback_MacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
         case MAC_WRP_MEDIA_TYPE_REQ_PLC_NO_BACKUP:
             /* RF confirm not expected on PLC_NO_BACKUP request. Ignore it */
             matchingDataReq->used = false;
-            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_ERROR, "_Callback_MacRfDataConfirm() called from a MEDIA_TYPE_REQ_PLC_NO_BACKUP request!!");
+            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_ERROR, "_Callback_MacRfDataConfirm() called from a MEDIA_TYPE_REQ_PLC_NO_BACKUP request!!\r\n");
             break;
         case MAC_WRP_MEDIA_TYPE_REQ_RF_NO_BACKUP:
             /* Fill Media Type */
@@ -1698,7 +1698,7 @@ static void _Callback_MacRfDataIndication(MAC_DATA_INDICATION_PARAMS *diParams)
 
 static void _Callback_MacRfResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacRfResetConfirm: Status: %u", rcParams->status);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacRfResetConfirm: Status: %u\r\n", rcParams->status);
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_RESET_CONFIRM_PARAMS resetConfirmParams;
@@ -1770,7 +1770,7 @@ static void _Callback_MacRfResetConfirm(MAC_RESET_CONFIRM_PARAMS *rcParams)
 
 static void _Callback_MacRfBeaconNotify(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bnParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacRfBeaconNotify: Pan ID: %04X", bnParams->panDescriptor.panId);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacRfBeaconNotify: Pan ID: %04X\r\n", bnParams->panDescriptor.panId);
 
     MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS notifyIndicationParams;
 
@@ -1789,7 +1789,7 @@ static void _Callback_MacRfBeaconNotify(MAC_BEACON_NOTIFY_INDICATION_PARAMS *bnP
 
 static void _Callback_MacRfScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacRfScanConfirm: Status: %u", scParams->status);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "_Callback_MacRfScanConfirm: Status: %u\r\n", scParams->status);
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_SCAN_CONFIRM_PARAMS scanConfirmParams;
@@ -1860,7 +1860,7 @@ static void _Callback_MacRfScanConfirm(MAC_SCAN_CONFIRM_PARAMS *scParams)
 
 static void _Callback_MacRfStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacRfStartConfirm: Status: %u", scParams->status);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacRfStartConfirm: Status: %u\r\n", scParams->status);
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     MAC_WRP_START_CONFIRM_PARAMS startConfirmParams;
@@ -1932,7 +1932,7 @@ static void _Callback_MacRfStartConfirm(MAC_START_CONFIRM_PARAMS *scParams)
 
 static void _Callback_MacRfCommStatusIndication(MAC_COMM_STATUS_INDICATION_PARAMS *csParams)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacRfCommStatusIndication: Status: %u", csParams->status);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "_Callback_MacRfCommStatusIndication: Status: %u\r\n", csParams->status);
 
     MAC_WRP_COMM_STATUS_INDICATION_PARAMS commStatusIndicationParams;
 
@@ -2018,7 +2018,7 @@ MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index, MAC_WRP_BAND plcBand)
 
 </#if>
 <#if MAC_PLC_PRESENT == true>
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Open: Initializing PLC MAC...");
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Open: Initializing PLC MAC...\r\n");
 
     plcInitData.macPlcHandlers.macPlcDataConfirm = _Callback_MacPlcDataConfirm;
     plcInitData.macPlcHandlers.macPlcDataIndication = _Callback_MacPlcDataIndication;
@@ -2043,7 +2043,7 @@ MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index, MAC_WRP_BAND plcBand)
 
 </#if>
 <#if MAC_RF_PRESENT == true>
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Open: Initializing RF MAC...");
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_Open: Initializing RF MAC...\r\n");
 
     rfInitData.macRfHandlers.macRfDataConfirm = _Callback_MacRfDataConfirm;
     rfInitData.macRfHandlers.macRfDataIndication = _Callback_MacRfDataIndication;
@@ -2271,7 +2271,7 @@ MAC_WRP_STATUS MAC_WRP_GetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBU
         return MAC_WRP_STATUS_INVALID_HANDLE;
     }
 
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "MAC_WRP_GetRequestSync: Attribute: %08X; Index: %u", attribute, index);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "MAC_WRP_GetRequestSync: Attribute: %08X; Index: %u\r\n", attribute, index);
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     /* Check attribute ID range to redirect to Common, PLC or RF MAC */
@@ -2415,7 +2415,7 @@ void MAC_WRP_ResetRequest(MAC_WRP_HANDLE handle, MAC_WRP_RESET_REQUEST_PARAMS *r
         return;
     }
 
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "MAC_WRP_ResetRequest: Set default PIB: %u", rstParams->setDefaultPib);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "MAC_WRP_ResetRequest: Set default PIB: %u\r\n", rstParams->setDefaultPib);
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     // Set control variable
@@ -2481,7 +2481,7 @@ void MAC_WRP_ScanRequest(MAC_WRP_HANDLE handle, MAC_WRP_SCAN_REQUEST_PARAMS *sca
         return;
     }
 
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_ScanRequest: Duration: %u", scanParams->scanDuration);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "MAC_WRP_ScanRequest: Duration: %u\r\n", scanParams->scanDuration);
 
     // Set control variable
     macWrpData.scanRequestInProgress = true;
@@ -2529,7 +2529,7 @@ void MAC_WRP_StartRequest(MAC_WRP_HANDLE handle, MAC_WRP_START_REQUEST_PARAMS *s
         return;
     }
 
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "MAC_WRP_StartRequest: Pan ID: %u", startParams->panId);
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "MAC_WRP_StartRequest: Pan ID: %u\r\n", startParams->panId);
 
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     // Set control variable
