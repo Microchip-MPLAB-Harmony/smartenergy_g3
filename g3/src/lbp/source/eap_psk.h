@@ -8,7 +8,7 @@
     eap_psk.h
 
   Summary:
-    LBP EAP-PSK Protoco Header File.
+    LBP EAP-PSK Protocol Header File.
 
   Description:
     The LoWPAN Bootstrapping Protocol (LBP) provides a simple interface to
@@ -65,411 +65,1132 @@
 // *****************************************************************************
 // *****************************************************************************
 
-
-/** EAP message types
- *
- ***********************************************************************************************************************
- *
- * The value takes in account the 2 reserved bits (values are left shifted by 2 bits)
- *
- **********************************************************************************************************************/
+/* EAP message types */
+/* The value takes in account the 2 reserved bits (values are left shifted by 2 bits) */
 #define EAP_REQUEST 0x04
 #define EAP_RESPONSE 0x08
 #define EAP_SUCCESS 0x0C
 #define EAP_FAILURE 0x10
 
-/**********************************************************************************************************************/
-
-/** T-subfield types
- *
- ***********************************************************************************************************************
- *
- * 0 The first EAP-PSK message
- * 1 The second EAP-PSK message
- * 2 The third EAP-PSK message
- * 3 The fourth EAP-PSK message
- *
- **********************************************************************************************************************/
+/* T-subfield types */
+/* 0 The first EAP-PSK message */
+/* 1 The second EAP-PSK message */
+/* 2 The third EAP-PSK message */
+/* 3 The fourth EAP-PSK message */
 #define EAP_PSK_T0 (0x00 << 6)
 #define EAP_PSK_T1 (0x01 << 6)
 #define EAP_PSK_T2 (0x02 << 6)
 #define EAP_PSK_T3 (0x03 << 6)
 
-/**********************************************************************************************************************/
-
-/** P-Channel result field
- *
- ***********************************************************************************************************************
- *
- **********************************************************************************************************************/
+/* P-Channel result field */
 #define PCHANNEL_RESULT_CONTINUE 0x01
 #define PCHANNEL_RESULT_DONE_SUCCESS 0x02
 #define PCHANNEL_RESULT_DONE_FAILURE 0x03
 
-/**********************************************************************************************************************/
+// *****************************************************************************
+// *****************************************************************************
+// Section: Data Type Definitions
+// *****************************************************************************
+// *****************************************************************************
 
-/** The EAP_PSK NetworkAccessIdentifier P & S types
- ***********************************************************************************************************************
- *
- **********************************************************************************************************************/
+// *****************************************************************************
+/* EAP_PSK NetworkAccessIdentifier P type
+
+  Summary:
+    Network Access Identifier for Bootstrapping Peer.
+
+  Description:
+    Network Access Identifier for Bootstrapping Peer.
+
+  Remarks:
+    None.
+*/
 typedef struct
 {
-	uint8_t m_u8Size;
-	uint8_t m_au8Value[LBP_NETWORK_ACCESS_ID_MAX_SIZE_P];
+    uint8_t size;
+    uint8_t value[LBP_NETWORK_ACCESS_ID_MAX_SIZE_P];
+
 } EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P;
 
+// *****************************************************************************
+/* EAP_PSK NetworkAccessIdentifier S type
+
+  Summary:
+    Network Access Identifier for Bootstrapping Server.
+
+  Description:
+    Network Access Identifier for Bootstrapping Server.
+
+  Remarks:
+    None.
+*/
 typedef struct
 {
-	uint8_t m_u8Size;
-	uint8_t m_au8Value[LBP_NETWORK_ACCESS_ID_MAX_SIZE_S];
+    uint8_t size;
+    uint8_t value[LBP_NETWORK_ACCESS_ID_MAX_SIZE_S];
 
 } EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S;
 
-/**********************************************************************************************************************/
+// *****************************************************************************
+/* The EAP_PSK key type
 
-/** The EAP_PSK key type
- ***********************************************************************************************************************
- *
- **********************************************************************************************************************/
+  Summary:
+    Bootstrapping Preshared Key.
+
+  Description:
+    Bootstrapping Preshared Key.
+
+  Remarks:
+    None.
+*/
 typedef struct
 {
-	uint8_t m_au8Value[16];
+    uint8_t value[16];
 
 } EAP_PSK_KEY;
 
-/**********************************************************************************************************************/
+// *****************************************************************************
+/* The EAP_PSK MSK key type
 
-/** The EAP_PSK MSK type
- ***********************************************************************************************************************
- *
- **********************************************************************************************************************/
+  Summary:
+    Bootstrapping Master Session Key.
+
+  Description:
+    Bootstrapping Master Session Key.
+
+  Remarks:
+    None.
+*/
 typedef struct
 {
-	uint8_t m_au8Value[64];
+    uint8_t value[64];
 
 } EAP_PSK_MSK;
 
-/**********************************************************************************************************************/
+// *****************************************************************************
+/* The EAP_PSK RAND type
 
-/** The EAP_PSK RAND type
- ***********************************************************************************************************************
- *
- **********************************************************************************************************************/
+  Summary:
+    Bootstrapping Random value derived from Keys.
+
+  Description:
+    Bootstrapping Random value derived from Keys.
+
+  Remarks:
+    None.
+*/
 typedef struct
 {
-	uint8_t m_au8Value[16];
+    uint8_t value[16];
 
 } EAP_PSK_RAND;
 
-/**********************************************************************************************************************/
+// *****************************************************************************
+/* The EAP_PSK Context
 
-/** The EAP_PSK_Context type keeps information needed for EAP-PSK calls
- ***********************************************************************************************************************
- *
- **********************************************************************************************************************/
+  Summary:
+    Contains the information needed during the EAP-PSK.
+
+  Description:
+    Contains the information needed during the EAP-PSK Bootstrapping process.
+
+  Remarks:
+    None.
+*/
 typedef struct
 {
-	EAP_PSK_KEY m_Kdk; /* Derivation key */
-	EAP_PSK_KEY m_Ak; /* Authentication key */
-	EAP_PSK_KEY m_Tek; /* Transient key */
-	EAP_PSK_KEY m_Msk; /* Master Session key */
-	EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S m_IdS;
-	EAP_PSK_RAND m_RandP;
-	EAP_PSK_RAND m_RandS;
+    EAP_PSK_KEY kdk; /* Derivation key */
+    EAP_PSK_KEY ak; /* Authentication key */
+    EAP_PSK_KEY tek; /* Transient key */
+    EAP_PSK_KEY msk; /* Master Session key */
+    EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S idS;
+    EAP_PSK_RAND randP;
+    EAP_PSK_RAND randS;
 } EAP_PSK_CONTEXT;
 
-/**********************************************************************************************************************/
+// *****************************************************************************
+// *****************************************************************************
+// Section: Interface Function Definitions
+// *****************************************************************************
+// *****************************************************************************
 
-/**********************************************************************************************************************/
+// *****************************************************************************
+/* Function:
+    void EAP_PSK_Initialize(
+        const EAP_PSK_KEY *pKey,
+        EAP_PSK_CONTEXT *pPskContext
+        )
 
-/** The EAP_PSK_Initialize primitive is used to initialize the EAP-PSK module
- ***********************************************************************************************************************
- * @param au8EAPPSK Shared secret needed to join the network
- * @param aesCtx The AES context structure
- * @param pContext OUT parameter; EAP-PSK context needed in other functions
- **********************************************************************************************************************/
-void EAP_PSK_Initialize(const EAP_PSK_KEY *pKey, EAP_PSK_CONTEXT *pPskContext);
+  Summary:
+    Initializes EAP-PSK module.
 
-/**********************************************************************************************************************/
+  Description:
+    This routine initializes the PSK Context filling the Derivation Key and
+    Authentication Key from a given PSK.
 
-/** The EAP_PSK_InitializeTEKMSK primitive is used to initialize the TEK key
- ***********************************************************************************************************************
- * @param au8RandP RandP random number computed by the local device used in 2nd message
- * @param aesCtx The AES context structure
- * @param pContext OUT parameter; EAP-PSK context needed in other functions
- **********************************************************************************************************************/
-void EAP_PSK_InitializeTEKMSK(const EAP_PSK_RAND *pRandP, EAP_PSK_CONTEXT *pPskContext);
+  Precondition:
+    None.
 
-/**********************************************************************************************************************/
+  Parameters:
+    pKey - Pointer to shared secret (PSK)
+    pPskContext - Pointer to EAP-PSK context to be filled deriving PSK
 
-/** The EAP_PSK_Decode_Message1 primitive is used to decode the first EAP-PSK message (type 0)
- ***********************************************************************************************************************
- * @param u16MessageLength Length of the message
- * @param pMessage Length of the message
- * @param pu8Code OUT parameter; upon successful return contains the Code field parameter
- * @param pu8Identifier OUT parameter; upon successful return contains the identifier field (aids in matching Responses
- *                      with Requests)
- * @param pu8TSubfield OUT parameter; upon successful return contains the T subfield parameter
- * @param pu16EAPDataLength OUT parameter; upon successful return contains the length of the EAP data
- * @param pEAPData OUT parameter; upon successful return contains a pointer the the EAP data
- * @return true if the message can be decoded; false otherwise
- **********************************************************************************************************************/
-bool EAP_PSK_Decode_Message(uint16_t u16MessageLength, uint8_t *pMessage, uint8_t *pu8Code, uint8_t *pu8Identifier,
-		uint8_t *pu8TSubfield, uint16_t *pu16EAPDataLength, uint8_t **pEAPData);
+  Returns:
+    None.
 
-/**********************************************************************************************************************/
+  Example:
+    <code>
+    EAP_PSK_KEY psk;
+    EAP_PSK_CONTEXT eapCtx;
 
-/** The EAP_PSK_Decode_Message1 primitive is used to decode the first EAP-PSK message (type 0)
- ***********************************************************************************************************************
- * @param u16MessageLength Length of the message
- * @param pMessage Length of the message
- * @param au8RandS OUT parameter; upon successful return contains the RandS parameter (16 bytes random number
- *                 generated by LBS)
- * @param au8IdS OUT parameter; upon successful return contains the IdS parameter (8 byte EUI-64 address of server)
- * @return true if the message can be decoded; false otherwise
- **********************************************************************************************************************/
-bool EAP_PSK_Decode_Message1(uint16_t u16MessageLength, uint8_t *pMessage, EAP_PSK_RAND *pRandS,
-		EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS);
+    EAP_PSK_Initialize(&psk, &eapCtx);
+    </code>
 
-/**********************************************************************************************************************/
+  Remarks:
+    None.
+*/
+void EAP_PSK_Initialize(
+    const EAP_PSK_KEY *pKey,
+    EAP_PSK_CONTEXT *pPskContext
+    );
 
-/** The EAP_PSK_Encode_Message2 primitive is used to encode the second EAP-PSK message (type 1)
- ***********************************************************************************************************************
- * @param context EAP-PSK context initialized in EAP_PSK_Initialize
- * @param u8Identifier Message identifier retrieved from the Request
- * @param au8RandS RandS parameter received from the server
- * @param au8RandP RandP random number computed by the local device
- * @param au8IdS IdS parameter received from the server
- * @param au8IdP IdP parameter: identity of the local device
- * @param u16MemoryBufferLength size of the buffer which will be used for data encoding
- * @param pMemoryBuffer OUT parameter; upon successful return contains the encoded message; this buffer should be previously
- *                      allocated; requested size being at least 62 bytes
- * @return encoded length or 0 if encoding failed
- **********************************************************************************************************************/
-uint16_t EAP_PSK_Encode_Message2(const EAP_PSK_CONTEXT *pPskContext, uint8_t u8Identifier,
-		const EAP_PSK_RAND *pRandS, const EAP_PSK_RAND *pRandP, const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
-		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P *pIdP, uint16_t u16MemoryBufferLength, uint8_t *pMemoryBuffer);
+// *****************************************************************************
+/* Function:
+    void EAP_PSK_InitializeTEKMSK(
+        const EAP_PSK_RAND *pRandP,
+        EAP_PSK_CONTEXT *pPskContext
+        )
 
-/**********************************************************************************************************************/
+  Summary:
+    Fills pending EAP-PSK context fields.
 
-/** The EAP_PSK_Decode_Message3 primitive is used to decode the third EAP-PSK message (type 2)
- ***********************************************************************************************************************
- * @param u16MessageLength Length of the message
- * @param pMessage Length of the message
- * @param pskContext Initialized PSK context
- * @param u16HeaderLength Length of the header field
- * @param pHeader Header field: the first 22 bytes of the EAP Request or Response packet used to compute the
- *         auth tag
- * @param au8RandS OUT parameter; upon successful return contains the RandS parameter (16 bytes random number
- *                 generated by LBS)
- * @param pu8PChannelResult OUT parameter; upon successful return contains the result indication flag
- * @param pau8CurrGMKId OUT parameter; upon successful return contains the Key Identifier of the current GMK
- * @param au8CurrGMK OUT parameter; upon successful return contains the 16 byte value of the current GMK
- * @param au8PrecGMK OUT parameter; upon successful return contains the 16 byte value of the preceding GMK
- * @return true if the message can be decoded; false otherwise
- **********************************************************************************************************************/
-bool EAP_PSK_Decode_Message3(uint16_t u16MessageLength, uint8_t *pMessage, const EAP_PSK_CONTEXT *pPskContext,
-		uint16_t u16HeaderLength, uint8_t *pHeader, EAP_PSK_RAND *pRandS, uint32_t *pu32Nonce,
-		uint8_t *pu8PChannelResult, uint16_t *pu16PChannelDataLength, uint8_t **pPChannelData);
+  Description:
+    This routine fills the Transient Key and Master Session Key on PSK Context
+    and encrypts a Random number array using the derivation key.
 
-/**********************************************************************************************************************/
+  Precondition:
+    None.
 
-/** The EAP_PSK_Encode_Message4 primitive is used to encode the second EAP-PSK message (type 3)
- ***********************************************************************************************************************
- * @param pskContext EAP-PSK context initialized in EAP_PSK_Initialize
- * @param u8Identifier Message identifier retrieved from the Request
- * @param au8RandS RandS parameter received from the server
- * @param u32Nonce Nonce needed for P-Channel
- * @param u8PChannelResult
- * @param u16MemoryBufferLength size of the buffer which will be used for data encoding
- * @param pMemoryBuffer OUT parameter; upon successful return contains the encoded message; this buffer should be previously
- *                      allocated; requested size being at least 62 bytes
- * @return encoded length or 0 if encoding failed
- **********************************************************************************************************************/
-uint16_t EAP_PSK_Encode_Message4(const EAP_PSK_CONTEXT *pPskContext, uint8_t u8Identifier,
-		const EAP_PSK_RAND *pRandS, uint32_t u32Nonce, uint8_t u8PChannelResult, uint16_t u16PChannelDataLength,
-		uint8_t *pPChannelData, uint16_t u16MemoryBufferLength, uint8_t *pMemoryBuffer);
+  Parameters:
+    pRandP - Pointer to Random numbers array container
+    pPskContext - Pointer to EAP-PSK context to be filled
 
-/**********************************************************************************************************************/
+  Returns:
+    None.
 
-/** The EAP_PSK_Encode_Message1 primitive is used to decode the first EAP-PSK message (type 0)
- ***********************************************************************************************************************
- *
- * @param u8Identifier Message identifier retrieved from the Request
- *
- * @param au8RandS RandS parameter built by the server
- *
- * @param au8IdS IdS parameter (the server identity)
- *
- * @param u16MemoryBufferLength size of the buffer which will be used for data encoding
- *
- * @param pMemoryBuffer OUT parameter; upon successful return contains the encoded message; this buffer should be previously
- *                      allocated
- *
- * @return encoded length or 0 if encoding failed
- *
- **********************************************************************************************************************/
-uint16_t EAP_PSK_Encode_Message1(
-		uint8_t u8Identifier,
-		const EAP_PSK_RAND *pRandS,
-		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
-		uint16_t u16MemoryBufferLength,
-		uint8_t *pMemoryBuffer
-		);
+  Example:
+    <code>
+    EAP_PSK_KEY psk;
+    EAP_PSK_RAND randP;
+    EAP_PSK_CONTEXT eapCtx;
 
-/**********************************************************************************************************************/
+    EAP_PSK_Initialize(&psk, &eapCtx);
+    EAP_PSK_InitializeTEKMSK(&randP, &eapCtx);
+    </code>
 
-/** The EAP_PSK_Decode_Message2 primitive is used to decode the second EAP-PSK message (type 1) and also to check
- * the MacP parameter
- ***********************************************************************************************************************
- *
- * @param context EAP-PSK context initialized in EAP_PSK_Initialize
- * @return true if the message can be decoded and the MacP field verified; false otherwise
- *
- **********************************************************************************************************************/
-bool EAP_PSK_Decode_Message2(
-		bool bAribBand,
-		uint16_t u16MessageLength,
-		uint8_t *pMessage,
-		const EAP_PSK_CONTEXT *pPskContext,
-		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
-		EAP_PSK_RAND *pRandS, /* out */
-		EAP_PSK_RAND *pRandP /* out */
-		);
+  Remarks:
+    None.
+*/
+void EAP_PSK_InitializeTEKMSK(
+    const EAP_PSK_RAND *pRandP,
+    EAP_PSK_CONTEXT *pPskContext
+    );
 
-/**********************************************************************************************************************/
+// *****************************************************************************
+/* Function:
+    bool EAP_PSK_DecodeMessage(
+        uint16_t messageLength,
+        uint8_t *pMessage,
+        uint8_t *pCode,
+        uint8_t *pIdentifier,
+        uint8_t *pTSubfield,
+        uint16_t *pEAPDataLength,
+        uint8_t **pEAPData
+        )
 
-/** The EAP_PSK_Encode_Message3 primitive is used to encode the third EAP-PSK message (type 2)
- ***********************************************************************************************************************
- *
- * @param context EAP-PSK context initialized in EAP_PSK_Initialize
- *
- * @param u8Identifier Message identifier retrieved from the Request
- *
- * @param au8RandS RandS parameter received from the server
- *
- * @param au8RandP RandP random number computed by the local device
- *
- * @param au8IdS IdS parameter received from the server
- *
- * @param au8IdP IdP parameter: identity of the local device
- *
- * @param bAuthSuccess true if authentication was successfull; false otherwise
- *
- * @param u32Nonce nonce needed by P-Tunnel
- *
- * @param u8CurrGMKId Represents the Key Identifier of the current GMK
- *
- * @param au8CurrGMK 16 byte value of the current GMK
- *
- * @param au8PrecGMK 16 byte value of the preceding GMK
- *
- * @param u16MemoryBufferLength size of the buffer which will be used for data encoding
- *
- * @param pMemoryBuffer OUT parameter; upon successful return contains the encoded message; this buffer should be previously
- *                      allocated; requested size being at least 62 bytes
- *
- * @return encoded length or 0 if encoding failed
- *
- **********************************************************************************************************************/
-uint16_t EAP_PSK_Encode_Message3(
-		const EAP_PSK_CONTEXT *pPskContext,
-		uint8_t u8Identifier,
-		const EAP_PSK_RAND *pRandS,
-		const EAP_PSK_RAND *pRandP,
-		const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
-		uint32_t u32Nonce,
-		uint8_t u8PChannelResult,
-		uint16_t u16PChannelDataLength,
-		uint8_t *pPChannelData,
-		uint16_t u16MemoryBufferLength,
-		uint8_t *pMemoryBuffer
-		);
+  Summary:
+    Extracts header fields of an EAP-PSK frame.
 
-/**********************************************************************************************************************/
+  Description:
+    This routine extracts Code, Identifier and TSubfield from an EAP-PSK frame
+    and provides a pointer and length to EAP payload.
 
-/** The EAP_PSK_Decode_Message4
- ***********************************************************************************************************************
- *
- *
- * @return encoded length or 0 if encoding failed
- *
- **********************************************************************************************************************/
-bool EAP_PSK_Decode_Message4(
-		uint16_t u16MessageLength,
-		uint8_t *pMessage,
-		const EAP_PSK_CONTEXT *pPskContext,
-		uint16_t u16HeaderLength,
-		uint8_t *pHeader,
-		EAP_PSK_RAND *pRandS,
-		uint32_t *pu32Nonce,
-		uint8_t *pu8PChannelResult,
-		uint16_t *pu16PChannelDataLength,
-		uint8_t **pPChannelData
-		);
+  Precondition:
+    None.
 
-/**********************************************************************************************************************/
+  Parameters:
+    messageLength - EAP frame length
+    pMessage - Pointer to EAP frame
+    pCode - Code field extracted from frame
+    pIdentifier - Identifier field extracted from frame
+    pTSubfield - T subfield extracted from frame
+    pEAPDataLength - EAP payload length
+    pEAPData - Pointer to EAP payload
 
-/** The EAP_PSK_Encode_EAP_Success primitive is used to encode the EAP success message
- ***********************************************************************************************************************
- *
- * @param u8Identifier Message identifier
- *
- * @param u16MemoryBufferLength size of the buffer which will be used for data encoding
- *
- * @param pMemoryBuffer OUT parameter; upon successful return contains the encoded message; this buffer should be previously
- *                      allocated; requested size being at least 62 bytes
- *
- * @return encoded length or 0 if encoding failed
- *
- **********************************************************************************************************************/
-uint16_t EAP_PSK_Encode_EAP_Success(
-		uint8_t u8Identifier,
-		uint16_t u16MemoryBufferLength,
-		uint8_t *pMemoryBuffer
-		);
+  Returns:
+    True if decode is successful, otherwise False.
 
-/**********************************************************************************************************************/
+  Example:
+    <code>
+    void EAP_FrameReceived(uint16_t messageLength, uint8_t *pMessage)
+    {
+        uint8_t code;
+        uint8_t identifier;
+        uint8_t tSubfield;
+        uint16_t EAPDataLength;
+        uint8_t *EAPData;
+        bool decodeOK;
 
-/** The EAP_PSK_Encode_EAP_Failure primitive is used to encode the EAP failure message
- ***********************************************************************************************************************
- *
- * @param u8Identifier Message identifier
- *
- * @param u16MemoryBufferLength size of the buffer which will be used for data encoding
- *
- * @param pMemoryBuffer OUT parameter; upon successful return contains the encoded message; this buffer should be previously
- *                      allocated; requested size being at least 62 bytes
- *
- * @return encoded length or 0 if encoding failed
- *
- **********************************************************************************************************************/
-uint16_t EAP_PSK_Encode_EAP_Failure(
-		uint8_t u8Identifier,
-		uint16_t u16MemoryBufferLength,
-		uint8_t *pMemoryBuffer
-		);
+        decodeOK = EAP_PSK_DecodeMessage(messageLength, pMessage,
+            &code, &identifier, &tSubfield, &EAPDataLength, &EAPData);
+    }
+    </code>
 
-/**********************************************************************************************************************/
+  Remarks:
+    None.
+*/
+bool EAP_PSK_DecodeMessage(
+    uint16_t messageLength,
+    uint8_t *pMessage,
+    uint8_t *pCode,
+    uint8_t *pIdentifier,
+    uint8_t *pTSubfield,
+    uint16_t *pEAPDataLength,
+    uint8_t **pEAPData
+    );
 
-/** The EAP_PSK_Encode_GMK_Activation primitive is used to encode the GMK activation message (end of re-keying process).
- ***********************************************************************************************************************
- *
- * @param pPChannelData
- *
- * @param u16MemoryBufferLength size of the buffer which will be used for data encoding
- *
- * @param pMemoryBuffer OUT parameter; upon successful return contains the encoded message; this buffer should be previously
- *                      allocated; requested size being at least 62 bytes
- *
- * @return encoded length or 0 if encoding failed
- *
- **********************************************************************************************************************/
-uint16_t EAP_PSK_Encode_GMK_Activation(
-		uint8_t *pPChannelData,
-		uint16_t u16MemoryBufferLength,
-		uint8_t *pMemoryBuffer
-		);
+// *****************************************************************************
+/* Function:
+    bool EAP_PSK_DecodeMessage1(
+        uint16_t messageLength,
+        uint8_t *pMessage,
+        EAP_PSK_RAND *pRandS,
+        EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS
+        )
+
+  Summary:
+    Extracts fields from payload of EAP message #1 (Type 0).
+
+  Description:
+    This routine extracts the fields (RandS and IdS) from EAP payload
+    of EAP message #1.
+
+  Precondition:
+    None.
+
+  Parameters:
+    messageLength - EAP payload length
+    pMessage - Pointer to EAP payload
+    pRandS - RandS field extracted from frame
+    pIdS - IdS field extracted from frame
+
+  Returns:
+    True if decode is successful, otherwise False.
+
+  Example:
+    <code>
+    void EAP_FrameReceived(uint16_t messageLength, uint8_t *pMessage)
+    {
+        uint8_t code;
+        uint8_t identifier;
+        uint8_t tSubfield;
+        uint16_t EAPDataLength;
+        uint8_t *EAPData;
+        bool decodeOK;
+
+        EAP_PSK_RAND randS;
+        EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S idS;
+
+        decodeOK = EAP_PSK_DecodeMessage(messageLength, pMessage,
+            &code, &identifier, &tSubfield, &EAPDataLength, &EAPData);
+        
+        if (decodeOK && (tSubfield == EAP_PSK_T0)) {
+            decodeOK = EAP_PSK_DecodeMessage1(EAPDataLength, EAPData,
+                &randS, &idS);
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+bool EAP_PSK_DecodeMessage1(
+    uint16_t messageLength,
+    uint8_t *pMessage,
+    EAP_PSK_RAND *pRandS,
+    EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS
+    );
+
+// *****************************************************************************
+/* Function:
+    uint16_t EAP_PSK_EncodeMessage2(
+        const EAP_PSK_CONTEXT *pPskContext,
+        uint8_t identifier,
+        const EAP_PSK_RAND *pRandS,
+        const EAP_PSK_RAND *pRandP,
+        const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+        const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P *pIdP,
+        uint16_t memoryBufferLength,
+        uint8_t *pMemoryBuffer
+        )
+
+  Summary:
+    Encodes an EAP message #2 frame (Type 1).
+
+  Description:
+    This routine encodes the fields of an EAP message #2 into a given buffer.
+
+  Precondition:
+    None.
+
+  Parameters:
+    pPskContext - Pointer to PSK context
+    identifier - EAP identifier
+    pRandS - Pointer to RandS field
+    pRandP - Pointer to RandP field
+    pIdS - Pointer to IdS field
+    pIdP - Pointer to IdP field
+    memoryBufferLength - Length of buffer on which frame is encoded
+    pMemoryBuffer - Pointer to buffer on which frame is encoded
+
+  Returns:
+    Encoded length, or 0 if encoding failed.
+
+  Example:
+    <code>
+    void EAP_FrameReceived(uint16_t messageLength, uint8_t *pMessage)
+    {
+        uint8_t code;
+        uint8_t identifier;
+        uint8_t tSubfield;
+        uint16_t EAPDataLength;
+        uint8_t *EAPData;
+        uint16_t txBufLen = sizeof(encodeBuffer);
+        uint8_t *txBuf = &encodeBuffer[0];
+        bool decodeOK;
+
+        EAP_PSK_RAND randS;
+        EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S idS;
+
+        decodeOK = EAP_PSK_DecodeMessage(messageLength, pMessage,
+            &code, &identifier, &tSubfield, &EAPDataLength, &EAPData);
+        
+        if (decodeOK && (tSubfield == EAP_PSK_T0)) {
+            decodeOK = EAP_PSK_DecodeMessage1(EAPDataLength, EAPData,
+                &randS, &idS);
+            
+            if (decodeOK) {
+                uint16_t encodedLen;
+                EAP_PSK_RAND randP = {Peer random sequence};
+                EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S idP = {Peer identifier};
+
+                encodedLen = EAP_PSK_EncodeMessage2(&PskContext,
+                    identifier, &randS, &randP, &idS, &idP, txBufLen, txBuf);
+            }
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+uint16_t EAP_PSK_EncodeMessage2(
+    const EAP_PSK_CONTEXT *pPskContext,
+    uint8_t identifier,
+    const EAP_PSK_RAND *pRandS,
+    const EAP_PSK_RAND *pRandP,
+    const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+    const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_P *pIdP,
+    uint16_t memoryBufferLength,
+    uint8_t *pMemoryBuffer
+    );
+
+// *****************************************************************************
+/* Function:
+    bool EAP_PSK_DecodeMessage3(
+        uint16_t messageLength,
+        uint8_t *pMessage,
+        const EAP_PSK_CONTEXT *pPskContext,
+        uint16_t headerLength,
+        uint8_t *pHeader,
+        EAP_PSK_RAND *pRandS,
+        uint32_t *pNonce,
+        uint8_t *pPChannelResult,
+        uint16_t *pPChannelDataLength,
+        uint8_t **pPChannelData)
+
+  Summary:
+    Extracts fields from payload of EAP message #3 (Type 2).
+
+  Description:
+    This routine extracts the fields (RandS, Nonce and PChannel Result)
+    from EAP payload of EAP message #3 and returns a pointer and lengh to
+    Protected Channel data.
+
+  Precondition:
+    None.
+
+  Parameters:
+    messageLength - EAP payload length
+    pMessage - Pointer to EAP payload
+    pPskContext - Pointer to PSK context
+    headerLength - Length of the header field
+    pHeader - Pointer to header field, used to compute the Authentication Tag
+    pRandS - RandS field extracted from frame
+    pNonce - Nonce field extracted from frame
+    pPChannelResult - Protected Channel result
+    pPChannelDataLength - Protected Channel length
+    pPChannelData - Pointer to Protected Channel data
+
+  Returns:
+    True if decode is successful, otherwise False.
+
+  Example:
+    <code>
+    void EAP_FrameReceived(uint16_t messageLength, uint8_t *pMessage)
+    {
+        uint8_t code;
+        uint8_t identifier;
+        uint8_t tSubfield;
+        uint16_t EAPDataLength;
+        uint8_t *EAPData;
+        bool decodeOK;
+
+        EAP_PSK_RAND randS;
+        uint16_t headerLength = HEADER_LEN;
+        uint8_t *header = &headerBuf[0];
+        uint32_t nonce;
+        uint8_t channelRes;
+        uint16_t chnDataLength;
+        uint8_t *chnData;
+
+        decodeOK = EAP_PSK_DecodeMessage(messageLength, pMessage,
+            &code, &identifier, &tSubfield, &EAPDataLength, &EAPData);
+        
+        if (decodeOK && (tSubfield == EAP_PSK_T2)) {
+            decodeOK = EAP_PSK_DecodeMessage3(EAPDataLength, EAPData,
+                &PskContext, headerLength, header, &randS, &nonce,
+                &channelRes, &chnDataLength, &chnData);
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+bool EAP_PSK_DecodeMessage3(
+    uint16_t messageLength,
+    uint8_t *pMessage,
+    const EAP_PSK_CONTEXT *pPskContext,
+    uint16_t headerLength,
+    uint8_t *pHeader,
+    EAP_PSK_RAND *pRandS,
+    uint32_t *pNonce,
+    uint8_t *pPChannelResult,
+    uint16_t *pPChannelDataLength,
+    uint8_t **pPChannelData
+    );
+
+// *****************************************************************************
+/* Function:
+    uint16_t EAP_PSK_EncodeMessage4(
+        const EAP_PSK_CONTEXT *pPskContext,
+        uint8_t identifier,
+        const EAP_PSK_RAND *pRandS,
+        uint32_t nonce,
+        uint8_t PChannelResult,
+        uint16_t PChannelDataLength,
+        uint8_t *pPChannelData,
+        uint16_t memoryBufferLength,
+        uint8_t *pMemoryBuffer)
+
+  Summary:
+    Encodes an EAP message #4 frame (Type 3).
+
+  Description:
+    This routine encodes the fields of an EAP message #4 into a given buffer.
+
+  Precondition:
+    None.
+
+  Parameters:
+    pPskContext - Pointer to PSK context
+    identifier - EAP identifier
+    pRandS - Pointer to RandS field
+    nonce - Nonce field
+    PChannelResult - Protected Channel result
+    PChannelDataLength - Protected Channel length
+    PChannelData - Pointer to Protected Channel data
+    memoryBufferLength - Length of buffer on which frame is encoded
+    pMemoryBuffer - Pointer to buffer on which frame is encoded
+
+  Returns:
+    Encoded length, or 0 if encoding failed.
+
+  Example:
+    <code>
+    void EAP_FrameReceived(uint16_t messageLength, uint8_t *pMessage)
+    {
+        uint8_t code;
+        uint8_t identifier;
+        uint8_t tSubfield;
+        uint16_t EAPDataLength;
+        uint8_t *EAPData;
+        uint16_t txBufLen = sizeof(encodeBuffer);
+        uint8_t *txBuf = &encodeBuffer[0];
+        bool decodeOK;
+
+        EAP_PSK_RAND randS;
+        uint16_t headerLength = HEADER_LEN;
+        uint8_t *header = &headerBuf[0];
+        uint32_t nonce;
+        uint8_t channelRes;
+        uint16_t chnDataLength;
+        uint8_t *chnData;
+
+        decodeOK = EAP_PSK_DecodeMessage(messageLength, pMessage,
+            &code, &identifier, &tSubfield, &EAPDataLength, &EAPData);
+        
+        if (decodeOK && (tSubfield == EAP_PSK_T2)) {
+            decodeOK = EAP_PSK_DecodeMessage3(EAPDataLength, EAPData,
+                &PskContext, headerLength, header, &randS, &nonce,
+                &channelRes, &chnDataLength, &chnData);
+            
+            if (decodeOK) {
+                uint16_t encodedLen;
+
+                encodedLen = EAP_PSK_EncodeMessage4(&PskContext,
+                    identifier, &randS, nonce, channelRes,
+                    chnDataLength, chnData, txBufLen, txBuf);
+            }
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+uint16_t EAP_PSK_EncodeMessage4(
+    const EAP_PSK_CONTEXT *pPskContext,
+    uint8_t identifier,
+    const EAP_PSK_RAND *pRandS,
+    uint32_t nonce,
+    uint8_t PChannelResult,
+    uint16_t PChannelDataLength,
+    uint8_t *pPChannelData,
+    uint16_t memoryBufferLength,
+    uint8_t *pMemoryBuffer
+    );
+
+// *****************************************************************************
+/* Function:
+    uint16_t EAP_PSK_EncodeMessage1(
+        uint8_t identifier,
+        const EAP_PSK_RAND *pRandS,
+        const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+        uint16_t memoryBufferLength,
+        uint8_t *pMemoryBuffer
+        )
+
+  Summary:
+    Encodes an EAP message #1 frame (Type 0).
+
+  Description:
+    This routine encodes the fields of an EAP message #1 into a given buffer.
+
+  Precondition:
+    None.
+
+  Parameters:
+    identifier - EAP identifier
+    pRandS - Pointer to RandS field
+    pIdS - Pointer to IdS field
+    memoryBufferLength - Length of buffer on which frame is encoded
+    pMemoryBuffer - Pointer to buffer on which frame is encoded
+
+  Returns:
+    Encoded length, or 0 if encoding failed.
+
+  Example:
+    <code>
+    void NodeJoining(void)
+    {
+        uint8_t identifier;
+        EAP_PSK_RAND randS;
+        EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S idS;
+        uint16_t txBufLen = sizeof(encodeBuffer);
+        uint8_t *txBuf = &encodeBuffer[0];
+
+        encodedLen = EAP_PSK_EncodeMessage1(identifier, &randS, &idS, txBufLen, txBuf);
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+uint16_t EAP_PSK_EncodeMessage1(
+    uint8_t identifier,
+    const EAP_PSK_RAND *pRandS,
+    const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+    uint16_t memoryBufferLength,
+    uint8_t *pMemoryBuffer
+    );
+
+// *****************************************************************************
+/* Function:
+    bool EAP_PSK_DecodeMessage2(
+        bool aribBand,
+        uint16_t messageLength,
+        uint8_t *pMessage,
+        const EAP_PSK_CONTEXT *pPskContext,
+        const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+        EAP_PSK_RAND *pRandS,
+        EAP_PSK_RAND *pRandP
+        )
+
+  Summary:
+    Extracts fields from payload of EAP message #2 (Type 1).
+
+  Description:
+    This routine extracts the fields (IdS, RandS, and RandP)
+    from EAP payload of EAP message #2.
+
+  Precondition:
+    None.
+
+  Parameters:
+    aribBand - Flag indicating whether ARIB band is used (fields size change)
+    messageLength - EAP payload length
+    pMessage - Pointer to EAP payload
+    pPskContext - Pointer to PSK context
+    pIdS - IdS field extracted from frame
+    pRandS - RandS field extracted from frame
+    pRandP - RandP field extracted from frame
+
+  Returns:
+    True if decode is successful, otherwise False.
+
+  Example:
+    <code>
+    void EAP_FrameReceived(uint16_t messageLength, uint8_t *pMessage)
+    {
+        uint8_t code;
+        uint8_t identifier;
+        uint8_t tSubfield;
+        uint16_t EAPDataLength;
+        uint8_t *EAPData;
+        bool decodeOK;
+
+        bool arib;
+        EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S idS;
+        EAP_PSK_RAND randS;
+        EAP_PSK_RAND randP;
+        uint16_t headerLength = HEADER_LEN;
+        uint8_t *header = &headerBuf[0];
+        uint32_t nonce;
+        uint8_t channelRes;
+        uint16_t chnDataLength;
+        uint8_t *chnData;
+
+        decodeOK = EAP_PSK_DecodeMessage(messageLength, pMessage,
+            &code, &identifier, &tSubfield, &EAPDataLength, &EAPData);
+        
+        if (decodeOK && (tSubfield == EAP_PSK_T1)) {
+            decodeOK = EAP_PSK_DecodeMessage2(arib, EAPDataLength, EAPData,
+                &PskContext, &idS, &randS, &randP);
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+bool EAP_PSK_DecodeMessage2(
+    bool aribBand,
+    uint16_t messageLength,
+    uint8_t *pMessage,
+    const EAP_PSK_CONTEXT *pPskContext,
+    const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+    EAP_PSK_RAND *pRandS,
+    EAP_PSK_RAND *pRandP
+    );
+
+// *****************************************************************************
+/* Function:
+    uint16_t EAP_PSK_EncodeMessage3(
+        const EAP_PSK_CONTEXT *pPskContext,
+        uint8_t identifier,
+        const EAP_PSK_RAND *pRandS,
+        const EAP_PSK_RAND *pRandP,
+        const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+        uint32_t nonce,
+        uint8_t PChannelResult,
+        uint16_t PChannelDataLength,
+        uint8_t *pPChannelData,
+        uint16_t memoryBufferLength,
+        uint8_t *pMemoryBuffer
+        )
+
+  Summary:
+    Encodes an EAP message #3 frame (Type 2).
+
+  Description:
+    This routine encodes the fields of an EAP message #3 into a given buffer.
+
+  Precondition:
+    None.
+
+  Parameters:
+    pPskContext - Pointer to PSK context
+    identifier - EAP identifier
+    pRandS - Pointer to RandS field
+    pRandP - Pointer to RandP field
+    pIdS - Pointer to IdS field
+    nonce - Nonce field
+    PChannelResult - Protected Channel result
+    PChannelDataLength - Protected Channel length
+    PChannelData - Pointer to Protected Channel data
+    memoryBufferLength - Length of buffer on which frame is encoded
+    pMemoryBuffer - Pointer to buffer on which frame is encoded
+
+  Returns:
+    Encoded length, or 0 if encoding failed.
+
+  Example:
+    <code>
+    void EAP_FrameReceived(uint16_t messageLength, uint8_t *pMessage)
+    {
+        uint8_t code;
+        uint8_t identifier;
+        uint8_t tSubfield;
+        uint16_t EAPDataLength;
+        uint8_t *EAPData;
+        uint16_t txBufLen = sizeof(encodeBuffer);
+        uint8_t *txBuf = &encodeBuffer[0];
+        bool decodeOK;
+
+        EAP_PSK_RAND randS;
+        uint16_t headerLength = HEADER_LEN;
+        uint8_t *header = &headerBuf[0];
+        uint32_t nonce;
+        uint8_t channelRes;
+        uint16_t chnDataLength;
+        uint8_t *chnData;
+
+        decodeOK = EAP_PSK_DecodeMessage(messageLength, pMessage,
+            &code, &identifier, &tSubfield, &EAPDataLength, &EAPData);
+        
+        if (decodeOK && (tSubfield == EAP_PSK_T2)) {
+            decodeOK = EAP_PSK_DecodeMessage3(EAPDataLength, EAPData,
+                &PskContext, headerLength, header, &randS, &nonce,
+                &channelRes, &chnDataLength, &chnData);
+            
+            if (decodeOK) {
+                uint16_t encodedLen;
+
+                encodedLen = EAP_PSK_EncodeMessage4(&PskContext,
+                    identifier, &randS, nonce, channelRes,
+                    chnDataLength, chnData, txBufLen, txBuf);
+            }
+        }
+    }
+    void EAP_FrameReceived(uint16_t messageLength, uint8_t *pMessage)
+    {
+        uint8_t code;
+        uint8_t identifier;
+        uint8_t tSubfield;
+        uint16_t EAPDataLength;
+        uint8_t *EAPData;
+        uint16_t txBufLen = sizeof(encodeBuffer);
+        uint8_t *txBuf = &encodeBuffer[0];
+        bool decodeOK;
+
+        bool arib;
+        EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S idS;
+        EAP_PSK_RAND randS;
+        EAP_PSK_RAND randP;
+        uint32_t nonce;
+        uint8_t channelRes;
+        uint16_t chnDataLength;
+        uint8_t *chnData;
+
+        decodeOK = EAP_PSK_DecodeMessage(messageLength, pMessage,
+            &code, &identifier, &tSubfield, &EAPDataLength, &EAPData);
+        
+        if (decodeOK && (tSubfield == EAP_PSK_T1)) {
+            decodeOK = EAP_PSK_DecodeMessage2(arib, EAPDataLength, EAPData,
+                &PskContext, &idS, &randS, &randP);
+            
+            if (decodeOK) {
+                uint16_t encodedLen;
+
+                encodedLen = EAP_PSK_EncodeMessage3(&PskContext,
+                    identifier, &randS, &randP, &idS, nonce, channelRes,
+                    chnDataLength, chnData, txBufLen, txBuf);
+            }
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+uint16_t EAP_PSK_EncodeMessage3(
+    const EAP_PSK_CONTEXT *pPskContext,
+    uint8_t identifier,
+    const EAP_PSK_RAND *pRandS,
+    const EAP_PSK_RAND *pRandP,
+    const EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S *pIdS,
+    uint32_t nonce,
+    uint8_t PChannelResult,
+    uint16_t PChannelDataLength,
+    uint8_t *pPChannelData,
+    uint16_t memoryBufferLength,
+    uint8_t *pMemoryBuffer
+    );
+
+// *****************************************************************************
+/* Function:
+    bool EAP_PSK_DecodeMessage4(
+        uint16_t messageLength,
+        uint8_t *pMessage,
+        const EAP_PSK_CONTEXT *pPskContext,
+        uint16_t headerLength,
+        uint8_t *pHeader,
+        EAP_PSK_RAND *pRandS,
+        uint32_t *pNonce,
+        uint8_t *pPChannelResult,
+        uint16_t *pPChannelDataLength,
+        uint8_t **pPChannelData
+        )
+
+  Summary:
+    Extracts fields from payload of EAP message #4 (Type 3).
+
+  Description:
+    This routine extracts the fields (RandS, Nonce and PChannel Result)
+    from EAP payload of EAP message #4 and returns a pointer and lengh to
+    Protected Channel data.
+
+  Precondition:
+    None.
+
+  Parameters:
+    messageLength - EAP payload length
+    pMessage - Pointer to EAP payload
+    pPskContext - Pointer to PSK context
+    headerLength - Length of the header field
+    pHeader - Pointer to header field, used to compute the Authentication Tag
+    pRandS - RandS field extracted from frame
+    pNonce - Nonce field extracted from frame
+    pPChannelResult - Protected Channel result
+    pPChannelDataLength - Protected Channel length
+    pPChannelData - Pointer to Protected Channel data
+
+  Returns:
+    True if decode is successful, otherwise False.
+
+  Example:
+    <code>
+    void EAP_FrameReceived(uint16_t messageLength, uint8_t *pMessage)
+    {
+        uint8_t code;
+        uint8_t identifier;
+        uint8_t tSubfield;
+        uint16_t EAPDataLength;
+        uint8_t *EAPData;
+        bool decodeOK;
+
+        EAP_PSK_RAND randS;
+        uint16_t headerLength = HEADER_LEN;
+        uint8_t *header = &headerBuf[0];
+        uint32_t nonce;
+        uint8_t channelRes;
+        uint16_t chnDataLength;
+        uint8_t *chnData;
+
+        decodeOK = EAP_PSK_DecodeMessage(messageLength, pMessage,
+            &code, &identifier, &tSubfield, &EAPDataLength, &EAPData);
+        
+        if (decodeOK && (tSubfield == EAP_PSK_T3)) {
+            decodeOK = EAP_PSK_DecodeMessage4(EAPDataLength, EAPData,
+                &PskContext, headerLength, header, &randS, &nonce,
+                &channelRes, &chnDataLength, &chnData);
+        }
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+bool EAP_PSK_DecodeMessage4(
+    uint16_t messageLength,
+    uint8_t *pMessage,
+    const EAP_PSK_CONTEXT *pPskContext,
+    uint16_t headerLength,
+    uint8_t *pHeader,
+    EAP_PSK_RAND *pRandS,
+    uint32_t *pNonce,
+    uint8_t *pPChannelResult,
+    uint16_t *pPChannelDataLength,
+    uint8_t **pPChannelData
+    );
+
+// *****************************************************************************
+/* Function:
+    uint16_t EAP_PSK_EncodeEAPSuccess(
+        uint8_t identifier,
+        uint16_t memoryBufferLength,
+        uint8_t *pMemoryBuffer
+        )
+
+  Summary:
+    Encodes an EAP Header carrying EAP_SUCCESS code.
+
+  Description:
+    This routine encodes the header fields of an EAP message to provide
+    a EAP_SUCCESS result into a given buffer.
+
+  Precondition:
+    None.
+
+  Parameters:
+    identifier - EAP identifier
+    memoryBufferLength - Length of buffer on which frame is encoded
+    pMemoryBuffer - Pointer to buffer on which frame is encoded
+
+  Returns:
+    Encoded length, or 0 if encoding failed.
+
+  Example:
+    <code>
+    void EAP_Success(void)
+    {
+        uint8_t identifier;
+        uint16_t txBufLen = sizeof(encodeBuffer);
+        uint8_t *txBuf = &encodeBuffer[0];
+        uint16_t encodedLen;
+
+        encodedLen = EAP_PSK_EncodeEAPSuccess(identifier, txBufLen, txBuf);
+
+        // Continue encoding LBP frame
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+uint16_t EAP_PSK_EncodeEAPSuccess(
+    uint8_t identifier,
+    uint16_t memoryBufferLength,
+    uint8_t *pMemoryBuffer
+    );
+
+// *****************************************************************************
+/* Function:
+    uint16_t EAP_PSK_EncodeEAPFailure(
+        uint8_t identifier,
+        uint16_t memoryBufferLength,
+        uint8_t *pMemoryBuffer
+        )
+
+  Summary:
+    Encodes an EAP Header carrying EAP_FAILURE code.
+
+  Description:
+    This routine encodes the header fields of an EAP message to provide
+    a EAP_FAILURE result into a given buffer.
+
+  Precondition:
+    None.
+
+  Parameters:
+    identifier - EAP identifier
+    memoryBufferLength - Length of buffer on which frame is encoded
+    pMemoryBuffer - Pointer to buffer on which frame is encoded
+
+  Returns:
+    Encoded length, or 0 if encoding failed.
+
+  Example:
+    <code>
+    void EAP_Failure(void)
+    {
+        uint8_t identifier;
+        uint16_t txBufLen = sizeof(encodeBuffer);
+        uint8_t *txBuf = &encodeBuffer[0];
+        uint16_t encodedLen;
+
+        encodedLen = EAP_PSK_EncodeEAPFailure(identifier, txBufLen, txBuf);
+
+        // Continue encoding LBP frame
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+uint16_t EAP_PSK_EncodeEAPFailure(
+    uint8_t identifier,
+    uint16_t memoryBufferLength,
+    uint8_t *pMemoryBuffer
+    );
+
+// *****************************************************************************
+/* Function:
+    uint16_t EAP_PSK_EncodeGMKActivation(
+        uint8_t *pPChannelData,
+        uint16_t memoryBufferLength,
+        uint8_t *pMemoryBuffer
+        )
+
+  Summary:
+    Encodes an EAP Header carrying PChannelData.
+
+  Description:
+    This routine encodes the header fields of an EAP message to provide
+    a commnad contained in PChannelData into a given buffer.
+
+  Precondition:
+    None.
+
+  Parameters:
+    pPChannelData - Pointer to data to copy in EAP frame
+    memoryBufferLength - Length of buffer on which frame is encoded
+    pMemoryBuffer - Pointer to buffer on which frame is encoded
+
+  Returns:
+    Encoded length, or 0 if encoding failed.
+
+  Example:
+    <code>
+    void EAP_ActivateGMK(void)
+    {
+        uint8_t pdata[3];
+        uint8_t u8NewKeyIndex = 1;
+        uint16_t txBufLen = sizeof(encodeBuffer);
+        uint8_t *txBuf = &encodeBuffer[0];
+        uint16_t encodedLen;
+
+        pdata[0] = LBP_CONF_PARAM_GMK_ACTIVATION;
+        pdata[1] = 0x01;
+        pdata[2] = u8NewKeyIndex;
+
+        encodedLen = EAP_PSK_EncodeGMKActivation(
+            pdata, txBufLen, txBuf);
+
+        // Continue encoding LBP frame
+    }
+    </code>
+
+  Remarks:
+    None.
+*/
+uint16_t EAP_PSK_EncodeGMKActivation(
+    uint8_t *pPChannelData,
+    uint16_t memoryBufferLength,
+    uint8_t *pMemoryBuffer
+    );
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

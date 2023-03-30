@@ -237,7 +237,7 @@ void LBP_InitCoord(bool aribBand);
 
 // *****************************************************************************
 /* Function:
-    void LBP_UpdateBootstrapSlots(void);
+    void LBP_UpdateLbpSlots(void);
 
   Summary:
     Updates the slots that control bootstrap protocol.
@@ -258,14 +258,14 @@ void LBP_InitCoord(bool aribBand);
     <code>
     void APP_Tasks(void)
     {
-        LBP_UpdateBootstrapSlots();
+        LBP_UpdateLbpSlots();
     }
     </code>
 
   Remarks:
     This routine should be called from system tasks.
 */
-void LBP_UpdateBootstrapSlots(void);
+void LBP_UpdateLbpSlots(void);
 
 // *****************************************************************************
 /* Function:
