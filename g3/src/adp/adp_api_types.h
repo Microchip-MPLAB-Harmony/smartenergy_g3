@@ -50,6 +50,7 @@
 // *****************************************************************************
 #include <stdint.h>
 #include <stdbool.h>
+#include "system/system.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
