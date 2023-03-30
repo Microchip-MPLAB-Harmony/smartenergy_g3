@@ -798,10 +798,10 @@ static ADP_SERIAL_STATUS _ParseInitialize(uint8_t* pData)
     ADP_MANAGEMENT_NOTIFICATIONS adpMngNotifications;
     LBP_NOTIFICATIONS_DEV lbpDevNotifications;
     LBP_NOTIFICATIONS_COORD lbpCoordNotifications;
-    MAC_WRP_BAND band;    
+    ADP_PLC_BAND band;
 
     /* Parse initialize message */
-    band = (MAC_WRP_BAND) pData[0];
+    band = (ADP_PLC_BAND) pData[0];
     adpSerialAribBand = (bool) (band == ADP_BAND_ARIB);
     adpSerialCoord = (bool) (pData[1] != 0);
 
@@ -1778,7 +1778,7 @@ void ADP_SERIAL_Tasks(SYS_MODULE_OBJ object)
     if ((adpStatus == SYS_STATUS_READY) && (adpSerialCoord == true))
     {
         /* LBP coordinator tasks */
-        LBP_UpdateBootstrapSlots();
+        LBP_UpdateLbpSlots();
     }
 }
 
