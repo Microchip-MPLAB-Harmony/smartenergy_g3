@@ -16,6 +16,13 @@
 #include "stack/g3/adaptation/adp.h"
 #include "stack/g3/adaptation/adp_api_types.h"
 #include "stack/g3/adaptation/adp_shared_types.h"
+#include "stack/g3/adaptation/lbp_defs.h"
+<#if G3_DEVICE == true>
+#include "stack/g3/adaptation/lbp_dev.h"
+</#if>
+<#if G3_COORDINATOR == true>
+#include "stack/g3/adaptation/lbp_coord.h"
+</#if>
 <#if g3_adapt_config.ADP_SERIALIZATION_EN == true>
 #include "stack/g3/adaptation/adp_serial.h"
 </#if>
