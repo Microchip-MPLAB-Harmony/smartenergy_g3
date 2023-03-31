@@ -292,6 +292,39 @@ void LBP_SetNotificationsDev(LBP_NOTIFICATIONS_DEV *pNotifications);
 
 // *****************************************************************************
 /* Function:
+    void LBP_TasksDev(void);
+
+Summary:
+    Maintains LBP Device state sachine.
+
+  Description:
+    This function maintains the LoWPAN Bootstrapping Protocol state machine in
+    Device mode.
+
+  Precondition:
+    LBP_InitDev must have been called before.
+
+  Parameters:
+    None.
+
+  Returns:
+    None.
+
+  Example:
+    <code>
+    void APP_Tasks(void)
+    {
+        LBP_TasksDev();
+    }
+    </code>
+
+  Remarks:
+    This routine should be called from system tasks.
+*/
+void LBP_TasksDev(void);
+
+// *****************************************************************************
+/* Function:
     void LBP_SetParamDev(uint32_t attributeId, uint16_t attributeIndex,
         uint8_t attributeLen, const uint8_t *pAttributeValue,
         LBP_SET_PARAM_CONFIRM *pSetConfirm);
