@@ -202,7 +202,7 @@ typedef struct
     EAP_PSK_KEY kdk; /* Derivation key */
     EAP_PSK_KEY ak; /* Authentication key */
     EAP_PSK_KEY tek; /* Transient key */
-    EAP_PSK_KEY msk; /* Master Session key */
+    EAP_PSK_MSK msk; /* Master Session key */
     EAP_PSK_NETWORK_ACCESS_IDENTIFIER_S idS;
     EAP_PSK_RAND randP;
     EAP_PSK_RAND randS;
