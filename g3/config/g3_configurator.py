@@ -76,7 +76,7 @@ def instantiateComponent(g3ConfigComponent):
     pLbpDevHeader.setDestPath("stack/g3/adaptation")
     pLbpDevHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     pLbpDevHeader.setType("HEADER")
-    pLbpDevHeader.setEnabled(False)
+    pLbpDevHeader.setEnabled(True)
     pLbpDevHeader.setDependencies(g3ConfigRoleChange, ["G3_ROLE"])
 
     pLbpDefsHeader = g3ConfigComponent.createFileSymbol("LBP_DEFS_HEADER", None)
@@ -132,7 +132,7 @@ def instantiateComponent(g3ConfigComponent):
     pLbpDevSource.setDestPath("stack/g3/adaptation")
     pLbpDevSource.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     pLbpDevSource.setType("SOURCE")
-    pLbpDevSource.setEnabled(False)
+    pLbpDevSource.setEnabled(True)
     pLbpDevSource.setDependencies(g3ConfigRoleChange, ["G3_ROLE"])
 
     pLbpVersionHeader = g3ConfigComponent.createFileSymbol("LBP_VERSION_HEADER", None)
