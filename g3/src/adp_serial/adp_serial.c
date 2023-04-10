@@ -935,7 +935,7 @@ static ADP_SERIAL_STATUS _ParseNetworkJoinRequest(uint8_t* pData)
     panId = ((uint16_t) *pData++) << 8;
     panId += (uint16_t) *pData++;
     lbaAddress = ((uint16_t) *pData++) << 8;
-    lbaAddress += (uint16_t) *pData;
+    lbaAddress += (uint16_t) *pData++;
     mediaType = *pData;
 
     /* Send network join request to LBP device */
