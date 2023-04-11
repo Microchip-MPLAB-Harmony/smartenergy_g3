@@ -2015,6 +2015,7 @@ MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index, MAC_WRP_BAND plcBand)
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     /* Set default HyAL variables */
     hyalData = hyalDataDefaults;
+    memset(hyALDuplicatesTable, 0, sizeof(hyALDuplicatesTable));
 
 </#if>
 <#if MAC_PLC_PRESENT == true>
