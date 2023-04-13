@@ -37,6 +37,7 @@ def instantiateComponent(g3ConfigComponent):
     g3ConfigMode.setDependencies(g3ConfigSelection, ["G3_MODE"])
 
     # Select G3 role
+    global g3ConfigRole
     g3Roles = ["PAN Device", "PAN Coordinator", "Dynamic (Selected upon Initialization)"]
     g3ConfigRole = g3ConfigComponent.createComboSymbol("G3_ROLE", None, g3Roles)
     g3ConfigRole.setLabel("Role for G3 Node")
@@ -79,6 +80,7 @@ def instantiateComponent(g3ConfigComponent):
     pLbpDevHeader.setEnabled(True)
     pLbpDevHeader.setDependencies(g3ConfigRoleChange, ["G3_ROLE"])
 
+    global pLbpDefsHeader
     pLbpDefsHeader = g3ConfigComponent.createFileSymbol("LBP_DEFS_HEADER", None)
     pLbpDefsHeader.setSourcePath("g3/src/lbp/include/lbp_defs.h")
     pLbpDefsHeader.setOutputName("lbp_defs.h")
@@ -87,6 +89,7 @@ def instantiateComponent(g3ConfigComponent):
     pLbpDefsHeader.setType("HEADER")
     
     # LBP Files
+    global pLbpEapSource
     pLbpEapSource = g3ConfigComponent.createFileSymbol("EAP_SOURCE", None)
     pLbpEapSource.setSourcePath("g3/src/lbp/source/eap_psk.c")
     pLbpEapSource.setOutputName("eap_psk.c")
@@ -94,6 +97,7 @@ def instantiateComponent(g3ConfigComponent):
     pLbpEapSource.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     pLbpEapSource.setType("SOURCE")
     
+    global pLbpEapHeader
     pLbpEapHeader = g3ConfigComponent.createFileSymbol("EAP_HEADER", None)
     pLbpEapHeader.setSourcePath("g3/src/lbp/source/eap_psk.h")
     pLbpEapHeader.setOutputName("eap_psk.h")
@@ -101,6 +105,7 @@ def instantiateComponent(g3ConfigComponent):
     pLbpEapHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     pLbpEapHeader.setType("SOURCE")
 
+    global pLbpEncodeDecodeSource
     pLbpEncodeDecodeSource = g3ConfigComponent.createFileSymbol("LBP_ENCODE_DECODE_SOURCE", None)
     pLbpEncodeDecodeSource.setSourcePath("g3/src/lbp/source/lbp_encode_decode.c")
     pLbpEncodeDecodeSource.setOutputName("lbp_encode_decode.c")
@@ -108,6 +113,7 @@ def instantiateComponent(g3ConfigComponent):
     pLbpEncodeDecodeSource.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     pLbpEncodeDecodeSource.setType("SOURCE")
 
+    global pLbpEncodeDecodeHeader
     pLbpEncodeDecodeHeader = g3ConfigComponent.createFileSymbol("LBP_ENCODE_DECODE_HEADER", None)
     pLbpEncodeDecodeHeader.setSourcePath("g3/src/lbp/source/lbp_encode_decode.h")
     pLbpEncodeDecodeHeader.setOutputName("lbp_encode_decode.h")
@@ -135,6 +141,7 @@ def instantiateComponent(g3ConfigComponent):
     pLbpDevSource.setEnabled(True)
     pLbpDevSource.setDependencies(g3ConfigRoleChange, ["G3_ROLE"])
 
+    global pLbpVersionHeader
     pLbpVersionHeader = g3ConfigComponent.createFileSymbol("LBP_VERSION_HEADER", None)
     pLbpVersionHeader.setSourcePath("g3/src/lbp/source/lbp_version.h")
     pLbpVersionHeader.setOutputName("lbp_version.h")
@@ -145,6 +152,52 @@ def instantiateComponent(g3ConfigComponent):
 ################################################################################
 #### Business Logic ####
 ################################################################################
+def selectLBPComponents(role):
+    if role == "dev":
+        pLbpCoordHeader.setEnabled(False)
+        pLbpDevHeader.setEnabled(True)
+        pLbpDefsHeader.setEnabled(True)
+        pLbpEapSource.setEnabled(True)
+        pLbpEapHeader.setEnabled(True)
+        pLbpEncodeDecodeSource.setEnabled(True)
+        pLbpEncodeDecodeHeader.setEnabled(True)
+        pLbpCoordSource.setEnabled(False)
+        pLbpDevSource.setEnabled(True)
+        pLbpVersionHeader.setEnabled(True)
+    elif role == "coord":
+        pLbpCoordHeader.setEnabled(True)
+        pLbpDevHeader.setEnabled(False)
+        pLbpDefsHeader.setEnabled(True)
+        pLbpEapSource.setEnabled(True)
+        pLbpEapHeader.setEnabled(True)
+        pLbpEncodeDecodeSource.setEnabled(True)
+        pLbpEncodeDecodeHeader.setEnabled(True)
+        pLbpCoordSource.setEnabled(True)
+        pLbpDevSource.setEnabled(False)
+        pLbpVersionHeader.setEnabled(True)
+    elif role == "both":
+        pLbpCoordHeader.setEnabled(True)
+        pLbpDevHeader.setEnabled(True)
+        pLbpDefsHeader.setEnabled(True)
+        pLbpEapSource.setEnabled(True)
+        pLbpEapHeader.setEnabled(True)
+        pLbpEncodeDecodeSource.setEnabled(True)
+        pLbpEncodeDecodeHeader.setEnabled(True)
+        pLbpCoordSource.setEnabled(True)
+        pLbpDevSource.setEnabled(True)
+        pLbpVersionHeader.setEnabled(True)
+    else: #None
+        pLbpCoordHeader.setEnabled(False)
+        pLbpDevHeader.setEnabled(False)
+        pLbpDefsHeader.setEnabled(False)
+        pLbpEapSource.setEnabled(False)
+        pLbpEapHeader.setEnabled(False)
+        pLbpEncodeDecodeSource.setEnabled(False)
+        pLbpEncodeDecodeHeader.setEnabled(False)
+        pLbpCoordSource.setEnabled(False)
+        pLbpDevSource.setEnabled(False)
+        pLbpVersionHeader.setEnabled(False)
+
 def addADPComponents():
     g3ConfigAdaptGroup = Database.findGroup("ADAPTATION LAYER")
     if (g3ConfigAdaptGroup == None):
@@ -156,9 +209,19 @@ def addADPComponents():
         Database.activateComponents(["g3ADP", "g3LOADng", "g3LBP"], "ADAPTATION LAYER")
     else:
         Database.activateComponents(["g3ADP", "g3LBP"], "ADAPTATION LAYER")
+    
+    if g3ConfigRole.getValue() == "PAN Device":
+        selectLBPComponents("dev")
+    elif g3ConfigRole.getValue() == "PAN Coordinator":
+        selectLBPComponents("coord")
+    elif g3ConfigRole.getValue() == "Dynamic (Selected upon Initialization)":
+        selectLBPComponents("both")
+    else:
+        selectLBPComponents("dev")
 
 def removeADPComponents():
     Database.deactivateComponents(["g3_adapt_config", "g3ADP", "g3LOADng", "g3LBP"])
+    selectLBPComponents("none")
     Database.disbandGroup("ADAPTATION LAYER")
 
 def removeMACComponents():
@@ -187,82 +250,65 @@ def g3ConfigSelection(symbol, event):
         # Complete Hybrid stack, enable components
         addADPComponents()
         addMACComponents(True, True)
+        g3ConfigRole.setVisible(True)
         setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Both PLC & RF MAC Layers")
     elif event["value"] == "G3 Stack (ADP + MAC) PLC":
         # Complete PLC stack, enable components
         addADPComponents()
         addMACComponents(True, False)
+        g3ConfigRole.setVisible(True)
         setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Only PLC MAC Layer")
     elif event["value"] == "G3 Stack (ADP + MAC) RF":
         # Complete RF stack, enable components
         addADPComponents()
         addMACComponents(False, True)
+        g3ConfigRole.setVisible(True)
         setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Only RF MAC Layer")
     elif event["value"] == "G3 MAC Layer Hybrid PLC & RF":
         # Hybrid MAC, disable and enable components
         removeADPComponents()
         addMACComponents(True, True)
+        g3ConfigRole.setVisible(False)
         setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Both PLC & RF MAC Layers")
     elif event["value"] == "G3 PLC MAC Layer":
         # PLC MAC, disable and enable components
         removeADPComponents()
         addMACComponents(True, False)
+        g3ConfigRole.setVisible(False)
         setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Only PLC MAC Layer")
     elif event["value"] == "G3 RF MAC Layer":
         # RF MAC, disable and enable components
         removeADPComponents()
         addMACComponents(False, True)
+        g3ConfigRole.setVisible(False)
         setVal("g3_mac_config", "G3_AVAILABLE_MACS", "Only RF MAC Layer")
     else:
         # Remove all G3 components
         removeADPComponents()
         removeMACComponents()
+        g3ConfigRole.setVisible(False)
 
 def g3ConfigRoleChange(symbol, event):
     if event["value"] == "PAN Device":
         # Device role selected
         Database.setSymbolValue("g3_adapt_config", "G3_DEVICE", True)
         Database.setSymbolValue("g3_adapt_config", "G3_COORDINATOR", False)
-        pLbpCoordHeader.setEnabled(False)
-        pLbpCoordSource.setEnabled(False)
-        pLbpDevHeader.setEnabled(True)
-        pLbpDevSource.setEnabled(True)
-        Log.writeInfoMessage("------------------------------------------------------------")
-        Log.writeInfoMessage("DSY: DEVICE set to True")
-        Log.writeInfoMessage("DSY: COORDINATOR set to False")
-        Log.writeInfoMessage("------------------------------------------------------------")
+        selectLBPComponents("dev")
     elif event["value"] == "PAN Coordinator":
         # Coordinator role selected
         Database.setSymbolValue("g3_adapt_config", "G3_DEVICE", False)
         Database.setSymbolValue("g3_adapt_config", "G3_COORDINATOR", True)
-        pLbpCoordHeader.setEnabled(True)
-        pLbpCoordSource.setEnabled(True)
-        pLbpDevHeader.setEnabled(False)
-        pLbpDevSource.setEnabled(False)
-        Log.writeInfoMessage("------------------------------------------------------------")
-        Log.writeInfoMessage("DSY: DEVICE set to False")
-        Log.writeInfoMessage("DSY: COORDINATOR set to True")
-        Log.writeInfoMessage("------------------------------------------------------------")
+        selectLBPComponents("coord")
     elif event["value"] == "Dynamic (Selected upon Initialization)":
         # Dynamic role selected
         Database.setSymbolValue("g3_adapt_config", "G3_DEVICE", True)
         Database.setSymbolValue("g3_adapt_config", "G3_COORDINATOR", True)
-        pLbpCoordHeader.setEnabled(True)
-        pLbpCoordSource.setEnabled(True)
-        pLbpDevHeader.setEnabled(True)
-        pLbpDevSource.setEnabled(True)
-        Log.writeInfoMessage("------------------------------------------------------------")
-        Log.writeInfoMessage("DSY: DEVICE set to True")
-        Log.writeInfoMessage("DSY: COORDINATOR set to True")
-        Log.writeInfoMessage("------------------------------------------------------------")
+        selectLBPComponents("both")
     else:
         # Unknown option, behave as Device
         Database.setSymbolValue("g3_adapt_config", "G3_DEVICE", True)
         Database.setSymbolValue("g3_adapt_config", "G3_COORDINATOR", False)
-        pLbpCoordHeader.setEnabled(False)
-        pLbpCoordSource.setEnabled(False)
-        pLbpDevHeader.setEnabled(True)
-        pLbpDevSource.setEnabled(True)
+        selectLBPComponents("dev")
 
 #Set symbols of other components
 def setVal(component, symbol, value):

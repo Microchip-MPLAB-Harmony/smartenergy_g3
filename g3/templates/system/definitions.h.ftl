@@ -19,8 +19,6 @@
 <#if g3_adapt_config.ADP_SERIALIZATION_EN == true>
 #include "stack/g3/adaptation/adp_serial.h"
 </#if>
-</#if>
-<#if (g3_config)??>
 #include "stack/g3/adaptation/lbp_defs.h"
 <#if g3_config.G3_DEVICE == true>
 #include "stack/g3/adaptation/lbp_dev.h"
