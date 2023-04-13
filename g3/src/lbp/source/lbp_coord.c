@@ -269,17 +269,13 @@ static void _processJoining0(ADP_EXTENDED_ADDRESS *pLBPEUI64Address, LBP_SLOT *p
 {
     uint8_t *pMemoryBuffer = &pSlot->lbpData[0];
     uint16_t memoryBufferLength = sizeof(pSlot->lbpData);
-    uint8_t i;
 
     SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "[LBP] Process Joining 0.\r\n");
 
     EAP_PSK_Initialize(&sEapPskKey, &pSlot->pskContext);
 
     /* Initialize RandS */
-    for (i = 0; i < sizeof(pSlot->randS.value); i++)
-    {
-        pSlot->randS.value[i] = SRV_RANDOM_Get32bits() & 0xFF;
-    }
+    SRV_RANDOM_Get128bits(pSlot->randS.value);
 
     pSlot->lbpDataLength = EAP_PSK_EncodeMessage1(
             sEAPIdentifier,
