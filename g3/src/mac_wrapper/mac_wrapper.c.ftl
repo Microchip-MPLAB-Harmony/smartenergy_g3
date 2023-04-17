@@ -2118,7 +2118,7 @@ void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
 <#if MAC_RF_PRESENT == true>
     MAC_RF_Tasks();
 <#else>
-    SRV_TIME_MANAGEMENT_GetMsCounter(); // Just to avoid counter overflow
+    MAC_COMMON_GetMsCounter(); /* Just to avoid counter overflow */
 </#if>
 }
 
@@ -3468,6 +3468,18 @@ uint8_t MAC_WRP_SerialStringifySetConfirm (
     serialData[serialRspLen++] = (uint8_t) index;
 
     return serialRspLen;
+}
+
+uint32_t MAC_WRP_GetMsCounter(void)
+{
+    /* Call lower layer function */
+    return MAC_COMMON_GetMsCounter();
+}
+
+bool MAC_WRP_TimeIsPast(int32_t timeValue)
+{
+    /* Call lower layer function */
+    return MAC_COMMON_TimeIsPast(timeValue);
 }
 
 /*******************************************************************************
