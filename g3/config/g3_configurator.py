@@ -46,13 +46,20 @@ def instantiateComponent(g3ConfigComponent):
     g3ConfigRole.setDependencies(g3ConfigRoleChange, ["G3_ROLE"])
     g3ConfigRole.setDefaultValue("PAN Device")
 
+    g3DebugEnable = g3ConfigComponent.createBooleanSymbol("G3_DEBUG_ENABLE", None)
+    g3DebugEnable.setLabel("Enable G3 Stack Debug Traces")
+    g3DebugEnable.setDescription("Enable/disable G3 Debug messages through SYS_DEBUG Service")
+    g3DebugEnable.setDefaultValue(False)
+    g3DebugEnable.setVisible(True)
+    g3DebugEnable.setDependencies(g3DebugChange, ["G3_DEBUG_ENABLE"])
+
     # Boolean symbols to use in FTLs to generate code
-    g3MacPLC = g3ConfigComponent.createBooleanSymbol("G3_DEVICE", None)
-    g3MacPLC.setVisible(False)
-    g3MacPLC.setDefaultValue(True)
-    g3MacRF = g3ConfigComponent.createBooleanSymbol("G3_COORDINATOR", None)
-    g3MacRF.setVisible(False)
-    g3MacRF.setDefaultValue(False)
+    g3DeviceRole = g3ConfigComponent.createBooleanSymbol("G3_DEVICE", None)
+    g3DeviceRole.setVisible(False)
+    g3DeviceRole.setDefaultValue(True)
+    g3CoordRole = g3ConfigComponent.createBooleanSymbol("G3_COORDINATOR", None)
+    g3CoordRole.setVisible(False)
+    g3CoordRole.setDefaultValue(False)
 
     ############################################################################
     #### Code Generation ####
@@ -309,6 +316,14 @@ def g3ConfigRoleChange(symbol, event):
         Database.setSymbolValue("g3_adapt_config", "G3_DEVICE", True)
         Database.setSymbolValue("g3_adapt_config", "G3_COORDINATOR", False)
         selectLBPComponents("dev")
+
+def g3DebugChange(symbol, event):
+    if event["value"] == True:
+        # Debug traces enabled
+        setVal("srvLogReport", "ENABLE_TRACES", True)
+    else:
+        # Debug traces disabled
+        setVal("srvLogReport", "ENABLE_TRACES", False)
 
 #Set symbols of other components
 def setVal(component, symbol, value):
