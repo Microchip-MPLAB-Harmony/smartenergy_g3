@@ -170,7 +170,7 @@ static bool _DRV_G3ADP_MAC_PutFreeQueueData(DRV_G3ADP_MAC_QUEUE_DATA *dataPool,
 static void _DRV_G3ADP_MAC_RxMacFreePacket(TCPIP_MAC_PACKET * pMacPacket, const void * param)
 {
     DRV_G3ADP_MAC_DRIVER * pMacDrv = (DRV_G3ADP_MAC_DRIVER *) param;
-
+    
     if (pMacPacket &&  pMacPacket->pDSeg 
             &&  (pMacPacket->pDSeg->segFlags & TCPIP_MAC_SEG_FLAG_ACK_REQUIRED))
     {
@@ -178,11 +178,9 @@ static void _DRV_G3ADP_MAC_RxMacFreePacket(TCPIP_MAC_PACKET * pMacPacket, const 
         
         if (rxQueueData != NULL)
         {
-            if (_DRV_G3ADP_MAC_PutFreeQueueData(_rxDataPool, rxQueueData, true) == true)
-            {
-                // Remove element from ADP RX Queue
-                SRV_QUEUE_Remove_Element(&pMacDrv->g3AdpMacData.adpRxQueue, (SRV_QUEUE_ELEMENT *)rxQueueData);
-            }
+            _DRV_G3ADP_MAC_PutFreeQueueData(_rxDataPool, rxQueueData, true);
+            // Update RX statistics
+            pMacDrv->g3AdpMacData.rxStat.nRxPendBuffers--;
         }
     }
 }
@@ -245,6 +243,8 @@ void _DRV_G3ADP_MAC_AdpDataCfmCallback(ADP_DATA_CFM_PARAMS* pDataCfm)
         
         txQueueData = _DRV_G3ADP_MAC_GetQueueDataFromMACPacket(_txDataPool, pMacPacket);
         _DRV_G3ADP_MAC_PutFreeQueueData(_txDataPool, txQueueData, 0);
+        // Update TX statistics
+        pMacDrv->g3AdpMacData.txStat.nTxPendBuffers--;
         
         if (pMacPacket->ackFunc)
         {
@@ -276,6 +276,19 @@ void _DRV_G3ADP_MAC_AdpDataIndCallback(ADP_DATA_IND_PARAMS* pDataInd)
         pMacPacket = rxQueueData->pMacPacket;
         pDSeg = pMacPacket->pDSeg;
         
+        // Set pMacLayer and pNetLayer
+        pMacPacket->pMacLayer = pDSeg->segLoad;
+        pMacPacket->pNetLayer = pMacPacket->pMacLayer + sizeof(TCPIP_MAC_ETHERNET_HEADER);
+        
+        // Set Ethernet Header Type - TCPIP_ETHER_TYPE_IPV6
+        TCPIP_MAC_ETHERNET_HEADER* pMacHdr = (TCPIP_MAC_ETHERNET_HEADER*)pMacPacket->pMacLayer;
+        pMacHdr->Type = TCPIP_Helper_htons(0x86DDu);
+        
+        // Copy data payload to Net Layer Payload
+        memcpy(pMacPacket->pNetLayer, pDataInd->pNsdu, pDataInd->nsduLength);
+        pDSeg->segLen = pDataInd->nsduLength + sizeof(TCPIP_MAC_ETHERNET_HEADER);
+        pDSeg->segFlags |= TCPIP_MAC_SEG_FLAG_ACK_REQUIRED; // allow rxMacPacketAck entry
+        
         // Add timestamp
         pMacPacket->tStamp = SYS_TMR_TickCountGet();
         // just one single packet
@@ -285,16 +298,14 @@ void _DRV_G3ADP_MAC_AdpDataIndCallback(ADP_DATA_IND_PARAMS* pDataInd)
         pMacPacket->ackParam = pMacDrv;
         // Update Packet flags
         pMacPacket->pktFlags |= TCPIP_MAC_PKT_FLAG_QUEUED;
-        // Copy data payload to Data Segment
-        memcpy(pDSeg->segLoad, pDataInd->pNsdu, pDataInd->nsduLength);
-        pDSeg->segLen = pDataInd->nsduLength;
-        pDSeg->segFlags |= TCPIP_MAC_SEG_FLAG_ACK_REQUIRED; // allow rxMacPacketAck entry
         pDSeg->next = NULL;
         
         // Append ADP packets to the ADP RX queue
         SRV_QUEUE_Append(&pMacDrv->g3AdpMacData.adpRxQueue, (SRV_QUEUE_ELEMENT *)rxQueueData);
+        rxQueueData->inUse = true;
         
         // Update RX statistics
+        pMacDrv->g3AdpMacData.rxStat.nRxSchedBuffers++;
         pMacDrv->g3AdpMacData.rxStat.nRxPendBuffers++;
         
         // Set RX triggered events: A receive packet is pending
@@ -552,37 +563,39 @@ TCPIP_MAC_PACKET* DRV_G3ADP_MAC_PacketRx (DRV_HANDLE hMac, TCPIP_MAC_RES* pRes, 
     DRV_G3ADP_MAC_DRIVER * pMacDrv = &_g3adp_mac_drv_dcpt;
 	TCPIP_MAC_PACKET * pRxPkt = NULL;
     DRV_G3ADP_MAC_QUEUE_DATA * rxQueueData;
+    TCPIP_MAC_RES mRes = TCPIP_MAC_RES_OK;
     
     if (hMac != (DRV_HANDLE)pMacDrv)
     {
-        *pRes = TCPIP_MAC_RES_INIT_FAIL;
-        return NULL;
+        return 0;
     }
     
-    rxQueueData = (DRV_G3ADP_MAC_QUEUE_DATA *)SRV_QUEUE_Read_Element(&pMacDrv->g3AdpMacData.adpRxQueue, SRV_QUEUE_POSITION_HEAD);
+    rxQueueData = (DRV_G3ADP_MAC_QUEUE_DATA *)SRV_QUEUE_Read_Or_Remove(&pMacDrv->g3AdpMacData.adpRxQueue, 
+            SRV_QUEUE_MODE_REMOVE, SRV_QUEUE_POSITION_HEAD);
     if (rxQueueData == NULL)
     {
-        *pRes = TCPIP_MAC_RES_INTERNAL_ERR;
-        pMacDrv->g3AdpMacData.rxStat.nRxBuffNotAvailable++;
-        return NULL;
+        return 0;
     }
-    
-    pRxPkt = rxQueueData->pMacPacket;
-    
-    if (pRxPkt == NULL)
+    else
     {
-        *pRes = TCPIP_MAC_RES_INTERNAL_ERR;
-        pMacDrv->g3AdpMacData.rxStat.nRxErrorPackets++;
-        return NULL;
+        // Update RX statistics
+        pMacDrv->g3AdpMacData.rxStat.nRxSchedBuffers--;
+        
+        pRxPkt = rxQueueData->pMacPacket;
+    
+        if (pRxPkt == NULL)
+        {
+            mRes = TCPIP_MAC_RES_INTERNAL_ERR;
+            pMacDrv->g3AdpMacData.rxStat.nRxErrorPackets++;
+        }
     }
     
     if (pRes)
-	{   // not needed
-		*pRes = 0;
+    {
+		*pRes = mRes;
 	}
     
     // Update RX statistics
-    *pRes = TCPIP_MAC_RES_OK;
     pMacDrv->g3AdpMacData.rxStat.nRxOkPackets++;
     
     return pRxPkt;
