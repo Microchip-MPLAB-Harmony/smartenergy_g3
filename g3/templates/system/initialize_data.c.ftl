@@ -22,7 +22,7 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *******************************************************************************/
 -->
-<#if (g3_adapt_config)??>
+<#if ADP_PRESENT == true>
 // <editor-fold defaultstate="collapsed" desc="G3 ADP Initialization Data">
 /* G3 ADP Buffers and Queues */
 ADP_DATA_PARAMS_BUFFER_1280 g3Adp1280Buffers[G3_ADP_NUM_BUFFERS_1280];

@@ -25,13 +25,13 @@
 
     /* Maintain G3 MAC */
     MAC_WRP_Tasks(sysObj.g3MacWrapper);
-<#if (g3_adapt_config)??>
+<#if ADP_PRESENT == true>
 
     /* Maintain G3 ADP */
     ADP_Tasks(sysObj.g3Adp);
-<#if g3_adapt_config.ADP_SERIALIZATION_EN == true>
+</#if>
+<#if ADP_SERIALIZATION_EN == true>
 
     /* Maintain G3 ADP Serialization */
     ADP_SERIAL_Tasks(sysObj.g3AdpSerial);
-</#if>
 </#if>

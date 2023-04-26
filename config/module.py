@@ -43,17 +43,22 @@ def loadModule():
     ###########  G3 Stack Configurations  ###########
     g3ConfigComponent = Module.CreateComponent("g3_config", "G3 Stack Configurator", "/SmartEnergy/G3 Stack", "g3/config/g3_configurator.py")
     g3ConfigComponent.setDisplayType("G3 Stack Configurator")
+    print("-------------- DSY DEBUG --------------")
+    print("CREATED G3 CONFIG")
+    print("---------------------------------------")
     
     ###########  G3 Stack Adaptation Layer Configurations  ###########
     g3ConfigAdaptComponent = Module.CreateComponent("g3_adapt_config", "G3 Adaptation Layer Configurator", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 2 - Adaptation", "g3/config/g3_configurator_adapt.py")
     g3ConfigAdaptComponent.setDisplayType("Adaptation Configurator")
+    print("-------------- DSY DEBUG --------------")
+    print("CREATED ADAPT CONFIG")
+    print("---------------------------------------")
 
     ## ADP
     g3AdpComponent = Module.CreateComponent("g3ADP", "ADP", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 2 - Adaptation", "g3/config/g3_adp.py")
     g3AdpComponent.addCapability("libADP", "ADP", True)
     g3AdpComponent.addDependency("adp_loadng_dependency", "LOADng", True, True)
     g3AdpComponent.addDependency("adp_bootstrap_dependency", "Bootstrap", True, True)
-    g3AdpComponent.addDependency("adp_mac_wrapper_dependency", "MAC Wrapper", True, True)
     g3AdpComponent.addDependency("adp_srv_random_dependency", "Random", True, True)
     g3AdpComponent.addDependency("adp_srv_log_report_dependency", "Log Report", True, True)
     g3AdpComponent.addDependency("adp_sys_time_dependency", "SYS_TIME", True, True)
@@ -63,7 +68,6 @@ def loadModule():
     ## LOADng
     g3LOADngComponent = Module.CreateComponent("g3LOADng", "LOADng", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 2 - Adaptation", "g3/config/g3_loadng.py")
     g3LOADngComponent.addCapability("libLOADng", "LOADng", True)
-    g3LOADngComponent.addDependency("loadng_mac_wrapper_dependency", "MAC Wrapper", True, True)
     g3LOADngComponent.addDependency("loadng_srv_random_dependency", "Random", True, True)
     g3LOADngComponent.addDependency("loadng_srv_queue_dependency", "Queue", True, True)
     g3LOADngComponent.addDependency("loadng_srv_log_report_dependency", "Log Report", True, True)
@@ -78,49 +82,6 @@ def loadModule():
     g3LbpComponent.addDependency("lbp_srv_security_dependency", "Security", True, True)
     g3LbpComponent.addDependency("lbp_sys_time_dependency", "SYS_TIME", True, True)
     g3LbpComponent.setDisplayType("Adaptation Layer")
-
-    ###########  G3 Stack MAC Layer Configurations  ###########
-    g3ConfigMacComponent = Module.CreateComponent("g3_mac_config", "G3 MAC Layer Configurator", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 1 - MAC", "g3/config/g3_configurator_mac.py")
-    g3ConfigMacComponent.setDisplayType("MAC Configurator")
-    
-    ## MAC Wrapper
-    g3MacWrpComponent = Module.CreateComponent("g3MacWrapper", "MAC Wrapper", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 1 - MAC", "g3/config/g3_mac_wrapper.py")
-    g3MacWrpComponent.addCapability("libMacWrapper", "MAC Wrapper", True)
-    g3MacWrpComponent.addDependency("macwrp_mac_common_dependency", "MAC Common", True, True)
-    g3MacWrpComponent.addDependency("macwrp_mac_plc_dependency", "MAC PLC", True, False)
-    g3MacWrpComponent.addDependency("macwrp_mac_rf_dependency", "MAC RF", True, False)
-    # TBD optional dependencies to logger and serialization
-    g3MacWrpComponent.setDisplayType("G3 MAC Layer")
-    
-    ## MAC Common
-    g3MacCommonComponent = Module.CreateComponent("g3MacCommon", "MAC Common", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 1 - MAC", "g3/config/g3_mac_common.py")
-    g3MacCommonComponent.addCapability("libMacCommon", "MAC Common", True)
-    # TBD optional dependencies to logger    
-    g3MacCommonComponent.setDisplayType("G3 MAC Layer")
-    
-    ## MAC PLC
-    g3MacPlcComponent = Module.CreateComponent("g3MacPlc", "MAC PLC", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 1 - MAC", "g3/config/g3_mac_plc.py")
-    g3MacPlcComponent.addCapability("libPlcMac", "MAC PLC", True)
-    g3MacPlcComponent.addDependency("mac_plc_common_dependency", "MAC Common", True, True)
-    g3MacPlcComponent.addDependency("mac_plc_wrapper_dependency", "MAC Wrapper", True, True)
-    g3MacPlcComponent.addDependency("plc_srv_random_dependency", "Random", True, True)
-    g3MacPlcComponent.addDependency("plc_srv_log_report_dependency", "Log Report", True, True)
-    g3MacPlcComponent.addDependency("plc_srv_security_dependency", "Security", True, True)
-    g3MacPlcComponent.addDependency("plc_srv_g3_palplc_dependency", "G3 PAL PLC", True, True)
-    # TBD optional dependencies to storage
-    g3MacPlcComponent.setDisplayType("G3 MAC Layer")
-    
-    ## MAC RF
-    g3MacRfComponent = Module.CreateComponent("g3MacRf", "MAC RF", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 1 - MAC", "g3/config/g3_mac_rf.py")
-    g3MacRfComponent.addCapability("libRfMac", "MAC RF", True)
-    g3MacRfComponent.addDependency("mac_rf_common_dependency", "MAC Common", True, True)
-    g3MacRfComponent.addDependency("mac_rf_wrapper_dependency", "MAC Wrapper", True, True)
-    g3MacRfComponent.addDependency("rf_srv_random_dependency", "Random", True, True)
-    g3MacRfComponent.addDependency("rf_srv_log_report_dependency", "Log Report", True, True)
-    g3MacRfComponent.addDependency("rf_srv_security_dependency", "Security", True, True)
-    g3MacRfComponent.addDependency("rf_srv_g3_palrf_dependency", "G3 PAL RF", True, True)
-    # TBD optional dependencies to storage
-    g3MacRfComponent.setDisplayType("G3 MAC Layer")
 
     ## ADP driver to be used as MAC interface with TCP-IP stack 
     g3MacAdpComponent = Module.CreateComponent("drvMacG3Adp", "G3ADPMAC", "/SmartEnergy/G3 Stack/", "g3/net/macg3adp/config/drv_mac_g3adp.py")
