@@ -43,45 +43,6 @@ def loadModule():
     ###########  G3 Stack Configurations  ###########
     g3ConfigComponent = Module.CreateComponent("g3_config", "G3 Stack Configurator", "/SmartEnergy/G3 Stack", "g3/config/g3_configurator.py")
     g3ConfigComponent.setDisplayType("G3 Stack Configurator")
-    print("-------------- DSY DEBUG --------------")
-    print("CREATED G3 CONFIG")
-    print("---------------------------------------")
-    
-    ###########  G3 Stack Adaptation Layer Configurations  ###########
-    g3ConfigAdaptComponent = Module.CreateComponent("g3_adapt_config", "G3 Adaptation Layer Configurator", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 2 - Adaptation", "g3/config/g3_configurator_adapt.py")
-    g3ConfigAdaptComponent.setDisplayType("Adaptation Configurator")
-    print("-------------- DSY DEBUG --------------")
-    print("CREATED ADAPT CONFIG")
-    print("---------------------------------------")
-
-    ## ADP
-    g3AdpComponent = Module.CreateComponent("g3ADP", "ADP", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 2 - Adaptation", "g3/config/g3_adp.py")
-    g3AdpComponent.addCapability("libADP", "ADP", True)
-    g3AdpComponent.addDependency("adp_loadng_dependency", "LOADng", True, True)
-    g3AdpComponent.addDependency("adp_bootstrap_dependency", "Bootstrap", True, True)
-    g3AdpComponent.addDependency("adp_srv_random_dependency", "Random", True, True)
-    g3AdpComponent.addDependency("adp_srv_log_report_dependency", "Log Report", True, True)
-    g3AdpComponent.addDependency("adp_sys_time_dependency", "SYS_TIME", True, True)
-    # TBD optional dependencies to serialization and storage
-    g3AdpComponent.setDisplayType("Adaptation Layer")
-    
-    ## LOADng
-    g3LOADngComponent = Module.CreateComponent("g3LOADng", "LOADng", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 2 - Adaptation", "g3/config/g3_loadng.py")
-    g3LOADngComponent.addCapability("libLOADng", "LOADng", True)
-    g3LOADngComponent.addDependency("loadng_srv_random_dependency", "Random", True, True)
-    g3LOADngComponent.addDependency("loadng_srv_queue_dependency", "Queue", True, True)
-    g3LOADngComponent.addDependency("loadng_srv_log_report_dependency", "Log Report", True, True)
-    g3LOADngComponent.addDependency("loadng_sys_time_dependency", "SYS_TIME", True, True)
-    # TBD optional dependencies to serialization and storage
-    g3LOADngComponent.setDisplayType("Adaptation Layer")
-    
-    ## LBP
-    g3LbpComponent = Module.CreateComponent("g3LBP", "LBP", "/SmartEnergy/G3 Stack/Layer 2 Sublayer 2 - Adaptation", "g3/config/g3_lbp.py")
-    g3LbpComponent.addCapability("libLBP", "LBP", True)
-    g3LbpComponent.addDependency("lbp_srv_random_dependency", "Random", True, True)
-    g3LbpComponent.addDependency("lbp_srv_security_dependency", "Security", True, True)
-    g3LbpComponent.addDependency("lbp_sys_time_dependency", "SYS_TIME", True, True)
-    g3LbpComponent.setDisplayType("Adaptation Layer")
 
     ## ADP driver to be used as MAC interface with TCP-IP stack 
     g3MacAdpComponent = Module.CreateComponent("drvMacG3Adp", "G3ADPMAC", "/SmartEnergy/G3 Stack/", "g3/net/macg3adp/config/drv_mac_g3adp.py")

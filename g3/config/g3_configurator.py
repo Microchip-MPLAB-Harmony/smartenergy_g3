@@ -107,7 +107,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacSerializationUsiInstance.setMax(0)
     g3MacSerializationUsiInstance.setMin(0)
     g3MacSerializationUsiInstance.setVisible(False)
-    g3MacSerializationUsiInstance.setDependencies(g3ShowUsiInstance, ["MAC_SERIALIZATION_EN"])
+    g3MacSerializationUsiInstance.setDependencies(showUsiInstance, ["MAC_SERIALIZATION_EN"])
 
     # Boolean symbols to use in FTLs to generate code
     g3DeviceRole = g3ConfigComponent.createBooleanSymbol("G3_DEVICE", None)
@@ -135,7 +135,6 @@ def instantiateComponent(g3ConfigComponent):
     g3ConfigLOADng.setLabel("Enable LOADng Routing")
     g3ConfigLOADng.setVisible(True)
     g3ConfigLOADng.setDescription("Enable LOADng Routing Protocol")
-    g3ConfigLOADng.setDependencies(g3LOADngEnable, ["LOADNG_ENABLE"])
     g3ConfigLOADng.setDefaultValue(True)
 
     loadngPendingRReqTable = g3ConfigComponent.createIntegerSymbol("LOADNG_PENDING_RREQ_TABLE_SIZE", g3ConfigLOADng)
@@ -452,6 +451,54 @@ def instantiateComponent(g3ConfigComponent):
     macRfMibHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_rf")
     macRfMibHeader.setType("HEADER")
     
+    #### ADP Library Files ######################################################
+    global adpLibFile
+    adpLibFile = g3ConfigComponent.createLibrarySymbol("G3_ADP_LIBRARY", None)
+    adpLibFile.setSourcePath("g3/libs/g3_lib_adp.a")
+    adpLibFile.setOutputName("g3_lib_adp.a")
+    adpLibFile.setDestPath("stack/g3/adaptation")
+
+    #### ADP header Files ######################################################
+    global adpHeader
+    adpHeader = g3ConfigComponent.createFileSymbol("G3_ADP_HEADER", None)
+    adpHeader.setSourcePath("g3/src/adp/adp.h")
+    adpHeader.setOutputName("adp.h")
+    adpHeader.setDestPath("stack/g3/adaptation")
+    adpHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    adpHeader.setType("HEADER")
+
+    global adpApiTypesHeader
+    adpApiTypesHeader = g3ConfigComponent.createFileSymbol("G3_ADP_API_TYPES_HEADER", None)
+    adpApiTypesHeader.setSourcePath("g3/src/adp/adp_api_types.h")
+    adpApiTypesHeader.setOutputName("adp_api_types.h")
+    adpApiTypesHeader.setDestPath("stack/g3/adaptation")
+    adpApiTypesHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    adpApiTypesHeader.setType("HEADER")
+
+    global adpSharedTypesHeader
+    adpSharedTypesHeader = g3ConfigComponent.createFileSymbol("G3_ADP_SHARED_TYPES_HEADER", None)
+    adpSharedTypesHeader.setSourcePath("g3/src/adp/adp_shared_types.h")
+    adpSharedTypesHeader.setOutputName("adp_shared_types.h")
+    adpSharedTypesHeader.setDestPath("stack/g3/adaptation")
+    adpSharedTypesHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    adpSharedTypesHeader.setType("HEADER")
+    
+    #### LOADNG Library Files ######################################################
+    global LOADngLibFile
+    LOADngLibFile = g3ConfigComponent.createLibrarySymbol("G3_LOADNG_LIBRARY", None)
+    LOADngLibFile.setSourcePath("g3/libs/g3_lib_loadng.a")
+    LOADngLibFile.setOutputName("g3_lib_loadng.a")
+    LOADngLibFile.setDestPath("stack/g3/adaptation")
+
+    #### LOADNG header Files ###################################################
+    global LOADngHeader
+    LOADngHeader = g3ConfigComponent.createFileSymbol("G3_LOADNG_HEADER", None)
+    LOADngHeader.setSourcePath("g3/src/loadng/loadng.h")
+    LOADngHeader.setOutputName("loadng.h")
+    LOADngHeader.setDestPath("stack/g3/adaptation")
+    LOADngHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
+    LOADngHeader.setType("HEADER")
+    
     #### Routing Wrapper Files #################################################
     routingTypesHeader = g3ConfigComponent.createFileSymbol("G3_ROUTING_TYPES_HEADER", None)
     routingTypesHeader.setSourcePath("g3/src/routing_wrapper/routing_types.h")
@@ -582,16 +629,12 @@ def selectLBPComponents(role):
 
 def addADPComponents():
     Database.setSymbolValue("g3_config", "ADP_PRESENT", True)
-    g3ConfigAdaptGroup = Database.findGroup("ADAPTATION LAYER")
-    if (g3ConfigAdaptGroup == None):
-        g3ConfigAdaptGroup = Database.createGroup("G3 STACK", "ADAPTATION LAYER")
-    
-    Database.activateComponents(["g3_adapt_config"], "ADAPTATION LAYER")
-    component = Database.getComponentByID("g3_config")
-    if (component.getSymbolValue("LOADNG_ENABLE") == True):
-        Database.activateComponents(["g3ADP", "g3LOADng", "g3LBP"], "ADAPTATION LAYER")
-    else:
-        Database.activateComponents(["g3ADP", "g3LBP"], "ADAPTATION LAYER")
+    adpLibFile.setEnabled(True)
+    adpHeader.setEnabled(True)
+    adpApiTypesHeader.setEnabled(True)
+    adpSharedTypesHeader.setEnabled(True)
+    LOADngLibFile.setEnabled(True)
+    LOADngHeader.setEnabled(True)
     
     if g3ConfigRole.getValue() == "PAN Device":
         selectLBPComponents("dev")
@@ -604,9 +647,13 @@ def addADPComponents():
 
 def removeADPComponents():
     Database.setSymbolValue("g3_config", "ADP_PRESENT", False)
-    Database.deactivateComponents(["g3_adapt_config", "g3ADP", "g3LOADng", "g3LBP"])
+    adpLibFile.setEnabled(False)
+    adpHeader.setEnabled(False)
+    adpApiTypesHeader.setEnabled(False)
+    adpSharedTypesHeader.setEnabled(False)
+    LOADngLibFile.setEnabled(False)
+    LOADngHeader.setEnabled(False)
     selectLBPComponents("none")
-    Database.disbandGroup("ADAPTATION LAYER")
 
 def macPlcFilesEnabled(enable):
     macPlcLibFile.setEnabled(enable)
@@ -724,13 +771,6 @@ def g3DebugChange(symbol, event):
         # Debug traces disabled
         setVal("srvLogReport", "ENABLE_TRACES", False)
 
-def g3ShowUsiInstance(symbol, event):
-    symbol.setVisible(event["value"])
-
-    if (event["value"] == True):
-        usiInstances = filter(lambda k: "srv_usi_" in k, Database.getActiveComponentIDs())
-        symbol.setMax(len(usiInstances) - 1)
-
 def showSymbol(symbol, event):
     # Show/hide configuration symbol depending on parent enabled/disabled
     symbol.setVisible(event["value"])
@@ -745,13 +785,6 @@ def showUsiInstance(symbol, event):
 def setEnabledFileSymbol(symbol, event):
     # Enable/disable file symbol depending on parent enabled/disabled
     symbol.setEnabled(event["value"])
-
-def g3LOADngEnable(symbol, event):
-    #g3AdaptGroup = Database.findGroup("ADAPTATION LAYER")
-    if (event["value"] == True):
-        Database.activateComponents(["g3LOADng"], "ADAPTATION LAYER")
-    else:
-        Database.deactivateComponents(["g3LOADng"])
 
 #Set symbols of other components
 def setVal(component, symbol, value):
