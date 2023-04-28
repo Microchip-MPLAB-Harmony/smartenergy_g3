@@ -22,10 +22,18 @@
 *****************************************************************************"""
 
 def instantiateComponent(g3ConfigComponent):
-    g3ConfigStackGroup = Database.findGroup("G3 STACK")
-    if (g3ConfigStackGroup == None):
-        g3ConfigStackGroup = Database.createGroup(None, "G3 STACK")
+    g3StackGroup = Database.findGroup("G3 STACK")
+    if (g3StackGroup == None):
+        g3StackGroup = Database.createGroup(None, "G3 STACK")
     Database.setActiveGroup("G3 STACK")
+
+    # Set dependencies inactive by default, they will be dinamically activated depending on config
+    g3ConfigComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
+    g3ConfigComponent.setDependencyEnabled("g3_srv_random_dependency", False)
+    g3ConfigComponent.setDependencyEnabled("g3_srv_log_report_dependency", False)
+    g3ConfigComponent.setDependencyEnabled("g3_srv_security_dependency", False)
+    g3ConfigComponent.setDependencyEnabled("g3_palplc_dependency", False)
+    g3ConfigComponent.setDependencyEnabled("g3_palrf_dependency", False)
 
     # Select G3 mode
     g3Modes = ["-- Select a G3 Stack Mode from list --", "G3 Stack (ADP + MAC) Hybrid PLC & RF", "G3 Stack (ADP + MAC) PLC", "G3 Stack (ADP + MAC) RF",
@@ -41,105 +49,65 @@ def instantiateComponent(g3ConfigComponent):
     g3Roles = ["PAN Device", "PAN Coordinator", "Dynamic (Selected upon Initialization)"]
     g3ConfigRole = g3ConfigComponent.createComboSymbol("G3_ROLE", None, g3Roles)
     g3ConfigRole.setLabel("Role for G3 Node")
-    g3ConfigRole.setVisible(True)
+    g3ConfigRole.setVisible(False)
     g3ConfigRole.setDescription("Select G3 Role")
     g3ConfigRole.setDependencies(g3ConfigRoleChange, ["G3_ROLE"])
     g3ConfigRole.setDefaultValue("PAN Device")
 
-    g3DebugEnable = g3ConfigComponent.createBooleanSymbol("G3_DEBUG_ENABLE", None)
-    g3DebugEnable.setLabel("Enable G3 Stack Debug Traces")
-    g3DebugEnable.setDescription("Enable/disable G3 Debug messages through SYS_DEBUG Service")
-    g3DebugEnable.setDefaultValue(False)
-    g3DebugEnable.setVisible(True)
-    g3DebugEnable.setDependencies(g3DebugChange, ["G3_DEBUG_ENABLE"])
+    # ADP Configuration
+    global g3AdpConfig
+    g3AdpConfig = g3ConfigComponent.createMenuSymbol("ADP_CONFIG", None)
+    g3AdpConfig.setLabel("ADP Configuration")
+    g3AdpConfig.setDescription("ADP Buffers and Table Sizes")
+    g3AdpConfig.setVisible(False)
 
-    # MAC PLC Table Sizes
-    global g3MacPLCTables
-    g3MacPLCTables = g3ConfigComponent.createMenuSymbol("MAC_PLC_TABLES", None)
-    g3MacPLCTables.setLabel("MAC PLC Table Sizes")
-    g3MacPLCTables.setDescription("MAC PLC Table Sizes")
-    g3MacPLCTables.setVisible(False)
-    
-    g3MacPLCDeviceTable = g3ConfigComponent.createIntegerSymbol("MAC_PLC_DEVICE_TABLE_SIZE", g3MacPLCTables)
-    g3MacPLCDeviceTable.setLabel("Device Table Size")
-    g3MacPLCDeviceTable.setDescription("Security Table where incoming Frame Counters are stored")
-    g3MacPLCDeviceTable.setDefaultValue(128)
-    g3MacPLCDeviceTable.setMin(16)
-    g3MacPLCDeviceTable.setMax(512)
+    g3CountBuffers1280 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_1280", g3AdpConfig)
+    g3CountBuffers1280.setLabel("Number of 1280-byte buffers")
+    g3CountBuffers1280.setDescription("Number of 1280-byte buffers for adaptation layer")
+    g3CountBuffers1280.setDefaultValue(1)
+    g3CountBuffers1280.setMin(1)
+    g3CountBuffers1280.setMax(16)
 
-    # MAC RF Table Sizes
-    global g3MacRFTables
-    g3MacRFTables = g3ConfigComponent.createMenuSymbol("MAC_RF_TABLES", None)
-    g3MacRFTables.setLabel("MAC RF Table Sizes")
-    g3MacRFTables.setDescription("MAC RF Table Sizes")
-    g3MacRFTables.setVisible(False)
-    
-    g3MacRFDeviceTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_DEVICE_TABLE_SIZE", g3MacRFTables)
-    g3MacRFDeviceTable.setLabel("Device Table Size")
-    g3MacRFDeviceTable.setDescription("Security Table where incoming Frame Counters are stored")
-    g3MacRFDeviceTable.setDefaultValue(128)
-    g3MacRFDeviceTable.setMin(16)
-    g3MacRFDeviceTable.setMax(512)
-    
-    g3MacRFPOSTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_POS_TABLE_SIZE", g3MacRFTables)
-    g3MacRFPOSTable.setLabel("POS Table Size")
-    g3MacRFPOSTable.setDescription("Auxiliary Table where information from Neighbouring nodes is stored")
-    g3MacRFPOSTable.setDefaultValue(100)
-    g3MacRFPOSTable.setMin(16)
-    g3MacRFPOSTable.setMax(512)
-    
-    g3MacRFDSNTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_DSN_TABLE_SIZE", g3MacRFTables)
-    g3MacRFDSNTable.setLabel("Sequence Number Table Size")
-    g3MacRFDSNTable.setDescription("Control Table where incoming sequence numbers are stored to avoid duplicated frames processing")
-    g3MacRFDSNTable.setDefaultValue(8)
-    g3MacRFDSNTable.setMin(4)
-    g3MacRFDSNTable.setMax(128)
+    g3CountBuffers400 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_400", g3AdpConfig)
+    g3CountBuffers400.setLabel("Number of 400-byte buffers")
+    g3CountBuffers400.setDescription("Number of 400-byte buffers for adaptation layer")
+    g3CountBuffers400.setDefaultValue(3)
+    g3CountBuffers400.setMin(1)
+    g3CountBuffers400.setMax(32)
 
-    g3MacSerializationEnable = g3ConfigComponent.createBooleanSymbol("MAC_SERIALIZATION_EN", None)
-    g3MacSerializationEnable.setLabel("Enable MAC Serialization")
-    g3MacSerializationEnable.setDescription("Enable/disable MAC serialization through USI")
-    g3MacSerializationEnable.setDefaultValue(False)
+    g3CountBuffers100 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_100", g3AdpConfig)
+    g3CountBuffers100.setLabel("Number of 100-byte buffers")
+    g3CountBuffers100.setDescription("Number of 100-byte buffers for adaptation layer")
+    g3CountBuffers100.setDefaultValue(3)
+    g3CountBuffers100.setMin(1)
+    g3CountBuffers100.setMax(64)
 
-    g3MacSerializationUsiInstance = g3ConfigComponent.createIntegerSymbol("MAC_SERIALIZATION_USI_INSTANCE", g3MacSerializationEnable)
-    g3MacSerializationUsiInstance.setLabel("USI Instance")
-    g3MacSerializationUsiInstance.setDescription("USI instance used for MAC serialization")
-    g3MacSerializationUsiInstance.setDefaultValue(0)
-    g3MacSerializationUsiInstance.setMax(0)
-    g3MacSerializationUsiInstance.setMin(0)
-    g3MacSerializationUsiInstance.setVisible(False)
-    g3MacSerializationUsiInstance.setDependencies(showUsiInstance, ["MAC_SERIALIZATION_EN"])
+    g3FragmentedTransferTableSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENTED_TRANSFER_TABLE_SIZE", g3AdpConfig)
+    g3FragmentedTransferTableSize.setLabel("Fragmented transfer table size")
+    g3FragmentedTransferTableSize.setDescription("The number of fragmented transfers which can be handled in parallel")
+    g3FragmentedTransferTableSize.setDefaultValue(1)
+    g3FragmentedTransferTableSize.setMin(1)
+    g3FragmentedTransferTableSize.setMax(16)
 
-    # Boolean symbols to use in FTLs to generate code
-    global g3DeviceRole
-    g3DeviceRole = g3ConfigComponent.createBooleanSymbol("G3_DEVICE", None)
-    g3DeviceRole.setVisible(False)
-    g3DeviceRole.setDefaultValue(True)
-    global g3CoordRole
-    g3CoordRole = g3ConfigComponent.createBooleanSymbol("G3_COORDINATOR", None)
-    g3CoordRole.setVisible(False)
-    g3CoordRole.setDefaultValue(False)
+    g3AdpSerializationEnable = g3ConfigComponent.createBooleanSymbol("ADP_SERIALIZATION_EN", g3AdpConfig)
+    g3AdpSerializationEnable.setLabel("Enable ADP and LBP Serialization")
+    g3AdpSerializationEnable.setDescription("Enable/disable ADP and LBP serialization through USI")
+    g3AdpSerializationEnable.setDefaultValue(False)
 
-    global g3MacPLCPresent
-    g3MacPLCPresent = g3ConfigComponent.createBooleanSymbol("MAC_PLC_PRESENT", None)
-    g3MacPLCPresent.setVisible(False)
-    g3MacPLCPresent.setDefaultValue(True)
-    global g3MacRFPresent
-    g3MacRFPresent = g3ConfigComponent.createBooleanSymbol("MAC_RF_PRESENT", None)
-    g3MacRFPresent.setVisible(False)
-    g3MacRFPresent.setDefaultValue(True)
+    g3AdpSerializationUsiInstance = g3ConfigComponent.createIntegerSymbol("ADP_SERIALIZATION_USI_INSTANCE", g3AdpSerializationEnable)
+    g3AdpSerializationUsiInstance.setLabel("USI Instance")
+    g3AdpSerializationUsiInstance.setDescription("USI instance used for ADP and LBP serialization")
+    g3AdpSerializationUsiInstance.setDefaultValue(0)
+    g3AdpSerializationUsiInstance.setMax(0)
+    g3AdpSerializationUsiInstance.setMin(0)
+    g3AdpSerializationUsiInstance.setVisible(False)
+    g3AdpSerializationUsiInstance.setDependencies(showUsiInstance, ["ADP_SERIALIZATION_EN"])
 
-    global g3ADPPresent
-    g3ADPPresent = g3ConfigComponent.createBooleanSymbol("ADP_PRESENT", None)
-    g3ADPPresent.setVisible(False)
-    g3ADPPresent.setDefaultValue(False)
-
-    ###########################################################################################################
-
-    # Enable LOADng Configuration
+    # LOADng Configuration
     global g3ConfigLOADng
     g3ConfigLOADng = g3ConfigComponent.createBooleanSymbol("LOADNG_ENABLE", None)
     g3ConfigLOADng.setLabel("Enable LOADng Routing")
-    g3ConfigLOADng.setVisible(True)
+    g3ConfigLOADng.setVisible(False)
     g3ConfigLOADng.setDescription("Enable LOADng Routing Protocol")
     g3ConfigLOADng.setDependencies(g3LOADngEnable, ["LOADNG_ENABLE"])
     g3ConfigLOADng.setDefaultValue(True)
@@ -208,49 +176,95 @@ def instantiateComponent(g3ConfigComponent):
     adpDestinationAddressSet.setMax(128)
     adpDestinationAddressSet.setDependencies(showSymbol, ["LOADNG_ENABLE"])
 
-    g3CountBuffers1280 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_1280", None)
-    g3CountBuffers1280.setLabel("Number of 1280-byte buffers")
-    g3CountBuffers1280.setDescription("Number of 1280-byte buffers for adaptation layer")
-    g3CountBuffers1280.setDefaultValue(1)
-    g3CountBuffers1280.setMin(1)
-    g3CountBuffers1280.setMax(16)
+    # MAC PLC Table Sizes
+    global g3MacPLCTables
+    g3MacPLCTables = g3ConfigComponent.createMenuSymbol("MAC_PLC_TABLES", None)
+    g3MacPLCTables.setLabel("MAC PLC Table Sizes")
+    g3MacPLCTables.setDescription("MAC PLC Table Sizes")
+    g3MacPLCTables.setVisible(False)
+    
+    g3MacPLCDeviceTable = g3ConfigComponent.createIntegerSymbol("MAC_PLC_DEVICE_TABLE_SIZE", g3MacPLCTables)
+    g3MacPLCDeviceTable.setLabel("Device Table Size")
+    g3MacPLCDeviceTable.setDescription("Security Table where incoming Frame Counters are stored")
+    g3MacPLCDeviceTable.setDefaultValue(128)
+    g3MacPLCDeviceTable.setMin(16)
+    g3MacPLCDeviceTable.setMax(512)
 
-    g3CountBuffers400 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_400", None)
-    g3CountBuffers400.setLabel("Number of 400-byte buffers")
-    g3CountBuffers400.setDescription("Number of 400-byte buffers for adaptation layer")
-    g3CountBuffers400.setDefaultValue(3)
-    g3CountBuffers400.setMin(1)
-    g3CountBuffers400.setMax(32)
+    # MAC RF Table Sizes
+    global g3MacRFTables
+    g3MacRFTables = g3ConfigComponent.createMenuSymbol("MAC_RF_TABLES", None)
+    g3MacRFTables.setLabel("MAC RF Table Sizes")
+    g3MacRFTables.setDescription("MAC RF Table Sizes")
+    g3MacRFTables.setVisible(False)
+    
+    g3MacRFDeviceTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_DEVICE_TABLE_SIZE", g3MacRFTables)
+    g3MacRFDeviceTable.setLabel("Device Table Size")
+    g3MacRFDeviceTable.setDescription("Security Table where incoming Frame Counters are stored")
+    g3MacRFDeviceTable.setDefaultValue(128)
+    g3MacRFDeviceTable.setMin(16)
+    g3MacRFDeviceTable.setMax(512)
+    
+    g3MacRFPOSTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_POS_TABLE_SIZE", g3MacRFTables)
+    g3MacRFPOSTable.setLabel("POS Table Size")
+    g3MacRFPOSTable.setDescription("Auxiliary Table where information from Neighbouring nodes is stored")
+    g3MacRFPOSTable.setDefaultValue(100)
+    g3MacRFPOSTable.setMin(16)
+    g3MacRFPOSTable.setMax(512)
+    
+    g3MacRFDSNTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_DSN_TABLE_SIZE", g3MacRFTables)
+    g3MacRFDSNTable.setLabel("Sequence Number Table Size")
+    g3MacRFDSNTable.setDescription("Control Table where incoming sequence numbers are stored to avoid duplicated frames processing")
+    g3MacRFDSNTable.setDefaultValue(8)
+    g3MacRFDSNTable.setMin(4)
+    g3MacRFDSNTable.setMax(128)
 
-    g3CountBuffers100 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_100", None)
-    g3CountBuffers100.setLabel("Number of 100-byte buffers")
-    g3CountBuffers100.setDescription("Number of 100-byte buffers for adaptation layer")
-    g3CountBuffers100.setDefaultValue(3)
-    g3CountBuffers100.setMin(1)
-    g3CountBuffers100.setMax(64)
+    g3MacSerializationEnable = g3ConfigComponent.createBooleanSymbol("MAC_SERIALIZATION_EN", None)
+    g3MacSerializationEnable.setLabel("Enable MAC Serialization")
+    g3MacSerializationEnable.setDescription("Enable/disable MAC serialization through USI")
+    g3MacSerializationEnable.setVisible(False)
+    g3MacSerializationEnable.setDefaultValue(False)
 
-    g3FragmentedTransferTableSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENTED_TRANSFER_TABLE_SIZE", None)
-    g3FragmentedTransferTableSize.setLabel("Fragmented transfer table size")
-    g3FragmentedTransferTableSize.setDescription("The number of fragmented transfers which can be handled in parallel")
-    g3FragmentedTransferTableSize.setDefaultValue(1)
-    g3FragmentedTransferTableSize.setMin(1)
-    g3FragmentedTransferTableSize.setMax(16)
+    g3MacSerializationUsiInstance = g3ConfigComponent.createIntegerSymbol("MAC_SERIALIZATION_USI_INSTANCE", g3MacSerializationEnable)
+    g3MacSerializationUsiInstance.setLabel("USI Instance")
+    g3MacSerializationUsiInstance.setDescription("USI instance used for MAC serialization")
+    g3MacSerializationUsiInstance.setDefaultValue(0)
+    g3MacSerializationUsiInstance.setMax(0)
+    g3MacSerializationUsiInstance.setMin(0)
+    g3MacSerializationUsiInstance.setVisible(False)
+    g3MacSerializationUsiInstance.setDependencies(showUsiInstance, ["MAC_SERIALIZATION_EN"])
 
-    g3AdpSerializationEnable = g3ConfigComponent.createBooleanSymbol("ADP_SERIALIZATION_EN", None)
-    g3AdpSerializationEnable.setLabel("Enable ADP and LBP Serialization")
-    g3AdpSerializationEnable.setDescription("Enable/disable ADP and LBP serialization through USI")
-    g3AdpSerializationEnable.setDefaultValue(False)
+    # Debug Traces Enable
+    global g3DebugEnable
+    g3DebugEnable = g3ConfigComponent.createBooleanSymbol("G3_DEBUG_ENABLE", None)
+    g3DebugEnable.setLabel("Enable G3 Stack Debug Traces")
+    g3DebugEnable.setDescription("Enable/disable G3 Debug messages through SYS_DEBUG Service")
+    g3DebugEnable.setDefaultValue(False)
+    g3DebugEnable.setVisible(False)
+    g3DebugEnable.setDependencies(g3DebugChange, ["G3_DEBUG_ENABLE"])
 
-    g3AdpSerializationUsiInstance = g3ConfigComponent.createIntegerSymbol("ADP_SERIALIZATION_USI_INSTANCE", g3AdpSerializationEnable)
-    g3AdpSerializationUsiInstance.setLabel("USI Instance")
-    g3AdpSerializationUsiInstance.setDescription("USI instance used for ADP and LBP serialization")
-    g3AdpSerializationUsiInstance.setDefaultValue(0)
-    g3AdpSerializationUsiInstance.setMax(0)
-    g3AdpSerializationUsiInstance.setMin(0)
-    g3AdpSerializationUsiInstance.setVisible(False)
-    g3AdpSerializationUsiInstance.setDependencies(showUsiInstance, ["ADP_SERIALIZATION_EN"])
+    # Boolean symbols to use in FTLs to generate code
+    global g3DeviceRole
+    g3DeviceRole = g3ConfigComponent.createBooleanSymbol("G3_DEVICE", None)
+    g3DeviceRole.setVisible(False)
+    g3DeviceRole.setDefaultValue(True)
+    global g3CoordRole
+    g3CoordRole = g3ConfigComponent.createBooleanSymbol("G3_COORDINATOR", None)
+    g3CoordRole.setVisible(False)
+    g3CoordRole.setDefaultValue(False)
 
-    ########################################################################################################################
+    global g3MacPLCPresent
+    g3MacPLCPresent = g3ConfigComponent.createBooleanSymbol("MAC_PLC_PRESENT", None)
+    g3MacPLCPresent.setVisible(False)
+    g3MacPLCPresent.setDefaultValue(True)
+    global g3MacRFPresent
+    g3MacRFPresent = g3ConfigComponent.createBooleanSymbol("MAC_RF_PRESENT", None)
+    g3MacRFPresent.setVisible(False)
+    g3MacRFPresent.setDefaultValue(True)
+
+    global g3ADPPresent
+    g3ADPPresent = g3ConfigComponent.createBooleanSymbol("ADP_PRESENT", None)
+    g3ADPPresent.setVisible(False)
+    g3ADPPresent.setDefaultValue(False)
 
     ############################################################################
     #### Code Generation ####
@@ -648,6 +662,7 @@ def addADPComponents():
         LOADngHeader.setEnabled(False)
     g3ConfigRole.setVisible(True)
     g3ConfigLOADng.setVisible(True)
+    g3AdpConfig.setVisible(True)
     
     if g3ConfigRole.getValue() == "PAN Device":
         selectLBPComponents("dev")
@@ -668,6 +683,7 @@ def removeADPComponents():
     LOADngHeader.setEnabled(False)
     g3ConfigRole.setVisible(False)
     g3ConfigLOADng.setVisible(False)
+    g3AdpConfig.setVisible(False)
     selectLBPComponents("none")
 
 def macPlcFilesEnabled(enable):
@@ -688,15 +704,18 @@ def removeMACComponents():
     macPlcFilesEnabled(False)
     macRfFilesEnabled(False)
     g3MacRFTables.setVisible(False)
+    g3MacPLCTables.setVisible(False)
     g3ConfigRole.setVisible(False)
+    g3DebugEnable.setVisible(False)
     # Deactivate service components
-    Database.deactivateComponents(["srvSecurity", "srvRandom", "srvLogReport"])
+    Database.deactivateComponents(["srvSecurity", "srvRandom", "srvLogReport", "srvQueue"])
 
 def addMACComponents(plc, rf):
     g3MacPLCPresent.setValue(plc)
     g3MacRFPresent.setValue(rf)
     g3MacPLCTables.setVisible(plc)
     g3MacRFTables.setVisible(rf)
+    g3DebugEnable.setVisible(True)
     
     if (plc and rf):
         macPlcFilesEnabled(True)
@@ -719,6 +738,9 @@ def g3ConfigSelection(symbol, event):
         addMACComponents(True, True)
         symbolComponent.setDependencyEnabled("g3_palplc_dependency", True)
         symbolComponent.setDependencyEnabled("g3_palrf_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_random_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_log_report_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_security_dependency", True)
         if g3ConfigLOADng.getValue() == True:
             symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", True)
             Database.activateComponents(["srvQueue"], "G3 STACK")
@@ -731,6 +753,9 @@ def g3ConfigSelection(symbol, event):
         addMACComponents(True, False)
         symbolComponent.setDependencyEnabled("g3_palplc_dependency", True)
         symbolComponent.setDependencyEnabled("g3_palrf_dependency", False)
+        symbolComponent.setDependencyEnabled("g3_srv_random_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_log_report_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_security_dependency", True)
         if g3ConfigLOADng.getValue() == True:
             symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", True)
             Database.activateComponents(["srvQueue"], "G3 STACK")
@@ -743,6 +768,9 @@ def g3ConfigSelection(symbol, event):
         addMACComponents(False, True)
         symbolComponent.setDependencyEnabled("g3_palplc_dependency", False)
         symbolComponent.setDependencyEnabled("g3_palrf_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_random_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_log_report_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_security_dependency", True)
         if g3ConfigLOADng.getValue() == True:
             symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", True)
             Database.activateComponents(["srvQueue"], "G3 STACK")
@@ -755,6 +783,9 @@ def g3ConfigSelection(symbol, event):
         addMACComponents(True, True)
         symbolComponent.setDependencyEnabled("g3_palplc_dependency", True)
         symbolComponent.setDependencyEnabled("g3_palrf_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_random_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_log_report_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_security_dependency", True)
         symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
         Database.deactivateComponents(["srvQueue"])
     elif event["value"] == "G3 PLC MAC Layer":
@@ -763,6 +794,9 @@ def g3ConfigSelection(symbol, event):
         addMACComponents(True, False)
         symbolComponent.setDependencyEnabled("g3_palplc_dependency", True)
         symbolComponent.setDependencyEnabled("g3_palrf_dependency", False)
+        symbolComponent.setDependencyEnabled("g3_srv_random_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_log_report_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_security_dependency", True)
         symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
         Database.deactivateComponents(["srvQueue"])
     elif event["value"] == "G3 RF MAC Layer":
@@ -771,12 +805,21 @@ def g3ConfigSelection(symbol, event):
         addMACComponents(False, True)
         symbolComponent.setDependencyEnabled("g3_palplc_dependency", False)
         symbolComponent.setDependencyEnabled("g3_palrf_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_random_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_log_report_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_security_dependency", True)
         symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
         Database.deactivateComponents(["srvQueue"])
     else:
         # Remove all G3 components
         removeADPComponents()
         removeMACComponents()
+        symbolComponent.setDependencyEnabled("g3_palplc_dependency", False)
+        symbolComponent.setDependencyEnabled("g3_palrf_dependency", False)
+        symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
+        symbolComponent.setDependencyEnabled("g3_srv_random_dependency", False)
+        symbolComponent.setDependencyEnabled("g3_srv_log_report_dependency", False)
+        symbolComponent.setDependencyEnabled("g3_srv_security_dependency", False)
 
 def g3ConfigRoleChange(symbol, event):
     if event["value"] == "PAN Device":
