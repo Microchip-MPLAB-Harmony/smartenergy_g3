@@ -41,14 +41,21 @@ def loadModule():
     g3PalRfComponent.setDisplayType("G3 PAL RF")
 
     ###########  G3 Stack Configurations  ###########
+    global g3ConfigComponent
     g3ConfigComponent = Module.CreateComponent("g3_config", "G3 Stack Configurator", "/SmartEnergy/G3 Stack", "g3/config/g3_configurator.py")
     g3ConfigComponent.setDisplayType("G3 Stack Configurator")
+    g3ConfigComponent.addDependency("g3_srv_random_dependency", "Random", True, True)
+    g3ConfigComponent.addDependency("g3_srv_log_report_dependency", "Log Report", True, True)
+    g3ConfigComponent.addDependency("g3_srv_security_dependency", "Security", True, True)
+    g3ConfigComponent.addDependency("g3_srv_queue_dependency", "Queue", True, True)
+    g3ConfigComponent.addDependency("g3_palplc_dependency", "G3 PAL PLC", True, True)
+    g3ConfigComponent.addDependency("g3_palrf_dependency", "G3 PAL RF", True, True)
 
     ## ADP driver to be used as MAC interface with TCP-IP stack 
     g3MacAdpComponent = Module.CreateComponent("drvMacG3Adp", "G3ADPMAC", "/SmartEnergy/G3 Stack/", "g3/net/macg3adp/config/drv_mac_g3adp.py")
     g3MacAdpComponent.addMultiCapability("libdrvMacG3Adp", "MAC", None)   
     g3MacAdpComponent.addDependency("g3_adp_dependency", "ADP", True, True)
-    g3LOADngComponent.addDependency("srv_queue_dependency", "Queue", True, True)
+    g3MacAdpComponent.addDependency("srv_queue_dependency", "Queue", True, True)
     # TBD optional dependencies to serialization and storage
     g3MacAdpComponent.setDisplayType("MAC Layer")
     

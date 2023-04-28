@@ -110,31 +110,38 @@ def instantiateComponent(g3ConfigComponent):
     g3MacSerializationUsiInstance.setDependencies(showUsiInstance, ["MAC_SERIALIZATION_EN"])
 
     # Boolean symbols to use in FTLs to generate code
+    global g3DeviceRole
     g3DeviceRole = g3ConfigComponent.createBooleanSymbol("G3_DEVICE", None)
     g3DeviceRole.setVisible(False)
     g3DeviceRole.setDefaultValue(True)
+    global g3CoordRole
     g3CoordRole = g3ConfigComponent.createBooleanSymbol("G3_COORDINATOR", None)
     g3CoordRole.setVisible(False)
     g3CoordRole.setDefaultValue(False)
 
-    g3MacPLC = g3ConfigComponent.createBooleanSymbol("MAC_PLC_PRESENT", None)
-    g3MacPLC.setVisible(False)
-    g3MacPLC.setDefaultValue(True)
-    g3MacRF = g3ConfigComponent.createBooleanSymbol("MAC_RF_PRESENT", None)
-    g3MacRF.setVisible(False)
-    g3MacRF.setDefaultValue(True)
+    global g3MacPLCPresent
+    g3MacPLCPresent = g3ConfigComponent.createBooleanSymbol("MAC_PLC_PRESENT", None)
+    g3MacPLCPresent.setVisible(False)
+    g3MacPLCPresent.setDefaultValue(True)
+    global g3MacRFPresent
+    g3MacRFPresent = g3ConfigComponent.createBooleanSymbol("MAC_RF_PRESENT", None)
+    g3MacRFPresent.setVisible(False)
+    g3MacRFPresent.setDefaultValue(True)
 
-    g3ADP = g3ConfigComponent.createBooleanSymbol("ADP_PRESENT", None)
-    g3ADP.setVisible(False)
-    g3ADP.setDefaultValue(True)
+    global g3ADPPresent
+    g3ADPPresent = g3ConfigComponent.createBooleanSymbol("ADP_PRESENT", None)
+    g3ADPPresent.setVisible(False)
+    g3ADPPresent.setDefaultValue(False)
 
     ###########################################################################################################
 
     # Enable LOADng Configuration
+    global g3ConfigLOADng
     g3ConfigLOADng = g3ConfigComponent.createBooleanSymbol("LOADNG_ENABLE", None)
     g3ConfigLOADng.setLabel("Enable LOADng Routing")
     g3ConfigLOADng.setVisible(True)
     g3ConfigLOADng.setDescription("Enable LOADng Routing Protocol")
+    g3ConfigLOADng.setDependencies(g3LOADngEnable, ["LOADNG_ENABLE"])
     g3ConfigLOADng.setDefaultValue(True)
 
     loadngPendingRReqTable = g3ConfigComponent.createIntegerSymbol("LOADNG_PENDING_RREQ_TABLE_SIZE", g3ConfigLOADng)
@@ -628,13 +635,19 @@ def selectLBPComponents(role):
         pLbpVersionHeader.setEnabled(False)
 
 def addADPComponents():
-    Database.setSymbolValue("g3_config", "ADP_PRESENT", True)
+    g3ADPPresent.setValue(True)
     adpLibFile.setEnabled(True)
     adpHeader.setEnabled(True)
     adpApiTypesHeader.setEnabled(True)
     adpSharedTypesHeader.setEnabled(True)
-    LOADngLibFile.setEnabled(True)
-    LOADngHeader.setEnabled(True)
+    if g3ConfigLOADng.getValue() == True:
+        LOADngLibFile.setEnabled(True)
+        LOADngHeader.setEnabled(True)
+    else:
+        LOADngLibFile.setEnabled(False)
+        LOADngHeader.setEnabled(False)
+    g3ConfigRole.setVisible(True)
+    g3ConfigLOADng.setVisible(True)
     
     if g3ConfigRole.getValue() == "PAN Device":
         selectLBPComponents("dev")
@@ -646,13 +659,15 @@ def addADPComponents():
         selectLBPComponents("dev")
 
 def removeADPComponents():
-    Database.setSymbolValue("g3_config", "ADP_PRESENT", False)
+    g3ADPPresent.setValue(False)
     adpLibFile.setEnabled(False)
     adpHeader.setEnabled(False)
     adpApiTypesHeader.setEnabled(False)
     adpSharedTypesHeader.setEnabled(False)
     LOADngLibFile.setEnabled(False)
     LOADngHeader.setEnabled(False)
+    g3ConfigRole.setVisible(False)
+    g3ConfigLOADng.setVisible(False)
     selectLBPComponents("none")
 
 def macPlcFilesEnabled(enable):
@@ -668,14 +683,20 @@ def macRfFilesEnabled(enable):
     macRfMibHeader.setEnabled(enable)
 
 def removeMACComponents():
-    Database.setSymbolValue("g3_config", "MAC_PLC_PRESENT", False)
-    Database.setSymbolValue("g3_config", "MAC_RF_PRESENT", False)
+    g3MacPLCPresent.setValue(False)
+    g3MacRFPresent.setValue(False)
     macPlcFilesEnabled(False)
     macRfFilesEnabled(False)
+    g3MacRFTables.setVisible(False)
+    g3ConfigRole.setVisible(False)
+    # Deactivate service components
+    Database.deactivateComponents(["srvSecurity", "srvRandom", "srvLogReport"])
 
 def addMACComponents(plc, rf):
-    Database.setSymbolValue("g3_config", "MAC_PLC_PRESENT", plc)
-    Database.setSymbolValue("g3_config", "MAC_RF_PRESENT", rf)
+    g3MacPLCPresent.setValue(plc)
+    g3MacRFPresent.setValue(rf)
+    g3MacPLCTables.setVisible(plc)
+    g3MacRFTables.setVisible(rf)
     
     if (plc and rf):
         macPlcFilesEnabled(True)
@@ -687,81 +708,110 @@ def addMACComponents(plc, rf):
         macPlcFilesEnabled(False)
         macRfFilesEnabled(True)
     
-    # In every case, add security component
-    Database.activateComponents(["srvSecurity"], "G3 STACK")
+    # In every case, add security, random and logReport components
+    Database.activateComponents(["srvSecurity", "srvRandom", "srvLogReport"], "G3 STACK")
 
 def g3ConfigSelection(symbol, event):
+    symbolComponent = symbol.getComponent()
     if event["value"] == "G3 Stack (ADP + MAC) Hybrid PLC & RF":
         # Complete Hybrid stack, enable components
         addADPComponents()
         addMACComponents(True, True)
-        g3ConfigRole.setVisible(True)
-        g3MacPLCTables.setVisible(True)
-        g3MacRFTables.setVisible(True)
+        symbolComponent.setDependencyEnabled("g3_palplc_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_palrf_dependency", True)
+        if g3ConfigLOADng.getValue() == True:
+            symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", True)
+            Database.activateComponents(["srvQueue"], "G3 STACK")
+        else:
+            symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
+            Database.deactivateComponents(["srvQueue"])
     elif event["value"] == "G3 Stack (ADP + MAC) PLC":
         # Complete PLC stack, enable components
         addADPComponents()
         addMACComponents(True, False)
-        g3ConfigRole.setVisible(True)
-        g3MacPLCTables.setVisible(True)
-        g3MacRFTables.setVisible(False)
+        symbolComponent.setDependencyEnabled("g3_palplc_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_palrf_dependency", False)
+        if g3ConfigLOADng.getValue() == True:
+            symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", True)
+            Database.activateComponents(["srvQueue"], "G3 STACK")
+        else:
+            symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
+            Database.deactivateComponents(["srvQueue"])
     elif event["value"] == "G3 Stack (ADP + MAC) RF":
         # Complete RF stack, enable components
         addADPComponents()
         addMACComponents(False, True)
-        g3ConfigRole.setVisible(True)
-        g3MacPLCTables.setVisible(False)
-        g3MacRFTables.setVisible(True)
+        symbolComponent.setDependencyEnabled("g3_palplc_dependency", False)
+        symbolComponent.setDependencyEnabled("g3_palrf_dependency", True)
+        if g3ConfigLOADng.getValue() == True:
+            symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", True)
+            Database.activateComponents(["srvQueue"], "G3 STACK")
+        else:
+            symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
+            Database.deactivateComponents(["srvQueue"])
     elif event["value"] == "G3 MAC Layer Hybrid PLC & RF":
         # Hybrid MAC, disable and enable components
         removeADPComponents()
         addMACComponents(True, True)
-        g3ConfigRole.setVisible(False)
-        g3MacPLCTables.setVisible(True)
-        g3MacRFTables.setVisible(True)
+        symbolComponent.setDependencyEnabled("g3_palplc_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_palrf_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
+        Database.deactivateComponents(["srvQueue"])
     elif event["value"] == "G3 PLC MAC Layer":
         # PLC MAC, disable and enable components
         removeADPComponents()
         addMACComponents(True, False)
-        g3ConfigRole.setVisible(False)
-        g3MacPLCTables.setVisible(True)
-        g3MacRFTables.setVisible(False)
+        symbolComponent.setDependencyEnabled("g3_palplc_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_palrf_dependency", False)
+        symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
+        Database.deactivateComponents(["srvQueue"])
     elif event["value"] == "G3 RF MAC Layer":
         # RF MAC, disable and enable components
         removeADPComponents()
         addMACComponents(False, True)
-        g3ConfigRole.setVisible(False)
-        g3MacPLCTables.setVisible(False)
-        g3MacRFTables.setVisible(True)
+        symbolComponent.setDependencyEnabled("g3_palplc_dependency", False)
+        symbolComponent.setDependencyEnabled("g3_palrf_dependency", True)
+        symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
+        Database.deactivateComponents(["srvQueue"])
     else:
         # Remove all G3 components
         removeADPComponents()
         removeMACComponents()
-        g3MacPLCTables.setVisible(False)
-        g3MacRFTables.setVisible(False)
-        g3ConfigRole.setVisible(False)
 
 def g3ConfigRoleChange(symbol, event):
     if event["value"] == "PAN Device":
         # Device role selected
-        Database.setSymbolValue("g3_config", "G3_DEVICE", True)
-        Database.setSymbolValue("g3_config", "G3_COORDINATOR", False)
+        g3DeviceRole.setValue(True)
+        g3CoordRole.setValue(False)
         selectLBPComponents("dev")
     elif event["value"] == "PAN Coordinator":
         # Coordinator role selected
-        Database.setSymbolValue("g3_config", "G3_DEVICE", False)
-        Database.setSymbolValue("g3_config", "G3_COORDINATOR", True)
+        g3DeviceRole.setValue(False)
+        g3CoordRole.setValue(True)
         selectLBPComponents("coord")
     elif event["value"] == "Dynamic (Selected upon Initialization)":
         # Dynamic role selected
-        Database.setSymbolValue("g3_config", "G3_DEVICE", True)
-        Database.setSymbolValue("g3_config", "G3_COORDINATOR", True)
+        g3DeviceRole.setValue(True)
+        g3CoordRole.setValue(True)
         selectLBPComponents("both")
     else:
         # Unknown option, behave as Device
-        Database.setSymbolValue("g3_config", "G3_DEVICE", True)
-        Database.setSymbolValue("g3_config", "G3_COORDINATOR", False)
+        g3DeviceRole.setValue(True)
+        g3CoordRole.setValue(False)
         selectLBPComponents("dev")
+
+def g3LOADngEnable(symbol, event):
+    symbolComponent = symbol.getComponent()
+    if (event["value"] == True):
+        LOADngLibFile.setEnabled(True)
+        LOADngHeader.setEnabled(True)
+        symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", True)
+        Database.activateComponents(["srvQueue"], "G3 STACK")
+    else:
+        LOADngLibFile.setEnabled(False)
+        LOADngHeader.setEnabled(False)
+        symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
+        Database.deactivateComponents(["srvQueue"])
 
 def g3DebugChange(symbol, event):
     if event["value"] == True:
