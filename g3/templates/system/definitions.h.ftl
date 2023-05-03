@@ -16,7 +16,6 @@
 #include "stack/g3/adaptation/adp.h"
 #include "stack/g3/adaptation/adp_api_types.h"
 #include "stack/g3/adaptation/adp_shared_types.h"
-</#if>
 <#if ADP_SERIALIZATION_EN == true>
 #include "stack/g3/adaptation/adp_serial.h"
 </#if>
@@ -26,4 +25,5 @@
 </#if>
 <#if G3_COORDINATOR == true>
 #include "stack/g3/adaptation/lbp_coord.h"
+</#if>
 </#if>

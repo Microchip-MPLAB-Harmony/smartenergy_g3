@@ -522,6 +522,7 @@ def instantiateComponent(g3ConfigComponent):
     LOADngHeader.setType("HEADER")
     
     #### Routing Wrapper Files #################################################
+    global routingTypesHeader
     routingTypesHeader = g3ConfigComponent.createFileSymbol("G3_ROUTING_TYPES_HEADER", None)
     routingTypesHeader.setSourcePath("g3/src/routing_wrapper/routing_types.h")
     routingTypesHeader.setOutputName("routing_types.h")
@@ -529,6 +530,7 @@ def instantiateComponent(g3ConfigComponent):
     routingTypesHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     routingTypesHeader.setType("HEADER")
     
+    global routingWrapperHeader
     routingWrapperHeader = g3ConfigComponent.createFileSymbol("G3_ROUTING_WRAPPER_HEADER", None)
     routingWrapperHeader.setSourcePath("g3/src/routing_wrapper/routing_wrapper.h")
     routingWrapperHeader.setOutputName("routing_wrapper.h")
@@ -536,6 +538,7 @@ def instantiateComponent(g3ConfigComponent):
     routingWrapperHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     routingWrapperHeader.setType("HEADER")
 
+    global routingWrapperSource
     routingWrapperSource = g3ConfigComponent.createFileSymbol("G3_ROUTING_WRAPPER_SOURCE", None)
     routingWrapperSource.setSourcePath("g3/src/routing_wrapper/routing_wrapper.c.ftl")
     routingWrapperSource.setOutputName("routing_wrapper.c")
@@ -659,6 +662,9 @@ def addADPComponents():
     adpHeader.setEnabled(True)
     adpApiTypesHeader.setEnabled(True)
     adpSharedTypesHeader.setEnabled(True)
+    routingTypesHeader.setEnabled(True)
+    routingWrapperHeader.setEnabled(True)
+    routingWrapperSource.setEnabled(True)
     if g3ConfigLOADng.getValue() == True:
         LOADngLibFile.setEnabled(True)
         LOADngHeader.setEnabled(True)
@@ -684,6 +690,9 @@ def removeADPComponents():
     adpHeader.setEnabled(False)
     adpApiTypesHeader.setEnabled(False)
     adpSharedTypesHeader.setEnabled(False)
+    routingTypesHeader.setEnabled(False)
+    routingWrapperHeader.setEnabled(False)
+    routingWrapperSource.setEnabled(False)
     LOADngLibFile.setEnabled(False)
     LOADngHeader.setEnabled(False)
     g3ConfigRole.setVisible(False)
