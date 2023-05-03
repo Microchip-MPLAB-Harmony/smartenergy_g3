@@ -87,7 +87,26 @@ def instantiateComponent(drvMacG3AdpComponent):
 
     if(Database.getComponentByID("srvQueue") == None):
         Database.activateComponents(["srvQueue"])
+
         
+    # Default TX Packet Queue limit
+    drvMacG3AdpTxQueueLimit = drvMacG3AdpComponent.createIntegerSymbol("DRV_MAC_G3ADP_PACKET_TX_QUEUE_LIMIT", None)
+    drvMacG3AdpTxQueueLimit.setHelp("drv_macG3Adp_helpkeyword")
+    drvMacG3AdpTxQueueLimit.setLabel("TX Queue Limit")
+    drvMacG3AdpTxQueueLimit.setDescription("Default TX MAC Packet Queue limit")
+    drvMacG3AdpTxQueueLimit.setDefaultValue(5)
+    drvMacG3AdpTxQueueLimit.setMin(1)
+    drvMacG3AdpTxQueueLimit.setMax(10)
+
+    # Default RX Packet Queue limit
+    drvMacG3AdpRxQueueLimit = drvMacG3AdpComponent.createIntegerSymbol("DRV_MAC_G3ADP_PACKET_RX_QUEUE_LIMIT", None)
+    drvMacG3AdpRxQueueLimit.setHelp("drv_macG3Adp_helpkeyword")
+    drvMacG3AdpRxQueueLimit.setLabel("RX Queue Limit")
+    drvMacG3AdpRxQueueLimit.setDescription("Default RX MAC Packet Queue limit")
+    drvMacG3AdpRxQueueLimit.setDefaultValue(5)
+    drvMacG3AdpRxQueueLimit.setMin(1)
+    drvMacG3AdpRxQueueLimit.setMax(10)
+    
     # Add drv_mac_g3adp.h file to project
     drvMacG3AdpHeaderFile = drvMacG3AdpComponent.createFileSymbol("DRV_MAC_G3ADP_HEADER_FILE", None)
     drvMacG3AdpHeaderFile.setSourcePath("g3/net/macg3adp/drv_mac_g3adp.h")
@@ -99,18 +118,17 @@ def instantiateComponent(drvMacG3AdpComponent):
 
     # Add drv_mac_g3adp_local.h file to project
     drvMacG3AdpLocalHeaderFile = drvMacG3AdpComponent.createFileSymbol("DRV_MAC_G3ADP_LOCAL_HEADER_FILE", None)
-    drvMacG3AdpLocalHeaderFile.setSourcePath("g3/net/macg3adp/src/drv_mac_g3adp_local.h")
+    drvMacG3AdpLocalHeaderFile.setSourcePath("g3/net/macg3adp/src/drv_mac_g3adp_local.h.ftl")
     drvMacG3AdpLocalHeaderFile.setOutputName("drv_mac_g3adp_local.h")
     drvMacG3AdpLocalHeaderFile.setDestPath("stack/g3/net/macg3adp/src/")
     drvMacG3AdpLocalHeaderFile.setProjectPath("config/" + configName + "/stack/g3/net/macg3adp/src/")
     drvMacG3AdpLocalHeaderFile.setType("HEADER")
-    drvMacG3AdpLocalHeaderFile.setOverwrite(True)
+    drvMacG3AdpLocalHeaderFile.setMarkup(True)
 
     # Add drv_mac_g3adp.c file
     drvMacG3AdpSourceFile = drvMacG3AdpComponent.createFileSymbol("DRV_MAC_G3ADP_SOURCE_FILE", None)
     drvMacG3AdpSourceFile.setSourcePath("g3/net/macg3adp/src/drv_mac_g3adp.c")
     drvMacG3AdpSourceFile.setOutputName("drv_mac_g3adp.c")
-    drvMacG3AdpSourceFile.setOverwrite(True)
     drvMacG3AdpSourceFile.setDestPath("stack/g3/net/macg3adp/src/")
     drvMacG3AdpSourceFile.setProjectPath("config/" + configName + "/stack/g3/net/macg3adp/src/")
     drvMacG3AdpSourceFile.setType("SOURCE")
@@ -136,9 +154,6 @@ def onAttachmentConnected(source, target):
         setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_INTERFACE_FLAG_IPV6_ADDRESS_IDX" + str(interface_number), True)
         setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_DEFAULT_IPV6_ADDRESS_IDX" + str(interface_number), "fd00::781D:00:1122:3344:5566")
         setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_DEFAULT_IPV6_GATEWAY_IDX" + str(interface_number), "fe80::781D:ff:fe00:0000")
-    #elif (source["id"] == "g3_adp_dependency"): 
-        # G3 ADP configuration
-    
         
 def onAttachmentDisconnected(source, target):
     if (target["id"] == "NETCONFIG_MAC_Dependency"):
@@ -148,69 +163,3 @@ def onAttachmentDisconnected(source, target):
         setVal("tcpipStack", "TCPIP_STACK_MII_MODE_IDX" + str(interface_number), "")
         decVal("tcpipStack", "TCPIP_STACK_INTMAC_INTERFACE_NUM")
         
-        # setVal("tcpipNetConfig", "TCPIP_NETWORK_INTERFACE_FLAG_IPV6_ADDRESS_IDX" + str(interface_number), False)
-        # setVal("tcpipNetConfig", "TCPIP_NETWORK_DEFAULT_IPV6_ADDRESS_IDX" + str(interface_number), "")
-        # setVal("tcpipNetConfig", "TCPIP_NETWORK_DEFAULT_IPV6_GATEWAY_IDX" + str(interface_number), "")
-    #elif (source["id"] == "g3_adp_dependency"): 
-        # G3 ADP configuration
-        
-
-# def drvMacMPUConfig(symbol, event):
-#     global drvGmacNoCacheMemRegSize
-#     global noCache_MPU_index
-#     coreComponent = Database.getComponentByID("core")
-    
-#     if (noCache_MPU_index != 0xff): 
-#         if(Database.getSymbolValue("drvGmac", "DRV_GMAC_NO_CACHE_CONFIG") == True):
-#             Database.setSymbolValue("core", ("MPU_Region_" + str(noCache_MPU_index) + "_Enable"), True)
-#             Database.setSymbolValue("core", ("MPU_Region_Name" + str(noCache_MPU_index)), "GMAC Descriptor")
-#             Database.setSymbolValue("core", ("MPU_Region_" + str(noCache_MPU_index) + "_Address"), Database.getSymbolValue("drvGmac", "DRV_GMAC_NOCACHE_MEM_ADDRESS"))
-#             index = drvGmacNoCacheMemRegSize.getValue()
-#             keyval = drvGmacNoCacheMemRegSize.getKeyValue(index)
-#             key = drvGmacNoCacheMemRegSize.getKeyForValue(keyval)
-#             setVal("tcpipStack", "TCPIP_STACK_NOCACHE_MEM_ADDRESS", Database.getSymbolValue("drvGmac", "DRV_GMAC_NOCACHE_MEM_ADDRESS"))
-#             setVal("tcpipStack", "TCPIP_STACK_NOCACHE_SIZE", key)
-#             setVal("tcpipStack", "TCPIP_STACK_NO_CACHE_CONFIG", True)
-#             mpuRegSize = coreComponent.getSymbolByID("MPU_Region_" + str(noCache_MPU_index) + "_Size")
-#             mpuRegSize.setSelectedKey(key)
-#         else:
-#             Database.setSymbolValue("core", ("MPU_Region_" + str(noCache_MPU_index) + "_Enable"), False)
-#             setVal("tcpipStack", "TCPIP_STACK_NO_CACHE_CONFIG", False)
-
-# def initNoCacheMPU():
-#     global noCache_MPU_index
-#     if (noCache_MPU_index == 0xff): 
-#         # Enable MPU Setting for GMAC descriptor
-#         if(Database.getSymbolValue("core", "CoreUseMPU") != True):
-#             Database.setSymbolValue("core", "CoreUseMPU", True)
-#         if(Database.getSymbolValue("core", "CoreMPU_DEFAULT") != True):  
-#             Database.setSymbolValue("core", "CoreMPU_DEFAULT", True)            
-#         mpuNumRegions = Database.getSymbolValue("core", "MPU_NUMBER_REGIONS")
-        
-#         for i in range(0,mpuNumRegions):
-#             if(Database.getSymbolValue("core", ("MPU_Region_" + str(i) + "_Enable")) != True):
-#                 noCache_MPU_index = i
-#                 Database.setSymbolValue("core", ("MPU_Region_" + str(noCache_MPU_index) + "_Enable"), True)
-#                 Database.setSymbolValue("core", ("MPU_Region_Name" + str(noCache_MPU_index)), "GMAC Descriptor")
-#                 Database.setSymbolValue("core", ("MPU_Region_" + str(noCache_MPU_index) + "_Type"), 5)
-#                 Database.setSymbolValue("core", ("MPU_Region_" + str(noCache_MPU_index) + "_Size"), 7)
-#                 Database.setSymbolValue("core", ("MPU_Region_" + str(noCache_MPU_index) + "_Access"), 3)
-#                 Database.setSymbolValue("core", ("MPU_Region_" + str(noCache_MPU_index) + "_Address"), Database.getSymbolValue("drvGmac", "DRV_GMAC_NOCACHE_MEM_ADDRESS"))
-#                 break
-                
-
-
-# def destroyComponent(drvMacG3AdpComponent):
-#     global gmac_periphID
-#     global noCache_MPU_index
-#     Database.setSymbolValue("drvGmac", "TCPIP_USE_ETH_MAC", False, 2)    
-#     setVal("core", "GMAC_INTERRUPT_ENABLE", False)
-#     if(gmac_periphID == "11046") or (gmac_periphID == "44152"): # SAME70 or SAMV71 or SAMA5D2
-#         setVal("core", "GMAC_Q1_INTERRUPT_ENABLE", False)
-#         setVal("core", "GMAC_Q2_INTERRUPT_ENABLE", False)
-#     if(gmac_periphID == "11046"): # SAME70, SAMV71, SAMRH71   
-#         setVal("core", "GMAC_Q3_INTERRUPT_ENABLE", False)
-#         setVal("core", "GMAC_Q4_INTERRUPT_ENABLE", False)
-#         setVal("core", "GMAC_Q5_INTERRUPT_ENABLE", False)
-#         setVal("core", ("MPU_Region_" + str(noCache_MPU_index) + "_Enable"), False)
-
