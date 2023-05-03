@@ -26,6 +26,7 @@ def instantiateComponent(g3ConfigComponent):
     if (g3StackGroup == None):
         g3StackGroup = Database.createGroup(None, "G3 STACK")
     Database.setActiveGroup("G3 STACK")
+    g3StackGroup.addComponent("g3_config")
 
     # Set dependencies inactive by default, they will be dinamically activated depending on config
     g3ConfigComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
@@ -599,6 +600,10 @@ def instantiateComponent(g3ConfigComponent):
     plcSystemTasksFile.setSourcePath("g3/templates/system/system_tasks.c.ftl")
     plcSystemTasksFile.setMarkup(True)
 
+def destroyComponent(g3ConfigComponent):
+    # Deactivate service and PAL components
+    Database.deactivateComponents(["g3PalPlc", "g3PalRf", "srvSecurity", "srvRandom", "srvLogReport", "srvQueue"])
+
 ################################################################################
 #### Business Logic ####
 ################################################################################
@@ -707,8 +712,8 @@ def removeMACComponents():
     g3MacPLCTables.setVisible(False)
     g3ConfigRole.setVisible(False)
     g3DebugEnable.setVisible(False)
-    # Deactivate service components
-    Database.deactivateComponents(["srvSecurity", "srvRandom", "srvLogReport", "srvQueue"])
+    # Deactivate service and PAL components
+    Database.deactivateComponents(["g3PalPlc", "g3PalRf", "srvSecurity", "srvRandom", "srvLogReport", "srvQueue"])
 
 def addMACComponents(plc, rf):
     g3MacPLCPresent.setValue(plc)
@@ -716,22 +721,33 @@ def addMACComponents(plc, rf):
     g3MacPLCTables.setVisible(plc)
     g3MacRFTables.setVisible(rf)
     g3DebugEnable.setVisible(True)
-    
-    if (plc and rf):
-        macPlcFilesEnabled(True)
-        macRfFilesEnabled(True)
-    elif (plc):
-        macPlcFilesEnabled(True)
-        macRfFilesEnabled(False)
-    elif (rf):
-        macPlcFilesEnabled(False)
-        macRfFilesEnabled(True)
+    macPlcFilesEnabled(plc)
+    macRfFilesEnabled(rf)
     
     # In every case, add security, random and logReport components
+    g3StackGroup = Database.findGroup("G3 STACK")
+    g3StackGroup.addComponent("srvSecurity")
+    g3StackGroup.addComponent("srvRandom")
+    g3StackGroup.addComponent("srvLogReport")
     Database.activateComponents(["srvSecurity", "srvRandom", "srvLogReport"], "G3 STACK")
+    
+    # Add PAL components depending on MAC availability
+    if (plc and rf):
+        g3StackGroup.addComponent("g3PalPlc")
+        g3StackGroup.addComponent("g3PalRf")
+        Database.activateComponents(["g3PalPlc", "g3PalRf"], "G3 STACK")
+    elif (plc):
+        g3StackGroup.addComponent("g3PalPlc")
+        Database.activateComponents(["g3PalPlc"], "G3 STACK")
+        Database.deactivateComponents(["g3PalRf"])
+    elif (rf):
+        g3StackGroup.addComponent("g3PalRf")
+        Database.activateComponents(["g3PalRf"], "G3 STACK")
+        Database.deactivateComponents(["g3PalPlc"])
 
 def g3ConfigSelection(symbol, event):
     symbolComponent = symbol.getComponent()
+    g3StackGroup = Database.findGroup("G3 STACK")
     if event["value"] == "G3 Stack (ADP + MAC) Hybrid PLC & RF":
         # Complete Hybrid stack, enable components
         addADPComponents()
@@ -743,6 +759,7 @@ def g3ConfigSelection(symbol, event):
         symbolComponent.setDependencyEnabled("g3_srv_security_dependency", True)
         if g3ConfigLOADng.getValue() == True:
             symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", True)
+            g3StackGroup.addComponent("srvQueue")
             Database.activateComponents(["srvQueue"], "G3 STACK")
         else:
             symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
@@ -758,6 +775,7 @@ def g3ConfigSelection(symbol, event):
         symbolComponent.setDependencyEnabled("g3_srv_security_dependency", True)
         if g3ConfigLOADng.getValue() == True:
             symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", True)
+            g3StackGroup.addComponent("srvQueue")
             Database.activateComponents(["srvQueue"], "G3 STACK")
         else:
             symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
@@ -773,6 +791,7 @@ def g3ConfigSelection(symbol, event):
         symbolComponent.setDependencyEnabled("g3_srv_security_dependency", True)
         if g3ConfigLOADng.getValue() == True:
             symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", True)
+            g3StackGroup.addComponent("srvQueue")
             Database.activateComponents(["srvQueue"], "G3 STACK")
         else:
             symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
@@ -845,10 +864,12 @@ def g3ConfigRoleChange(symbol, event):
 
 def g3LOADngEnable(symbol, event):
     symbolComponent = symbol.getComponent()
+    g3StackGroup = Database.findGroup("G3 STACK")
     if (event["value"] == True):
         LOADngLibFile.setEnabled(True)
         LOADngHeader.setEnabled(True)
         symbolComponent.setDependencyEnabled("g3_srv_queue_dependency", True)
+        g3StackGroup.addComponent("srvQueue")
         Database.activateComponents(["srvQueue"], "G3 STACK")
     else:
         LOADngLibFile.setEnabled(False)
