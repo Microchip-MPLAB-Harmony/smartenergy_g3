@@ -29,14 +29,14 @@ def loadModule():
     ## G3 PAL PLC
     g3PalPlcComponent = Module.CreateComponent("g3PalPlc", "G3 PAL PLC", "/SmartEnergy/G3 Stack/PAL", "pal/plc/config/pal_plc.py")
     g3PalPlcComponent.addCapability("g3PalPlc", "G3 PAL PLC", True)
-    g3PalPlcComponent.addDependency("g3PalPlc_G3MacRT_dependency", "DRV_G3_MAC_RT", False, True)
+    g3PalPlcComponent.addDependency("g3PalPlc_G3MacRT_dependency", "DRV_G3_MAC_RT", True, True)
     g3PalPlcComponent.addDependency("g3PalPlc_PCoup_dependency", "PCOUP", True, True)
     g3PalPlcComponent.setDisplayType("G3 PAL PLC")
 
     ## G3 PAL RF
     g3PalRfComponent = Module.CreateComponent("g3PalRf", "G3 PAL RF", "/SmartEnergy/G3 Stack/PAL", "pal/rf/config/pal_rf.py")
     g3PalRfComponent.addCapability("g3PalRf", "G3 PAL RF", True)
-    g3PalRfComponent.addDependency("g3PalRf_DrvRfPhy_dependency", "DRV_RF_PHY", False, True)
+    g3PalRfComponent.addDependency("g3PalRf_DrvRfPhy_dependency", "DRV_RF_PHY", True, True)
     g3PalRfComponent.addDependency("g3PalRf_sysTime_dependency", "SYS_TIME", True, True)
     g3PalRfComponent.setDisplayType("G3 PAL RF")
 
@@ -55,7 +55,7 @@ def loadModule():
     ## ADP driver to be used as MAC interface with TCP-IP stack 
     g3MacAdpComponent = Module.CreateComponent("drvMacG3Adp", "G3ADPMAC", "/SmartEnergy/G3 Stack/", "g3/net/macg3adp/config/drv_mac_g3adp.py")
     g3MacAdpComponent.addMultiCapability("libdrvMacG3Adp", "MAC", None)   
-    g3MacAdpComponent.addDependency("g3_adp_dependency", "ADP", True, True)
+    g3MacAdpComponent.addDependency("g3_adp_dependency", "G3 Stack", True, True)
     g3MacAdpComponent.addDependency("srv_queue_dependency", "Queue", True, True)
     # TBD optional dependencies to serialization and storage
     g3MacAdpComponent.setDisplayType("MAC Layer")
