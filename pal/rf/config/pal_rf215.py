@@ -48,16 +48,6 @@ def instantiateComponent(g3PalRfComponent):
     ############################################################################
     configName = Variables.get("__CONFIGURATION_NAME")
 
-    g3PalRfDevice = g3PalRfComponent.createStringSymbol("G3_PAL_RF_DEVICE", None)
-    g3PalRfDevice.setLabel("G3 PAL RF Device")
-    g3PalRfDevice.setReadOnly(True)
-    g3PalRfDevice.setHelp(g3_pal_rf_helpkeyword)
-
-    global g3PalRfConfigComment
-    g3PalRfConfigComment = g3PalRfComponent.createCommentSymbol("G3_PAL_RF_CONFIG_COMMENT", None)
-    g3PalRfConfigComment.setLabel("***Selected RF PHY driver is not compatible with this PAL RF***")
-    g3PalRfConfigComment.setVisible(False)
-
     g3PalRfPhySnifferEnable = g3PalRfComponent.createBooleanSymbol("G3_PAL_RF_PHY_SNIFFER_EN", None)
     g3PalRfPhySnifferEnable.setLabel("Enable RF PHY sniffer")
     g3PalRfPhySnifferEnable.setDefaultValue(False)
@@ -119,41 +109,3 @@ def instantiateComponent(g3PalRfComponent):
     g3PalRfSymSystemDefObjFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_H_OBJECTS")
     g3PalRfSymSystemDefObjFile.setSourcePath("pal/rf/templates/system/definitions_objects.h.ftl")
     g3PalRfSymSystemDefObjFile.setMarkup(True)
-
-def onAttachmentConnected(source, target):
-    global g3PalRfSrcFile
-    global g3PalRfHdrFile
-    localComponent = source["component"]
-    localConnectID = source["id"]
-    remoteComponent = target["component"]
-    remoteComponentID = remoteComponent.getID()
-
-    if localConnectID == "g3PalRf_DrvRfPhy_dependency":
-        deviceUsed = localComponent.getSymbolByID("G3_PAL_RF_DEVICE")
-        deviceUsed.setValue(remoteComponentID.upper())
-        if (remoteComponentID.upper() == "DRVRF215"):
-            g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_rf215.c.ftl")
-            g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h.ftl")
-            g3PalRfConfigComment.setVisible(False)
-        elif (remoteComponentID.upper() == "WBZ45"):  ########################      TBD!!!!!!!!!!!!!!!!
-            g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_wbz45.c")
-            g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_wbz45.h")
-            g3PalRfConfigComment.setVisible(False)
-        else:
-            g3PalRfConfigComment.setVisible(True)
-                
-def onAttachmentDisconnected(source, target):
-    global g3PalRfSrcFile
-    global g3PalRfHdrFile
-    localComponent = source["component"]
-    localConnectID = source["id"]
-    remoteComponent = target["component"]
-    remoteComponentID = remoteComponent.getID()
-
-    if localConnectID == "g3PalRf_DrvRfPhy_dependency":
-        localComponent.getSymbolByID("G3_PAL_RF_DEVICE").clearValue()
-        g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_rf215.c.ftl")
-        g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h.ftl")
-        g3PalRfConfigComment.setVisible(False)
-
-    

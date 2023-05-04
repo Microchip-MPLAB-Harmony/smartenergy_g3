@@ -25,6 +25,23 @@
 def loadModule():
 
     print("Load Module: Harmony Smart Energy G3 Stack")
+    processor = Variables.get("__PROCESSOR")
+
+    if "WBZ45" in processor:
+        ## G3 PAL RF for WBZ45
+        print("G3: Loading PAL RF for WBZ45")
+        g3PalRfComponent = Module.CreateComponent("g3PalRf", "G3 PAL RF", "/SmartEnergy/G3 Stack/PAL", "pal/rf/config/pal_wbz45.py")
+        g3PalRfComponent.addCapability("g3PalRf", "G3 PAL RF", True) 
+        g3PalRfComponent.addDependency("g3PalRf_DrvRfPhy_dependency", "Device_Support", True, True)
+        g3PalRfComponent.setDisplayType("G3 PAL RF")
+    else:
+        ## G3 PAL RF for RF215
+        print("G3: Loading PAL RF for RF215")
+        g3PalRfComponent = Module.CreateComponent("g3PalRf", "G3 PAL RF", "/SmartEnergy/G3 Stack/PAL", "pal/rf/config/pal_rf215.py")
+        g3PalRfComponent.addCapability("g3PalRf", "G3 PAL RF", True) 
+        g3PalRfComponent.addDependency("g3PalRf_DrvRfPhy_dependency", "DRV_RF_PHY", True, True)
+        g3PalRfComponent.addDependency("g3PalRf_sysTime_dependency", "SYS_TIME", True, True)
+        g3PalRfComponent.setDisplayType("G3 PAL RF")
 
     ## G3 PAL PLC
     g3PalPlcComponent = Module.CreateComponent("g3PalPlc", "G3 PAL PLC", "/SmartEnergy/G3 Stack/PAL", "pal/plc/config/pal_plc.py")
@@ -32,13 +49,6 @@ def loadModule():
     g3PalPlcComponent.addDependency("g3PalPlc_G3MacRT_dependency", "DRV_G3_MAC_RT", True, True)
     g3PalPlcComponent.addDependency("g3PalPlc_PCoup_dependency", "PCOUP", True, True)
     g3PalPlcComponent.setDisplayType("G3 PAL PLC")
-
-    ## G3 PAL RF
-    g3PalRfComponent = Module.CreateComponent("g3PalRf", "G3 PAL RF", "/SmartEnergy/G3 Stack/PAL", "pal/rf/config/pal_rf.py")
-    g3PalRfComponent.addCapability("g3PalRf", "G3 PAL RF", True)
-    g3PalRfComponent.addDependency("g3PalRf_DrvRfPhy_dependency", "DRV_RF_PHY", True, True)
-    g3PalRfComponent.addDependency("g3PalRf_sysTime_dependency", "SYS_TIME", True, True)
-    g3PalRfComponent.setDisplayType("G3 PAL RF")
 
     ###########  G3 Stack Configurations  ###########
     global g3ConfigComponent
