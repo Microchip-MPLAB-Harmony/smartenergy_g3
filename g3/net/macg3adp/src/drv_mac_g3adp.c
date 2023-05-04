@@ -408,7 +408,6 @@ void DRV_G3ADP_MAC_Deinitialize(SYS_MODULE_OBJ object)
             // Clear ADP Data Notifications
             adpDataNot.dataConfirm = NULL;
             adpDataNot.dataIndication = NULL;
-            adpDataNot.bufferIndication = NULL;
             ADP_SetDataNotifications(&adpDataNot);
 
             pMacDrv->g3AdpMacData.sysStat = SYS_STATUS_UNINITIALIZED;
