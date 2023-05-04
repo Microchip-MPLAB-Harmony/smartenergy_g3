@@ -62,6 +62,7 @@ def instantiateComponent(g3ConfigComponent):
     g3AdpConfig.setDescription("ADP Buffers and Table Sizes")
     g3AdpConfig.setVisible(False)
 
+    global g3CountBuffers1280
     g3CountBuffers1280 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_1280", g3AdpConfig)
     g3CountBuffers1280.setLabel("Number of 1280-byte buffers")
     g3CountBuffers1280.setDescription("Number of 1280-byte buffers for adaptation layer")
@@ -69,6 +70,14 @@ def instantiateComponent(g3ConfigComponent):
     g3CountBuffers1280.setMin(1)
     g3CountBuffers1280.setMax(16)
 
+    global g3CountBuffers1280Comment
+    g3CountBuffers1280Comment = g3ConfigComponent.createCommentSymbol("ADP_COUNT_BUFFERS_1280_COMMENT", g3CountBuffers1280)
+    g3CountBuffers1280Comment.setVisible(True)
+    totalMem = (1280 + 50) * g3CountBuffers1280.getValue()
+    g3CountBuffers1280Comment.setLabel("Memory used: ~%d bytes" %totalMem)
+    g3CountBuffers1280Comment.setDependencies(g3CountBuffers1280CommentDepend, ["ADP_COUNT_BUFFERS_1280"])
+
+    global g3CountBuffers400
     g3CountBuffers400 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_400", g3AdpConfig)
     g3CountBuffers400.setLabel("Number of 400-byte buffers")
     g3CountBuffers400.setDescription("Number of 400-byte buffers for adaptation layer")
@@ -76,12 +85,27 @@ def instantiateComponent(g3ConfigComponent):
     g3CountBuffers400.setMin(1)
     g3CountBuffers400.setMax(32)
 
+    global g3CountBuffers400Comment
+    g3CountBuffers400Comment = g3ConfigComponent.createCommentSymbol("ADP_COUNT_BUFFERS_400_COMMENT", g3CountBuffers400)
+    g3CountBuffers400Comment.setVisible(True)
+    totalMem = (400 + 50) * g3CountBuffers400.getValue()
+    g3CountBuffers400Comment.setLabel("Memory used: ~%d bytes" %totalMem)
+    g3CountBuffers400Comment.setDependencies(g3CountBuffers400CommentDepend, ["ADP_COUNT_BUFFERS_400"])
+
+    global g3CountBuffers100
     g3CountBuffers100 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_100", g3AdpConfig)
     g3CountBuffers100.setLabel("Number of 100-byte buffers")
     g3CountBuffers100.setDescription("Number of 100-byte buffers for adaptation layer")
     g3CountBuffers100.setDefaultValue(3)
     g3CountBuffers100.setMin(1)
     g3CountBuffers100.setMax(64)
+
+    global g3CountBuffers100Comment
+    g3CountBuffers100Comment = g3ConfigComponent.createCommentSymbol("ADP_COUNT_BUFFERS_100_COMMENT", g3CountBuffers100)
+    g3CountBuffers100Comment.setVisible(True)
+    totalMem = (100 + 50) * g3CountBuffers100.getValue()
+    g3CountBuffers100Comment.setLabel("Memory used: ~%d bytes" %totalMem)
+    g3CountBuffers100Comment.setDependencies(g3CountBuffers100CommentDepend, ["ADP_COUNT_BUFFERS_100"])
 
     g3FragmentedTransferTableSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENTED_TRANSFER_TABLE_SIZE", g3AdpConfig)
     g3FragmentedTransferTableSize.setLabel("Fragmented transfer table size")
@@ -908,6 +932,18 @@ def showUsiInstance(symbol, event):
 def setEnabledFileSymbol(symbol, event):
     # Enable/disable file symbol depending on parent enabled/disabled
     symbol.setEnabled(event["value"])
+    
+def g3CountBuffers1280CommentDepend(symbol, event):
+    totalMem = (1280 + 50) * g3CountBuffers1280.getValue()
+    g3CountBuffers1280Comment.setLabel("Memory used: ~%d bytes" %totalMem)
+    
+def g3CountBuffers400CommentDepend(symbol, event):
+    totalMem = (400 + 50) * g3CountBuffers400.getValue()
+    g3CountBuffers400Comment.setLabel("Memory used: ~%d bytes" %totalMem)
+    
+def g3CountBuffers100CommentDepend(symbol, event):
+    totalMem = (100 + 50) * g3CountBuffers100.getValue()
+    g3CountBuffers100Comment.setLabel("Memory used: ~%d bytes" %totalMem)
 
 #Set symbols of other components
 def setVal(component, symbol, value):
