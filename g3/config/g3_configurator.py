@@ -243,6 +243,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacRFDSNTable.setMin(4)
     g3MacRFDSNTable.setMax(128)
 
+    global g3MacSerializationEnable
     g3MacSerializationEnable = g3ConfigComponent.createBooleanSymbol("MAC_SERIALIZATION_EN", None)
     g3MacSerializationEnable.setLabel("Enable MAC Serialization")
     g3MacSerializationEnable.setDescription("Enable/disable MAC serialization through USI")
@@ -744,6 +745,7 @@ def removeMACComponents():
     g3MacRFTables.setVisible(False)
     g3MacPLCTables.setVisible(False)
     g3ConfigRole.setVisible(False)
+    g3MacSerializationEnable.setVisible(False)
     g3DebugEnable.setVisible(False)
     # Deactivate service and PAL components
     Database.deactivateComponents(["g3PalPlc", "g3PalRf", "srvSecurity", "srvRandom", "srvLogReport", "srvQueue"])
@@ -753,6 +755,7 @@ def addMACComponents(plc, rf):
     g3MacRFPresent.setValue(rf)
     g3MacPLCTables.setVisible(plc)
     g3MacRFTables.setVisible(rf)
+    g3MacSerializationEnable.setVisible(True)
     g3DebugEnable.setVisible(True)
     macPlcFilesEnabled(plc)
     macRfFilesEnabled(rf)
