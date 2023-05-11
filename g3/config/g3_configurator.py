@@ -55,6 +55,14 @@ def instantiateComponent(g3ConfigComponent):
     g3ConfigRole.setDependencies(g3ConfigRoleChange, ["G3_ROLE"])
     g3ConfigRole.setDefaultValue("PAN Device")
 
+    # G3 Task rate control
+    g3TaskRate = g3ConfigComponent.createIntegerSymbol("G3_TASK_RATE_MS", None)
+    g3TaskRate.setLabel("G3 stack task rate (ms)")
+    g3TaskRate.setDescription("Number of milliseconds between G3 stack task processing")
+    g3TaskRate.setDefaultValue(5)
+    g3TaskRate.setMin(1)
+    g3TaskRate.setMax(20)
+
     # ADP Configuration
     global g3AdpConfig
     g3AdpConfig = g3ConfigComponent.createMenuSymbol("ADP_CONFIG", None)

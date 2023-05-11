@@ -1,4 +1,7 @@
 
+/* G3 stack task rate in milliseconds */
+#define G3_STACK_TASK_RATE_MS            ${G3_TASK_RATE_MS}
+
 /* MAC COMMON Identification */
 #define G3_MAC_COMMON_INDEX_0            0
 #define G3_MAC_COMMON_INSTANCES_NUMBER   1

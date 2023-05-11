@@ -79,6 +79,8 @@ typedef struct
     MAC_WRP_HANDLERS macWrpHandlers;
     /* Mac Wrapper instance handle */
     MAC_WRP_HANDLE macWrpHandle;
+    /* Time of next task in milliseconds */
+    uint32_t nextTaskTimeMs;
     /* PIB serialization debug set length */
     uint16_t debugSetLength;
 <#if MAC_SERIALIZATION_EN == true>
@@ -2077,6 +2079,8 @@ MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index, MAC_WRP_BAND plcBand)
 
     macWrpData.state = MAC_WRP_STATE_IDLE;
 
+    macWrpData.nextTaskTimeMs = MAC_WRP_GetMsCounter() + G3_STACK_TASK_RATE_MS;
+
     return macWrpData.macWrpHandle;
 }
 
@@ -2095,6 +2099,15 @@ void MAC_WRP_Tasks(SYS_MODULE_OBJ object)
         /* Invalid object */
         return;
     }
+
+    if (!MAC_COMMON_TimeIsPast(macWrpData.nextTaskTimeMs))
+    {
+        /* Do nothing */
+        return;
+    }
+
+    /* Time to execute MAC Wrapper task. Update time for next task. */
+    macWrpData.nextTaskTimeMs += G3_STACK_TASK_RATE_MS;
 
 <#if MAC_SERIALIZATION_EN == true>
     if (macWrpData.usiHandle == SRV_USI_HANDLE_INVALID)

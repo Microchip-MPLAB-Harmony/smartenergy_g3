@@ -61,7 +61,10 @@ ADP_INIT g3AdpInitData = {
     .numProcessQueueEntries = G3_ADP_PROCESS_QUEUE_SIZE,
 
     /* Number of fragmented transfer entries */
-    .numFragmentedTransferEntries = G3_ADP_FRAG_TRANSFER_TABLE_SIZE
+    .numFragmentedTransferEntries = G3_ADP_FRAG_TRANSFER_TABLE_SIZE,
+
+    /* ADP task rate in milliseconds */
+    .taskRateMs = G3_STACK_TASK_RATE_MS
 };
 
 // </editor-fold>

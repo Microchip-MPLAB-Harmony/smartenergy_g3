@@ -1315,6 +1315,9 @@ typedef struct
     /* Number of fragmented transfer entries */
     uint8_t         numFragmentedTransferEntries;
 
+    /* ADP task rate in milliseconds */
+    uint8_t         taskRateMs;
+
 } ADP_INIT;
 
 // *****************************************************************************
