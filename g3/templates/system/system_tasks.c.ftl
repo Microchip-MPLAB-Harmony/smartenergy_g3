@@ -23,6 +23,7 @@
 *******************************************************************************/
 -->
 
+<#if !(HarmonyCore.SELECT_RTOS)?? || (HarmonyCore.SELECT_RTOS == "BareMetal")>
     /* Maintain G3 MAC */
     MAC_WRP_Tasks(sysObj.g3MacWrapper);
 <#if ADP_PRESENT == true>
@@ -34,4 +35,57 @@
 
     /* Maintain G3 ADP Serialization */
     ADP_SERIAL_Tasks(sysObj.g3AdpSerial);
+</#if>
+<#elseif HarmonyCore.SELECT_RTOS == "FreeRTOS">
+    xTaskCreate( _G3_STACK_Tasks,
+        "G3_STACK_TASKS",
+        G3_STACK_RTOS_STACK_SIZE,
+        (void*)NULL,
+        G3_STACK_RTOS_TASK_PRIORITY,
+        (TaskHandle_t*)NULL
+    );
+<#elseif HarmonyCore.SELECT_RTOS == "ThreadX">
+    tx_byte_allocate(&byte_pool_0,
+        (VOID **) &_G3_STACK_Task_Stk_Ptr,
+        G3_STACK_RTOS_STACK_SIZE,
+        TX_NO_WAIT
+    );
+
+    tx_thread_create(&_G3_STACK_Task_TCB,
+        "G3_STACK_TASKS",
+        _G3_STACK_Tasks,
+        0,
+        _G3_STACK_Task_Stk_Ptr,
+        G3_STACK_RTOS_STACK_SIZE,
+        G3_STACK_RTOS_TASK_PRIORITY,
+        G3_STACK_RTOS_TASK_PRIORITY,
+        TX_NO_TIME_SLICE,
+        TX_AUTO_START
+    );
+<#elseif HarmonyCore.SELECT_RTOS == "MicriumOSIII">
+    <#assign G3_STACK_RTOS_TASK_OPTIONS = "OS_OPT_TASK_NONE" + G3_RTOS_TASK_OPT_STK_CHK?then(' | OS_OPT_TASK_STK_CHK', '') + G3_RTOS_TASK_OPT_STK_CLR?then(' | OS_OPT_TASK_STK_CLR', '') + G3_RTOS_TASK_OPT_SAVE_FP?then(' | OS_OPT_TASK_SAVE_FP', '') + G3_RTOS_TASK_OPT_NO_TLS?then(' | OS_OPT_TASK_NO_TLS', '')>
+    OSTaskCreate((OS_TCB      *)&_G3_STACK_Tasks_TCB,
+                 (CPU_CHAR    *)"G3_STACK_TASKS",
+                 (OS_TASK_PTR  )_G3_STACK_Tasks,
+                 (void        *)0,
+                 (OS_PRIO      )G3_STACK_RTOS_TASK_PRIORITY,
+                 (CPU_STK     *)&_G3_STACK_TasksStk[0],
+                 (CPU_STK_SIZE )0u,
+                 (CPU_STK_SIZE )G3_STACK_RTOS_STACK_SIZE,
+    <#if MicriumOSIII.UCOSIII_CFG_TASK_Q_EN == true>
+                 (OS_MSG_QTY   )G3_STACK_RTOS_TASK_MSG_QTY,
+    <#else>
+                 (OS_MSG_QTY   )0u,
+    </#if>
+    <#if MicriumOSIII.UCOSIII_CFG_SCHED_ROUND_ROBIN_EN == true>
+                 (OS_TICK      )G3_STACK_RTOS_TASK_TIME_QUANTA,
+    <#else>
+                 (OS_TICK      )0u,
+    </#if>
+                 (void        *)0,
+                 (OS_OPT       )(${G3_STACK_RTOS_TASK_OPTIONS}),
+                 (OS_ERR      *)&os_err);
+<#elseif HarmonyCore.SELECT_RTOS == "MbedOS">
+    Thread G3_STACK_thread((osPriority)(osPriorityNormal + (G3_STACK_RTOS_TASK_PRIORITY - 1)), G3_STACK_RTOS_STACK_SIZE, NULL, "_G3_STACK_Tasks");
+    G3_STACK_thread.start(callback(_G3_STACK_Tasks, (void *)NULL));
 </#if>

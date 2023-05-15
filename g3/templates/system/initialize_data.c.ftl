@@ -63,8 +63,14 @@ ADP_INIT g3AdpInitData = {
     /* Number of fragmented transfer entries */
     .numFragmentedTransferEntries = G3_ADP_FRAG_TRANSFER_TABLE_SIZE,
 
+<#if (HarmonyCore.SELECT_RTOS)?? && (HarmonyCore.SELECT_RTOS != "BareMetal")>
+    /* RTOS enabled: ADP task executed always */
+    .taskRateMs = 0
+<#else>
     /* ADP task rate in milliseconds */
     .taskRateMs = G3_STACK_TASK_RATE_MS
+</#if>
+
 };
 
 // </editor-fold>

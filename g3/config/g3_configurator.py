@@ -1,3 +1,4 @@
+# coding: utf-8
 """*****************************************************************************
 * Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
 *
@@ -62,6 +63,71 @@ def instantiateComponent(g3ConfigComponent):
     g3TaskRate.setDefaultValue(5)
     g3TaskRate.setMin(1)
     g3TaskRate.setMax(20)
+
+    # RTOS CONFIG
+    g3StackRTOSMenu = g3ConfigComponent.createMenuSymbol("G3_RTOS_MENU", None)
+    g3StackRTOSMenu.setLabel("RTOS settings")
+    g3StackRTOSMenu.setDescription("RTOS settings")
+    g3StackRTOSMenu.setVisible(getActiveRtos() != "BareMetal")
+    g3StackRTOSMenu.setDependencies(showRTOSMenu, ["HarmonyCore.SELECT_RTOS"])
+
+    g3StackRTOSStackSize = g3ConfigComponent.createIntegerSymbol("G3_RTOS_STACK_SIZE", g3StackRTOSMenu)
+    g3StackRTOSStackSize.setLabel("Stack Size (in bytes)")
+    g3StackRTOSStackSize.setDefaultValue(2048)
+    g3StackRTOSStackSize.setMin(2048)
+    g3StackRTOSStackSize.setMax(16*1024)
+
+    g3StackRTOSTaskPriority = g3ConfigComponent.createIntegerSymbol("G3_RTOS_TASK_PRIORITY", g3StackRTOSMenu)
+    g3StackRTOSTaskPriority.setLabel("Task Priority")
+    g3StackRTOSTaskPriority.setDefaultValue(1)
+    g3StackRTOSTaskPriority.setMin(0)
+
+    g3StackRTOSMsgQSize = g3ConfigComponent.createIntegerSymbol("G3_RTOS_TASK_MSG_QTY", g3StackRTOSMenu)
+    g3StackRTOSMsgQSize.setLabel("Maximum Message Queue Size")
+    g3StackRTOSMsgQSize.setDescription("A µC/OS-III task contains an optional internal message queue (if OS_CFG_TASK_Q_EN is set to DEF_ENABLED in os_cfg.h). This argument specifies the maximum number of messages that the task can receive through this message queue. The user may specify that the task is unable to receive messages by setting this argument to 0")
+    g3StackRTOSMsgQSize.setDefaultValue(0)
+    g3StackRTOSMsgQSize.setMin(0)
+    g3StackRTOSMsgQSize.setVisible(getActiveRtos() == "MicriumOSIII")
+    g3StackRTOSMsgQSize.setDependencies(commandRtosMicriumOSIIIAppTaskVisibility, ["HarmonyCore.SELECT_RTOS"])
+
+    g3StackRTOSTaskTimeQuanta = g3ConfigComponent.createIntegerSymbol("G3_RTOS_TASK_TIME_QUANTA", g3StackRTOSMenu)
+    g3StackRTOSTaskTimeQuanta.setLabel("Task Time Quanta")
+    g3StackRTOSTaskTimeQuanta.setDescription("The amount of time (in clock ticks) for the time quanta when Round Robin is enabled. If you specify 0, then the default time quanta will be used which is the tick rate divided by 10.")
+    g3StackRTOSTaskTimeQuanta.setDefaultValue(0)
+    g3StackRTOSTaskTimeQuanta.setMin(0)
+    g3StackRTOSTaskTimeQuanta.setVisible(getActiveRtos() == "MicriumOSIII")
+    g3StackRTOSTaskTimeQuanta.setDependencies(commandRtosMicriumOSIIIAppTaskVisibility, ["HarmonyCore.SELECT_RTOS"])
+
+    g3StackRTOSTaskSpecificOpt = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_OPT_NONE", g3StackRTOSMenu)
+    g3StackRTOSTaskSpecificOpt.setLabel("Task Specific Options")
+    g3StackRTOSTaskSpecificOpt.setDescription("Contains task-specific options. Each option consists of one bit. The option is selected when the bit is set. The current version of µC/OS-III supports the following options:")
+    g3StackRTOSTaskSpecificOpt.setDefaultValue(True)
+    g3StackRTOSTaskSpecificOpt.setVisible(getActiveRtos() == "MicriumOSIII")
+    g3StackRTOSTaskSpecificOpt.setDependencies(commandRtosMicriumOSIIIAppTaskVisibility, ["HarmonyCore.SELECT_RTOS"])
+
+    g3StackRTOSTaskStkChk = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_OPT_STK_CHK", g3StackRTOSTaskSpecificOpt)
+    g3StackRTOSTaskStkChk.setLabel("Stack checking is allowed for the task")
+    g3StackRTOSTaskStkChk.setDescription("Specifies whether stack checking is allowed for the task")
+    g3StackRTOSTaskStkChk.setDefaultValue(True)
+    g3StackRTOSTaskStkChk.setDependencies(commandRtosMicriumOSIIITaskOptVisibility, ["G3_RTOS_TASK_OPT_NONE"])
+
+    g3StackRTOSTaskStkClr = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_OPT_STK_CLR", g3StackRTOSTaskSpecificOpt)
+    g3StackRTOSTaskStkClr.setLabel("Stack needs to be cleared")
+    g3StackRTOSTaskStkClr.setDescription("Specifies whether the stack needs to be cleared")
+    g3StackRTOSTaskStkClr.setDefaultValue(True)
+    g3StackRTOSTaskStkClr.setDependencies(commandRtosMicriumOSIIITaskOptVisibility, ["G3_RTOS_TASK_OPT_NONE"])
+
+    g3StackRTOSTaskSaveFp = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_OPT_SAVE_FP", g3StackRTOSTaskSpecificOpt)
+    g3StackRTOSTaskSaveFp.setLabel("Floating-point registers needs to be saved")
+    g3StackRTOSTaskSaveFp.setDescription("Specifies whether floating-point registers are saved. This option is only valid if the processor has floating-point hardware and the processor-specific code saves the floating-point registers")
+    g3StackRTOSTaskSaveFp.setDefaultValue(False)
+    g3StackRTOSTaskSaveFp.setDependencies(commandRtosMicriumOSIIITaskOptVisibility, ["G3_RTOS_TASK_OPT_NONE"])
+
+    g3StackRTOSTaskNoTls = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_OPT_NO_TLS", g3StackRTOSTaskSpecificOpt)
+    g3StackRTOSTaskNoTls.setLabel("TLS (Thread Local Storage) support needed for the task")
+    g3StackRTOSTaskNoTls.setDescription("If the caller doesn’t want or need TLS (Thread Local Storage) support for the task being created. If you do not include this option, TLS will be supported by default. TLS support was added in V3.03.00")
+    g3StackRTOSTaskNoTls.setDefaultValue(False)
+    g3StackRTOSTaskNoTls.setDependencies(commandRtosMicriumOSIIITaskOptVisibility, ["G3_RTOS_TASK_OPT_NONE"])
 
     # ADP Configuration
     global g3AdpConfig
@@ -636,6 +702,14 @@ def instantiateComponent(g3ConfigComponent):
     plcSystemTasksFile.setSourcePath("g3/templates/system/system_tasks.c.ftl")
     plcSystemTasksFile.setMarkup(True)
 
+    g3StackSystemRtosTasksFile = g3ConfigComponent.createFileSymbol("G3_STACK_SYS_RTOS_TASK", None)
+    g3StackSystemRtosTasksFile.setType("STRING")
+    g3StackSystemRtosTasksFile.setOutputName("core.LIST_SYSTEM_RTOS_TASKS_C_DEFINITIONS")
+    g3StackSystemRtosTasksFile.setSourcePath("g3/templates/system/system_rtos_tasks.c.ftl")
+    g3StackSystemRtosTasksFile.setMarkup(True)
+    g3StackSystemRtosTasksFile.setEnabled(getActiveRtos() != "BareMetal")
+    g3StackSystemRtosTasksFile.setDependencies(genRtosTask, ["HarmonyCore.SELECT_RTOS"])
+
 def destroyComponent(g3ConfigComponent):
     # Deactivate service and PAL components
     Database.deactivateComponents(["g3PalPlc", "g3PalRf", "srvSecurity", "srvRandom", "srvLogReport", "srvQueue"])
@@ -955,6 +1029,21 @@ def g3CountBuffers400CommentDepend(symbol, event):
 def g3CountBuffers100CommentDepend(symbol, event):
     totalMem = (100 + 50) * g3CountBuffers100.getValue()
     g3CountBuffers100Comment.setLabel("Memory used: ~%d bytes" %totalMem)
+
+def showRTOSMenu(symbol, event):
+    symbol.setVisible(event["value"] != "BareMetal")
+
+def genRtosTask(symbol, event):
+    symbol.setEnabled(event["value"] != "BareMetal")
+
+def commandRtosMicriumOSIIIAppTaskVisibility(symbol, event):
+    symbol.setVisible(event["value"] == "MicriumOSIII")
+
+def commandRtosMicriumOSIIITaskOptVisibility(symbol, event):
+    symbol.setVisible(event["value"])
+
+def getActiveRtos():
+    return Database.getSymbolValue("HarmonyCore", "SELECT_RTOS")
 
 #Set symbols of other components
 def setVal(component, symbol, value):
