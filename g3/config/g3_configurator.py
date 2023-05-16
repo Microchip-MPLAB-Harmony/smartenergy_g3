@@ -206,7 +206,10 @@ def instantiateComponent(g3ConfigComponent):
     else:
         g3FragmentSize.setDefaultValue(400)
     g3FragmentSize.setMin(64)
-    g3FragmentSize.setMax(400)
+    if "WBZ45" in processor:
+        g3FragmentSize.setMax(100)
+    else:
+        g3FragmentSize.setMax(400)
 
     g3FragmentedTransferTableSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENTED_TRANSFER_TABLE_SIZE", g3AdpConfig)
     g3FragmentedTransferTableSize.setLabel("Fragmented transfer table size")
