@@ -60,9 +60,11 @@ def instantiateComponent(g3ConfigComponent):
     g3TaskRate = g3ConfigComponent.createIntegerSymbol("G3_TASK_RATE_MS", None)
     g3TaskRate.setLabel("G3 stack task rate (ms)")
     g3TaskRate.setDescription("Number of milliseconds between G3 stack task processing")
+    g3TaskRate.setVisible(getActiveRtos() == "BareMetal")
     g3TaskRate.setDefaultValue(5)
     g3TaskRate.setMin(1)
     g3TaskRate.setMax(20)
+    g3TaskRate.setDependencies(showTaskRate, ["HarmonyCore.SELECT_RTOS"])
 
     # RTOS CONFIG
     g3StackRTOSMenu = g3ConfigComponent.createMenuSymbol("G3_RTOS_MENU", None)
@@ -81,6 +83,19 @@ def instantiateComponent(g3ConfigComponent):
     g3StackRTOSTaskPriority.setLabel("Task Priority")
     g3StackRTOSTaskPriority.setDefaultValue(1)
     g3StackRTOSTaskPriority.setMin(0)
+
+    g3StackRTOSUseDelay = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_USE_DELAY", g3StackRTOSMenu)
+    g3StackRTOSUseDelay.setLabel("Use Task Delay")
+    g3StackRTOSUseDelay.setDescription("Specifies whether task delay is used or not")
+    g3StackRTOSUseDelay.setDefaultValue(True)
+    g3StackRTOSUseDelay.setReadOnly(True)
+
+    g3StackRTOSDelay = g3ConfigComponent.createIntegerSymbol("G3_RTOS_TASK_DELAY_MS", g3StackRTOSUseDelay)
+    g3StackRTOSDelay.setLabel("Task Delay in ms")
+    g3StackRTOSDelay.setDescription("Specifies the G3 stack task delay in ms")
+    g3StackRTOSDelay.setDefaultValue(5)
+    g3StackRTOSDelay.setMin(1)
+    g3StackRTOSDelay.setMax(20)
 
     g3StackRTOSMsgQSize = g3ConfigComponent.createIntegerSymbol("G3_RTOS_TASK_MSG_QTY", g3StackRTOSMenu)
     g3StackRTOSMsgQSize.setLabel("Maximum Message Queue Size")
@@ -1029,6 +1044,9 @@ def g3CountBuffers400CommentDepend(symbol, event):
 def g3CountBuffers100CommentDepend(symbol, event):
     totalMem = (100 + 50) * g3CountBuffers100.getValue()
     g3CountBuffers100Comment.setLabel("Memory used: ~%d bytes" %totalMem)
+
+def showTaskRate(symbol, event):
+    symbol.setVisible(event["value"] == "BareMetal")
 
 def showRTOSMenu(symbol, event):
     symbol.setVisible(event["value"] != "BareMetal")

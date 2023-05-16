@@ -1,8 +1,8 @@
 
-/* G3 stack task rate in milliseconds */
-#define G3_STACK_TASK_RATE_MS            ${G3_TASK_RATE_MS}
-
-<#if (HarmonyCore.SELECT_RTOS)?? && HarmonyCore.SELECT_RTOS != "BareMetal">
+<#if !(HarmonyCore.SELECT_RTOS)?? || (HarmonyCore.SELECT_RTOS == "BareMetal")>
+    <#lt>/* G3 stack task rate in milliseconds */
+    <#lt>#define G3_STACK_TASK_RATE_MS            ${G3_TASK_RATE_MS}
+<#else>
     <#lt>/* G3 stack RTOS configuration */
     <#if HarmonyCore.SELECT_RTOS == "FreeRTOS">
         <#lt>#define G3_STACK_RTOS_STACK_SIZE         ${G3_RTOS_STACK_SIZE / 4}
@@ -10,12 +10,13 @@
         <#lt>#define G3_STACK_RTOS_STACK_SIZE         ${G3_RTOS_STACK_SIZE}
     </#if>
     <#lt>#define G3_STACK_RTOS_TASK_PRIORITY      ${G3_RTOS_TASK_PRIORITY}
+    <#lt>#define G3_STACK_RTOS_TASK_DELAY_MS      ${G3_RTOS_TASK_DELAY_MS}
     <#if HarmonyCore.SELECT_RTOS == "MicriumOSIII">
         <#lt>#define G3_STACK_RTOS_TASK_MSG_QTY       ${G3_RTOS_TASK_MSG_QTY}u
         <#lt>#define G3_STACK_RTOS_TASK_TIME_QUANTA   ${G3_RTOS_TASK_TIME_QUANTA}u
     </#if>
-
 </#if>
+
 /* MAC COMMON Identification */
 #define G3_MAC_COMMON_INDEX_0            0
 #define G3_MAC_COMMON_INSTANCES_NUMBER   1

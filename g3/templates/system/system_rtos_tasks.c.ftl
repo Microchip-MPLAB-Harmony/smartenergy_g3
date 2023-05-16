@@ -40,7 +40,7 @@
     <#lt>        ADP_SERIAL_Tasks(sysObj.g3AdpSerial);
 </#if>
 
-    <#lt>        vTaskDelay(G3_STACK_TASK_RATE_MS / portTICK_PERIOD_MS);
+    <#lt>        vTaskDelay(G3_STACK_RTOS_TASK_DELAY_MS / portTICK_PERIOD_MS);
     <#lt>    }
     <#lt>}
 <#elseif (HarmonyCore.SELECT_RTOS)?? && HarmonyCore.SELECT_RTOS == "ThreadX">
@@ -64,7 +64,7 @@
     <#lt>        ADP_SERIAL_Tasks(sysObj.g3AdpSerial);
 </#if>
 
-    <#lt>        tx_thread_sleep((ULONG)(G3_STACK_TASK_RATE_MS / (TX_TICK_PERIOD_MS)));
+    <#lt>        tx_thread_sleep((ULONG)(G3_STACK_RTOS_TASK_DELAY_MS / (TX_TICK_PERIOD_MS)));
     <#lt>    }
     <#lt>}
 <#elseif (HarmonyCore.SELECT_RTOS)?? && HarmonyCore.SELECT_RTOS == "MicriumOSIII">
@@ -89,7 +89,7 @@
     <#lt>        ADP_SERIAL_Tasks(sysObj.g3AdpSerial);
 </#if>
 
-    <#lt>        OSTimeDly(G3_STACK_TASK_RATE_MS, OS_OPT_TIME_DLY, &os_err);
+    <#lt>        OSTimeDly(G3_STACK_RTOS_TASK_DELAY_MS, OS_OPT_TIME_DLY, &os_err);
     <#lt>    }
     <#lt>}
 <#elseif (HarmonyCore.SELECT_RTOS)?? && HarmonyCore.SELECT_RTOS == "MbedOS">
@@ -110,7 +110,7 @@
     <#lt>        ADP_SERIAL_Tasks(sysObj.g3AdpSerial);
 </#if>
 
-    <#lt>        thread_sleep_for((uint32_t)(G3_STACK_TASK_RATE_MS / MBED_OS_TICK_PERIOD_MS));
+    <#lt>        thread_sleep_for((uint32_t)(G3_STACK_RTOS_TASK_DELAY_MS / MBED_OS_TICK_PERIOD_MS));
     <#lt>    }
     <#lt>}
 </#if>
