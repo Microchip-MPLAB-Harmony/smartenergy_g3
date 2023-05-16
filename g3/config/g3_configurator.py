@@ -28,6 +28,8 @@ def instantiateComponent(g3ConfigComponent):
         g3StackGroup = Database.createGroup(None, "G3 STACK")
     Database.setActiveGroup("G3 STACK")
     g3StackGroup.addComponent("g3_config")
+    
+    processor = Variables.get("__PROCESSOR")
 
     # Set dependencies inactive by default, they will be dinamically activated depending on config
     g3ConfigComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
@@ -195,6 +197,16 @@ def instantiateComponent(g3ConfigComponent):
     totalMem = (100 + 50) * g3CountBuffers100.getValue()
     g3CountBuffers100Comment.setLabel("Memory used: ~%d bytes" %totalMem)
     g3CountBuffers100Comment.setDependencies(g3CountBuffers100CommentDepend, ["ADP_COUNT_BUFFERS_100"])
+
+    g3FragmentSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENT_SIZE", g3AdpConfig)
+    g3FragmentSize.setLabel("Size of ADP Fragments")
+    g3FragmentSize.setDescription("The number of bytes of each ADP fragment. Depends on MAC layer capabilities.")
+    if "WBZ45" in processor:
+        g3FragmentSize.setDefaultValue(100)
+    else:
+        g3FragmentSize.setDefaultValue(400)
+    g3FragmentSize.setMin(64)
+    g3FragmentSize.setMax(400)
 
     g3FragmentedTransferTableSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENTED_TRANSFER_TABLE_SIZE", g3AdpConfig)
     g3FragmentedTransferTableSize.setLabel("Fragmented transfer table size")

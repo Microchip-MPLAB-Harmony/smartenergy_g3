@@ -48,6 +48,9 @@ ADP_INIT g3AdpInitData = {
     /* Pointer to start of fragmented transfer entries */
     .pFragmentedTransferEntries = &g3AdpFragmentedTransferTable,
 
+    /* ADP fragmentation size */
+    .fragmentSize = G3_ADP_FRAGMENT_SIZE,
+
     /* Number of 1280-byte buffers */
     .numBuffers1280 = G3_ADP_NUM_BUFFERS_1280,
 

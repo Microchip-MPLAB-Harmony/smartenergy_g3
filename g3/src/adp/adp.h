@@ -1300,6 +1300,9 @@ typedef struct
     /* Pointer to start of fragmented transfer entries */
     void*           pFragmentedTransferEntries;
 
+    /* ADP fragmentation size */
+    uint16_t        fragmentSize;
+
     /* Number of 1280-byte buffers */
     uint8_t         numBuffers1280;
 
