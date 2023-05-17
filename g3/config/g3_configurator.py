@@ -218,6 +218,39 @@ def instantiateComponent(g3ConfigComponent):
     g3FragmentedTransferTableSize.setMin(1)
     g3FragmentedTransferTableSize.setMax(16)
 
+    g3LbpCoordConfig = g3ConfigComponent.createMenuSymbol("LBP_COORD_CONFIG", g3AdpConfig)
+    g3LbpCoordConfig.setLabel("Coordinator LBP Configuration")
+    g3LbpCoordConfig.setDescription("Configuration on Coordinator LBP module")
+    g3LbpCoordConfig.setVisible(g3ConfigRole.getValue() != "PAN Device")
+    g3LbpCoordConfig.setDependencies(showLbpCoordConfig, ["G3_ROLE"])
+
+    g3CoordLbpSlots = g3ConfigComponent.createIntegerSymbol("COORD_LBP_SLOTS", g3LbpCoordConfig)
+    g3CoordLbpSlots.setLabel("Number of LBP Slots")
+    g3CoordLbpSlots.setDescription("The number of LBP processes that can be handled in parallel from Coordinator")
+    g3CoordLbpSlots.setVisible(g3ConfigRole.getValue() != "PAN Device")
+    g3CoordLbpSlots.setDefaultValue(5)
+    g3CoordLbpSlots.setMin(1)
+    g3CoordLbpSlots.setMax(20)
+    g3CoordLbpSlots.setDependencies(showLbpCoordConfig, ["G3_ROLE"])
+
+    g3CoordLbpRetries = g3ConfigComponent.createIntegerSymbol("COORD_LBP_RETRIES", g3LbpCoordConfig)
+    g3CoordLbpRetries.setLabel("Number Retries for LBP frames")
+    g3CoordLbpRetries.setDescription("The number of times an LBP frame is retried when no response is received")
+    g3CoordLbpRetries.setVisible(g3ConfigRole.getValue() != "PAN Device")
+    g3CoordLbpRetries.setDefaultValue(1)
+    g3CoordLbpRetries.setMin(1)
+    g3CoordLbpRetries.setMax(5)
+    g3CoordLbpRetries.setDependencies(showLbpCoordConfig, ["G3_ROLE"])
+
+    g3CoordInitialKeyIndex = g3ConfigComponent.createIntegerSymbol("COORD_INIT_KEY_INDEX", g3LbpCoordConfig)
+    g3CoordInitialKeyIndex.setLabel("Initial Security Key Index")
+    g3CoordInitialKeyIndex.setDescription("Security Index to set as active on LBP frames sent to Devices")
+    g3CoordInitialKeyIndex.setVisible(g3ConfigRole.getValue() != "PAN Device")
+    g3CoordInitialKeyIndex.setDefaultValue(0)
+    g3CoordInitialKeyIndex.setMin(0)
+    g3CoordInitialKeyIndex.setMax(1)
+    g3CoordInitialKeyIndex.setDependencies(showLbpCoordConfig, ["G3_ROLE"])
+
     g3AdpSerializationEnable = g3ConfigComponent.createBooleanSymbol("ADP_SERIALIZATION_EN", g3AdpConfig)
     g3AdpSerializationEnable.setLabel("Enable ADP and LBP Serialization")
     g3AdpSerializationEnable.setDescription("Enable/disable ADP and LBP serialization through USI")
@@ -246,7 +279,7 @@ def instantiateComponent(g3ConfigComponent):
     loadngPendingRReqTable.setDescription("Number of RREQs/RERRs that can be stored to respect the parameter ADP_IB_RREQ_WAIT")
     loadngPendingRReqTable.setDefaultValue(6)
     loadngPendingRReqTable.setMin(1)
-    loadngPendingRReqTable.setMax(128)
+    loadngPendingRReqTable.setMax(10)
     loadngPendingRReqTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
 
     loadngRRepGenerationTable = g3ConfigComponent.createIntegerSymbol("LOADNG_RREP_GENERATION_TABLE_SIZE", g3ConfigLOADng)
@@ -254,7 +287,7 @@ def instantiateComponent(g3ConfigComponent):
     loadngRRepGenerationTable.setDescription("Number of RREQs from different sources, that can be handled at the same time")
     loadngRRepGenerationTable.setDefaultValue(3)
     loadngRRepGenerationTable.setMin(1)
-    loadngRRepGenerationTable.setMax(128)
+    loadngRRepGenerationTable.setMax(10)
     loadngRRepGenerationTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
 
     loadngRReqForwardingTable = g3ConfigComponent.createIntegerSymbol("LOADNG_RREQ_FORWARDING_TABLE_SIZE", g3ConfigLOADng)
@@ -262,7 +295,7 @@ def instantiateComponent(g3ConfigComponent):
     loadngRReqForwardingTable.setDescription("Number of entries of RREP forwarding table for LOADNG")
     loadngRReqForwardingTable.setDefaultValue(5)
     loadngRReqForwardingTable.setMin(1)
-    loadngRReqForwardingTable.setMax(128)
+    loadngRReqForwardingTable.setMax(10)
     loadngRReqForwardingTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
 
     loadngDiscoverRouteTable = g3ConfigComponent.createIntegerSymbol("LOADNG_DISCOVER_ROUTE_TABLE_SIZE", g3ConfigLOADng)
@@ -270,7 +303,7 @@ def instantiateComponent(g3ConfigComponent):
     loadngDiscoverRouteTable.setDescription("Number of route discover that can be handled at the same time")
     loadngDiscoverRouteTable.setDefaultValue(3)
     loadngDiscoverRouteTable.setMin(1)
-    loadngDiscoverRouteTable.setMax(128)
+    loadngDiscoverRouteTable.setMax(10)
     loadngDiscoverRouteTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
 
     adpRoutingTable = g3ConfigComponent.createIntegerSymbol("ADP_ROUTING_TABLE_SIZE", g3ConfigLOADng)
@@ -465,13 +498,14 @@ def instantiateComponent(g3ConfigComponent):
 
     global pLbpCoordSource
     pLbpCoordSource = g3ConfigComponent.createFileSymbol("LBP_COORD_SOURCE", None)
-    pLbpCoordSource.setSourcePath("g3/src/lbp/source/lbp_coord.c")
+    pLbpCoordSource.setSourcePath("g3/src/lbp/source/lbp_coord.c.ftl")
     pLbpCoordSource.setOutputName("lbp_coord.c")
     pLbpCoordSource.setDestPath("stack/g3/adaptation")
     pLbpCoordSource.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     pLbpCoordSource.setType("SOURCE")
     pLbpCoordSource.setEnabled(False)
     pLbpCoordSource.setDependencies(g3ConfigRoleChange, ["G3_ROLE"])
+    pLbpCoordSource.setMarkup(True)
 
     global pLbpDevSource
     pLbpDevSource = g3ConfigComponent.createFileSymbol("LBP_DEV_SOURCE", None)
@@ -1059,6 +1093,9 @@ def g3CountBuffers400CommentDepend(symbol, event):
 def g3CountBuffers100CommentDepend(symbol, event):
     totalMem = (100 + 50) * g3CountBuffers100.getValue()
     g3CountBuffers100Comment.setLabel("Memory used: ~%d bytes" %totalMem)
+
+def showLbpCoordConfig(symbol, event):
+    symbol.setVisible(event["value"] != "PAN Device")
 
 def showTaskRate(symbol, event):
     symbol.setVisible(event["value"] == "BareMetal")
