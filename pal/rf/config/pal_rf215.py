@@ -21,7 +21,7 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
-g3_pal_rf_helpkeyword = "mcc_g3_pal_rf_config"
+g3_pal_rf_helpkeyword = "mcc_g3_pal_rf_rf215_config"
 
 def showSymbol(symbol, event):
     symbol.setVisible(event["value"])
@@ -71,7 +71,6 @@ def instantiateComponent(g3PalRfComponent):
     #####################################################################################################################################
     # G3 PAL RF FILES 
 
-    global g3PalRfSrcFile
     g3PalRfSrcFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_SOURCE", None)
     g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_rf215.c.ftl")
     g3PalRfSrcFile.setOutputName("pal_rf.c")
@@ -80,14 +79,20 @@ def instantiateComponent(g3PalRfComponent):
     g3PalRfSrcFile.setType("SOURCE")
     g3PalRfSrcFile.setMarkup(True)
 
-    global g3PalRfHdrFile
     g3PalRfHdrFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_HEADER", None)
-    g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h.ftl")
+    g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h")
     g3PalRfHdrFile.setOutputName("pal_rf.h")
     g3PalRfHdrFile.setDestPath("stack/g3/pal/rf")
     g3PalRfHdrFile.setProjectPath("config/" + configName + "/stack/g3/pal/rf/")
     g3PalRfHdrFile.setType("HEADER")
-    g3PalRfHdrFile.setMarkup(True)
+
+    g3PalRfHdrLocalFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_HEADER_LOCAL", None)
+    g3PalRfHdrLocalFile.setSourcePath("pal/rf/pal_rf_rf215_local.h.ftl")
+    g3PalRfHdrLocalFile.setOutputName("pal_rf_local.h")
+    g3PalRfHdrLocalFile.setDestPath("stack/g3/pal/rf")
+    g3PalRfHdrLocalFile.setProjectPath("config/" + configName + "/stack/g3/pal/rf/")
+    g3PalRfHdrLocalFile.setType("HEADER")
+    g3PalRfHdrLocalFile.setMarkup(True)
 
     #####################################################################################################################################
     # G3 PAL RF TEMPLATES 

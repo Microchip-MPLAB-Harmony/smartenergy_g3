@@ -2351,7 +2351,7 @@ MAC_WRP_STATUS MAC_WRP_GetRequestSync(MAC_WRP_HANDLE handle, MAC_WRP_PIB_ATTRIBU
         else
         {
             /* Get from RF MAC */
-            return (MAC_WRP_STATUS)(MAC_RF_GetRequestSync((MAC_PLC_PIB_ATTRIBUTE)attribute, index, (MAC_PIB_VALUE *)pibValue));
+            return (MAC_WRP_STATUS)(MAC_RF_GetRequestSync((MAC_RF_PIB_ATTRIBUTE)attribute, index, (MAC_PIB_VALUE *)pibValue));
         }
     }
 </#if>
