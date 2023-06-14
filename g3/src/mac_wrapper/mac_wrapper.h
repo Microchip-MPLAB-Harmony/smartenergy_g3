@@ -877,14 +877,14 @@ MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index, MAC_WRP_BAND plcBand);
     handle = MAC_WRP_Open(G3_MAC_WRP_INDEX_0, MAC_WRP_BAND_CENELEC_A);
 
     MAC_WRP_HANDLERS macWrpHandlers = {
-        dataConfirmCallback = appDataConfirm,
-        dataIndicationCallback = appDataIndication,
-        resetConfirmCallback = appResetConfirm,
-        beaconNotifyIndicationCallback = appBeaconIndication,
-        scanConfirmCallback = appScanConfirm,
-        startConfirmCallback = NULL, // Start primitive not used
-        commStatusIndicationCallback = appCommStatus,
-        snifferIndicationCallback = NULL, // MAC Sniffer not used
+        .dataConfirmCallback = appDataConfirm,
+        .dataIndicationCallback = appDataIndication,
+        .resetConfirmCallback = appResetConfirm,
+        .beaconNotifyIndicationCallback = appBeaconIndication,
+        .scanConfirmCallback = appScanConfirm,
+        .startConfirmCallback = NULL, // Start primitive not used
+        .commStatusIndicationCallback = appCommStatus,
+        .snifferIndicationCallback = NULL, // MAC Sniffer not used
     };
 
     MAC_WRP_SetCallbacks(handle, &macWrpHandlers);
@@ -903,7 +903,7 @@ void MAC_WRP_SetCallbacks(MAC_WRP_HANDLE handle, MAC_WRP_HANDLERS* handlers);
     )
 
   Summary:
-    Maintains MAC Wrapper State Machine.
+    Maintains MAC Layers State Machines.
 
   Description:
     MAC Wrapper does not have a State Machine to maintain, but is in charge
@@ -1650,7 +1650,7 @@ uint32_t MAC_WRP_GetMsCounter(void);
     SYS_TIME_Initialize primitive has to be called before.
 
   Parameters:
-    timeValue      - Time value in milliseconds
+    timeValue - Time value in milliseconds
 
   Returns:
     True if the time value is in the past.
@@ -1736,7 +1736,7 @@ uint32_t MAC_WRP_GetSecondsCounter(void);
     None.
 
   Parameters:
-    timeValue      - Time value in seconds
+    timeValue - Time value in seconds
 
   Returns:
     True if the time value is in the past.

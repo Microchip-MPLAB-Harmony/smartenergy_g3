@@ -517,7 +517,8 @@ typedef uint32_t MAC_WRP_TIMESTAMP;
     which contains information of the Beacon frames seen on a G3 network.
 
    Remarks:
-    None.
+    mediaType field is only relevant if both MAC layers are used,
+    otherwise it is fixed to the available MAC.
 */
 typedef struct
 {
@@ -704,7 +705,7 @@ typedef enum
     MAC_WRP_PIB_POS_RECENT_ENTRIES = 0x00000122, /* 16 bits */
     MAC_WRP_PIB_PLC_DISABLE = 0x00000123, /* 8 bits (bool) */
     /* manufacturer specific */
-    /* provides access to device table. 8 Byte entries. */
+    /* provides access to device table. 6 Byte entries. */
     MAC_WRP_PIB_MANUF_DEVICE_TABLE = 0x08000000,
     /* Extended address of this node. 8 Byte array. */
     MAC_WRP_PIB_MANUF_EXTENDED_ADDRESS = 0x08000001,
