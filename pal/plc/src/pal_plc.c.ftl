@@ -6,16 +6,16 @@
     pal_plc.c
 
   Summary:
-    Platform Abstraction Layer PLC (PAL PLC) Interface source file.
+    PLC Platform Abstraction Layer (PAL) Interface source file.
 
   Description:
-    Platform Abstraction Layer PLC (PAL PLC) Interface header.
-    The PAL PLC module provides a simple interface to manage the PLC PHY driver.
+    PLC Platform Abstraction Layer (PAL) Interface source file. The PLC PAL
+    module provides a simple interface to manage the G3-PLC MAC-RT layer.
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -49,16 +49,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "configuration.h"
-#include "driver/driver.h"
-#include "driver/plc/g3MacRt/drv_g3_macrt.h"
-#include "service/pcoup/srv_pcoup.h"
 <#if G3_PAL_PLC_PVDD_MONITOR == true> 
 #include "service/pvddmon/srv_pvddmon.h"
 </#if>
-<#if G3_PAL_PLC_PHY_SNIFFER_EN == true>
-#include "service/usi/srv_usi.h"
-</#if>
-#include "pal_plc.h"
+#include "pal_plc_local.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -81,12 +75,12 @@ static PAL_PLC_DATA palPlcData = {0};
 // *****************************************************************************
 static void _palPlcGetMibBackupInfo(void)
 {
-	palPlcData.plcPIB.pib = MAC_RT_PIB_GET_SET_ALL_MIB;
+    palPlcData.plcPIB.pib = MAC_RT_PIB_GET_SET_ALL_MIB;
     palPlcData.plcPIB.index = 0;
     palPlcData.plcPIB.length = sizeof(MAC_RT_MIB_INIT_OBJ);
     DRV_G3_MACRT_PIBGet(palPlcData.drvG3MacRtHandle, &palPlcData.plcPIB);
     
-	memcpy(&palPlcData.mibInitData, palPlcData.plcPIB.pData, 
+    memcpy(&palPlcData.mibInitData, palPlcData.plcPIB.pData, 
             sizeof(MAC_RT_MIB_INIT_OBJ));
 }
 
@@ -95,7 +89,7 @@ static void _palPlcSetMibBackupInfo(void)
     memcpy(palPlcData.plcPIB.pData, &palPlcData.mibInitData, 
             sizeof(MAC_RT_MIB_INIT_OBJ));
     
-	palPlcData.plcPIB.pib = MAC_RT_PIB_GET_SET_ALL_MIB;
+    palPlcData.plcPIB.pib = MAC_RT_PIB_GET_SET_ALL_MIB;
     palPlcData.plcPIB.index = 0;
     palPlcData.plcPIB.length = sizeof(MAC_RT_MIB_INIT_OBJ);
     DRV_G3_MACRT_PIBSet(palPlcData.drvG3MacRtHandle, &palPlcData.plcPIB);
@@ -104,7 +98,7 @@ static void _palPlcSetMibBackupInfo(void)
 
 static void _palPlcUpdateMibBackupInfo(MAC_RT_PIB pib, uint8_t *pValue)
 {
-	switch (pib) {
+    switch (pib) {
         case MAC_RT_PIB_CSMA_NO_ACK_COUNT:
             palPlcData.mibInitData.csmaNoAckCount = *(uint32_t *)pValue;
             break;
@@ -207,22 +201,21 @@ static void _palPlcUpdateMibBackupInfo(MAC_RT_PIB pib, uint8_t *pValue)
 
         default:
             break;
-	}
+    }
 }
 
 static void _palPlcSetInitialConfiguration ( void )
 {
     /* Apply PLC coupling configuration */
     SRV_PCOUP_Set_Config(palPlcData.drvG3MacRtHandle, palPlcData.plcBranch);
+<#if G3_PAL_PLC_MAC_SNIFFER_EN == true>
 
-<#if G3_PAL_PLC_MAC_SNIFFER_EN == true> 
     /* Enable MAC Sniffer */
     palPlcData.plcPIB.pib = MAC_RT_PIB_MANUF_ENABLE_MAC_SNIFFER;
     palPlcData.plcPIB.index = 0;
     palPlcData.plcPIB.length = 1;
     palPlcData.plcPIB.pData[0] = 1;
     DRV_G3_MACRT_PIBSet(palPlcData.drvG3MacRtHandle, &palPlcData.plcPIB);
-
 </#if>
 }
 
@@ -266,7 +259,7 @@ static void _palPlcExceptionCb( DRV_G3_MACRT_EXCEPTION exceptionObj )
         case DRV_G3_MACRT_EXCEPTION_RESET:
             palPlcData.statsErrorReset++;
             break;
-	}
+    }
     
     /* Set restart Mib flag */
     palPlcData.restartMib = false;
@@ -296,7 +289,7 @@ static void _palPlcDataIndCb( uint8_t *pData, uint16_t length )
 <#if G3_PAL_PLC_PHY_SNIFFER_EN == true>  
 static void _palPlcPhySnifferCb(uint16_t us_len)
 {
-	/* Send to USI */
+    /* Send to USI */
     if (SRV_USI_Status(palPlcData.usiHandler) == SRV_USI_STATUS_CONFIGURED)
     {
         SRV_USI_Send_Message(palPlcData.usiHandler, SRV_USI_PROT_ID_SNIFF_G3, 
@@ -354,15 +347,9 @@ static void _palPlcInitCallback(bool initResult)
         DRV_G3_MACRT_PhySnifferCallbackRegister(palPlcData.drvG3MacRtHandle, 
                 _palPlcPhySnifferCb, (uint8_t *)&palPlcData.phySnifferData);
         DRV_G3_MACRT_EnablePhySniffer(palPlcData.drvG3MacRtHandle);
-        
-        /* Get USI handler */
-        palPlcData.usiHandler = SRV_USI_GetHandler(PAL_PLC_PHY_SNIFFER_USI_INSTANCE);
-        /* Check USI state */
-        if (SRV_USI_Status(palPlcData.usiHandler) != SRV_USI_STATUS_CONFIGURED)
-        {
-            /* Open USI */
-            palPlcData.usiHandler = SRV_USI_Open(PAL_PLC_PHY_SNIFFER_USI_INSTANCE);
-        }
+
+        /* Open USI */
+        palPlcData.usiHandler = SRV_USI_Open(PAL_PLC_PHY_SNIFFER_USI_INSTANCE);
 
 </#if>
         /* Enable PLC Transmission */

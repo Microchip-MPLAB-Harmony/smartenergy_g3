@@ -101,6 +101,14 @@ def instantiateComponent(g3PalPlcComponent):
     g3PalPlcHdrFile.setType("HEADER")
     g3PalPlcHdrFile.setMarkup(True)
 
+    g3PalPlcHdrLocalFile = g3PalPlcComponent.createFileSymbol("G3_PAL_PLC_HEADER_LOCAL", None)
+    g3PalPlcHdrLocalFile.setSourcePath("pal/plc/pal_plc_local.h.ftl")
+    g3PalPlcHdrLocalFile.setOutputName("pal_plc_local.h")
+    g3PalPlcHdrLocalFile.setDestPath("stack/g3/pal/plc")
+    g3PalPlcHdrLocalFile.setProjectPath("config/" + configName + "/stack/g3/pal/plc/")
+    g3PalPlcHdrLocalFile.setType("HEADER")
+    g3PalPlcHdrLocalFile.setMarkup(True)
+
     #####################################################################################################################################
     # G3 PAL PLC TEMPLATES 
     
@@ -115,9 +123,3 @@ def instantiateComponent(g3PalPlcComponent):
     g3PalPlcSystemDefFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_H_INCLUDES")
     g3PalPlcSystemDefFile.setSourcePath("pal/plc/templates/system/definitions.h.ftl")
     g3PalPlcSystemDefFile.setMarkup(True)
-
-    g3PalPlcSymSystemDefObjFile = g3PalPlcComponent.createFileSymbol("G3_PAL_PLC_SYSTEM_DEF_OBJECT", None)
-    g3PalPlcSymSystemDefObjFile.setType("STRING")
-    g3PalPlcSymSystemDefObjFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_H_OBJECTS")
-    g3PalPlcSymSystemDefObjFile.setSourcePath("pal/plc/templates/system/definitions_objects.h.ftl")
-    g3PalPlcSymSystemDefObjFile.setMarkup(True)
