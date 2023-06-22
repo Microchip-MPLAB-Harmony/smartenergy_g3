@@ -90,7 +90,6 @@ static PAL_RF_PHY_STATUS palRfPhyStatus[] = {
 #define CHANNEL_TRANSMIT_RECEIVE (${G3_PAL_RF_PHY_CHANNEL?string}U)
 #define CHANNEL_PAGE_TRANSMIT_RECEIVE (${G3_PAL_RF_PHY_PAGE?string}U)
 #define CCA_MODE (1U)
-#define TRANSMIT_POWER_DBm (${G3_PAL_RF_PHY_TX_POWER?string}U)
 #define PROMISCUOUS_MODE (true)
 #define AUTOACK_MODE (false)
 
@@ -402,12 +401,6 @@ static PAL_RF_PIB_RESULT _PAL_RF_setRFNetworkParameters(void)
     PHY_ConfigRxPromiscuousMode(PROMISCUOUS_MODE);
     pibValue.pib_value_bool = (bool)PROMISCUOUS_MODE;
     attributeStatus = PHY_PibSet(macPromiscuousMode, &pibValue);
-    if (attributeStatus != PHY_SUCCESS)
-    {
-        return PAL_RF_PIB_INVALID_PARAM;
-    }
-
-    attributeStatus = PHY_ConfigTxPwr(PWR_DBM_VALUE, (uint8_t)TRANSMIT_POWER_DBm);
     if (attributeStatus != PHY_SUCCESS)
     {
         return PAL_RF_PIB_INVALID_PARAM;

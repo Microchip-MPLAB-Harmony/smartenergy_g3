@@ -104,13 +104,6 @@ def instantiateComponent(g3PalRfComponent):
     g3PalRfPHYPage.setDefaultValue("0")
     g3PalRfPHYPage.setHelp(g3_pal_rf_helpkeyword)
 
-    g3PalRfPHYTXPower = g3PalRfComponent.createIntegerSymbol("G3_PAL_RF_PHY_TX_POWER", None)
-    g3PalRfPHYTXPower.setLabel("RF PHY Transmit Power (dBm)")
-    g3PalRfPHYTXPower.setDefaultValue(12)
-    g3PalRfPHYTXPower.setMin(-14)
-    g3PalRfPHYTXPower.setMax(12)
-    g3PalRfPHYTXPower.setHelp(g3_pal_rf_helpkeyword)
-
     g3PalRfPHYPhySnifferEnable = g3PalRfComponent.createBooleanSymbol("G3_PAL_RF_PHY_SNIFFER_EN", None)
     g3PalRfPHYPhySnifferEnable.setLabel("Enable G3 PHY sniffer")
     g3PalRfPHYPhySnifferEnable.setDefaultValue(False)
