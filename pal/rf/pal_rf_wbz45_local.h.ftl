@@ -6,15 +6,15 @@
     pal_rf_local.h
 
   Summary:
-    Platform Abstraction Layer RF (PAL RF) Local Interface header file.
+    RF Platform Abstraction Layer (PAL) Interface Local header file.
 
   Description:
-    Platform Abstraction Layer RF (PAL RF) Local Interface header.
+    RF Platform Abstraction Layer (PAL) Interface Local header file.
  *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
- * Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
+ * Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software
  * and any derivatives exclusively with Microchip products. It is your

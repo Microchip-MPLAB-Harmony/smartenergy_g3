@@ -255,12 +255,6 @@ def instantiateComponent(g3PalRfComponent):
     g3PalRfSystemDefFile.setSourcePath("pal/rf/templates/system/definitions.h.ftl")
     g3PalRfSystemDefFile.setMarkup(True)
 
-    g3PalRfSymSystemDefObjFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_SYSTEM_DEF_OBJECT", None)
-    g3PalRfSymSystemDefObjFile.setType("STRING")
-    g3PalRfSymSystemDefObjFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_H_OBJECTS")
-    g3PalRfSymSystemDefObjFile.setSourcePath("pal/rf/templates/system/definitions_objects.h.ftl")
-    g3PalRfSymSystemDefObjFile.setMarkup(True)
-
     g3PalRfSystemTasksFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_SYS_TASK", None)
     g3PalRfSystemTasksFile.setType("STRING")
     g3PalRfSystemTasksFile.setOutputName("core.LIST_SYSTEM_TASKS_C_CALL_LIB_TASKS")

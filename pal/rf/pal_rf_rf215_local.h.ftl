@@ -6,15 +6,15 @@
     pal_rf.h
 
   Summary:
-    Platform Abstraction Layer RF (PAL RF) Interface Local header file.
+    RF Platform Abstraction Layer (PAL) Interface Local header file.
 
   Description:
-    Platform Abstraction Layer RF (PAL RF) Interface local header.
+    RF Platform Abstraction Layer (PAL) Interface Local header file.
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -83,9 +83,17 @@ typedef struct
     
     DRV_RF215_PHY_MOD_SCHEME rfPhyModScheme;
 
-<#if G3_PAL_RF_PHY_SNIFFER_EN == true>   
+<#if drvRf215.DRV_RF215_FSK_EN == true && drvRf215.DRV_RF215_OFDM_EN == true>
+    DRV_RF215_PHY_MOD_SCHEME rfPhyModSchemeFsk;
+
+    DRV_RF215_PHY_MOD_SCHEME rfPhyModSchemeOfdm;
+
+</#if> 
+<#if G3_PAL_RF_PHY_SNIFFER_EN == true>
     SRV_USI_HANDLE srvUsiHandler;
 
+</#if>
+<#if G3_PAL_RF_PHY_SNIFFER_EN == true || drvRf215.DRV_RF215_OFDM_EN == true>
     DRV_RF215_PHY_CFG_OBJ rfPhyConfig;
 
 </#if> 

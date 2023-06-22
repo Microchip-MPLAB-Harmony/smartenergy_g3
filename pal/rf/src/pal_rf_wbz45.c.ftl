@@ -6,16 +6,16 @@
     pal_rf.c
 
   Summary:
-    Platform Abstraction Layer RF (PAL RF) Interface source file.
+    RF Platform Abstraction Layer (PAL) Interface source file.
 
   Description:
-    Platform Abstraction Layer RF (PAL RF) Interface header.
-    The PAL RF module provides a simple interface to manage the RF PHY driver.
+    RF Platform Abstraction Layer (PAL) Interface source file. The RF PAL module
+    provides a simple interface to manage the RF PHY layer.
  *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
- * Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
+ * Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
  *
  * Subject to your compliance with these terms, you may use Microchip software
  * and any derivatives exclusively with Microchip products. It is your
@@ -1130,6 +1130,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
     case PAL_RF_PIB_DEVICE_ID:
     case PAL_RF_PIB_FW_VERSION:
     case PAL_RF_PIB_PHY_TURNAROUND_TIME:
+    case PAL_RF_PIB_PHY_CHANNEL_FREQ_HZ:
     case PAL_RF_PIB_PHY_TX_PAY_SYMBOLS:
     case PAL_RF_PIB_PHY_RX_PAY_SYMBOLS:
     case PAL_RF_PIB_PHY_TX_TOTAL:
@@ -1181,7 +1182,6 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 
     case PAL_RF_PIB_PHY_CONFIG:
     case PAL_RF_PIB_PHY_BAND_OPERATING_MODE:
-    case PAL_RF_PIB_PHY_CHANNEL_FREQ_HZ:
     case PAL_RF_PIB_TX_FSK_FEC:
     case PAL_RF_PIB_TX_OFDM_MCS:
     default:
@@ -1193,7 +1193,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 
 uint8_t PAL_RF_GetRfPhyPibLength(PAL_RF_HANDLE handle, PAL_RF_PIB_ATTRIBUTE attribute)
 {
-    uint8_t pibLen;
+    uint8_t pibLen = 0;
 
     if (handle != (PAL_RF_HANDLE) & palRfData)
     {
@@ -1209,14 +1209,11 @@ uint8_t PAL_RF_GetRfPhyPibLength(PAL_RF_HANDLE handle, PAL_RF_PIB_ATTRIBUTE attr
     case PAL_RF_PIB_PHY_CCA_ED_SAMPLE:
     case PAL_RF_PIB_PHY_STATS_RESET:
     case PAL_RF_PIB_SET_CONTINUOUS_TX_MODE:
-    case PAL_RF_PIB_TX_FSK_FEC:
-    case PAL_RF_PIB_TX_OFDM_MCS:
     case PAL_RF_PIB_PHY_CHANNEL_PAGE:
         pibLen = 1;
         break;
 
     case PAL_RF_PIB_DEVICE_ID:
-    case PAL_RF_PIB_PHY_BAND_OPERATING_MODE:
     case PAL_RF_PIB_PHY_CHANNEL_NUM:
     case PAL_RF_PIB_PHY_CCA_ED_DURATION:
     case PAL_RF_PIB_PHY_TURNAROUND_TIME:
@@ -1254,11 +1251,11 @@ uint8_t PAL_RF_GetRfPhyPibLength(PAL_RF_HANDLE handle, PAL_RF_PIB_ATTRIBUTE attr
         break;
 
     case PAL_RF_PIB_PHY_CONFIG:
-        pibLen = 19;
-        break;
-
+    case PAL_RF_PIB_PHY_BAND_OPERATING_MODE:
+    case PAL_RF_PIB_TX_FSK_FEC:
+    case PAL_RF_PIB_TX_OFDM_MCS:
     default:
-        pibLen = 0;
+        break;
     }
 
     return pibLen;
