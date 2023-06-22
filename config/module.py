@@ -27,7 +27,7 @@ def loadModule():
     print("Load Module: Harmony Smart Energy G3 Stack")
     processor = Variables.get("__PROCESSOR")
 
-    if "WBZ45" in processor:
+    if ("WBZ45" in processor) or ("PIC32CX1012BZ" in processor):
         ## G3 PAL RF for WBZ45
         print("G3: Loading PAL RF for WBZ45")
         g3PalRfComponent = Module.CreateComponent("g3PalRf", "G3 PAL RF", "/SmartEnergy/G3 Stack/PAL", "pal/rf/config/pal_wbz45.py")

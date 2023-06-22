@@ -96,17 +96,17 @@ typedef enum
      * 32 bits (read-only) */
     PAL_RF_PIB_PHY_CHANNEL_FREQ_HZ = 0x0121,
     /* RF channel page used for transmission and reception. 8 bits
-     * (only available for WBZ45x) */
+     * (only available for WBZ45/PIC32CX-BZ2) */
     PAL_RF_PIB_PHY_CHANNEL_PAGE = 0x0122,
     /* RF channels supported used for transmission and reception. 32 bits
-     * (only available for WBZ45x) */
+     * (only available for WBZ45/PIC32CX-BZ2) */
     PAL_RF_PIB_PHY_CHANNELS_SUPPORTED = 0x0123,
     /* Duration in us of Energy Detection for CCA. 16 bits */
     PAL_RF_PIB_PHY_CCA_ED_DURATION = 0x0141,
     /* Threshold in dBm of for CCA with Energy Detection. 16 bits */
     PAL_RF_PIB_PHY_CCA_ED_THRESHOLD = 0x0142,
     /* Perform a single ED measurement on current channel (dBm). 8 bits
-     * (only available for WBZ45x) */
+     * (only available for WBZ45/PIC32CX-BZ2) */
     PAL_RF_PIB_PHY_CCA_ED_SAMPLE = 0x0143,
     /* Turnaround time in us (aTurnaroundTime in IEEE 802.15.4).
      * 16 bits (read-only) */

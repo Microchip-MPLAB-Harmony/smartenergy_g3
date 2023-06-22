@@ -201,12 +201,12 @@ def instantiateComponent(g3ConfigComponent):
     g3FragmentSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENT_SIZE", g3AdpConfig)
     g3FragmentSize.setLabel("Size of ADP Fragments")
     g3FragmentSize.setDescription("The number of bytes of each ADP fragment. Depends on MAC layer capabilities.")
-    if "WBZ45" in processor:
+    if ("WBZ45" in processor) or ("PIC32CX1012BZ" in processor):
         g3FragmentSize.setDefaultValue(100)
     else:
         g3FragmentSize.setDefaultValue(400)
     g3FragmentSize.setMin(64)
-    if "WBZ45" in processor:
+    if ("WBZ45" in processor) or ("PIC32CX1012BZ" in processor):
         g3FragmentSize.setMax(100)
     else:
         g3FragmentSize.setMax(400)
