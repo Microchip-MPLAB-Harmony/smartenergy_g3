@@ -143,6 +143,8 @@ def instantiateComponent(g3PalRfComponent):
     palRFRTOSStackSize.setLabel("Stack Size (in bytes)")
     palRFRTOSStackSize.setHelp(g3_pal_rf_helpkeyword)
     palRFRTOSStackSize.setDefaultValue(256)
+    palRFRTOSStackSize.setMin(256)
+    palRFRTOSStackSize.setMax(16*1024)
 
     palRFRTOSMsgQSize = g3PalRfComponent.createIntegerSymbol("PAL_RF_RTOS_TASK_MSG_QTY", palRFRTOSMenu)
     palRFRTOSMsgQSize.setLabel("Maximum Message Queue Size")
