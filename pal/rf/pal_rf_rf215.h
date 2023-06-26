@@ -314,6 +314,72 @@ typedef enum
 } PAL_RF_PHY_STATUS;
 
 // *****************************************************************************
+/* RF PAL FSK FEC
+
+  Summary:
+    Defines the available FSK FEC modes.
+
+  Description:
+    This data type defines the list of available FSK Forward Error Correction
+    (FEC) modes. FEC mode for transmission can be configured through PIB
+    PAL_RF_PIB_TX_FSK_FEC.
+
+  Remarks:
+    None.
+*/
+
+typedef enum
+{
+    /* FSK: FEC enabled */
+    PAL_RF_FSK_FEC_OFF  = 0,
+
+    /* FSK: FEC disabled */
+    PAL_RF_FSK_FEC_ON   = 1,
+
+} PAL_RF_FSK_FEC;
+
+// *****************************************************************************
+/* RF PAL OFDM MCS
+
+  Summary:
+    Defines the available OFDM MCS modes.
+
+  Description:
+    This data type defines the list of available OFDM Modulation and Coding
+    Scheme (MCS) modes. MCS mode for transmission can be configured through PIB
+    PAL_RF_PIB_TX_OFDM_MCS.
+
+  Remarks:
+    MCS1 is not available in bandwidth option 4. MCS0 is not available in
+    bandwidth options 3 and 4.
+*/
+
+typedef enum
+{
+    /* OFDM: BPSK, 1/2 convolutional encoder rate, 4x frequency repetition */
+    PAL_RF_OFDM_MCS_0   = 0,
+
+    /* OFDM: BPSK, 1/2 convolutional encoder rate, 2x frequency repetition */
+    PAL_RF_OFDM_MCS_1   = 1,
+
+    /* OFDM: QPSK, 1/2 convolutional encoder rate, 2x frequency repetition */
+    PAL_RF_OFDM_MCS_2   = 2,
+
+    /* OFDM: QPSK, 1/2 convolutional encoder rate */
+    PAL_RF_OFDM_MCS_3   = 3,
+
+    /* OFDM: QPSK, 3/4 convolutional encoder rate */
+    PAL_RF_OFDM_MCS_4   = 4,
+
+    /* OFDM: 16-QAM, 1/2 convolutional encoder rate */
+    PAL_RF_OFDM_MCS_5   = 5,
+
+    /* OFDM: 16-QAM, 3/4 convolutional encoder rate */
+    PAL_RF_OFDM_MCS_6   = 6,
+
+} PAL_RF_OFDM_MCS;
+
+// *****************************************************************************
 /* RF PAL TX Request Parameters
 
   Summary:

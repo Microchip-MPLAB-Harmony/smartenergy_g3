@@ -462,12 +462,12 @@ PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 
         case PAL_RF_PIB_TX_OFDM_MCS:
 <#if drvRf215.DRV_RF215_FSK_EN == true && drvRf215.DRV_RF215_OFDM_EN == true>
-            pibObj->pData[0] = (uint8_t) (palRfData.rfPhyModSchemeOfdm - OFDM_MCS_0);
+            pibObj->pData[0] = (uint8_t) palRfData.rfPhyModSchemeOfdm;
 <#elseif drvRf215.DRV_RF215_FSK_EN == true>
             /* OFDM disabled in MCC */
             pibResult = PAL_RF_PIB_INVALID_ATTR;
 <#else>
-            pibObj->pData[0] = (uint8_t) (palRfData.rfPhyModScheme - OFDM_MCS_0);
+            pibObj->pData[0] = (uint8_t) palRfData.rfPhyModScheme;
 </#if>
             break;
 
@@ -499,18 +499,12 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
     {
         case PAL_RF_PIB_TX_FSK_FEC:
 <#if drvRf215.DRV_RF215_FSK_EN == true && drvRf215.DRV_RF215_OFDM_EN == true>
-            if (pibObj->pData[0] == 0)
-            {
-                palRfData.rfPhyModSchemeFsk = FSK_FEC_OFF;
-            }
-            else if (pibObj->pData[0] == 1)
-            {
-                palRfData.rfPhyModSchemeFsk = FSK_FEC_ON;
-            }
-            else
+            if (pibObj->pData[0] > PAL_RF_FSK_FEC_ON)
             {
                 return PAL_RF_PIB_INVALID_PARAM;
             }
+
+            palRfData.rfPhyModSchemeFsk = (DRV_RF215_PHY_MOD_SCHEME) pibObj->pData[0];
 
             if (palRfData.rfPhyConfig.phyType == PHY_TYPE_FSK)
             {
@@ -518,18 +512,12 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
             }
 
 <#elseif drvRf215.DRV_RF215_FSK_EN == true>
-            if (pibObj->pData[0] == 0)
+            if (pibObj->pData[0] > PAL_RF_FSK_FEC_ON)
             {
-                palRfData.rfPhyModScheme = FSK_FEC_OFF;
+                return PAL_RF_PIB_INVALID_PARAM;
             }
-            else if (pibObj->pData[0] == 1)
-            {
-                palRfData.rfPhyModScheme = FSK_FEC_ON;
-            }
-            else
-            {
-                pibResult = PAL_RF_PIB_INVALID_PARAM;
-            }
+
+            palRfData.rfPhyModScheme = (DRV_RF215_PHY_MOD_SCHEME) pibObj->pData[0];
 
 <#else>
             /* FSK disabled in MCC */
@@ -541,7 +529,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 <#if drvRf215.DRV_RF215_FSK_EN == true && drvRf215.DRV_RF215_OFDM_EN == true>
             switch (pibObj->pData[0])
             {
-                case 0:
+                case PAL_RF_OFDM_MCS_0:
                     if ((palRfData.rfPhyConfig.phyType == PHY_TYPE_OFDM) &&
                         ((palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_4) ||
                         (palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_3)))
@@ -552,7 +540,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
                     palRfData.rfPhyModSchemeOfdm = OFDM_MCS_0;
                     break;
 
-                case 1:
+                case PAL_RF_OFDM_MCS_1:
                     if ((palRfData.rfPhyConfig.phyType == PHY_TYPE_OFDM) &&
                         (palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_4))
                     {
@@ -562,24 +550,12 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
                     palRfData.rfPhyModSchemeOfdm = OFDM_MCS_1;
                     break;
 
-                case 2:
-                    palRfData.rfPhyModSchemeOfdm = OFDM_MCS_2;
-                    break;
-
-                case 3:
-                    palRfData.rfPhyModSchemeOfdm = OFDM_MCS_3;
-                    break;
-
-                case 4:
-                    palRfData.rfPhyModSchemeOfdm = OFDM_MCS_4;
-                    break;
-
-                case 5:
-                    palRfData.rfPhyModSchemeOfdm = OFDM_MCS_5;
-                    break;
-
-                case 6:
-                    palRfData.rfPhyModSchemeOfdm = OFDM_MCS_6;
+                case PAL_RF_OFDM_MCS_2:
+                case PAL_RF_OFDM_MCS_3:
+                case PAL_RF_OFDM_MCS_4:
+                case PAL_RF_OFDM_MCS_5:
+                case PAL_RF_OFDM_MCS_6:
+                    palRfData.rfPhyModSchemeOfdm = (DRV_RF215_PHY_MOD_SCHEME) pibObj->pData[0];
                     break;
 
                 default:
@@ -597,7 +573,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 <#else>
             switch (pibObj->pData[0])
             {
-                case 0:
+                case PAL_RF_OFDM_MCS_0:
                     if ((palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_4) ||
                         (palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_3))
                     {
@@ -607,7 +583,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
                     palRfData.rfPhyModScheme = OFDM_MCS_0;
                     break;
 
-                case 1:
+                case PAL_RF_OFDM_MCS_1:
                     if (palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_4)
                     {
                         return PAL_RF_PIB_INVALID_PARAM;
@@ -616,24 +592,12 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
                     palRfData.rfPhyModScheme = OFDM_MCS_1;
                     break;
 
-                case 2:
-                    palRfData.rfPhyModScheme = OFDM_MCS_2;
-                    break;
-
-                case 3:
-                    palRfData.rfPhyModScheme = OFDM_MCS_3;
-                    break;
-
-                case 4:
-                    palRfData.rfPhyModScheme = OFDM_MCS_4;
-                    break;
-
-                case 5:
-                    palRfData.rfPhyModScheme = OFDM_MCS_5;
-                    break;
-
-                case 6:
-                    palRfData.rfPhyModScheme = OFDM_MCS_6;
+                case PAL_RF_OFDM_MCS_2:
+                case PAL_RF_OFDM_MCS_3:
+                case PAL_RF_OFDM_MCS_4:
+                case PAL_RF_OFDM_MCS_5:
+                case PAL_RF_OFDM_MCS_6:
+                    palRfData.rfPhyModScheme = (DRV_RF215_PHY_MOD_SCHEME) pibObj->pData[0];
                     break;
 
                 default:
