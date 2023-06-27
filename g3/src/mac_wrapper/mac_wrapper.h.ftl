@@ -1347,6 +1347,7 @@ MAC_WRP_AVAILABLE_MAC_LAYERS MAC_WRP_GetAvailableMacLayers(MAC_WRP_HANDLE handle
 */
 SYS_STATUS MAC_WRP_Status(void);
 
+<#if MAC_SERIALIZATION_EN == true || ADP_SERIALIZATION_EN == true>
 // *****************************************************************************
 /* Function:
     uint32_t MAC_WRP_SerialParseGetRequest(uint8_t* pData, uint16_t* index)
@@ -1588,6 +1589,7 @@ uint8_t MAC_WRP_SerialStringifySetConfirm (
     uint16_t index
 );
 
+</#if>
 // *****************************************************************************
 /* Function:
     uint32_t MAC_WRP_GetMsCounter

@@ -535,12 +535,12 @@ def instantiateComponent(g3ConfigComponent):
     pMacWrpSource.setMarkup(True)
     
     pMacWrpHeader = g3ConfigComponent.createFileSymbol("MAC_WRAPPER_HEADER", None)
-    pMacWrpHeader.setSourcePath("g3/src/mac_wrapper/mac_wrapper.h")
+    pMacWrpHeader.setSourcePath("g3/src/mac_wrapper/mac_wrapper.h.ftl")
     pMacWrpHeader.setOutputName("mac_wrapper.h")
     pMacWrpHeader.setDestPath("stack/g3/mac/mac_wrapper")
     pMacWrpHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_wrapper")
     pMacWrpHeader.setType("HEADER")
-    pMacWrpHeader.setMarkup(False)
+    pMacWrpHeader.setMarkup(True)
     
     pMacWrpDefsHeader = g3ConfigComponent.createFileSymbol("MAC_WRAPPER_DEFS_HEADER", None)
     pMacWrpDefsHeader.setSourcePath("g3/src/mac_wrapper/mac_wrapper_defs.h")

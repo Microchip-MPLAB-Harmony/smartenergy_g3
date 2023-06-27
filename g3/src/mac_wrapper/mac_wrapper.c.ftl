@@ -415,6 +415,7 @@ static bool _macWrpIsSharedAttribute(MAC_WRP_PIB_ATTRIBUTE attribute)
     }
 }
 
+<#if MAC_SERIALIZATION_EN == true || ADP_SERIALIZATION_EN == true>
 static void _Serial_memcpyToUsiEndianessUint32(uint8_t* pDst, uint8_t* pSrc)
 {
     uint32_t aux;
@@ -459,6 +460,7 @@ static void _Serial_memcpyFromUsiEndianessUint16(uint8_t* pDst, uint8_t* pSrc)
     memcpy(pDst, (uint8_t *)&aux, 2);
 }
 
+</#if>
 <#if MAC_SERIALIZATION_EN == true>
 static void _Serial_StringifyMsgStatus(MAC_WRP_SERIAL_STATUS status, MAC_WRP_SERIAL_MSG_ID command)
 {
@@ -2576,6 +2578,7 @@ MAC_WRP_AVAILABLE_MAC_LAYERS MAC_WRP_GetAvailableMacLayers(MAC_WRP_HANDLE handle
 </#if>
 }
 
+<#if MAC_SERIALIZATION_EN == true || ADP_SERIALIZATION_EN == true>
 uint32_t MAC_WRP_SerialParseGetRequest(uint8_t* pData, uint16_t* index)
 {
     uint32_t attribute;
@@ -3489,6 +3492,7 @@ uint8_t MAC_WRP_SerialStringifySetConfirm (
     return serialRspLen;
 }
 
+</#if>
 uint32_t MAC_WRP_GetMsCounter(void)
 {
     /* Call lower layer function */
