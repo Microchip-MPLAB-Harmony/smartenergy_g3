@@ -28,7 +28,7 @@ def instantiateComponent(g3ConfigComponent):
         g3StackGroup = Database.createGroup(None, "G3 STACK")
     Database.setActiveGroup("G3 STACK")
     g3StackGroup.addComponent("g3_config")
-    
+
     processor = Variables.get("__PROCESSOR")
 
     # Set dependencies inactive by default, they will be dinamically activated depending on config
@@ -67,6 +67,15 @@ def instantiateComponent(g3ConfigComponent):
     g3TaskRate.setMin(1)
     g3TaskRate.setMax(20)
     g3TaskRate.setDependencies(showTaskRate, ["HarmonyCore.SELECT_RTOS"])
+
+    # Debug Traces Enable
+    global g3DebugEnable
+    g3DebugEnable = g3ConfigComponent.createBooleanSymbol("G3_DEBUG_ENABLE", None)
+    g3DebugEnable.setLabel("Enable G3 Stack Debug Traces")
+    g3DebugEnable.setDescription("Enable/disable G3 Debug messages through SYS_DEBUG Service")
+    g3DebugEnable.setDefaultValue(False)
+    g3DebugEnable.setVisible(False)
+    g3DebugEnable.setDependencies(g3DebugChange, ["G3_DEBUG_ENABLE"])
 
     # RTOS CONFIG
     g3StackRTOSMenu = g3ConfigComponent.createMenuSymbol("G3_RTOS_MENU", None)
@@ -153,8 +162,14 @@ def instantiateComponent(g3ConfigComponent):
     g3AdpConfig.setDescription("ADP Buffers and Table Sizes")
     g3AdpConfig.setVisible(False)
 
+    global g3SixLoWPANConfig
+    g3SixLoWPANConfig = g3ConfigComponent.createMenuSymbol("6LOWPAN_CONFIG", g3AdpConfig)
+    g3SixLoWPANConfig.setLabel("6LOWPAN Configuration")
+    g3SixLoWPANConfig.setDescription("6LOWPAN Buffers and Table Sizes")
+    g3SixLoWPANConfig.setVisible(False)
+
     global g3CountBuffers1280
-    g3CountBuffers1280 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_1280", g3AdpConfig)
+    g3CountBuffers1280 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_1280", g3SixLoWPANConfig)
     g3CountBuffers1280.setLabel("Number of 1280-byte buffers")
     g3CountBuffers1280.setDescription("Number of 1280-byte buffers for adaptation layer")
     g3CountBuffers1280.setDefaultValue(1)
@@ -169,7 +184,7 @@ def instantiateComponent(g3ConfigComponent):
     g3CountBuffers1280Comment.setDependencies(g3CountBuffers1280CommentDepend, ["ADP_COUNT_BUFFERS_1280"])
 
     global g3CountBuffers400
-    g3CountBuffers400 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_400", g3AdpConfig)
+    g3CountBuffers400 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_400", g3SixLoWPANConfig)
     g3CountBuffers400.setLabel("Number of 400-byte buffers")
     g3CountBuffers400.setDescription("Number of 400-byte buffers for adaptation layer")
     g3CountBuffers400.setDefaultValue(3)
@@ -184,7 +199,7 @@ def instantiateComponent(g3ConfigComponent):
     g3CountBuffers400Comment.setDependencies(g3CountBuffers400CommentDepend, ["ADP_COUNT_BUFFERS_400"])
 
     global g3CountBuffers100
-    g3CountBuffers100 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_100", g3AdpConfig)
+    g3CountBuffers100 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_100", g3SixLoWPANConfig)
     g3CountBuffers100.setLabel("Number of 100-byte buffers")
     g3CountBuffers100.setDescription("Number of 100-byte buffers for adaptation layer")
     g3CountBuffers100.setDefaultValue(3)
@@ -198,7 +213,7 @@ def instantiateComponent(g3ConfigComponent):
     g3CountBuffers100Comment.setLabel("Memory used: ~%d bytes" %totalMem)
     g3CountBuffers100Comment.setDependencies(g3CountBuffers100CommentDepend, ["ADP_COUNT_BUFFERS_100"])
 
-    g3FragmentSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENT_SIZE", g3AdpConfig)
+    g3FragmentSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENT_SIZE", g3SixLoWPANConfig)
     g3FragmentSize.setLabel("Size of ADP Fragments")
     g3FragmentSize.setDescription("The number of bytes of each ADP fragment. Depends on MAC layer capabilities.")
     if ("WBZ45" in processor) or ("PIC32CX1012BZ" in processor):
@@ -211,13 +226,98 @@ def instantiateComponent(g3ConfigComponent):
     else:
         g3FragmentSize.setMax(400)
 
-    g3FragmentedTransferTableSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENTED_TRANSFER_TABLE_SIZE", g3AdpConfig)
+    g3FragmentedTransferTableSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENTED_TRANSFER_TABLE_SIZE", g3SixLoWPANConfig)
     g3FragmentedTransferTableSize.setLabel("Fragmented transfer table size")
     g3FragmentedTransferTableSize.setDescription("The number of fragmented transfers which can be handled in parallel")
     g3FragmentedTransferTableSize.setDefaultValue(1)
     g3FragmentedTransferTableSize.setMin(1)
     g3FragmentedTransferTableSize.setMax(16)
 
+    # LOADng Configuration
+    global g3ConfigLOADng
+    g3ConfigLOADng = g3ConfigComponent.createBooleanSymbol("LOADNG_ENABLE", g3AdpConfig)
+    g3ConfigLOADng.setLabel("Enable LOADng Routing")
+    g3ConfigLOADng.setVisible(False)
+    g3ConfigLOADng.setDescription("Enable LOADng Routing Protocol")
+    g3ConfigLOADng.setDependencies(g3LOADngEnable, ["LOADNG_ENABLE"])
+    g3ConfigLOADng.setDefaultValue(True)
+
+    adpRoutingTable = g3ConfigComponent.createIntegerSymbol("ADP_ROUTING_TABLE_SIZE", g3ConfigLOADng)
+    adpRoutingTable.setLabel("Routing Table size")
+    adpRoutingTable.setDescription("Number of entries in the Routing Table for LOADNG")
+    adpRoutingTable.setDefaultValue(150)
+    adpRoutingTable.setMin(1)
+    adpRoutingTable.setMax(1024)
+    adpRoutingTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
+    adpRoutingSet = g3ConfigComponent.createIntegerSymbol("ADP_ROUTING_SET_SIZE", g3ConfigLOADng)
+    adpRoutingSet.setLabel("Routing Set size")
+    adpRoutingSet.setDescription("Number of entries in the Routing Set for LOADNG")
+    adpRoutingSet.setDefaultValue(30)
+    adpRoutingSet.setMin(1)
+    adpRoutingSet.setMax(256)
+    adpRoutingSet.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
+    adpBlacklistTable = g3ConfigComponent.createIntegerSymbol("ADP_BLACKLIST_TABLE_SIZE", g3ConfigLOADng)
+    adpBlacklistTable.setLabel("Blacklist Table size")
+    adpBlacklistTable.setDescription("Number of entries in the Blacklist Table for LOADNG")
+    adpBlacklistTable.setDefaultValue(20)
+    adpBlacklistTable.setMin(1)
+    adpBlacklistTable.setMax(256)
+    adpBlacklistTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
+    adpDestinationAddressSet = g3ConfigComponent.createIntegerSymbol("ADP_DESTINATION_ADDRESS_SET_SIZE", g3ConfigLOADng)
+    adpDestinationAddressSet.setLabel("Destination Address Set size")
+    adpDestinationAddressSet.setDescription("Number of entries in the Destination Address Set Table")
+    adpDestinationAddressSet.setDefaultValue(1)
+    adpDestinationAddressSet.setMin(1)
+    adpDestinationAddressSet.setMax(128)
+    adpDestinationAddressSet.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+
+    global g3LOADngAdvancedSettings
+    g3LOADngAdvancedSettings = g3ConfigComponent.createBooleanSymbol("LOADNG_ADVANCED_SETTINGS", g3ConfigLOADng)
+    g3LOADngAdvancedSettings.setLabel("LOADng Advanced Settings")
+    g3LOADngAdvancedSettings.setDescription("Enable LOADng Advanced Configuration")
+    g3LOADngAdvancedSettings.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+    g3LOADngAdvancedSettings.setDefaultValue(False)
+
+    loadngPendingRReqTable = g3ConfigComponent.createIntegerSymbol("LOADNG_PENDING_RREQ_TABLE_SIZE", g3LOADngAdvancedSettings)
+    loadngPendingRReqTable.setLabel("Pending RREQ table size")
+    loadngPendingRReqTable.setDescription("Number of RREQs/RERRs that can be stored to respect the parameter ADP_IB_RREQ_WAIT")
+    loadngPendingRReqTable.setDefaultValue(6)
+    loadngPendingRReqTable.setMin(1)
+    loadngPendingRReqTable.setMax(10)
+    loadngPendingRReqTable.setVisible(False)
+    loadngPendingRReqTable.setDependencies(showSymbol, ["LOADNG_ADVANCED_SETTINGS"])
+
+    loadngRRepGenerationTable = g3ConfigComponent.createIntegerSymbol("LOADNG_RREP_GENERATION_TABLE_SIZE", g3LOADngAdvancedSettings)
+    loadngRRepGenerationTable.setLabel("RREP generation table size")
+    loadngRRepGenerationTable.setDescription("Number of RREQs from different sources, that can be handled at the same time")
+    loadngRRepGenerationTable.setDefaultValue(3)
+    loadngRRepGenerationTable.setMin(1)
+    loadngRRepGenerationTable.setMax(10)
+    loadngRRepGenerationTable.setVisible(False)
+    loadngRRepGenerationTable.setDependencies(showSymbol, ["LOADNG_ADVANCED_SETTINGS"])
+
+    loadngRReqForwardingTable = g3ConfigComponent.createIntegerSymbol("LOADNG_RREQ_FORWARDING_TABLE_SIZE", g3LOADngAdvancedSettings)
+    loadngRReqForwardingTable.setLabel("RREP forwarding table size")
+    loadngRReqForwardingTable.setDescription("Number of entries of RREP forwarding table for LOADNG")
+    loadngRReqForwardingTable.setDefaultValue(5)
+    loadngRReqForwardingTable.setMin(1)
+    loadngRReqForwardingTable.setMax(10)
+    loadngRReqForwardingTable.setVisible(False)
+    loadngRReqForwardingTable.setDependencies(showSymbol, ["LOADNG_ADVANCED_SETTINGS"])
+
+    loadngDiscoverRouteTable = g3ConfigComponent.createIntegerSymbol("LOADNG_DISCOVER_ROUTE_TABLE_SIZE", g3LOADngAdvancedSettings)
+    loadngDiscoverRouteTable.setLabel("Discover route table size")
+    loadngDiscoverRouteTable.setDescription("Number of route discover that can be handled at the same time")
+    loadngDiscoverRouteTable.setDefaultValue(3)
+    loadngDiscoverRouteTable.setMin(1)
+    loadngDiscoverRouteTable.setMax(10)
+    loadngDiscoverRouteTable.setVisible(False)
+    loadngDiscoverRouteTable.setDependencies(showSymbol, ["LOADNG_ADVANCED_SETTINGS"])
+
+    # Coordinator LBP Configuration
     g3LbpCoordConfig = g3ConfigComponent.createMenuSymbol("LBP_COORD_CONFIG", g3AdpConfig)
     g3LbpCoordConfig.setLabel("Coordinator LBP Configuration")
     g3LbpCoordConfig.setDescription("Configuration on Coordinator LBP module")
@@ -251,6 +351,7 @@ def instantiateComponent(g3ConfigComponent):
     g3CoordInitialKeyIndex.setMax(1)
     g3CoordInitialKeyIndex.setDependencies(showLbpCoordConfig, ["G3_ROLE"])
 
+    # ADP Serialization
     g3AdpSerializationEnable = g3ConfigComponent.createBooleanSymbol("ADP_SERIALIZATION_EN", g3AdpConfig)
     g3AdpSerializationEnable.setLabel("Enable ADP and LBP Serialization")
     g3AdpSerializationEnable.setDescription("Enable/disable ADP and LBP serialization through USI")
@@ -265,86 +366,20 @@ def instantiateComponent(g3ConfigComponent):
     g3AdpSerializationUsiInstance.setVisible(False)
     g3AdpSerializationUsiInstance.setDependencies(showUsiInstance, ["ADP_SERIALIZATION_EN"])
 
-    # LOADng Configuration
-    global g3ConfigLOADng
-    g3ConfigLOADng = g3ConfigComponent.createBooleanSymbol("LOADNG_ENABLE", None)
-    g3ConfigLOADng.setLabel("Enable LOADng Routing")
-    g3ConfigLOADng.setVisible(False)
-    g3ConfigLOADng.setDescription("Enable LOADng Routing Protocol")
-    g3ConfigLOADng.setDependencies(g3LOADngEnable, ["LOADNG_ENABLE"])
-    g3ConfigLOADng.setDefaultValue(True)
-
-    loadngPendingRReqTable = g3ConfigComponent.createIntegerSymbol("LOADNG_PENDING_RREQ_TABLE_SIZE", g3ConfigLOADng)
-    loadngPendingRReqTable.setLabel("Pending RREQ table size")
-    loadngPendingRReqTable.setDescription("Number of RREQs/RERRs that can be stored to respect the parameter ADP_IB_RREQ_WAIT")
-    loadngPendingRReqTable.setDefaultValue(6)
-    loadngPendingRReqTable.setMin(1)
-    loadngPendingRReqTable.setMax(10)
-    loadngPendingRReqTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
-
-    loadngRRepGenerationTable = g3ConfigComponent.createIntegerSymbol("LOADNG_RREP_GENERATION_TABLE_SIZE", g3ConfigLOADng)
-    loadngRRepGenerationTable.setLabel("RREQ generation table size")
-    loadngRRepGenerationTable.setDescription("Number of RREQs from different sources, that can be handled at the same time")
-    loadngRRepGenerationTable.setDefaultValue(3)
-    loadngRRepGenerationTable.setMin(1)
-    loadngRRepGenerationTable.setMax(10)
-    loadngRRepGenerationTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
-
-    loadngRReqForwardingTable = g3ConfigComponent.createIntegerSymbol("LOADNG_RREQ_FORWARDING_TABLE_SIZE", g3ConfigLOADng)
-    loadngRReqForwardingTable.setLabel("RREP forwarding table size")
-    loadngRReqForwardingTable.setDescription("Number of entries of RREP forwarding table for LOADNG")
-    loadngRReqForwardingTable.setDefaultValue(5)
-    loadngRReqForwardingTable.setMin(1)
-    loadngRReqForwardingTable.setMax(10)
-    loadngRReqForwardingTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
-
-    loadngDiscoverRouteTable = g3ConfigComponent.createIntegerSymbol("LOADNG_DISCOVER_ROUTE_TABLE_SIZE", g3ConfigLOADng)
-    loadngDiscoverRouteTable.setLabel("Discover route table size")
-    loadngDiscoverRouteTable.setDescription("Number of route discover that can be handled at the same time")
-    loadngDiscoverRouteTable.setDefaultValue(3)
-    loadngDiscoverRouteTable.setMin(1)
-    loadngDiscoverRouteTable.setMax(10)
-    loadngDiscoverRouteTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
-
-    adpRoutingTable = g3ConfigComponent.createIntegerSymbol("ADP_ROUTING_TABLE_SIZE", g3ConfigLOADng)
-    adpRoutingTable.setLabel("Routing table size")
-    adpRoutingTable.setDescription("Number of entries in the Routing Table for LOADNG")
-    adpRoutingTable.setDefaultValue(150)
-    adpRoutingTable.setMin(1)
-    adpRoutingTable.setMax(1024)
-    adpRoutingTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
-
-    adpBlacklistTable = g3ConfigComponent.createIntegerSymbol("ADP_BLACKLIST_TABLE_SIZE", g3ConfigLOADng)
-    adpBlacklistTable.setLabel("Blacklist table size")
-    adpBlacklistTable.setDescription("Number of entries in the Blacklist Table for LOADNG")
-    adpBlacklistTable.setDefaultValue(20)
-    adpBlacklistTable.setMin(1)
-    adpBlacklistTable.setMax(256)
-    adpBlacklistTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
-
-    adpRoutingSet = g3ConfigComponent.createIntegerSymbol("ADP_ROUTING_SET_SIZE", g3ConfigLOADng)
-    adpRoutingSet.setLabel("Routing set size")
-    adpRoutingSet.setDescription("Number of entries in the Routing Set for LOADNG")
-    adpRoutingSet.setDefaultValue(30)
-    adpRoutingSet.setMin(1)
-    adpRoutingSet.setMax(256)
-    adpRoutingSet.setDependencies(showSymbol, ["LOADNG_ENABLE"])
-
-    adpDestinationAddressSet = g3ConfigComponent.createIntegerSymbol("ADP_DESTINATION_ADDRESS_SET_SIZE", g3ConfigLOADng)
-    adpDestinationAddressSet.setLabel("Destination address set size")
-    adpDestinationAddressSet.setDescription("Number of entries in the Destination Address Set Table")
-    adpDestinationAddressSet.setDefaultValue(1)
-    adpDestinationAddressSet.setMin(1)
-    adpDestinationAddressSet.setMax(128)
-    adpDestinationAddressSet.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+    # MAC Configuration
+    global g3MacConfig
+    g3MacConfig = g3ConfigComponent.createMenuSymbol("MAC_CONFIG", None)
+    g3MacConfig.setLabel("MAC Configuration")
+    g3MacConfig.setDescription("MAC Buffers and Table Sizes")
+    g3MacConfig.setVisible(False)
 
     # MAC PLC Table Sizes
     global g3MacPLCTables
-    g3MacPLCTables = g3ConfigComponent.createMenuSymbol("MAC_PLC_TABLES", None)
+    g3MacPLCTables = g3ConfigComponent.createMenuSymbol("MAC_PLC_TABLES", g3MacConfig)
     g3MacPLCTables.setLabel("MAC PLC Table Sizes")
     g3MacPLCTables.setDescription("MAC PLC Table Sizes")
     g3MacPLCTables.setVisible(False)
-    
+
     g3MacPLCDeviceTable = g3ConfigComponent.createIntegerSymbol("MAC_PLC_DEVICE_TABLE_SIZE", g3MacPLCTables)
     g3MacPLCDeviceTable.setLabel("Device Table Size")
     g3MacPLCDeviceTable.setDescription("Security Table where incoming Frame Counters are stored")
@@ -354,25 +389,25 @@ def instantiateComponent(g3ConfigComponent):
 
     # MAC RF Table Sizes
     global g3MacRFTables
-    g3MacRFTables = g3ConfigComponent.createMenuSymbol("MAC_RF_TABLES", None)
+    g3MacRFTables = g3ConfigComponent.createMenuSymbol("MAC_RF_TABLES", g3MacConfig)
     g3MacRFTables.setLabel("MAC RF Table Sizes")
     g3MacRFTables.setDescription("MAC RF Table Sizes")
     g3MacRFTables.setVisible(False)
-    
+
     g3MacRFDeviceTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_DEVICE_TABLE_SIZE", g3MacRFTables)
     g3MacRFDeviceTable.setLabel("Device Table Size")
     g3MacRFDeviceTable.setDescription("Security Table where incoming Frame Counters are stored")
     g3MacRFDeviceTable.setDefaultValue(128)
     g3MacRFDeviceTable.setMin(16)
     g3MacRFDeviceTable.setMax(512)
-    
+
     g3MacRFPOSTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_POS_TABLE_SIZE", g3MacRFTables)
     g3MacRFPOSTable.setLabel("POS Table Size")
     g3MacRFPOSTable.setDescription("Auxiliary Table where information from Neighbouring nodes is stored")
     g3MacRFPOSTable.setDefaultValue(100)
     g3MacRFPOSTable.setMin(16)
     g3MacRFPOSTable.setMax(512)
-    
+
     g3MacRFDSNTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_DSN_TABLE_SIZE", g3MacRFTables)
     g3MacRFDSNTable.setLabel("Sequence Number Table Size")
     g3MacRFDSNTable.setDescription("Control Table where incoming sequence numbers are stored to avoid duplicated frames processing")
@@ -381,7 +416,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacRFDSNTable.setMax(128)
 
     global g3MacSerializationEnable
-    g3MacSerializationEnable = g3ConfigComponent.createBooleanSymbol("MAC_SERIALIZATION_EN", None)
+    g3MacSerializationEnable = g3ConfigComponent.createBooleanSymbol("MAC_SERIALIZATION_EN", g3MacConfig)
     g3MacSerializationEnable.setLabel("Enable MAC Serialization")
     g3MacSerializationEnable.setDescription("Enable/disable MAC serialization through USI")
     g3MacSerializationEnable.setVisible(False)
@@ -395,15 +430,6 @@ def instantiateComponent(g3ConfigComponent):
     g3MacSerializationUsiInstance.setMin(0)
     g3MacSerializationUsiInstance.setVisible(False)
     g3MacSerializationUsiInstance.setDependencies(showUsiInstance, ["MAC_SERIALIZATION_EN"])
-
-    # Debug Traces Enable
-    global g3DebugEnable
-    g3DebugEnable = g3ConfigComponent.createBooleanSymbol("G3_DEBUG_ENABLE", None)
-    g3DebugEnable.setLabel("Enable G3 Stack Debug Traces")
-    g3DebugEnable.setDescription("Enable/disable G3 Debug messages through SYS_DEBUG Service")
-    g3DebugEnable.setDefaultValue(False)
-    g3DebugEnable.setVisible(False)
-    g3DebugEnable.setDependencies(g3DebugChange, ["G3_DEBUG_ENABLE"])
 
     # Boolean symbols to use in FTLs to generate code
     global g3DeviceRole
@@ -433,7 +459,7 @@ def instantiateComponent(g3ConfigComponent):
     #### Code Generation ####
     ############################################################################
     configName = Variables.get("__CONFIGURATION_NAME")
-    
+
     # LBP API
     global pLbpCoordHeader
     pLbpCoordHeader = g3ConfigComponent.createFileSymbol("LBP_COORD_HEADER", None)
@@ -462,7 +488,7 @@ def instantiateComponent(g3ConfigComponent):
     pLbpDefsHeader.setDestPath("stack/g3/adaptation")
     pLbpDefsHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     pLbpDefsHeader.setType("HEADER")
-    
+
     # LBP Files
     global pLbpEapSource
     pLbpEapSource = g3ConfigComponent.createFileSymbol("EAP_SOURCE", None)
@@ -471,7 +497,7 @@ def instantiateComponent(g3ConfigComponent):
     pLbpEapSource.setDestPath("stack/g3/adaptation")
     pLbpEapSource.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     pLbpEapSource.setType("SOURCE")
-    
+
     global pLbpEapHeader
     pLbpEapHeader = g3ConfigComponent.createFileSymbol("EAP_HEADER", None)
     pLbpEapHeader.setSourcePath("g3/src/lbp/source/eap_psk.h")
@@ -524,7 +550,7 @@ def instantiateComponent(g3ConfigComponent):
     pLbpVersionHeader.setDestPath("stack/g3/adaptation")
     pLbpVersionHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     pLbpVersionHeader.setType("SOURCE")
-    
+
     # MAC Wrapper Files
     pMacWrpSource = g3ConfigComponent.createFileSymbol("MAC_WRAPPER_SOURCE", None)
     pMacWrpSource.setSourcePath("g3/src/mac_wrapper/mac_wrapper.c.ftl")
@@ -533,7 +559,7 @@ def instantiateComponent(g3ConfigComponent):
     pMacWrpSource.setProjectPath("config/" + configName + "/stack/g3/mac/mac_wrapper")
     pMacWrpSource.setType("SOURCE")
     pMacWrpSource.setMarkup(True)
-    
+
     pMacWrpHeader = g3ConfigComponent.createFileSymbol("MAC_WRAPPER_HEADER", None)
     pMacWrpHeader.setSourcePath("g3/src/mac_wrapper/mac_wrapper.h.ftl")
     pMacWrpHeader.setOutputName("mac_wrapper.h")
@@ -541,14 +567,14 @@ def instantiateComponent(g3ConfigComponent):
     pMacWrpHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_wrapper")
     pMacWrpHeader.setType("HEADER")
     pMacWrpHeader.setMarkup(True)
-    
+
     pMacWrpDefsHeader = g3ConfigComponent.createFileSymbol("MAC_WRAPPER_DEFS_HEADER", None)
     pMacWrpDefsHeader.setSourcePath("g3/src/mac_wrapper/mac_wrapper_defs.h")
     pMacWrpDefsHeader.setOutputName("mac_wrapper_defs.h")
     pMacWrpDefsHeader.setDestPath("stack/g3/mac/mac_wrapper")
     pMacWrpDefsHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_wrapper")
     pMacWrpDefsHeader.setType("HEADER")
-    
+
     # MAC Common Files
     pMacCommonSource = g3ConfigComponent.createFileSymbol("MAC_COMMON_SOURCE", None)
     pMacCommonSource.setSourcePath("g3/src/mac_common/mac_common.c.ftl")
@@ -557,14 +583,14 @@ def instantiateComponent(g3ConfigComponent):
     pMacCommonSource.setProjectPath("config/" + configName + "/stack/g3/mac/mac_common")
     pMacCommonSource.setType("SOURCE")
     pMacCommonSource.setMarkup(True)
-    
+
     pMacCommonHeader = g3ConfigComponent.createFileSymbol("MAC_COMMON_HEADER", None)
     pMacCommonHeader.setSourcePath("g3/src/mac_common/mac_common.h")
     pMacCommonHeader.setOutputName("mac_common.h")
     pMacCommonHeader.setDestPath("stack/g3/mac/mac_common")
     pMacCommonHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_common")
     pMacCommonHeader.setType("HEADER")
-    
+
     pMacCommonDefsHeader = g3ConfigComponent.createFileSymbol("MAC_COMMON_DEFS_HEADER", None)
     pMacCommonDefsHeader.setSourcePath("g3/src/mac_common/mac_common_defs.h")
     pMacCommonDefsHeader.setOutputName("mac_common_defs.h")
@@ -579,7 +605,7 @@ def instantiateComponent(g3ConfigComponent):
     macPlcLibFile.setOutputName("g3_lib_plc_mac.a")
     macPlcLibFile.setDestPath("stack/g3/mac/mac_plc")
     macPlcLibFile.setEnabled(True)
-    
+
     global macPlcHeader
     macPlcHeader = g3ConfigComponent.createFileSymbol("MAC_PLC_HEADER", None)
     macPlcHeader.setSourcePath("g3/src/mac_plc/mac_plc.h")
@@ -587,7 +613,7 @@ def instantiateComponent(g3ConfigComponent):
     macPlcHeader.setDestPath("stack/g3/mac/mac_plc")
     macPlcHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_plc")
     macPlcHeader.setType("HEADER")
-    
+
     global macPlcDefsHeader
     macPlcDefsHeader = g3ConfigComponent.createFileSymbol("MAC_PLC_DEFS_HEADER", None)
     macPlcDefsHeader.setSourcePath("g3/src/mac_plc/mac_plc_defs.h")
@@ -595,7 +621,7 @@ def instantiateComponent(g3ConfigComponent):
     macPlcDefsHeader.setDestPath("stack/g3/mac/mac_plc")
     macPlcDefsHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_plc")
     macPlcDefsHeader.setType("HEADER")
-    
+
     global macPlcMibHeader
     macPlcMibHeader = g3ConfigComponent.createFileSymbol("MAC_PLC_MIB_HEADER", None)
     macPlcMibHeader.setSourcePath("g3/src/mac_plc/mac_plc_mib.h")
@@ -603,7 +629,7 @@ def instantiateComponent(g3ConfigComponent):
     macPlcMibHeader.setDestPath("stack/g3/mac/mac_plc")
     macPlcMibHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_plc")
     macPlcMibHeader.setType("HEADER")
-    
+
     # MAC RF Files
     global macRfLibFile
     macRfLibFile = g3ConfigComponent.createLibrarySymbol("G3_MAC_RF_LIBRARY", None)
@@ -611,7 +637,7 @@ def instantiateComponent(g3ConfigComponent):
     macRfLibFile.setOutputName("g3_lib_rf_mac.a")
     macRfLibFile.setDestPath("stack/g3/mac/mac_rf")
     macRfLibFile.setEnabled(True)
-    
+
     global macRfHeader
     macRfHeader = g3ConfigComponent.createFileSymbol("MAC_RF_HEADER", None)
     macRfHeader.setSourcePath("g3/src/mac_rf/mac_rf.h")
@@ -619,7 +645,7 @@ def instantiateComponent(g3ConfigComponent):
     macRfHeader.setDestPath("stack/g3/mac/mac_rf")
     macRfHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_rf")
     macRfHeader.setType("HEADER")
-    
+
     global macRfDefsHeader
     macRfDefsHeader = g3ConfigComponent.createFileSymbol("MAC_RF_DEFS_HEADER", None)
     macRfDefsHeader.setSourcePath("g3/src/mac_rf/mac_rf_defs.h")
@@ -627,7 +653,7 @@ def instantiateComponent(g3ConfigComponent):
     macRfDefsHeader.setDestPath("stack/g3/mac/mac_rf")
     macRfDefsHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_rf")
     macRfDefsHeader.setType("HEADER")
-    
+
     global macRfMibHeader
     macRfMibHeader = g3ConfigComponent.createFileSymbol("MAC_RF_MIB_HEADER", None)
     macRfMibHeader.setSourcePath("g3/src/mac_rf/mac_rf_mib.h")
@@ -635,7 +661,7 @@ def instantiateComponent(g3ConfigComponent):
     macRfMibHeader.setDestPath("stack/g3/mac/mac_rf")
     macRfMibHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_rf")
     macRfMibHeader.setType("HEADER")
-    
+
     #### ADP Library Files ######################################################
     global adpLibFile
     adpLibFile = g3ConfigComponent.createLibrarySymbol("G3_ADP_LIBRARY", None)
@@ -667,7 +693,7 @@ def instantiateComponent(g3ConfigComponent):
     adpSharedTypesHeader.setDestPath("stack/g3/adaptation")
     adpSharedTypesHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     adpSharedTypesHeader.setType("HEADER")
-    
+
     #### LOADNG Library Files ######################################################
     global LOADngLibFile
     LOADngLibFile = g3ConfigComponent.createLibrarySymbol("G3_LOADNG_LIBRARY", None)
@@ -683,7 +709,7 @@ def instantiateComponent(g3ConfigComponent):
     LOADngHeader.setDestPath("stack/g3/adaptation")
     LOADngHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     LOADngHeader.setType("HEADER")
-    
+
     #### Routing Wrapper Files #################################################
     global routingTypesHeader
     routingTypesHeader = g3ConfigComponent.createFileSymbol("G3_ROUTING_TYPES_HEADER", None)
@@ -692,7 +718,7 @@ def instantiateComponent(g3ConfigComponent):
     routingTypesHeader.setDestPath("stack/g3/adaptation")
     routingTypesHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     routingTypesHeader.setType("HEADER")
-    
+
     global routingWrapperHeader
     routingWrapperHeader = g3ConfigComponent.createFileSymbol("G3_ROUTING_WRAPPER_HEADER", None)
     routingWrapperHeader.setSourcePath("g3/src/routing_wrapper/routing_wrapper.h")
@@ -729,7 +755,7 @@ def instantiateComponent(g3ConfigComponent):
     adpSerialSource.setEnabled(False)
     adpSerialSource.setDependencies(setEnabledFileSymbol, ["ADP_SERIALIZATION_EN"])
 
-    # G3 STACK TEMPLATES 
+    # G3 STACK TEMPLATES
     g3StackSystemConfigFile = g3ConfigComponent.createFileSymbol("G3_STACK_CONFIGURATION", None)
     g3StackSystemConfigFile.setType("STRING")
     g3StackSystemConfigFile.setOutputName("core.LIST_SYSTEM_CONFIG_H_MIDDLEWARE_CONFIGURATION")
@@ -843,9 +869,10 @@ def addADPComponents():
         LOADngLibFile.setEnabled(False)
         LOADngHeader.setEnabled(False)
     g3ConfigRole.setVisible(True)
-    g3ConfigLOADng.setVisible(True)
     g3AdpConfig.setVisible(True)
-    
+    g3ConfigLOADng.setVisible(True)
+    g3SixLoWPANConfig.setVisible(True)
+
     if g3ConfigRole.getValue() == "PAN Device":
         selectLBPComponents("dev")
     elif g3ConfigRole.getValue() == "PAN Coordinator":
@@ -868,6 +895,7 @@ def removeADPComponents():
     LOADngHeader.setEnabled(False)
     g3ConfigRole.setVisible(False)
     g3ConfigLOADng.setVisible(False)
+    g3SixLoWPANConfig.setVisible(False)
     g3AdpConfig.setVisible(False)
     selectLBPComponents("none")
 
@@ -893,26 +921,28 @@ def removeMACComponents():
     g3ConfigRole.setVisible(False)
     g3MacSerializationEnable.setVisible(False)
     g3DebugEnable.setVisible(False)
+    g3MacConfig.setVisible(False)
     # Deactivate service and PAL components
     Database.deactivateComponents(["g3PalPlc", "g3PalRf", "srvSecurity", "srvRandom", "srvLogReport", "srvQueue"])
 
 def addMACComponents(plc, rf):
     g3MacPLCPresent.setValue(plc)
     g3MacRFPresent.setValue(rf)
+    g3MacConfig.setVisible(True)
     g3MacPLCTables.setVisible(plc)
     g3MacRFTables.setVisible(rf)
     g3MacSerializationEnable.setVisible(True)
     g3DebugEnable.setVisible(True)
     macPlcFilesEnabled(plc)
     macRfFilesEnabled(rf)
-    
+
     # In every case, add security, random and logReport components
     g3StackGroup = Database.findGroup("G3 STACK")
     g3StackGroup.addComponent("srvSecurity")
     g3StackGroup.addComponent("srvRandom")
     g3StackGroup.addComponent("srvLogReport")
     Database.activateComponents(["srvSecurity", "srvRandom", "srvLogReport"], "G3 STACK")
-    
+
     # Add PAL components depending on MAC availability
     if (plc and rf):
         g3StackGroup.addComponent("g3PalPlc")
@@ -1081,15 +1111,15 @@ def showUsiInstance(symbol, event):
 def setEnabledFileSymbol(symbol, event):
     # Enable/disable file symbol depending on parent enabled/disabled
     symbol.setEnabled(event["value"])
-    
+
 def g3CountBuffers1280CommentDepend(symbol, event):
     totalMem = (1280 + 50) * g3CountBuffers1280.getValue()
     g3CountBuffers1280Comment.setLabel("Memory used: ~%d bytes" %totalMem)
-    
+
 def g3CountBuffers400CommentDepend(symbol, event):
     totalMem = (400 + 50) * g3CountBuffers400.getValue()
     g3CountBuffers400Comment.setLabel("Memory used: ~%d bytes" %totalMem)
-    
+
 def g3CountBuffers100CommentDepend(symbol, event):
     totalMem = (100 + 50) * g3CountBuffers100.getValue()
     g3CountBuffers100Comment.setLabel("Memory used: ~%d bytes" %totalMem)
