@@ -38,8 +38,8 @@
 *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _PAL_PLC_H
-#define _PAL_PLC_H
+#ifndef PAL_PLC_H
+#define PAL_PLC_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -164,7 +164,7 @@ typedef enum {
     <code>
     static void _plcDataIndication(uint8_t *pData, uint16_t length)
     {
-        // Reception handling here.
+        
     }
 
     PAL_PLC_INIT palPlcInitData;
@@ -176,7 +176,7 @@ typedef enum {
     palPlcInitData.macRtHandlers.palPlcCommStatusIndication = _plcCommStatusIndication;
     palPlcInitData.macRtHandlers.palPlcRxParamsIndication = _plcRxParamsIndication;
     palPlcInitData.initMIB = true;
-    // Initialize the PLC PAL module
+
     palPlcObj = PAL_PLC_Initialize(PAL_PLC_PHY_INDEX, (const SYS_MODULE_INIT *) &palPlcInitData);
     </code>
 
@@ -217,13 +217,10 @@ typedef void (*PAL_PLC_DataIndication)(uint8_t *pData, uint16_t length);
         switch(status)
         {
             case MAC_RT_STATUS_SUCCESS:
-                // Transmission result: already in process
                 break;   
             case MAC_RT_STATUS_CHANNEL_ACCESS_FAILURE:
-                // Transmission result: CSMA failure
                 break;   
             case MAC_RT_STATUS_NO_ACK:
-                // Transmission result: ACK failure
                 break;
         }
     }
@@ -237,7 +234,7 @@ typedef void (*PAL_PLC_DataIndication)(uint8_t *pData, uint16_t length);
     palPlcInitData.macRtHandlers.palPlcCommStatusIndication = _plcCommStatusIndication;
     palPlcInitData.macRtHandlers.palPlcRxParamsIndication = _plcRxParamsIndication;
     palPlcInitData.initMIB = true;
-    // Initialize the PLC PAL module
+
     palPlcObj = PAL_PLC_Initialize(PAL_PLC_PHY_INDEX, (const SYS_MODULE_INIT *) &palPlcInitData);
     </code>
 
@@ -279,7 +276,6 @@ typedef void (*PAL_PLC_TxConfirm)(MAC_RT_STATUS status, bool updateTimestamp);
 
     static void _plcRxParamsIndication(MAC_RT_RX_PARAMETERS_OBJ *pParameters)
     {
-        // extract all parameters from received message
         memcpy(rxParameters, pParameters, sizeof(MAC_RT_RX_PARAMETERS_OBJ));
     }
 
@@ -292,7 +288,7 @@ typedef void (*PAL_PLC_TxConfirm)(MAC_RT_STATUS status, bool updateTimestamp);
     palPlcInitData.macRtHandlers.palPlcCommStatusIndication = _plcCommStatusIndication;
     palPlcInitData.macRtHandlers.palPlcRxParamsIndication = _plcRxParamsIndication;
     palPlcInitData.initMIB = true;
-    // Initialize the PLC PAL module
+
     palPlcObj = PAL_PLC_Initialize(PAL_PLC_PHY_INDEX, (const SYS_MODULE_INIT *) &palPlcInitData);
     </code>
 
@@ -330,7 +326,6 @@ typedef void (*PAL_PLC_RxParamsIndication)(MAC_RT_RX_PARAMETERS_OBJ *pParameters
 
     static void _plcCommStatusIndication(uint8_t *pData)
     {
-        // extract data from received message
         memcpy(macCommStatusBuffer, pData, MAC_RT_FULL_HEADER_SIZE);
     }
 
@@ -343,7 +338,7 @@ typedef void (*PAL_PLC_RxParamsIndication)(MAC_RT_RX_PARAMETERS_OBJ *pParameters
     palPlcInitData.macRtHandlers.palPlcCommStatusIndication = _plcCommStatusIndication;
     palPlcInitData.macRtHandlers.palPlcRxParamsIndication = _plcRxParamsIndication;
     palPlcInitData.initMIB = true;
-    // Initialize the PLC PAL module
+
     palPlcObj = PAL_PLC_Initialize(PAL_PLC_PHY_INDEX, (const SYS_MODULE_INIT *) &palPlcInitData);
     </code>
 
@@ -381,7 +376,7 @@ typedef void (*PAL_PLC_CommStatusIndication)(uint8_t *pData);
     <code>
     static void _plcMACSnifferIndication( uint8_t *pData, uint16_t length )
     {
-        // MAC sniffer handling here.
+        
     }
 
     PAL_PLC_INIT palPlcInitData;
@@ -394,7 +389,7 @@ typedef void (*PAL_PLC_CommStatusIndication)(uint8_t *pData);
     palPlcInitData.macRtHandlers.palPlcRxParamsIndication = _plcRxParamsIndication;
     palPlcInitData.macRtHandlers.palPlcMacSnifferIndication = _plcMACSnifferIndication;
     palPlcInitData.initMIB = true;    
-    // Initialize the PLC PAL module
+
     palPlcObj = PAL_PLC_Initialize(PAL_PLC_PHY_INDEX, (const SYS_MODULE_INIT *) &palPlcInitData);
     </code>
 
@@ -495,7 +490,7 @@ typedef struct
     palPlcInitData.macRtHandlers.palPlcCommStatusIndication = _plcCommStatusIndication;
     palPlcInitData.macRtHandlers.palPlcRxParamsIndication = _plcRxParamsIndication;
     palPlcInitData.initMIB = true;
-    // Initialize the PLC PAL module
+
     palPlcObj = PAL_PLC_Initialize(PAL_PLC_PHY_INDEX, (const SYS_MODULE_INIT *) &palPlcInitData);
     </code>
 
@@ -535,14 +530,12 @@ SYS_MODULE_OBJ PAL_PLC_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE
 
   Example:
     <code>
-    // "object" returned from PAL_PLC_Initialize
-
     PAL_PLC_STATUS palPlcStatus;
 
     palPlcStatus = PAL_PLC_Status (object);
     if (palPlcStatus == PAL_PLC_STATUS_READY)
     {
-        // PLC PAL is initialized and is ready to accept client requests.
+        
     }
     </code>
 
@@ -581,7 +574,7 @@ PAL_PLC_STATUS PAL_PLC_Status(SYS_MODULE_OBJ object);
 
     if (myPalPlcHandle != PAL_PLC_HANDLE_INVALID)
     {
-        // Found a valid handle to the PLC PAL instance
+        
     }
     </code>
 
@@ -614,9 +607,6 @@ PAL_PLC_HANDLE PAL_PLC_HandleGet(const SYS_MODULE_INDEX index);
 
   Example:
     <code>
-    // This code example shows how the PLC PAL can be deinitialized. 
-    // It is assumed the PLC PAL module was already initialized.
-
     SYS_MODULE_OBJ palPlcobj;
 
     PAL_PLC_Deinitialize(palPlcobj);
@@ -655,7 +645,6 @@ void PAL_PLC_Deinitialize(SYS_MODULE_OBJ object);
 
   Example:
     <code>
-    // 'palPlcHandle', returned from PAL_PLC_HandleGet
     MAC_RT_HEADER macHeader;
     uint16_t totalLength;
     uint16_t headerLength;
@@ -663,7 +652,6 @@ void PAL_PLC_Deinitialize(SYS_MODULE_OBJ object);
     uint8_t txData[MAC_RT_DATA_MAX_SIZE];
     uint8_t payloadData[MAC_RT_MAX_PAYLOAD_SIZE];
     
-    // Local function implemented in the upper layer
     headerLength = _buildMacHeader(txData, &macHeader);
 
     memcpy(&txData[headerLength], payloadData, payloadLength);
@@ -700,8 +688,6 @@ void PAL_PLC_TxRequest(PAL_PLC_HANDLE handle, uint8_t *pData, uint16_t length);
 
   Example:
     <code>
-    // 'palPlcHandle', returned from PAL_PLC_HandleGet
-    
     PAL_PLC_Reset(palPlcHandle);
     </code>
 
@@ -734,7 +720,6 @@ void PAL_PLC_Reset(PAL_PLC_HANDLE handle, bool resetMib);
 
   Example:
     <code>
-    // 'palPlcHandle', returned from PAL_PLC_HandleGet
     uint32_t plcTimerRef;
 
     plcTimerRef = PAL_PLC_GetPhyTime(palPlcHandle);
@@ -771,7 +756,6 @@ uint32_t PAL_PLC_GetPhyTime(PAL_PLC_HANDLE handle);
 
   Example:
     <code>
-    // 'palPlcHandle', returned from PAL_PLC_HandleGet
     MAC_RT_PIB_OBJ pibObj;
     uint32_t phyVersion;
 
@@ -814,7 +798,6 @@ PAL_PLC_PIB_RESULT PAL_PLC_GetMacRtPib(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pi
 
   Example:
     <code>
-    // 'palPlcHandle', returned from PAL_PLC_HandleGet
     MAC_RT_PIB_OBJ pibObj;
 
     pibObj.pib = MAC_RT_PIB_PAN_ID;
@@ -825,7 +808,7 @@ PAL_PLC_PIB_RESULT PAL_PLC_GetMacRtPib(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pi
     
     if (PAL_PLC_SetMacRtPib(palPlcHandle, &pibObj) == PAL_PLC_PIB_SUCCESS)
     {
-        // PIB has been written successfully
+        
     }
     </code>
 
@@ -855,8 +838,6 @@ PAL_PLC_PIB_RESULT PAL_PLC_SetMacRtPib(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pi
 
   Example:
     <code>
-    // 'palPlcHandle', returned from PAL_PLC_HandleGet
-
     PAL_PLC_SetCoordinator(palPlcHandle);
     </code>
 
@@ -865,7 +846,7 @@ PAL_PLC_PIB_RESULT PAL_PLC_SetMacRtPib(PAL_PLC_HANDLE handle, MAC_RT_PIB_OBJ *pi
 */
 void PAL_PLC_SetCoordinator(PAL_PLC_HANDLE handle);
  
-#endif // #ifndef _PAL_PLC_H
+#endif // #ifndef PAL_PLC_H
 /*******************************************************************************
  End of File
 */
