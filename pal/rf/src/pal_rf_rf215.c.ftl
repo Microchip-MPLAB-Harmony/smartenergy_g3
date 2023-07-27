@@ -69,11 +69,11 @@ static PAL_RF_DATA palRfData = {0};
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: local callbacks
+// Section: Local Callbacks
 // *****************************************************************************
 // *****************************************************************************
 
-static void _palRfRxIndCallback(DRV_RF215_RX_INDICATION_OBJ* indObj, uintptr_t ctxt)
+static void lPAL_RF_RxIndCallback(DRV_RF215_RX_INDICATION_OBJ* indObj, uintptr_t ctxt)
 {
     uint8_t *pData;
     uint16_t len;
@@ -81,7 +81,7 @@ static void _palRfRxIndCallback(DRV_RF215_RX_INDICATION_OBJ* indObj, uintptr_t c
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
     uint8_t* pRfSnifferData;
     size_t rfSnifferDataSize;
-    uint16_t rfPayloadSymbols;
+    uint16_t rfPayloadSymbols = 0;
 </#if>
     
     pData = indObj->psdu;
@@ -91,14 +91,14 @@ static void _palRfRxIndCallback(DRV_RF215_RX_INDICATION_OBJ* indObj, uintptr_t c
     rxParameters.rssi = indObj->rssiDBm;
     rxParameters.fcsOk = indObj->fcsOk;
         
-    if (palRfData.rfPhyHandlers.palRfDataIndication)
+    if (palRfData.rfPhyHandlers.palRfDataIndication != NULL)
     {
         palRfData.rfPhyHandlers.palRfDataIndication(pData, len, &rxParameters);
     }
 
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
     // Get payload symbols in the received message
-    DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_RX_PAY_SYMBOLS,
+    (void) DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_RX_PAY_SYMBOLS,
             &rfPayloadSymbols);
 
     // Serialize received RF message
@@ -111,7 +111,7 @@ static void _palRfRxIndCallback(DRV_RF215_RX_INDICATION_OBJ* indObj, uintptr_t c
 </#if>
 }
 
-static void _palRfTxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CONFIRM_OBJ *cfmObj,
+static void lPAL_RF_TxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CONFIRM_OBJ *cfmObj,
     uintptr_t ctxt)
 {
     PAL_RF_PHY_STATUS status = PAL_RF_PHY_ERROR;
@@ -120,7 +120,7 @@ static void _palRfTxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CONF
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
     uint8_t* pRfSnifferData;
     size_t rfSnifferDataSize;
-    uint16_t rfPayloadSymbols;
+    uint16_t rfPayloadSymbols = 0;
 </#if>
     
     /* Get Frame times */
@@ -166,21 +166,21 @@ static void _palRfTxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CONF
             break;      
     }
     
-    if (palRfData.rfPhyHandlers.palRfTxConfirm)
+    if (palRfData.rfPhyHandlers.palRfTxConfirm != NULL)
     {
         palRfData.rfPhyHandlers.palRfTxConfirm(status, timeIniCount, timeEndCount);
     }
 
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
     // Get payload symbols in the transmitted message
-    DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_TX_PAY_SYMBOLS,
+    (void) DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_TX_PAY_SYMBOLS,
             &rfPayloadSymbols);
 
     // Serialize transmitted RF message
     pRfSnifferData = SRV_RSNIFFER_SerialCfmMessage(cfmObj, txHandle,
             &palRfData.rfPhyConfig, rfPayloadSymbols, &rfSnifferDataSize);
 
-    if ((pRfSnifferData != NULL) && (rfSnifferDataSize != 0))
+    if ((pRfSnifferData != NULL) && (rfSnifferDataSize != 0U))
     {
         // Send through USI
         SRV_USI_Send_Message(palRfData.srvUsiHandler, SRV_USI_PROT_ID_SNIFF_G3,
@@ -189,11 +189,11 @@ static void _palRfTxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CONF
 </#if>
 }
 
-static void _palRfInitCallback(uintptr_t context, SYS_STATUS status)
+static void lPAL_RF_InitCallback(uintptr_t context, SYS_STATUS status)
 {
     if (status == SYS_STATUS_ERROR)
     {
-        palRfData.status = SYS_STATUS_ERROR;
+        palRfData.status = PAL_RF_STATUS_ERROR;
         return;
     }
 
@@ -201,13 +201,13 @@ static void _palRfInitCallback(uintptr_t context, SYS_STATUS status)
     
     if (palRfData.drvRfPhyHandle == DRV_HANDLE_INVALID)
     {
-        palRfData.status = SYS_STATUS_ERROR;
+        palRfData.status = PAL_RF_STATUS_ERROR;
         return;
     }
 
     /* Register RF PHY driver callbacks */
-    DRV_RF215_RxIndCallbackRegister(palRfData.drvRfPhyHandle, _palRfRxIndCallback, 0);
-    DRV_RF215_TxCfmCallbackRegister(palRfData.drvRfPhyHandle, _palRfTxCfmCallback, 0);
+    DRV_RF215_RxIndCallbackRegister(palRfData.drvRfPhyHandle, lPAL_RF_RxIndCallback, 0);
+    DRV_RF215_TxCfmCallbackRegister(palRfData.drvRfPhyHandle, lPAL_RF_TxCfmCallback, 0);
 
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true>
     /* Get USI handler for RF PHY SNIFFER protocol */
@@ -216,7 +216,7 @@ static void _palRfInitCallback(uintptr_t context, SYS_STATUS status)
 </#if>
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true || drvRf215.DRV_RF215_OFDM_EN == true>
     /* Get RF PHY configuration */
-    DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_CONFIG, &palRfData.rfPhyConfig);
+    (void) DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_CONFIG, &palRfData.rfPhyConfig);
 
 </#if>
 <#if drvRf215.DRV_RF215_FSK_EN == true && drvRf215.DRV_RF215_OFDM_EN == true>
@@ -268,7 +268,7 @@ static void _palRfInitCallback(uintptr_t context, SYS_STATUS status)
     }
 </#if>
 
-    palRfData.status = SYS_STATUS_READY;
+    palRfData.status = PAL_RF_STATUS_READY;
 }
 
 // *****************************************************************************
@@ -280,7 +280,23 @@ static void _palRfInitCallback(uintptr_t context, SYS_STATUS status)
 SYS_MODULE_OBJ PAL_RF_Initialize(const SYS_MODULE_INDEX index, 
         const SYS_MODULE_INIT * const init)
 {
-    PAL_RF_INIT *palInit = (PAL_RF_INIT *)init;
+    /* MISRA C-2012 deviation block start */
+    /* MISRA C-2012 Rule 11.3 deviated once. Deviation record ID - H3_MISRAC_2012_R_11_3_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+    <#if core.COMPILER_CHOICE == "XC32">
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunknown-pragmas"
+    </#if>
+    #pragma coverity compliance block deviate "MISRA C-2012 Rule 11.3" "H3_MISRAC_2012_R_11_3_DR_1"
+</#if>
+    const PAL_RF_INIT * const palInit = (const PAL_RF_INIT * const)init;
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+    #pragma coverity compliance end_block "MISRA C-2012 Rule 11.3"
+    <#if core.COMPILER_CHOICE == "XC32">
+    #pragma GCC diagnostic pop
+    </#if>
+</#if>
+    /* MISRA C-2012 deviation block end */
 
     /* Check Single instance */
     if (index != PAL_RF_PHY_INDEX)
@@ -297,10 +313,10 @@ SYS_MODULE_OBJ PAL_RF_Initialize(const SYS_MODULE_INDEX index,
     palRfData.rfPhyHandlers.palRfDataIndication = palInit->rfPhyHandlers.palRfDataIndication;
     palRfData.rfPhyHandlers.palRfTxConfirm = palInit->rfPhyHandlers.palRfTxConfirm;
 
-    palRfData.status = SYS_STATUS_BUSY;
+    palRfData.status = PAL_RF_STATUS_BUSY;
     palRfData.drvRfPhyHandle = DRV_HANDLE_INVALID;
 
-    DRV_RF215_ReadyStatusCallbackRegister(DRV_RF215_INDEX_0, _palRfInitCallback, 0);
+    DRV_RF215_ReadyStatusCallbackRegister(DRV_RF215_INDEX_0, lPAL_RF_InitCallback, 0);
 
     return (SYS_MODULE_OBJ)PAL_RF_PHY_INDEX;
 }
@@ -360,7 +376,7 @@ PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
             
     if (handle != (PAL_RF_HANDLE)&palRfData)
     {
-        if (palRfData.rfPhyHandlers.palRfTxConfirm)
+        if (palRfData.rfPhyHandlers.palRfTxConfirm != NULL)
         {
             palRfData.rfPhyHandlers.palRfTxConfirm(PAL_RF_PHY_TRX_OFF, txParameters->timeCount, 
                     txParameters->timeCount);
@@ -403,7 +419,7 @@ PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
         cfmObj.txResult = txResult;
         cfmObj.timeIniCount = SYS_TIME_Counter64Get();
         cfmObj.ppduDurationCount = 0;
-        _palRfTxCfmCallback(DRV_RF215_TX_HANDLE_INVALID, &cfmObj, 0);
+        lPAL_RF_TxCfmCallback(DRV_RF215_TX_HANDLE_INVALID, &cfmObj, 0);
     }
     
     return (PAL_RF_TX_HANDLE)rfPhyTxReqHandle;
@@ -428,8 +444,8 @@ void PAL_RF_Reset(PAL_RF_HANDLE handle)
         return;
     }
     
-    DRV_RF215_SetPib(palRfData.drvRfPhyHandle, RF215_PIB_DEVICE_RESET, &resetValue);
-    DRV_RF215_SetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_STATS_RESET, &resetValue);
+    (void) DRV_RF215_SetPib(palRfData.drvRfPhyHandle, RF215_PIB_DEVICE_RESET, &resetValue);
+    (void) DRV_RF215_SetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_STATS_RESET, &resetValue);
 }
  
 PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibObj)
@@ -473,7 +489,7 @@ PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 
         default:
             pibResult = (PAL_RF_PIB_RESULT)DRV_RF215_GetPib(palRfData.drvRfPhyHandle,
-                    pibObj->pib, pibObj->pData);
+                    (DRV_RF215_PIB_ATTRIBUTE)pibObj->pib, pibObj->pData);
             break;
     }
 
@@ -499,7 +515,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
     {
         case PAL_RF_PIB_TX_FSK_FEC:
 <#if drvRf215.DRV_RF215_FSK_EN == true && drvRf215.DRV_RF215_OFDM_EN == true>
-            if (pibObj->pData[0] > PAL_RF_FSK_FEC_ON)
+            if (pibObj->pData[0] > (uint8_t)PAL_RF_FSK_FEC_ON)
             {
                 return PAL_RF_PIB_INVALID_PARAM;
             }
@@ -512,13 +528,12 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
             }
 
 <#elseif drvRf215.DRV_RF215_FSK_EN == true>
-            if (pibObj->pData[0] > PAL_RF_FSK_FEC_ON)
+            if (pibObj->pData[0] > (uint8_t)PAL_RF_FSK_FEC_ON)
             {
                 return PAL_RF_PIB_INVALID_PARAM;
             }
 
             palRfData.rfPhyModScheme = (DRV_RF215_PHY_MOD_SCHEME) pibObj->pData[0];
-
 <#else>
             /* FSK disabled in MCC */
             pibResult = PAL_RF_PIB_INVALID_ATTR;
@@ -527,7 +542,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 
         case PAL_RF_PIB_TX_OFDM_MCS:
 <#if drvRf215.DRV_RF215_FSK_EN == true && drvRf215.DRV_RF215_OFDM_EN == true>
-            switch (pibObj->pData[0])
+            switch ((PAL_RF_OFDM_MCS) pibObj->pData[0])
             {
                 case PAL_RF_OFDM_MCS_0:
                     if ((palRfData.rfPhyConfig.phyType == PHY_TYPE_OFDM) &&
@@ -559,7 +574,8 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
                     break;
 
                 default:
-                    return PAL_RF_PIB_INVALID_PARAM;
+                    pibResult = PAL_RF_PIB_INVALID_PARAM;
+                    break;
             }
 
             if (palRfData.rfPhyConfig.phyType == PHY_TYPE_OFDM)
@@ -571,7 +587,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
             /* OFDM disabled in MCC */
             pibResult = PAL_RF_PIB_INVALID_ATTR;
 <#else>
-            switch (pibObj->pData[0])
+            switch ((PAL_RF_OFDM_MCS) pibObj->pData[0])
             {
                 case PAL_RF_OFDM_MCS_0:
                     if ((palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_4) ||
@@ -602,6 +618,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 
                 default:
                     pibResult = PAL_RF_PIB_INVALID_PARAM;
+                    break;
             }
 
 </#if>
@@ -609,7 +626,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 
         default:
             pibResult = (PAL_RF_PIB_RESULT)DRV_RF215_SetPib(palRfData.drvRfPhyHandle,
-                    pibObj->pib, pibObj->pData);
+                    (DRV_RF215_PIB_ATTRIBUTE)pibObj->pib, pibObj->pData);
 
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true || drvRf215.DRV_RF215_OFDM_EN == true>
             if ((pibResult == PAL_RF_PIB_SUCCESS) &&
@@ -617,8 +634,8 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
                 (pibObj->pib == PAL_RF_PIB_PHY_BAND_OPERATING_MODE)))
             {
                 /* Update RF PHY configuration */
-                DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_CONFIG, &palRfData.rfPhyConfig);
-<#if drvRf215.DRV_RF215_FSK_EN == true>
+                (void) DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_CONFIG, &palRfData.rfPhyConfig);
+<#if drvRf215.DRV_RF215_FSK_EN == true && drvRf215.DRV_RF215_OFDM_EN == true>
                 if (palRfData.rfPhyConfig.phyType == PHY_TYPE_FSK)
                 {
                     palRfData.rfPhyModScheme = palRfData.rfPhyModSchemeFsk;
@@ -630,28 +647,36 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
                     {
                         palRfData.rfPhyModSchemeOfdm = OFDM_MCS_2;
                     }
-                    else if ((palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_3) &&
-                        (palRfData.rfPhyModSchemeOfdm < OFDM_MCS_1))
+                    else
                     {
-                        palRfData.rfPhyModSchemeOfdm = OFDM_MCS_1;
+                        if ((palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_3) &&
+                            (palRfData.rfPhyModSchemeOfdm < OFDM_MCS_1))
+                        {
+                            palRfData.rfPhyModSchemeOfdm = OFDM_MCS_1;
+                        }
                     }
 
                     palRfData.rfPhyModScheme = palRfData.rfPhyModSchemeOfdm;
                 }
-<#else>
+<#elseif drvRf215.DRV_RF215_OFDM_EN == true>
                 if ((palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_4) &&
                     (palRfData.rfPhyModScheme < OFDM_MCS_2))
                 {
                     palRfData.rfPhyModScheme = OFDM_MCS_2;
                 }
-                else if ((palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_3) &&
-                    (palRfData.rfPhyModScheme < OFDM_MCS_1))
+                else
                 {
-                    palRfData.rfPhyModScheme = OFDM_MCS_1;
+                    if ((palRfData.rfPhyConfig.phyTypeCfg.ofdm.opt == OFDM_BW_OPT_3) &&
+                        (palRfData.rfPhyModScheme < OFDM_MCS_1))
+                    {
+                        palRfData.rfPhyModScheme = OFDM_MCS_1;
+                    }
                 }
 </#if>
             }
+
 </#if>
+            break;
     }
 
     return pibResult;
@@ -671,9 +696,11 @@ uint8_t PAL_RF_GetRfPhyPibLength(PAL_RF_HANDLE handle, PAL_RF_PIB_ATTRIBUTE attr
         case PAL_RF_PIB_TX_FSK_FEC:
         case PAL_RF_PIB_TX_OFDM_MCS:
             pibLen = 1;
+            break;
 
         default:
-            pibLen = DRV_RF215_GetPibSize(attribute);
+            pibLen = DRV_RF215_GetPibSize((DRV_RF215_PIB_ATTRIBUTE)attribute);
+            break;
     }
 
     return pibLen;

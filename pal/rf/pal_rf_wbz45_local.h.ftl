@@ -37,8 +37,8 @@
  *******************************************************************************/
 // DOM-IGNORE-END
 
-#ifndef _PAL_RF_LOCAL_H
-#define _PAL_RF_LOCAL_H
+#ifndef PAL_RF_LOCAL_H
+#define PAL_RF_LOCAL_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -157,12 +157,12 @@ typedef struct
     PHY_CSMAMode_t csmaMode;
 
     SYS_TIME_HANDLE txTimer;
-    uint32_t txTimeIniCount;
-    uint32_t txTimeIniCountCalc;
-    uint32_t txTimeEndCount;
+    uint64_t txTimeIniCount;
+    uint64_t txTimeIniCountCalc;
+    uint64_t txTimeEndCount;
 
     volatile bool txPending;
-    bool txCfmErrorPending;
+    volatile bool txCfmErrorPending;
     PAL_RF_PHY_STATUS txCfmErrorStatus;
     uint64_t txCfmErrorTime;
 
@@ -177,16 +177,16 @@ typedef struct
     bool txContinuousMode;
     bool sleepMode;
 
-<#if G3_PAL_RF_PHY_SNIFFER_EN == true>   
+<#if G3_PAL_RF_PHY_SNIFFER_EN == true>
     uint8_t *serialData; 
     size_t serialLen;
     SRV_RSNIFFER_PHY_DATA snifferData;
     SRV_USI_HANDLE usiHandler;
 
-</#if>    
+</#if>
 } PAL_RF_DATA;
 
-#endif // #ifndef _PAL_RF_LOCAL_H
+#endif // #ifndef PAL_RF_LOCAL_H
 
 /*******************************************************************************
  End of File

@@ -38,8 +38,8 @@
  ******************************************************************************/
 // DOM-IGNORE-END
 
-#ifndef _PAL_RF_H
-#define _PAL_RF_H
+#ifndef PAL_RF_H
+#define PAL_RF_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -398,7 +398,7 @@ typedef struct
     uint64_t timeCount;
 
     /* Transmitter power attenuation in dB (max 31 dB) */
-    uint32_t txPowerAttenuation;
+    uint8_t txPowerAttenuation;
 
     /* CSMA enable flag */
     bool csmaEnable;
@@ -488,7 +488,7 @@ typedef struct
     <code>
     static void _rfDataIndication(uint8_t *pData, uint16_t length, PAL_RF_RX_PARAMETERS *pParameters)
     {
-        // Reception handling here.
+        
     }
 
     PAL_RF_INIT palRfInitData;
@@ -496,7 +496,7 @@ typedef struct
 
     palRfInitData.rfPhyHandlers.palRfDataIndication = _rfDataIndication;
     palRfInitData.rfPhyHandlers.palRfTxConfirm = _rfTxConfirm;
-    // Initialize the RF PAL module
+
     palRfObj = PAL_RF_Initialize(PAL_RF_PHY_INDEX, (const SYS_MODULE_INIT *) &palRfInitData);
     </code>
 
@@ -531,7 +531,7 @@ typedef void (*PAL_RF_DataIndication)(uint8_t *pData, uint16_t length, PAL_RF_RX
     <code>
     static void _rfTxConfirm(PAL_RF_PHY_STATUS status, uint64_t timeIni, uint64_t timeEnd)
     {
-        // Tx Confirm handling here.
+        
     }
 
     PAL_RF_INIT palRfInitData;
@@ -539,7 +539,7 @@ typedef void (*PAL_RF_DataIndication)(uint8_t *pData, uint16_t length, PAL_RF_RX
 
     palRfInitData.rfPhyHandlers.palRfDataIndication = _rfDataIndication;
     palRfInitData.rfPhyHandlers.palRfTxConfirm = _rfTxConfirm;
-    // Initialize the RF PAL module
+
     palRfObj = PAL_RF_Initialize(PAL_RF_PHY_INDEX, (const SYS_MODULE_INIT *) &palRfInitData);
     </code>
 
@@ -666,14 +666,12 @@ SYS_MODULE_OBJ PAL_RF_Initialize(const SYS_MODULE_INDEX index, const SYS_MODULE_
 
   Example:
     <code>
-    // "object" returned from PAL_RF_Initialize
-
     PAL_RF_STATUS palRfStatus;
 
     palRfStatus = PAL_RF_Status (object);
     if (palRfStatus == PAL_RF_STATUS_READY)
     {
-        // RF PAL is initialized and is ready to accept client requests.
+        
     }
     </code>
 
@@ -712,7 +710,7 @@ PAL_RF_STATUS PAL_RF_Status(SYS_MODULE_OBJ object);
 
     if (myPalRfHandle != PAL_RF_HANDLE_INVALID)
     {
-        // Found a valid handle to the RF PAL instance
+        
     }
     </code>
 
@@ -745,9 +743,6 @@ PAL_RF_HANDLE PAL_RF_HandleGet(const SYS_MODULE_INDEX index);
 
   Example:
     <code>
-    // This code example shows how the RF PAL can be deinitialized.
-    // It is assumed the RF PAL module was already initialized.
-
     SYS_MODULE_OBJ palRfobj;
 
     PAL_RF_Deinitialize(palRfobj);
@@ -789,7 +784,6 @@ void PAL_RF_Deinitialize(SYS_MODULE_OBJ object);
 
   Example:
     <code>
-    // 'palRfHandle', returned from the PAL_RF_HandleGet
     uint8_t txData[128];
     PAL_RF_TX_PARAMETERS txParameters;
     uint16_t length = 128;
@@ -832,8 +826,8 @@ PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
 
   Example:
     <code>
-    PAL_RF_HANDLE palRfHandle; // returned from PAL_RF_HandleGet
-    PAL_RF_TX_HANDLE txReqHandle; // returned from PAL_RF_TxRequest
+    PAL_RF_HANDLE palRfHandle;
+    PAL_RF_TX_HANDLE txReqHandle;
 
     PAL_RF_TxCancel(palRfHandle, txReqHandle);
     </code>
@@ -865,8 +859,6 @@ void PAL_RF_TxCancel(PAL_RF_HANDLE handle, PAL_RF_TX_HANDLE txHandle);
 
   Example:
     <code>
-    // 'palRfHandle', returned from the PAL_RF_HandleGet
-
     PAL_RF_Reset(palRfHandle);
     </code>
 
@@ -899,7 +891,7 @@ void PAL_RF_Reset(PAL_RF_HANDLE handle);
 
   Example:
     <code>
-    PAL_RF_HANDLE palRfHandle; // returned from PAL_RF_HandleGet
+    PAL_RF_HANDLE palRfHandle;
     PAL_RF_PIB_OBJ pibObj;
 
     pibObj.pib = PAL_RF_PIB_PHY_FW_VERSION;
@@ -907,7 +899,6 @@ void PAL_RF_Reset(PAL_RF_HANDLE handle);
     if (PAL_RF_GetRfPhyPib(palRfHandle, &pibObj) == PAL_RF_PIB_SUCCESS)
     {
         uint8_t size = PAL_RF_GetRfPhyPibLength(palRfHandle, PAL_RF_PIB_PHY_FW_VERSION);
-        // The value is stored in pibObj.pData array
     }
     </code>
 
@@ -940,7 +931,7 @@ PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 
   Example:
     <code>
-    PAL_RF_HANDLE palRfHandle; // returned from PAL_RF_HandleGet
+    PAL_RF_HANDLE palRfHandle;
     PAL_RF_PIB_OBJ pibObj;
 
     pibObj.pib = PAL_RF_PIB_PHY_CHANNEL_NUM;
@@ -948,7 +939,7 @@ PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 
     if (PAL_RF_SetRfPhyPib(palRfHandle, &pibObj) == PAL_RF_PIB_SUCCESS)
     {
-        // PIB set successfully
+        
     }
     </code>
 
@@ -980,7 +971,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 
   Example:
     <code>
-    PAL_RF_HANDLE palRfHandle; // returned from PAL_RF_HandleGet
+    PAL_RF_HANDLE palRfHandle;
     uint8_t pibSize;
 
     pibSize = PAL_RF_GetRfPhyPibLength(palRfHandle, PAL_RF_PIB_PHY_CONFIG);
@@ -991,7 +982,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
 */
 uint8_t PAL_RF_GetRfPhyPibLength(PAL_RF_HANDLE handle, PAL_RF_PIB_ATTRIBUTE attribute);
 
-#endif // #ifndef _PAL_RF_H
+#endif // #ifndef PAL_RF_H
 
 /*******************************************************************************
  End of File
