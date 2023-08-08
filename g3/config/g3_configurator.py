@@ -569,11 +569,12 @@ def instantiateComponent(g3ConfigComponent):
     pMacWrpHeader.setMarkup(True)
 
     pMacWrpDefsHeader = g3ConfigComponent.createFileSymbol("MAC_WRAPPER_DEFS_HEADER", None)
-    pMacWrpDefsHeader.setSourcePath("g3/src/mac_wrapper/mac_wrapper_defs.h")
+    pMacWrpDefsHeader.setSourcePath("g3/src/mac_wrapper/mac_wrapper_defs.h.ftl")
     pMacWrpDefsHeader.setOutputName("mac_wrapper_defs.h")
     pMacWrpDefsHeader.setDestPath("stack/g3/mac/mac_wrapper")
     pMacWrpDefsHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_wrapper")
     pMacWrpDefsHeader.setType("HEADER")
+    pMacWrpDefsHeader.setMarkup(True)
 
     # MAC Common Files
     pMacCommonSource = g3ConfigComponent.createFileSymbol("MAC_COMMON_SOURCE", None)
@@ -624,11 +625,12 @@ def instantiateComponent(g3ConfigComponent):
 
     global macPlcMibHeader
     macPlcMibHeader = g3ConfigComponent.createFileSymbol("MAC_PLC_MIB_HEADER", None)
-    macPlcMibHeader.setSourcePath("g3/src/mac_plc/mac_plc_mib.h")
+    macPlcMibHeader.setSourcePath("g3/src/mac_plc/mac_plc_mib.h.ftl")
     macPlcMibHeader.setOutputName("mac_plc_mib.h")
     macPlcMibHeader.setDestPath("stack/g3/mac/mac_plc")
     macPlcMibHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_plc")
     macPlcMibHeader.setType("HEADER")
+    macPlcMibHeader.setMarkup(True)
 
     # MAC RF Files
     global macRfLibFile
@@ -656,11 +658,12 @@ def instantiateComponent(g3ConfigComponent):
 
     global macRfMibHeader
     macRfMibHeader = g3ConfigComponent.createFileSymbol("MAC_RF_MIB_HEADER", None)
-    macRfMibHeader.setSourcePath("g3/src/mac_rf/mac_rf_mib.h")
+    macRfMibHeader.setSourcePath("g3/src/mac_rf/mac_rf_mib.h.ftl")
     macRfMibHeader.setOutputName("mac_rf_mib.h")
     macRfMibHeader.setDestPath("stack/g3/mac/mac_rf")
     macRfMibHeader.setProjectPath("config/" + configName + "/stack/g3/mac/mac_rf")
     macRfMibHeader.setType("HEADER")
+    macRfMibHeader.setMarkup(True)
 
     #### ADP Library Files ######################################################
     global adpLibFile

@@ -16,7 +16,7 @@
 
 //DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) 2023 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -39,8 +39,8 @@
 *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _MAC_PLC_MIB_H
-#define _MAC_PLC_MIB_H
+#ifndef MAC_PLC_MIB_H
+#define MAC_PLC_MIB_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -57,12 +57,6 @@
 
 #endif
 // DOM-IGNORE-END
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Macro Definitions
-// *****************************************************************************
-// *****************************************************************************
 
 // *****************************************************************************
 // *****************************************************************************
@@ -131,6 +125,16 @@ typedef struct
     bool plcDisable;
     bool plcAvailable;
 } MAC_PLC_MIB;
+
+/* MISRA C-2012 deviation block start */
+/* MISRA C-2012 Rule 5.2 deviated once.  Deviation record ID - H3_MISRAC_2012_R_5_2_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block deviate "MISRA C-2012 Rule 5.2" "H3_MISRAC_2012_R_5_2_DR_1"
+</#if>
 
 // *****************************************************************************
 /* MAC PLC Parameter Information Base definition
@@ -282,6 +286,14 @@ typedef enum
     MAC_PIB_MANUF_PHY_PARAM = 0x08000020
 } MAC_PLC_PIB_ATTRIBUTE;
 
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 5.2"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>
+</#if>
+/* MISRA C-2012 deviation block end */
+
 // *****************************************************************************
 /* Function:
     MAC_STATUS MAC_PLC_MIB_SetAttributeSync
@@ -320,13 +332,13 @@ typedef enum
     MAC_STATUS status;
     const MAC_PIB_VALUE value = {
         .length = 1,
-        .value = 1
+        .value = {1}
     };
 
     status = MAC_PLC_MIB_SetAttributeSync(MAC_COMMON_PIB_PROMISCUOUS_MODE, 0, &value);
     if (status == MAC_STATUS_SUCCESS)
     {
-        // MIB correctly set
+        
     }
     </code>
 
@@ -342,7 +354,7 @@ MAC_STATUS MAC_PLC_MIB_SetAttributeSync(MAC_COMMON_PIB_ATTRIBUTE attribute,
 #endif
 //DOM-IGNORE-END
 
-#endif // #ifndef _MAC_PLC_MIB_H
+#endif // #ifndef MAC_PLC_MIB_H
 
 /*******************************************************************************
  End of File

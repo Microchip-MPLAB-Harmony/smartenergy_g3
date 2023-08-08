@@ -23,7 +23,7 @@
  *******************************************************************************/
 -->
 <#if (HarmonyCore.SELECT_RTOS)?? && HarmonyCore.SELECT_RTOS == "FreeRTOS">
-    <#lt>static void _G3_STACK_Tasks(  void *pvParameters  )
+    <#lt>static void lG3_STACK_Tasks(  void *pvParameters  )
     <#lt>{
     <#lt>    while(true)
     <#lt>    {
@@ -44,10 +44,10 @@
     <#lt>    }
     <#lt>}
 <#elseif (HarmonyCore.SELECT_RTOS)?? && HarmonyCore.SELECT_RTOS == "ThreadX">
-    <#lt>TX_THREAD      _G3_STACK_Task_TCB;
-    <#lt>uint8_t*       _G3_STACK_Task_Stk_Ptr;
+    <#lt>TX_THREAD      lG3_STACK_Task_TCB;
+    <#lt>uint8_t*       lG3_STACK_Task_Stk_Ptr;
 
-    <#lt>static void _G3_STACK_Tasks( ULONG thread_input )
+    <#lt>static void lG3_STACK_Tasks( ULONG thread_input )
     <#lt>{
     <#lt>    while(true)
     <#lt>    {
@@ -68,10 +68,10 @@
     <#lt>    }
     <#lt>}
 <#elseif (HarmonyCore.SELECT_RTOS)?? && HarmonyCore.SELECT_RTOS == "MicriumOSIII">
-    <#lt>OS_TCB  _G3_STACK_Tasks_TCB;
-    <#lt>CPU_STK _G3_STACK_TasksStk[G3_STACK_RTOS_STACK_SIZE];
+    <#lt>OS_TCB  lG3_STACK_Tasks_TCB;
+    <#lt>CPU_STK lG3_STACK_TasksStk[G3_STACK_RTOS_STACK_SIZE];
 
-    <#lt>static void _G3_STACK_Tasks(  void *pvParameters  )
+    <#lt>static void lG3_STACK_Tasks(  void *pvParameters  )
     <#lt>{
     <#lt>    OS_ERR os_err;
     <#lt>    while(true)
@@ -93,7 +93,7 @@
     <#lt>    }
     <#lt>}
 <#elseif (HarmonyCore.SELECT_RTOS)?? && HarmonyCore.SELECT_RTOS == "MbedOS">
-    <#lt>static void _G3_STACK_Tasks( void *pvParameters )
+    <#lt>static void lG3_STACK_Tasks( void *pvParameters )
     <#lt>{
     <#lt>    while(true)
     <#lt>    {
