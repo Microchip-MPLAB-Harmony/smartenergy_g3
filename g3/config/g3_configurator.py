@@ -675,19 +675,21 @@ def instantiateComponent(g3ConfigComponent):
     #### ADP header Files ######################################################
     global adpHeader
     adpHeader = g3ConfigComponent.createFileSymbol("G3_ADP_HEADER", None)
-    adpHeader.setSourcePath("g3/src/adp/adp.h")
+    adpHeader.setSourcePath("g3/src/adp/adp.h.ftl")
     adpHeader.setOutputName("adp.h")
     adpHeader.setDestPath("stack/g3/adaptation")
     adpHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     adpHeader.setType("HEADER")
+    adpHeader.setMarkup(True)
 
     global adpApiTypesHeader
     adpApiTypesHeader = g3ConfigComponent.createFileSymbol("G3_ADP_API_TYPES_HEADER", None)
-    adpApiTypesHeader.setSourcePath("g3/src/adp/adp_api_types.h")
+    adpApiTypesHeader.setSourcePath("g3/src/adp/adp_api_types.h.ftl")
     adpApiTypesHeader.setOutputName("adp_api_types.h")
     adpApiTypesHeader.setDestPath("stack/g3/adaptation")
     adpApiTypesHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     adpApiTypesHeader.setType("HEADER")
+    adpApiTypesHeader.setMarkup(True)
 
     global adpSharedTypesHeader
     adpSharedTypesHeader = g3ConfigComponent.createFileSymbol("G3_ADP_SHARED_TYPES_HEADER", None)
@@ -750,13 +752,14 @@ def instantiateComponent(g3ConfigComponent):
     adpSerialHeader.setDependencies(setEnabledFileSymbol, ["ADP_SERIALIZATION_EN"])
 
     adpSerialSource = g3ConfigComponent.createFileSymbol("G3_ADP_SERIAL_SOURCE", None)
-    adpSerialSource.setSourcePath("g3/src/adp_serial/adp_serial.c")
+    adpSerialSource.setSourcePath("g3/src/adp_serial/adp_serial.c.ftl")
     adpSerialSource.setOutputName("adp_serial.c")
     adpSerialSource.setDestPath("stack/g3/adaptation")
     adpSerialSource.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     adpSerialSource.setType("SOURCE")
     adpSerialSource.setEnabled(False)
     adpSerialSource.setDependencies(setEnabledFileSymbol, ["ADP_SERIALIZATION_EN"])
+    adpSerialSource.setMarkup(True)
 
     # G3 STACK TEMPLATES
     g3StackSystemConfigFile = g3ConfigComponent.createFileSymbol("G3_STACK_CONFIGURATION", None)

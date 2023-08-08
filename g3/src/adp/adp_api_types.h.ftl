@@ -40,8 +40,8 @@
 *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _ADP_API_TYPES_H
-#define _ADP_API_TYPES_H
+#ifndef ADP_API_TYPES_H
+#define ADP_API_TYPES_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -78,7 +78,7 @@
    Remarks:
     None.
 */
-#define ADP_ADDRESS_16BITS 2
+#define ADP_ADDRESS_16BITS 2U
 
 // *****************************************************************************
 /* ADP 64-bit Address Definition
@@ -92,7 +92,7 @@
    Remarks:
     None.
 */
-#define ADP_ADDRESS_64BITS 8
+#define ADP_ADDRESS_64BITS 8U
 
 // *****************************************************************************
 // *****************************************************************************
@@ -334,6 +334,16 @@ typedef struct
 
 } ADP_PATH_DESCRIPTOR;
 
+/* MISRA C-2012 deviation block start */
+/* MISRA C-2012 Rule 5.2 deviated 4 times.  Deviation record ID - H3_MISRAC_2012_R_5_2_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block deviate "MISRA C-2012 Rule 5.2" "H3_MISRAC_2012_R_5_2_DR_1"
+</#if>
+
 // *****************************************************************************
 /* ADP PIB Attributes Definition
 
@@ -461,6 +471,14 @@ typedef enum
 
 } ADP_PIB_ATTRIBUTE;
 
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 5.2"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>
+</#if>
+/* MISRA C-2012 deviation block end */
+
 // *****************************************************************************
 /* ADP Result Definition
 
@@ -562,4 +580,4 @@ typedef enum
 #endif
 //DOM-IGNORE-END
 
-#endif // #ifndef _ADP_API_TYPES_H
+#endif // #ifndef ADP_API_TYPES_H
