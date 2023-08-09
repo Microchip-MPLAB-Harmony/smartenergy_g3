@@ -60,14 +60,14 @@
 // *****************************************************************************
 
 /* Routing tables */
-ROUTING_PENDING_RREQ_ENTRY routingWrpPendingRReqTable[LOADNG_PENDING_RREQ_TABLE_SIZE];
-ROUTING_RREP_GENERATION_ENTRY routingWrpRRepGenerationTable[LOADNG_RREP_GEN_TABLE_SIZE];
-ROUTING_RREQ_FORWARDING_ENTRY routingWrpRReqForwardingTable[LOADNG_RREQ_FORWARD_TABLE_SIZE];
-ROUTING_DISCOVER_ROUTE_ENTRY routingWrpDiscoverRouteTable[LOADNG_DISCOVER_ROUTE_TABLE_SIZE];
-ROUTING_TABLE_ENTRY routingWrpRoutingTable[G3_ADP_ROUTING_TABLE_SIZE];
-ROUTING_BLACKLIST_ENTRY routingWrpBlacklistTable[G3_ADP_BLACKLIST_TABLE_SIZE];
-ROUTING_TABLE_ENTRY routingWrpRoutingSet[G3_ADP_ROUTING_SET_SIZE];
-uint16_t routingWrpDestinationAddressSet[G3_ADP_DESTINATION_ADDR_SET_SIZE];
+static ROUTING_PENDING_RREQ_ENTRY routingWrpPendingRReqTable[LOADNG_PENDING_RREQ_TABLE_SIZE];
+static ROUTING_RREP_GENERATION_ENTRY routingWrpRRepGenerationTable[LOADNG_RREP_GEN_TABLE_SIZE];
+static ROUTING_RREQ_FORWARDING_ENTRY routingWrpRReqForwardingTable[LOADNG_RREQ_FORWARD_TABLE_SIZE];
+static ROUTING_DISCOVER_ROUTE_ENTRY routingWrpDiscoverRouteTable[LOADNG_DISCOVER_ROUTE_TABLE_SIZE];
+static ROUTING_TABLE_ENTRY routingWrpRoutingTable[G3_ADP_ROUTING_TABLE_SIZE];
+static ROUTING_BLACKLIST_ENTRY routingWrpBlacklistTable[G3_ADP_BLACKLIST_TABLE_SIZE];
+static ROUTING_TABLE_ENTRY routingWrpRoutingSet[G3_ADP_ROUTING_SET_SIZE];
+static uint16_t routingWrpDestinationAddressSet[G3_ADP_DESTINATION_ADDR_SET_SIZE];
 
 </#if>
 // *****************************************************************************
@@ -105,57 +105,57 @@ void ROUTING_WRP_Reset(MAC_WRP_HANDLE macWrpHandle)
 </#if>
 }
 
-bool ROUTING_WRP_IsDisabled()
+bool ROUTING_WRP_IsDisabled(void)
 {
 <#if LOADNG_ENABLE == true>
     ADP_GET_CFM_PARAMS getConfirm;
-    ROUTING_WRP_GetMib(ADP_IB_DISABLE_DEFAULT_ROUTING, 0, &getConfirm);
+    ROUTING_WRP_GetMib((uint32_t) ADP_IB_DISABLE_DEFAULT_ROUTING, 0, &getConfirm);
     return (bool)getConfirm.attributeValue[0];
 <#else>
     return true;
 </#if>
 }
 
-bool ROUTING_WRP_IsAutoRReqDisabled()
+bool ROUTING_WRP_IsAutoRReqDisabled(void)
 {
 <#if LOADNG_ENABLE == true>
     ADP_GET_CFM_PARAMS getConfirm;
-    ROUTING_WRP_GetMib(ADP_IB_MANUF_DISABLE_AUTO_RREQ, 0, &getConfirm);
+    ROUTING_WRP_GetMib((uint32_t) ADP_IB_MANUF_DISABLE_AUTO_RREQ, 0, &getConfirm);
     return (bool)getConfirm.attributeValue[0];
 <#else>
     return true;
 </#if>
 }
 
-bool ROUTING_WRP_IsDefaultCoordRouteEnabled()
+bool ROUTING_WRP_IsDefaultCoordRouteEnabled(void)
 {
 <#if LOADNG_ENABLE == true>
     ADP_GET_CFM_PARAMS getConfirm;
-    ROUTING_WRP_GetMib(ADP_IB_DEFAULT_COORD_ROUTE_ENABLED, 0, &getConfirm);
+    ROUTING_WRP_GetMib((uint32_t) ADP_IB_DEFAULT_COORD_ROUTE_ENABLED, 0, &getConfirm);
     return (bool)getConfirm.attributeValue[0];
 <#else>
     return false;
 </#if>
 }
 
-uint8_t ROUTING_WRP_GetRRepWait()
+uint8_t ROUTING_WRP_GetRRepWait(void)
 {
 <#if LOADNG_ENABLE == true>
     ADP_GET_CFM_PARAMS getConfirm;
-    ROUTING_WRP_GetMib(ADP_IB_RREP_WAIT, 0, &getConfirm);
+    ROUTING_WRP_GetMib((uint32_t) ADP_IB_RREP_WAIT, 0, &getConfirm);
     return getConfirm.attributeValue[0];
 <#else>
     return 4;
 </#if>
 }
 
-uint16_t ROUTING_WRP_GetDiscoverRouteGlobalSeqNo()
+uint16_t ROUTING_WRP_GetDiscoverRouteGlobalSeqNo(void)
 {
 <#if LOADNG_ENABLE == true>
     uint16_t u16Value;
     ADP_GET_CFM_PARAMS getConfirm;
-    ROUTING_WRP_GetMib(ADP_IB_MANUF_DISCOVER_SEQUENCE_NUMBER, 0, &getConfirm);
-    memcpy(&u16Value, &getConfirm.attributeValue, 2);
+    ROUTING_WRP_GetMib((uint32_t) ADP_IB_MANUF_DISCOVER_SEQUENCE_NUMBER, 0, &getConfirm);
+    (void) memcpy((void *) &u16Value, (void *) getConfirm.attributeValue, 2);
     return u16Value;
 <#else>
     return 1;
@@ -166,7 +166,7 @@ void ROUTING_WRP_SetDiscoverRouteGlobalSeqNo(uint16_t seqNo)
 {
 <#if LOADNG_ENABLE == true>
     ADP_SET_CFM_PARAMS setConfirm;
-    ROUTING_WRP_SetMib(ADP_IB_MANUF_DISCOVER_SEQUENCE_NUMBER, 0, 2,
+    ROUTING_WRP_SetMib((uint32_t) ADP_IB_MANUF_DISCOVER_SEQUENCE_NUMBER, 0, 2,
         (uint8_t*) &seqNo, &setConfirm);
 </#if>
 }
@@ -389,7 +389,7 @@ uint16_t ROUTING_WRP_GetRouteAndMediaType(uint16_t destinationAddress,
     ADP_MAC_GET_CFM_PARAMS getConfirm;
     uint16_t u16AdpShortAddress;
     ADP_MacGetRequestSync(MAC_WRP_PIB_SHORT_ADDRESS, 0, &getConfirm);
-    memcpy(&u16AdpShortAddress, &getConfirm.attributeValue, 2);
+    (void) memcpy(&u16AdpShortAddress, &getConfirm.attributeValue, 2);
     *pMediaType = 0;
     return u16AdpShortAddress;
 </#if>
