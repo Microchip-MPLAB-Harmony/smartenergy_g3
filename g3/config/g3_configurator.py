@@ -483,11 +483,12 @@ def instantiateComponent(g3ConfigComponent):
 
     global pLbpDefsHeader
     pLbpDefsHeader = g3ConfigComponent.createFileSymbol("LBP_DEFS_HEADER", None)
-    pLbpDefsHeader.setSourcePath("g3/src/lbp/include/lbp_defs.h")
+    pLbpDefsHeader.setSourcePath("g3/src/lbp/include/lbp_defs.h.ftl")
     pLbpDefsHeader.setOutputName("lbp_defs.h")
     pLbpDefsHeader.setDestPath("stack/g3/adaptation")
     pLbpDefsHeader.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     pLbpDefsHeader.setType("HEADER")
+    pLbpDefsHeader.setMarkup(True)
 
     # LBP Files
     global pLbpEapSource
@@ -535,13 +536,14 @@ def instantiateComponent(g3ConfigComponent):
 
     global pLbpDevSource
     pLbpDevSource = g3ConfigComponent.createFileSymbol("LBP_DEV_SOURCE", None)
-    pLbpDevSource.setSourcePath("g3/src/lbp/source/lbp_dev.c")
+    pLbpDevSource.setSourcePath("g3/src/lbp/source/lbp_dev.c.ftl")
     pLbpDevSource.setOutputName("lbp_dev.c")
     pLbpDevSource.setDestPath("stack/g3/adaptation")
     pLbpDevSource.setProjectPath("config/" + configName + "/stack/g3/adaptation")
     pLbpDevSource.setType("SOURCE")
     pLbpDevSource.setEnabled(True)
     pLbpDevSource.setDependencies(g3ConfigRoleChange, ["G3_ROLE"])
+    pLbpDevSource.setMarkup(True)
 
     global pLbpVersionHeader
     pLbpVersionHeader = g3ConfigComponent.createFileSymbol("LBP_VERSION_HEADER", None)

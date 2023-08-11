@@ -41,8 +41,8 @@
 *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _LBP_DEFS_H
-#define _LBP_DEFS_H
+#ifndef LBP_DEFS_H
+#define LBP_DEFS_H
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -72,7 +72,7 @@
    Remarks:
     None.
 */
-#define LBP_NETWORK_ACCESS_ID_SIZE_S_CENELEC_FCC 8
+#define LBP_NETWORK_ACCESS_ID_SIZE_S_CENELEC_FCC 8U
 
 // *****************************************************************************
 /* P Network Access Identifier Size Definition
@@ -88,7 +88,7 @@
    Remarks:
     None.
 */
-#define LBP_NETWORK_ACCESS_ID_SIZE_P_CENELEC_FCC 8
+#define LBP_NETWORK_ACCESS_ID_SIZE_P_CENELEC_FCC 8U
 
 // *****************************************************************************
 /* S Network Access Identifier Size Definition
@@ -103,7 +103,7 @@
    Remarks:
     None.
 */
-#define LBP_NETWORK_ACCESS_ID_SIZE_S_ARIB        34
+#define LBP_NETWORK_ACCESS_ID_SIZE_S_ARIB        34U
 
 // *****************************************************************************
 /* P Network Access Identifier Size Definition
@@ -118,7 +118,17 @@
    Remarks:
     None.
 */
-#define LBP_NETWORK_ACCESS_ID_SIZE_P_ARIB        36
+#define LBP_NETWORK_ACCESS_ID_SIZE_P_ARIB        36U
+
+/* MISRA C-2012 deviation block start */
+/* MISRA C-2012 Rule 5.4 deviated once.  Deviation record ID - H3_MISRAC_2012_R_5_4_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block deviate "MISRA C-2012 Rule 5.4" "H3_MISRAC_2012_R_5_4_DR_1"
+</#if>
 
 // *****************************************************************************
 /* S Network Access Identifier Maximum Size Definition
@@ -149,6 +159,14 @@
     None.
 */
 #define LBP_NETWORK_ACCESS_ID_MAX_SIZE_P         LBP_NETWORK_ACCESS_ID_SIZE_P_ARIB
+
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 5.4"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>
+</#if>
+/* MISRA C-2012 deviation block end */
 
 // *****************************************************************************
 // *****************************************************************************
@@ -235,4 +253,4 @@ typedef struct
 #endif
 //DOM-IGNORE-END
 
-#endif // #ifndef _LBP_DEFS_H
+#endif // #ifndef LBP_DEFS_H
