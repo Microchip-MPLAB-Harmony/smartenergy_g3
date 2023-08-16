@@ -137,12 +137,13 @@ def instantiateComponent(drvMacG3AdpComponent):
 
     # Add drv_mac_g3adp.c file
     drvMacG3AdpSourceFile = drvMacG3AdpComponent.createFileSymbol("DRV_MAC_G3ADP_SOURCE_FILE", None)
-    drvMacG3AdpSourceFile.setSourcePath("g3/net/macg3adp/src/drv_mac_g3adp.c")
+    drvMacG3AdpSourceFile.setSourcePath("g3/net/macg3adp/src/drv_mac_g3adp.c.ftl")
     drvMacG3AdpSourceFile.setOutputName("drv_mac_g3adp.c")
     drvMacG3AdpSourceFile.setDestPath("stack/g3/net/macg3adp/src/")
     drvMacG3AdpSourceFile.setProjectPath("config/" + configName + "/stack/g3/net/macg3adp/src/")
     drvMacG3AdpSourceFile.setType("SOURCE")
     drvMacG3AdpSourceFile.setEnabled(True)
+    drvMacG3AdpSourceFile.setMarkup(True)
     
     # Add to definitions.h
     MacG3AdpSystemDefFile = drvMacG3AdpComponent.createFileSymbol("DRV_MAC_G3ADP_DEFINITIONS_FILE", None)
