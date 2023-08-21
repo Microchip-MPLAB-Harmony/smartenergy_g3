@@ -23,16 +23,16 @@
 
 drv_macG3Adp_helpkeyword = "mcc_h3_drv_macG3Adp_config"
 
-interfaceNum = []
+interface_number = None
 
 def macG3AdpSetVisible(symbol, event):
-    if (event["value"] == True):      
+    if (event["value"] == True):
         symbol.setVisible(True)
     else:
         symbol.setVisible(False)
 
 def macG3AdpSetClear(symbol, event):
-    if (event["value"] == True):     
+    if (event["value"] == True):
         symbol.setVisible(True)
     else:
         symbol.setVisible(False)
@@ -42,7 +42,7 @@ def macG3AdpSetClear(symbol, event):
 def setVal(component, symbol, value):
     triggerDict = {"Component":component,"Id":symbol, "Value":value}
     if(Database.sendMessage(component, "SET_SYMBOL", triggerDict) == None):
-        print "Set Symbol Failure" + component + ":" + symbol + ":" + str(value)
+        print("Set Symbol Failure" + component + ":" + symbol + ":" + str(value))
         return False
     else:
         return True
@@ -51,7 +51,7 @@ def setVal(component, symbol, value):
 def incVal(component, symbol):
     triggerDict = {"Component":component,"Id":symbol}
     if(Database.sendMessage(component, "INC_SYMBOL", triggerDict) == None):
-        print "Increment Symbol Failure" + component + ":" + symbol
+        print("Increment Symbol Failure" + component + ":" + symbol)
         return False
     else:
         return True
@@ -60,7 +60,7 @@ def incVal(component, symbol):
 def decVal(component, symbol):
     triggerDict = {"Component":component,"Id":symbol}
     if(Database.sendMessage(component, "DEC_SYMBOL", triggerDict) == None):
-        print "Decrement Symbol Failure" + component + ":" + symbol
+        print("Decrement Symbol Failure" + component + ":" + symbol)
         return False
     else:
         return True
@@ -69,17 +69,26 @@ def decVal(component, symbol):
 def handleMessage(messageID, args):
     retDict= {}
     if (messageID == "SET_SYMBOL"):
-        print "handleMessage: Set Symbol"
+        print("handleMessage: Set Symbol")
         retDict= {"Return": "Success"}
         Database.setSymbolValue(args["Component"], args["Id"], args["Value"])
     else:
         retDict= {"Return": "UnImplemented Command"}
     return retDict
 
+def g3RoleChanged(symbol, event):
+    g3Coordinator = False
+    if event["value"] == "PAN Coordinator":
+        g3Coordinator = True
+
+    setVal("tcpipIPv6", "TCPIP_IPV6_G3_PLC_BORDER_ROUTER", g3Coordinator)
+    if interface_number != None:
+        setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_INTERFACE_FLAG_IPV6_G3_NET_ROUTER_IDX" + str(interface_number), g3Coordinator)
+
 def instantiateComponent(drvMacG3AdpComponent):
     
     print("G3 MAC ADP Component")   
-    configName = Variables.get("__CONFIGURATION_NAME")      
+    configName = Variables.get("__CONFIGURATION_NAME")
     
     device_node = ATDF.getNode('/avr-tools-device-file/devices/device')
     dev_family = str(device_node.getAttribute("family"))
@@ -88,7 +97,7 @@ def instantiateComponent(drvMacG3AdpComponent):
     if(Database.getComponentByID("srvQueue") == None):
         Database.activateComponents(["srvQueue"])
 
-        
+
     # Default TX Packet Queue limit
     drvMacG3AdpTxQueueLimit = drvMacG3AdpComponent.createIntegerSymbol("DRV_MAC_G3ADP_PACKET_TX_QUEUE_LIMIT", None)
     drvMacG3AdpTxQueueLimit.setHelp("drv_macG3Adp_helpkeyword")
@@ -97,6 +106,7 @@ def instantiateComponent(drvMacG3AdpComponent):
     drvMacG3AdpTxQueueLimit.setDefaultValue(5)
     drvMacG3AdpTxQueueLimit.setMin(1)
     drvMacG3AdpTxQueueLimit.setMax(10)
+    drvMacG3AdpTxQueueLimit.setDependencies(g3RoleChanged, ["g3_config.G3_ROLE"])
 
     # Default RX Packet Queue limit
     drvMacG3AdpRxQueueLimit = drvMacG3AdpComponent.createIntegerSymbol("DRV_MAC_G3ADP_PACKET_RX_QUEUE_LIMIT", None)
@@ -143,23 +153,34 @@ def instantiateComponent(drvMacG3AdpComponent):
 
 def onAttachmentConnected(source, target):
     if (target["id"] == "NETCONFIG_MAC_Dependency"):
+        global interface_number
         interface_number = int(target["component"].getID().strip("tcpipNetConfig_"))
-        interfaceNum.append(interface_number)
 
         setVal("tcpipStack", "TCPIP_STACK_INT_MAC_IDX" + str(interface_number), True)
         setVal("tcpipStack", "TCPIP_STACK_MII_MODE_IDX" + str(interface_number), "")
         incVal("tcpipStack", "TCPIP_STACK_INTMAC_INTERFACE_NUM")
-        
+
+        g3Role = Database.getSymbolValue("g3_config", "G3_ROLE")
+        g3Coordinator = False
+        if g3Role == "PAN Coordinator":
+            g3Coordinator = True
+
+        setVal("tcpipIPv6", "TCPIP_IPV6_DEFAULT_LINK_MTU", 1280)
+        setVal("tcpipIPv6", "TCPIP_IPV6_RX_FRAGMENTED_BUFFER_SIZE", 1280)
+        setVal("tcpipIPv6", "TCPIP_IPV6_G3_PLC_SUPPORT", True)
+        setVal("tcpipIPv6", "TCPIP_IPV6_G3_PLC_BORDER_ROUTER", g3Coordinator)
+
+        setVal("tcpipUdp", "TCPIP_UDP_SOCKET_DEFAULT_TX_SIZE", 1200)
+
         setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_CONFIG_MULTICAST_IDX" + str(interface_number), True)
-        setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_INTERFACE_FLAG_IPV6_ADDRESS_IDX" + str(interface_number), True)
-        setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_DEFAULT_IPV6_ADDRESS_IDX" + str(interface_number), "fd00::781D:00:1122:3344:5566")
-        setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_DEFAULT_IPV6_GATEWAY_IDX" + str(interface_number), "fe80::781D:ff:fe00:0000")
-        
+        setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_INTERFACE_FLAG_IPV6_ADDRESS_IDX" + str(interface_number), False)
+        setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_INTERFACE_FLAG_IPV6_G3_NET_IDX" + str(interface_number), True)
+        setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_INTERFACE_FLAG_IPV6_G3_NET_ROUTER_IDX" + str(interface_number), g3Coordinator)
+        setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_INTERFACE_FLAG_IPV6_G3_NET_ROUTER_ADV_IDX" + str(interface_number), False)
+
 def onAttachmentDisconnected(source, target):
     if (target["id"] == "NETCONFIG_MAC_Dependency"):
-        interface_number = int(target["component"].getID().strip("tcpipNetConfig_"))
-        interfaceNum.append(interface_number)
+        global interface_number
         setVal("tcpipStack", "TCPIP_STACK_INT_MAC_IDX" + str(interface_number), False)
-        setVal("tcpipStack", "TCPIP_STACK_MII_MODE_IDX" + str(interface_number), "")
         decVal("tcpipStack", "TCPIP_STACK_INTMAC_INTERFACE_NUM")
-        
+        interface_number = None
