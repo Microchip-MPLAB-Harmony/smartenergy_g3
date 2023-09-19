@@ -113,7 +113,7 @@ def instantiateComponent(drvMacG3AdpComponent):
     drvMacG3AdpRxQueueLimit.setHelp("drv_macG3Adp_helpkeyword")
     drvMacG3AdpRxQueueLimit.setLabel("RX Queue Limit")
     drvMacG3AdpRxQueueLimit.setDescription("Default RX MAC Packet Queue limit")
-    drvMacG3AdpRxQueueLimit.setDefaultValue(5)
+    drvMacG3AdpRxQueueLimit.setDefaultValue(2)
     drvMacG3AdpRxQueueLimit.setMin(1)
     drvMacG3AdpRxQueueLimit.setMax(10)
     
