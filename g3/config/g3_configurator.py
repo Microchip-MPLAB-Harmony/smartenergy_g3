@@ -220,7 +220,7 @@ def instantiateComponent(g3ConfigComponent):
         g3FragmentSize.setDefaultValue(100)
     else:
         g3FragmentSize.setDefaultValue(400)
-    g3FragmentSize.setMin(64)
+    g3FragmentSize.setMin(100)
     if ("WBZ45" in processor) or ("PIC32CX1012BZ" in processor):
         g3FragmentSize.setMax(100)
     else:
