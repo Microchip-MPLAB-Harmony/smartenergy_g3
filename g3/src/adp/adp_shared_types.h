@@ -331,7 +331,10 @@ typedef struct
 
     /* Flag to indicate if header was compressed */
     bool wasCompressed;
-    
+
+    /* Flag to indicate if fragmentation data buffer is used or not */
+    bool used;
+
 } ADP_LOWPAN_FRAGMENTED_DATA;
 
 // *****************************************************************************
