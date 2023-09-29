@@ -85,6 +85,9 @@ def g3RoleChanged(symbol, event):
     if interface_number != None:
         setVal("tcpipNetConfig_" + str(interface_number), "TCPIP_NETWORK_INTERFACE_FLAG_IPV6_G3_NET_ROUTER_IDX" + str(interface_number), g3Coordinator)
 
+    if not g3Coordinator:
+        setVal("tcpipNdp", "TCPIP_RTR_SOLICITATION_INTERVAL", 20)
+
 def instantiateComponent(drvMacG3AdpComponent):
     
     print("G3 MAC ADP Component")   
@@ -170,6 +173,9 @@ def onAttachmentConnected(source, target):
         setVal("tcpipIPv6", "TCPIP_IPV6_RX_FRAGMENTED_BUFFER_SIZE", 1280)
         setVal("tcpipIPv6", "TCPIP_IPV6_G3_PLC_SUPPORT", True)
         setVal("tcpipIPv6", "TCPIP_IPV6_G3_PLC_BORDER_ROUTER", g3Coordinator)
+
+        if not g3Coordinator:
+            setVal("tcpipNdp", "TCPIP_RTR_SOLICITATION_INTERVAL", 20)
 
         setVal("tcpipUdp", "TCPIP_UDP_SOCKET_DEFAULT_TX_SIZE", 1200)
 
