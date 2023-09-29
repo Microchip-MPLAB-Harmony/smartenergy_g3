@@ -86,7 +86,7 @@ def instantiateComponent(g3ConfigComponent):
 
     g3StackRTOSStackSize = g3ConfigComponent.createIntegerSymbol("G3_RTOS_STACK_SIZE", g3StackRTOSMenu)
     g3StackRTOSStackSize.setLabel("Stack Size (in bytes)")
-    g3StackRTOSStackSize.setDefaultValue(2048)
+    g3StackRTOSStackSize.setDefaultValue(3584)
     g3StackRTOSStackSize.setMin(1024)
     g3StackRTOSStackSize.setMax(16*1024)
 
