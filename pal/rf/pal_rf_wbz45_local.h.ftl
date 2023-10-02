@@ -107,6 +107,8 @@ typedef struct
     uint16_t txLastPaySymbols;
     uint16_t rxLastPaySymbols;
     uint32_t txTotalPackets;
+    uint32_t txTotalTxRequest;
+    uint32_t txTotalCfmPackets;
     uint32_t txTotalBytes;
     uint32_t txTotalErrors;
     uint32_t txErrorBusyTX;
@@ -127,6 +129,8 @@ typedef struct
     uint32_t rxErrorAborted;
     uint32_t rxErrorOverride;
     uint32_t rxErrorRcvDataNotHandled;
+    uint32_t phyResets;
+    uint32_t phyResetsInTx;
 } PAL_RF_STATISTICS;
 
 // *****************************************************************************
@@ -150,6 +154,7 @@ typedef struct
     PAL_RF_HANDLERS rfPhyHandlers;
 
     PAL_RF_STATUS status;
+    PHY_TrxStatus_t phyStatus;
 
     PAL_RF_NETWORK_PARAMS network;
 
@@ -158,13 +163,12 @@ typedef struct
 
     SYS_TIME_HANDLE txTimer;
     uint64_t txTimeIniCount;
-    uint64_t txTimeIniCountCalc;
     uint64_t txTimeEndCount;
 
-    volatile bool txPending;
-    volatile bool txCfmErrorPending;
-    PAL_RF_PHY_STATUS txCfmErrorStatus;
-    uint64_t txCfmErrorTime;
+    bool txDelayedPending;
+    bool txTransmitting;
+    bool txCfmPending;
+    PAL_RF_PHY_STATUS txCfmStatus;
 
     uint8_t rxBuffer[LARGE_BUFFER_SIZE];
     uint8_t txBuffer[LARGE_BUFFER_SIZE];

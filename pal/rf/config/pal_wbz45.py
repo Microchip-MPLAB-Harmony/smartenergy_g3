@@ -142,7 +142,7 @@ def instantiateComponent(g3PalRfComponent):
     palRFRTOSStackSize = g3PalRfComponent.createIntegerSymbol("PAL_RF_RTOS_STACK_SIZE", palRFRTOSMenu)
     palRFRTOSStackSize.setLabel("Stack Size (in bytes)")
     palRFRTOSStackSize.setHelp(g3_pal_rf_helpkeyword)
-    palRFRTOSStackSize.setDefaultValue(256)
+    palRFRTOSStackSize.setDefaultValue(1024)
     palRFRTOSStackSize.setMin(256)
     palRFRTOSStackSize.setMax(16*1024)
 
