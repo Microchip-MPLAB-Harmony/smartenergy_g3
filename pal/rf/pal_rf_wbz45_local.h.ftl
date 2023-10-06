@@ -118,6 +118,9 @@ typedef struct
     uint32_t txErrorFormat;
     uint32_t txErrorTimeout;
     uint32_t txErrorAborted;
+    uint32_t txErrorTxError;
+    uint32_t txErrorTrxOff;
+    uint32_t txErrorPhyErrors;
     uint32_t txCfmNotHandled;
     uint32_t rxTotalPackets;
     uint32_t rxTotalBytes;
@@ -167,7 +170,6 @@ typedef struct
 
     bool txDelayedPending;
     bool txTransmitting;
-    bool txCfmPending;
     PAL_RF_PHY_STATUS txCfmStatus;
 
     uint8_t rxBuffer[LARGE_BUFFER_SIZE];
