@@ -292,7 +292,7 @@ void MAC_COMMON_Init(void)
         {
             if (msCounterSemaphoreID != NULL)
             {
-                OSAL_SEM_Delete(&msCounterSemaphoreID);
+                (void) OSAL_SEM_Delete(&msCounterSemaphoreID);
             }
         }
     }
