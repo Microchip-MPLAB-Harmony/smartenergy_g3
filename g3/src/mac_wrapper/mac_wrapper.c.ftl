@@ -3098,7 +3098,8 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
                     case MAC_WRP_RF_PHY_PARAM_DEVICE_ID:
                     case MAC_WRP_RF_PHY_PARAM_PHY_BAND_OPERATING_MODE:
                     case MAC_WRP_RF_PHY_PARAM_PHY_CHANNEL_NUM:
-                    case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION_US:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION_SYMBOLS:
                     case MAC_WRP_RF_PHY_PARAM_PHY_TURNAROUND_TIME:
                     case MAC_WRP_RF_PHY_PARAM_PHY_TX_PAY_SYMBOLS:
                     case MAC_WRP_RF_PHY_PARAM_PHY_RX_PAY_SYMBOLS:
@@ -3110,7 +3111,8 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
                     case MAC_WRP_RF_PHY_PARAM_DEVICE_RESET:
                     case MAC_WRP_RF_PHY_PARAM_TRX_RESET:
                     case MAC_WRP_RF_PHY_PARAM_TRX_SLEEP:
-                    case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD_DBM:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD_SENSITIVITY:
                     case MAC_WRP_RF_PHY_PARAM_PHY_STATS_RESET:
                     case MAC_WRP_RF_PHY_PARAM_TX_FSK_FEC:
                     case MAC_WRP_RF_PHY_PARAM_TX_OFDM_MCS:
@@ -3519,7 +3521,8 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
 
                 case MAC_WRP_RF_PHY_PARAM_PHY_BAND_OPERATING_MODE:
                 case MAC_WRP_RF_PHY_PARAM_PHY_CHANNEL_NUM:
-                case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION:
+                case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION_US:
+                case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION_SYMBOLS:
                 case MAC_WRP_RF_PHY_PARAM_PHY_TX_PAY_SYMBOLS:
                 case MAC_WRP_RF_PHY_PARAM_PHY_RX_PAY_SYMBOLS:
                     lMemcpyFromUsiEndianessUint16(pibValue->value, pData);
@@ -3528,7 +3531,8 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
                 case MAC_WRP_RF_PHY_PARAM_DEVICE_RESET:
                 case MAC_WRP_RF_PHY_PARAM_TRX_RESET:
                 case MAC_WRP_RF_PHY_PARAM_TRX_SLEEP:
-                case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD:
+                case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD_DBM:
+                case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD_SENSITIVITY:
                 case MAC_WRP_RF_PHY_PARAM_PHY_STATS_RESET:
                 case MAC_WRP_RF_PHY_PARAM_TX_FSK_FEC:
                 case MAC_WRP_RF_PHY_PARAM_TX_OFDM_MCS:

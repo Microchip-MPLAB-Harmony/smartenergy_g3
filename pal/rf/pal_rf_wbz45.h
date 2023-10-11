@@ -75,102 +75,106 @@
 */
 typedef enum
 {
-    /* RF device identifier. 16 bits */
-    PAL_RF_PIB_DEVICE_ID = 0x0000,
-    /* RF PHY layer firmware version number. 6 bytes */
-    PAL_RF_PIB_FW_VERSION = 0x0001,
-    /* RF device reset (write-only). 8 bits */
-    PAL_RF_PIB_DEVICE_RESET = 0x0002,
-    /* RF transceiver reset (write-only). 8 bits */
-    PAL_RF_PIB_TRX_RESET = 0x0080,
-    /* RF transceiver sleep. 8 bits */
-    PAL_RF_PIB_TRX_SLEEP = 0x0081,
-    /* RF PHY configuration. 19 bytes
-     * (see "DRV_RF215_PHY_CFG_OBJ", only available for RF215) */
-    PAL_RF_PIB_PHY_CONFIG = 0x0100,
-    /* RF PHY band and operating mode. 16 bits (only available for RF215) */
-    PAL_RF_PIB_PHY_BAND_OPERATING_MODE = 0x0101,
-    /* RF channel number used for transmission and reception. 16 bits */
-    PAL_RF_PIB_PHY_CHANNEL_NUM = 0x0120,
-    /* RF frequency in Hz used for transmission and reception.
-     * 32 bits (read-only) */
-    PAL_RF_PIB_PHY_CHANNEL_FREQ_HZ = 0x0121,
-    /* RF channel page used for transmission and reception. 8 bits
-     * (only available for WBZ45/PIC32CX-BZ2) */
-    PAL_RF_PIB_PHY_CHANNEL_PAGE = 0x0122,
-    /* RF channels supported used for transmission and reception. 32 bits
-     * (only available for WBZ45/PIC32CX-BZ2) */
-    PAL_RF_PIB_PHY_CHANNELS_SUPPORTED = 0x0123,
-    /* Duration in us of Energy Detection for CCA. 16 bits */
-    PAL_RF_PIB_PHY_CCA_ED_DURATION = 0x0141,
-    /* Threshold in dBm of for CCA with Energy Detection. 16 bits */
-    PAL_RF_PIB_PHY_CCA_ED_THRESHOLD = 0x0142,
-    /* Perform a single ED measurement on current channel (dBm). 8 bits
-     * (only available for WBZ45/PIC32CX-BZ2) */
-    PAL_RF_PIB_PHY_CCA_ED_SAMPLE = 0x0143,
-    /* Turnaround time in us (aTurnaroundTime in IEEE 802.15.4).
-     * 16 bits (read-only) */
-    PAL_RF_PIB_PHY_TURNAROUND_TIME = 0x0160,
-    /* Number of payload symbols in last transmitted message. 16 bits */
-    PAL_RF_PIB_PHY_TX_PAY_SYMBOLS = 0x0180,
-    /* Number of payload symbols in last received message. 16 bits */
-    PAL_RF_PIB_PHY_RX_PAY_SYMBOLS = 0x0181,
-    /* Successfully transmitted messages count. 32 bits */
-    PAL_RF_PIB_PHY_TX_TOTAL = 0x01A0,
-    /* Successfully transmitted bytes count. 32 bits */
-    PAL_RF_PIB_PHY_TX_TOTAL_BYTES = 0x01A1,
-    /* Transmission errors count. 32 bits */
-    PAL_RF_PIB_PHY_TX_ERR_TOTAL = 0x01A2,
-    /* Transmission errors count due to already in transmission. 32 bits */
-    PAL_RF_PIB_PHY_TX_ERR_BUSY_TX = 0x01A3,
-    /* Transmission errors count due to already in reception. 32 bits */
-    PAL_RF_PIB_PHY_TX_ERR_BUSY_RX = 0x01A4,
-    /* Transmission errors count due to busy channel. 32 bits */
-    PAL_RF_PIB_PHY_TX_ERR_BUSY_CHN = 0x01A5,
-    /* Transmission errors count due to bad message length. 32 bits */
-    PAL_RF_PIB_PHY_TX_ERR_BAD_LEN = 0x01A6,
-    /* Transmission errors count due to bad format. 32 bits */
-    PAL_RF_PIB_PHY_TX_ERR_BAD_FORMAT = 0x01A7,
-    /* Transmission errors count due to timeout. 32 bits */
-    PAL_RF_PIB_PHY_TX_ERR_TIMEOUT = 0x01A8,
-    /* Transmission aborted count. 32 bits */
-    PAL_RF_PIB_PHY_TX_ERR_ABORTED = 0x01A9,
-    /* Transmission confirms not handled by upper layer count. 32 bits */
-    PAL_RF_PIB_PHY_TX_CFM_NOT_HANDLED = 0x01AA,
-    /* Successfully received messages count. 32 bits */
-    PAL_RF_PIB_PHY_RX_TOTAL = 0x01B0,
-    /* Successfully received bytes count. 32 bits */
-    PAL_RF_PIB_PHY_RX_TOTAL_BYTES = 0x01B1,
-    /* Reception errors count. 32 bits */
-    PAL_RF_PIB_PHY_RX_ERR_TOTAL = 0x01B2,
-    /* Reception false positive count. 32 bits */
-    PAL_RF_PIB_PHY_RX_ERR_FALSE_POSITIVE = 0x01B3,
-    /* Reception errors count due to bad message length. 32 bits */
-    PAL_RF_PIB_PHY_RX_ERR_BAD_LEN = 0x01B4,
-    /* Reception errors count due to bad format or bad FCS in header. 32 bits */
-    PAL_RF_PIB_PHY_RX_ERR_BAD_FORMAT = 0x01B5,
-    /* Reception errors count due to bad FCS in payload. 32 bits */
-    PAL_RF_PIB_PHY_RX_ERR_BAD_FCS_PAY = 0x01B6,
-    /* Reception aborted count. 32 bits */
-    PAL_RF_PIB_PHY_RX_ERR_ABORTED = 0x01B7,
-    /* Reception overrided (another message with higher signal level) count.
-     * 32 bits */
-    PAL_RF_PIB_PHY_RX_OVERRIDE = 0x01B8,
-    /* Reception indications not handled by upper layer count. 32 bits */
-    PAL_RF_PIB_PHY_RX_IND_NOT_HANDLED = 0x01B9,
-    /* Reset Phy Statistics (write-only) */
-    PAL_RF_PIB_PHY_STATS_RESET = 0x01C0,
-    /* Set Continuous Tx Mode (write-only) */
-    PAL_RF_PIB_SET_CONTINUOUS_TX_MODE = 0x01C1,
-    /* Backoff period unit in us (aUnitBackoffPeriod in IEEE 802.15.4) used for
-     * CSMA-CA. 16 bits (read-only) */
-    PAL_RF_PIB_MAC_UNIT_BACKOFF_PERIOD = 0x0200,
-    /* SUN FSK FEC enabled or disabled for transmission
-     * (phyFskFecEnabled in IEEE 802.15.4; only available for RF215). 8 bits */
-    PAL_RF_PIB_TX_FSK_FEC = 0x8000,
-    /* SUN OFDM MCS (Modulation and coding scheme) used for transmission
-     * (only available for RF215). 8 bits */
-    PAL_RF_PIB_TX_OFDM_MCS = 0x8001,
+  /* RF device identifier. 16 bits */
+  PAL_RF_PIB_DEVICE_ID = 0x0000,
+  /* RF PHY layer firmware version number. 6 bytes */
+  PAL_RF_PIB_FW_VERSION = 0x0001,
+  /* RF device reset (write-only). 8 bits */
+  PAL_RF_PIB_DEVICE_RESET = 0x0002,
+  /* RF transceiver reset (write-only). 8 bits */
+  PAL_RF_PIB_TRX_RESET = 0x0080,
+  /* RF transceiver sleep. 8 bits */
+  PAL_RF_PIB_TRX_SLEEP = 0x0081,
+  /* RF PHY configuration. 19 bytes
+   * (see "DRV_RF215_PHY_CFG_OBJ", only available for RF215) */
+  PAL_RF_PIB_PHY_CONFIG = 0x0100,
+  /* RF PHY band and operating mode. 16 bits (only available for RF215) */
+  PAL_RF_PIB_PHY_BAND_OPERATING_MODE = 0x0101,
+  /* RF channel number used for transmission and reception. 16 bits */
+  PAL_RF_PIB_PHY_CHANNEL_NUM = 0x0120,
+  /* RF frequency in Hz used for transmission and reception.
+   * 32 bits (read-only) */
+  PAL_RF_PIB_PHY_CHANNEL_FREQ_HZ = 0x0121,
+  /* RF channel page used for transmission and reception. 8 bits
+   * (only available for WBZ45/PIC32CX-BZ2) */
+  PAL_RF_PIB_PHY_CHANNEL_PAGE = 0x0122,
+  /* RF channels supported used for transmission and reception. 32 bits
+   * (only available for WBZ45/PIC32CX-BZ2) */
+  PAL_RF_PIB_PHY_CHANNELS_SUPPORTED = 0x0123,
+  /* Duration in us of Energy Detection for CCA. 16 bits */
+  PAL_RF_PIB_PHY_CCA_ED_DURATION_US = 0x0141,
+  /* Threshold in dBm for CCA with Energy Detection. 8 bits */
+  PAL_RF_PIB_PHY_CCA_ED_THRESHOLD_DBM = 0x0142,
+  /* Duration in symbols of Energy Detection for CCA. 16 bits */
+  PAL_RF_PIB_PHY_CCA_ED_DURATION_SYMBOLS = 0x0143,
+  /* Threshold in dB above sensitivity for CCA with Energy Detection. 8 bits */
+  PAL_RF_PIB_PHY_CCA_ED_THRESHOLD_SENSITIVITY = 0x0144,
+  /* Perform a single ED measurement on current channel (dBm). 8 bits
+   * (only available for WBZ45/PIC32CX-BZ2) */
+  PAL_RF_PIB_PHY_CCA_ED_SAMPLE = 0x0150,
+  /* Turnaround time in us (aTurnaroundTime in IEEE 802.15.4).
+   * 16 bits (read-only) */
+  PAL_RF_PIB_PHY_TURNAROUND_TIME = 0x0160,
+  /* Number of payload symbols in last transmitted message. 16 bits */
+  PAL_RF_PIB_PHY_TX_PAY_SYMBOLS = 0x0180,
+  /* Number of payload symbols in last received message. 16 bits */
+  PAL_RF_PIB_PHY_RX_PAY_SYMBOLS = 0x0181,
+  /* Successfully transmitted messages count. 32 bits */
+  PAL_RF_PIB_PHY_TX_TOTAL = 0x01A0,
+  /* Successfully transmitted bytes count. 32 bits */
+  PAL_RF_PIB_PHY_TX_TOTAL_BYTES = 0x01A1,
+  /* Transmission errors count. 32 bits */
+  PAL_RF_PIB_PHY_TX_ERR_TOTAL = 0x01A2,
+  /* Transmission errors count due to already in transmission. 32 bits */
+  PAL_RF_PIB_PHY_TX_ERR_BUSY_TX = 0x01A3,
+  /* Transmission errors count due to already in reception. 32 bits */
+  PAL_RF_PIB_PHY_TX_ERR_BUSY_RX = 0x01A4,
+  /* Transmission errors count due to busy channel. 32 bits */
+  PAL_RF_PIB_PHY_TX_ERR_BUSY_CHN = 0x01A5,
+  /* Transmission errors count due to bad message length. 32 bits */
+  PAL_RF_PIB_PHY_TX_ERR_BAD_LEN = 0x01A6,
+  /* Transmission errors count due to bad format. 32 bits */
+  PAL_RF_PIB_PHY_TX_ERR_BAD_FORMAT = 0x01A7,
+  /* Transmission errors count due to timeout. 32 bits */
+  PAL_RF_PIB_PHY_TX_ERR_TIMEOUT = 0x01A8,
+  /* Transmission aborted count. 32 bits */
+  PAL_RF_PIB_PHY_TX_ERR_ABORTED = 0x01A9,
+  /* Transmission confirms not handled by upper layer count. 32 bits */
+  PAL_RF_PIB_PHY_TX_CFM_NOT_HANDLED = 0x01AA,
+  /* Successfully received messages count. 32 bits */
+  PAL_RF_PIB_PHY_RX_TOTAL = 0x01B0,
+  /* Successfully received bytes count. 32 bits */
+  PAL_RF_PIB_PHY_RX_TOTAL_BYTES = 0x01B1,
+  /* Reception errors count. 32 bits */
+  PAL_RF_PIB_PHY_RX_ERR_TOTAL = 0x01B2,
+  /* Reception false positive count. 32 bits */
+  PAL_RF_PIB_PHY_RX_ERR_FALSE_POSITIVE = 0x01B3,
+  /* Reception errors count due to bad message length. 32 bits */
+  PAL_RF_PIB_PHY_RX_ERR_BAD_LEN = 0x01B4,
+  /* Reception errors count due to bad format or bad FCS in header. 32 bits */
+  PAL_RF_PIB_PHY_RX_ERR_BAD_FORMAT = 0x01B5,
+  /* Reception errors count due to bad FCS in payload. 32 bits */
+  PAL_RF_PIB_PHY_RX_ERR_BAD_FCS_PAY = 0x01B6,
+  /* Reception aborted count. 32 bits */
+  PAL_RF_PIB_PHY_RX_ERR_ABORTED = 0x01B7,
+  /* Reception overrided (another message with higher signal level) count.
+   * 32 bits */
+  PAL_RF_PIB_PHY_RX_OVERRIDE = 0x01B8,
+  /* Reception indications not handled by upper layer count. 32 bits */
+  PAL_RF_PIB_PHY_RX_IND_NOT_HANDLED = 0x01B9,
+  /* Reset Phy Statistics (write-only) */
+  PAL_RF_PIB_PHY_STATS_RESET = 0x01C0,
+  /* Set Continuous Tx Mode (write-only) */
+  PAL_RF_PIB_SET_CONTINUOUS_TX_MODE = 0x01C1,
+  /* Backoff period unit in us (aUnitBackoffPeriod in IEEE 802.15.4) used for
+   * CSMA-CA. 16 bits (read-only) */
+  PAL_RF_PIB_MAC_UNIT_BACKOFF_PERIOD = 0x0200,
+  /* SUN FSK FEC enabled or disabled for transmission
+   * (phyFskFecEnabled in IEEE 802.15.4; only available for RF215). 8 bits */
+  PAL_RF_PIB_TX_FSK_FEC = 0x8000,
+  /* SUN OFDM MCS (Modulation and coding scheme) used for transmission
+   * (only available for RF215). 8 bits */
+  PAL_RF_PIB_TX_OFDM_MCS = 0x8001,
 
 } PAL_RF_PIB_ATTRIBUTE;
 

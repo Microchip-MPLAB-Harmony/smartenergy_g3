@@ -1047,9 +1047,13 @@ typedef enum
     /* RF frequency in Hz used for transmission and reception. 32 bits (read-only) */
     MAC_WRP_RF_PHY_PARAM_PHY_CHANNEL_FREQ_HZ = 0x0121,
     /* Duration in us of Energy Detection for CCA. 16 bits */
-    MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION = 0x0141,
-    /* Threshold in dBm of for CCA with Energy Detection. 16 bits */
-    MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD = 0x0142,
+    MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION_US = 0x0141,
+    /* Threshold in dBm for CCA with Energy Detection. 16 bits */
+    MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD_DBM = 0x0142,
+    /* Duration in symbols of Energy Detection for CCA. 8 bits */
+    MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION_SYMBOLS = 0x0143,
+    /* Threshold in dB above sensitivity for CCA with Energy Detection. 8 bits */
+    MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD_SENSITIVITY = 0x0144,
     /* Turnaround time in us (aTurnaroundTime in IEEE 802.15.4). 16 bits (read-only) */
     MAC_WRP_RF_PHY_PARAM_PHY_TURNAROUND_TIME = 0x0160,
     /* Number of payload symbols in last transmitted message. 16 bits */

@@ -102,9 +102,13 @@ typedef enum
      * (only available for WBZ45/PIC32CX-BZ2) */
     PAL_RF_PIB_PHY_CHANNELS_SUPPORTED = 0x0123,
     /* Duration in us of Energy Detection for CCA. 16 bits */
-    PAL_RF_PIB_PHY_CCA_ED_DURATION = 0x0141,
-    /* Threshold in dBm of for CCA with Energy Detection. 16 bits */
-    PAL_RF_PIB_PHY_CCA_ED_THRESHOLD = 0x0142,
+    PAL_RF_PIB_PHY_CCA_ED_DURATION_US = 0x0141,
+    /* Threshold in dBm for CCA with Energy Detection. 16 bits */
+    PAL_RF_PIB_PHY_CCA_ED_THRESHOLD_DBM = 0x0142,
+    /* Duration in symbols of Energy Detection for CCA. 8 bits */
+    PAL_RF_PIB_PHY_CCA_ED_DURATION_SYMBOLS = 0x0143,
+    /* Threshold in dB above sensitivity for CCA with Energy Detection. 8 bits */
+    PAL_RF_PIB_PHY_CCA_ED_THRESHOLD_SENSITIVITY = 0x0144,
     /* Perform a single ED measurement on current channel (dBm). 8 bits
      * (only available for WBZ45/PIC32CX-BZ2) */
     PAL_RF_PIB_PHY_CCA_ED_SAMPLE = 0x0143,
