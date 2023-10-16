@@ -3113,6 +3113,8 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
                     case MAC_WRP_RF_PHY_PARAM_TRX_SLEEP:
                     case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD_DBM:
                     case MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD_SENSITIVITY:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_SENSITIVITY:
+                    case MAC_WRP_RF_PHY_PARAM_PHY_MAX_TX_POWER:
                     case MAC_WRP_RF_PHY_PARAM_PHY_STATS_RESET:
                     case MAC_WRP_RF_PHY_PARAM_TX_FSK_FEC:
                     case MAC_WRP_RF_PHY_PARAM_TX_OFDM_MCS:
@@ -3543,6 +3545,8 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
                 case MAC_WRP_RF_PHY_PARAM_PHY_CHANNEL_FREQ_HZ:
                 case MAC_WRP_RF_PHY_PARAM_FW_VERSION:
                 case MAC_WRP_RF_PHY_PARAM_DEVICE_ID:
+                case MAC_WRP_RF_PHY_PARAM_PHY_SENSITIVITY:
+                case MAC_WRP_RF_PHY_PARAM_PHY_MAX_TX_POWER:
                 case MAC_WRP_RF_PHY_PARAM_PHY_TURNAROUND_TIME:
                 case MAC_WRP_RF_PHY_PARAM_MAC_UNIT_BACKOFF_PERIOD:
                     /* MAC_WRP_STATUS_READ_ONLY */

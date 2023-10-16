@@ -80,11 +80,12 @@ def instantiateComponent(g3PalRfComponent):
     g3PalRfSrcFile.setMarkup(True)
 
     g3PalRfHdrFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_HEADER", None)
-    g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h")
+    g3PalRfHdrFile.setSourcePath("pal/rf/pal_rf_rf215.h.ftl")
     g3PalRfHdrFile.setOutputName("pal_rf.h")
     g3PalRfHdrFile.setDestPath("stack/g3/pal/rf")
     g3PalRfHdrFile.setProjectPath("config/" + configName + "/stack/g3/pal/rf/")
     g3PalRfHdrFile.setType("HEADER")
+    g3PalRfHdrFile.setMarkup(True)
 
     g3PalRfHdrLocalFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_HEADER_LOCAL", None)
     g3PalRfHdrLocalFile.setSourcePath("pal/rf/pal_rf_rf215_local.h.ftl")

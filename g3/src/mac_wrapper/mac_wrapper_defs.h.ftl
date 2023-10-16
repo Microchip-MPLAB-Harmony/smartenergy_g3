@@ -1054,6 +1054,10 @@ typedef enum
     MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_DURATION_SYMBOLS = 0x0143,
     /* Threshold in dB above sensitivity for CCA with Energy Detection. 8 bits */
     MAC_WRP_RF_PHY_PARAM_PHY_CCA_ED_THRESHOLD_SENSITIVITY = 0x0144,
+    /* Sensitivity in dBm (according to 802.15.4). 8 bits */
+    MAC_WRP_RF_PHY_PARAM_PHY_SENSITIVITY = 0x0150,
+    /* Maximum TX power in dBm. 8 bits */
+    MAC_WRP_RF_PHY_PARAM_PHY_MAX_TX_POWER = 0x0151,
     /* Turnaround time in us (aTurnaroundTime in IEEE 802.15.4). 16 bits (read-only) */
     MAC_WRP_RF_PHY_PARAM_PHY_TURNAROUND_TIME = 0x0160,
     /* Number of payload symbols in last transmitted message. 16 bits */

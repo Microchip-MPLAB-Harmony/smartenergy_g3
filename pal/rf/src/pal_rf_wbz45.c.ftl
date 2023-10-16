@@ -623,9 +623,9 @@ PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
 
     /* Set Tx Power (Power value in dBm (-14dBm to 12dBm))*/
     pwrDbm = 12 - (int16_t)txParameters->txPowerAttenuation;
-    if (pwrDbm < 0) //-14)
+    if (pwrDbm < -14)
     {
-        pwrDbm = 0; //-14;
+        pwrDbm = -14;
     }
 
     (void) PHY_ConfigTxPwr(PWR_DBM_VALUE, (int8_t)pwrDbm);
@@ -844,8 +844,33 @@ PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
         break;
     }
 
+    case PAL_RF_PIB_PHY_SENSITIVITY:
+    {
+        uint8_t pdtLevel;
+
+        // Get RSSI base value of TRX
+        int8_t trxBaseRSSI = PHY_GetRSSIBaseVal();
+
+        // To get the PDT level configured
+        (void) PHY_GetTrxConfig(RX_SENS, &pdtLevel);
+
+        // THRS = RSSIBASE_VAL + 3 x (pdtLevel - 1)
+        if (pdtLevel > 1U)
+        {
+            pdtLevel = 3U * (pdtLevel - 1U);
+        }
+
+        *((int8_t *)pData) = trxBaseRSSI + (int8_t)pdtLevel;
+        break;
+    }
+
+    case PAL_RF_PIB_PHY_MAX_TX_POWER:
+        *((int8_t *)pData) = 12;
+        break;
+
     case PAL_RF_PIB_PHY_TURNAROUND_TIME:
-        *((uint16_t *)pData) = (uint16_t)aTurnaroundTime;
+        /* aTurnaroundTime[symb] * 16 us/symb */
+        *((uint16_t *)pData) = (uint16_t)aTurnaroundTime << 4;
         break;
 
     case PAL_RF_PIB_PHY_TX_PAY_SYMBOLS:
