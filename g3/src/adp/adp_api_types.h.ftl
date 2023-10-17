@@ -191,9 +191,10 @@ typedef enum {
     ADP_BAND_CENELEC_A = 0,
     ADP_BAND_CENELEC_B = 1,
     ADP_BAND_FCC = 2,
-    ADP_BAND_ARIB = 3
+    ADP_BAND_ARIB = 3,
+    ADP_BAND_RF_ONLY = 255
 
-} ADP_PLC_BAND;
+} ADP_BAND;
 
 // *****************************************************************************
 /* ADP Available MAC layers

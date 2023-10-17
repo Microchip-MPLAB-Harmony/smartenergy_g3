@@ -488,14 +488,14 @@ typedef void (*MAC_WRP_DataConfirm)(MAC_WRP_DATA_CONFIRM_PARAMS *dcParams);
             {
                 if (params->destAddress.shortAddress == myShortAddress)
                 {
-                    
+
                 }
             }
             else if (params->destAddress.addressMode == MAC_WRP_ADDRESS_MODE_EXTENDED)
             {
                 if (params->destAddress.extendedAddress == myExtendedAddress)
                 {
-                    
+
                 }
             }
         }
@@ -558,11 +558,11 @@ typedef void (*MAC_WRP_SnifferIndication)(MAC_WRP_SNIFFER_INDICATION_PARAMS *siP
     {
         if (params->status != MAC_WRP_STATUS_SUCCESS)
         {
-            
+
         }
         else
         {
-            
+
         }
     }
     </code>
@@ -633,11 +633,11 @@ typedef void (*MAC_WRP_BeaconNotifyIndication)(MAC_WRP_BEACON_NOTIFY_INDICATION_
     {
         if (params->status != MAC_WRP_STATUS_SUCCESS)
         {
-            
+
         }
         else
         {
-            
+
         }
     }
     </code>
@@ -669,11 +669,11 @@ typedef void (*MAC_WRP_ScanConfirm)(MAC_WRP_SCAN_CONFIRM_PARAMS *scParams);
     {
         if (params->status != MAC_WRP_STATUS_SUCCESS)
         {
-            
+
         }
         else
         {
-            
+
         }
     }
     </code>
@@ -784,7 +784,7 @@ typedef struct
     sysObjMacWrp = MAC_WRP_Initialize(G3_MAC_WRP_INDEX_0);
     if (sysObjMacWrp == SYS_MODULE_OBJ_INVALID)
     {
-        
+
     }
     </code>
 
@@ -795,7 +795,7 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index);
 
 // *****************************************************************************
 /* Function:
-    MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index, MAC_WRP_BAND plcBand)
+    MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index, MAC_WRP_BAND band)
 
   Summary:
     Opens the specified MAC Wrapper instance and returns a handle to it.
@@ -811,7 +811,7 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index);
   Parameters:
     index   - Index for the instance to be opened
 
-    plcBand - Working band for PLC (should be inline with the hardware)
+    band - Working band for PLC (should be inline with the hardware)
 
   Returns:
     If successful, the routine returns a valid open-instance handle (a number
@@ -828,7 +828,7 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index);
     handle = MAC_WRP_Open(G3_MAC_WRP_INDEX_0, MAC_WRP_BAND_CENELEC_A);
     if (handle == MAC_WRP_HANDLE_INVALID)
     {
-        
+
     }
     </code>
 
@@ -836,7 +836,7 @@ SYS_MODULE_OBJ MAC_WRP_Initialize(const SYS_MODULE_INDEX index);
     This routine must be called before any other MAC Wrapper API function,
     except MAC_WRP_Initialize.
 */
-MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index, MAC_WRP_BAND plcBand);
+MAC_WRP_HANDLE MAC_WRP_Open(SYS_MODULE_INDEX index, MAC_WRP_BAND band);
 
 // *****************************************************************************
 /* Function:
@@ -1021,7 +1021,7 @@ void MAC_WRP_DataRequest(MAC_WRP_HANDLE handle, MAC_WRP_DATA_REQUEST_PARAMS *drP
     status = MAC_WRP_GetRequestSync(handle, MAC_WRP_PIB_MAX_FRAME_RETRIES, 0, &value);
     if (status == MAC_WRP_STATUS_SUCCESS)
     {
-        
+
     }
     </code>
 
@@ -1080,7 +1080,7 @@ MAC_WRP_STATUS MAC_WRP_GetRequestSync(MAC_WRP_HANDLE handle,
     status = MAC_WRP_SetRequestSync(handle, MAC_WRP_PIB_MAX_FRAME_RETRIES, 0, &value);
     if (status == MAC_WRP_STATUS_SUCCESS)
     {
-        
+
     }
     </code>
 
@@ -1258,15 +1258,15 @@ void MAC_WRP_StartRequest(MAC_WRP_HANDLE handle, MAC_WRP_START_REQUEST_PARAMS *s
 
     if (availableLayers == MAC_WRP_AVAILABLE_MAC_PLC)
     {
-        
+
     }
     else if (availableLayers == MAC_WRP_AVAILABLE_MAC_RF)
     {
-        
+
     }
     else
     {
-        
+
     }
     </code>
 
@@ -1304,7 +1304,7 @@ MAC_WRP_AVAILABLE_MAC_LAYERS MAC_WRP_GetAvailableMacLayers(MAC_WRP_HANDLE handle
     status = MAC_WRP_Status();
     if (status == SYS_STATUS_READY)
     {
-        
+
     }
     </code>
 
@@ -1569,7 +1569,7 @@ uint8_t MAC_WRP_SerialStringifySetConfirm (
 
     if ((newCounter - previousCounter) > TIMEOUT_MS)
     {
-        
+
     }
     </code>
 
@@ -1607,7 +1607,7 @@ uint32_t MAC_WRP_GetMsCounter(void);
 
     if (MAC_WRP_TimeIsPast(validityTime))
     {
-        
+
     }
     </code>
 
@@ -1649,7 +1649,7 @@ bool MAC_WRP_TimeIsPast(int32_t timeValue);
 
     if ((newCounter - previousCounter) > TIMEOUT_SECONDS)
     {
-        
+
     }
     </code>
 
@@ -1687,7 +1687,7 @@ uint32_t MAC_WRP_GetSecondsCounter(void);
 
     if (MAC_WRP_TimeIsPastSeconds(validityTime))
     {
-        
+
     }
     </code>
 

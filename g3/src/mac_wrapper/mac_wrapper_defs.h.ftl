@@ -121,6 +121,7 @@ typedef enum
     MAC_WRP_BAND_CENELEC_B = 1,
     MAC_WRP_BAND_FCC = 2,
     MAC_WRP_BAND_ARIB = 3,
+    MAC_WRP_BAND_RF_ONLY = 255,
 } MAC_WRP_BAND;
 
 // *****************************************************************************

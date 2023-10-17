@@ -198,7 +198,7 @@ typedef struct
     {
         if (params->linkQualityIndicator > 40)
         {
-            
+
         }
     }
     </code>
@@ -513,7 +513,7 @@ typedef struct
     {
         if (params->status == G3_SUCCESS)
         {
-            
+
         }
     }
     </code>
@@ -581,7 +581,7 @@ typedef struct
     {
         if (params->status == G3_SUCCESS)
         {
-            
+
         }
     }
     </code>
@@ -705,7 +705,7 @@ typedef struct
     {
         if (params->linkQualityIndicator > 40)
         {
-            
+
         }
     }
     </code>
@@ -901,7 +901,7 @@ typedef struct
     <code>
     App_NetworkStatusIndication(ADP_NETWORK_STATUS_IND_PARAMS *params)
     {
-        
+
     }
     </code>
 
@@ -993,17 +993,17 @@ typedef union
     {
         if (bufferInd->largeBuffersAvailable == 1)
         {
-            
+
         }
 
         if (bufferInd->mediumBuffersAvailable == 1)
         {
-            
+
         }
 
         if (bufferInd->smallBuffersAvailable == 1)
         {
-            
+
         }
     }
     </code>
@@ -1039,7 +1039,7 @@ typedef void (*ADP_BUFFER_IND_CALLBACK)(ADP_BUFFER_IND_PARAMS* bufferInd);
     <code>
     App_NetworkLeaveIndication(void)
     {
-        
+
     }
     </code>
 
@@ -1104,7 +1104,7 @@ typedef struct
     <code>
     App_NonVolatileDataIndication(ADP_NON_VOLATILE_DATA_IND_PARAMS *params)
     {
-        
+
     }
     </code>
 
@@ -1190,7 +1190,7 @@ typedef struct
     <code>
     App_RouteNotFoundIndication(ADP_ROUTE_NOT_FOUND_IND_PARAMS *params)
     {
-        
+
     }
     </code>
 
@@ -1368,7 +1368,7 @@ typedef struct
     sysObjAdp = ADP_Initialize(G3_ADP_INDEX_0, (SYS_MODULE_INIT *)&initData);
     if (sysObjAdp == SYS_MODULE_OBJ_INVALID)
     {
-        
+
     }
     </code>
 
@@ -1419,7 +1419,7 @@ void ADP_Tasks(SYS_MODULE_OBJ object);
 
 // *****************************************************************************
 /* Function:
-    void ADP_Open(ADP_PLC_BAND band)
+    void ADP_Open(ADP_BAND band)
 
   Summary:
     Opens the ADP module and starts the process that makes it ready for clients
@@ -1454,7 +1454,7 @@ void ADP_Tasks(SYS_MODULE_OBJ object);
     After calling this function, ADP_Status must be used to check if it is ready
     before calling any other ADP API function.
 */
-void ADP_Open(ADP_PLC_BAND band);
+void ADP_Open(ADP_BAND band);
 
 // *****************************************************************************
 /* Function:
@@ -1482,7 +1482,7 @@ void ADP_Open(ADP_PLC_BAND band);
     status = ADP_Status();
     if (status == ADP_STATUS_READY)
     {
-        
+
     }
     </code>
 
@@ -1674,15 +1674,15 @@ void ADP_SetNotificationsToLbp(ADP_NOTIFICATIONS_TO_LBP* pNotifications);
 
     if (availableLayers == ADP_AVAILABLE_MAC_PLC)
     {
-        
+
     }
     else if (availableLayers == ADP_AVAILABLE_MAC_RF)
     {
-        
+
     }
     else
     {
-        
+
     }
     </code>
 
@@ -1975,7 +1975,7 @@ void ADP_GetRequest(uint32_t attributeId, uint16_t attributeIndex);
 
     if (getConfirm->status == G3_SUCCESS)
     {
-        
+
     }
     </code>
 
@@ -2056,7 +2056,7 @@ void ADP_MacGetRequest(uint32_t attributeId, uint16_t attributeIndex);
 
     if (getConfirm->status == G3_SUCCESS)
     {
-        
+
     }
     </code>
 
