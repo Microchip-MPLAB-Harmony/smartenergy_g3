@@ -104,10 +104,10 @@ typedef uintptr_t MAC_WRP_HANDLE;
 #define MAC_WRP_HANDLE_INVALID   ((MAC_WRP_HANDLE) (-1))
 
 // *****************************************************************************
-/* MAC Wrapper PLC Bands definition
+/* MAC Wrapper Bands definition
 
    Summary:
-    Identifies the possible PLC band values.
+    Identifies the possible PLC band values, or if No PLC is used.
 
    Description:
     This enumeration identifies the possible PLC working band values.

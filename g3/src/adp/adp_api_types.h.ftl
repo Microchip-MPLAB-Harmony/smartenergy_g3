@@ -175,10 +175,10 @@ typedef struct
 } ADP_ADDRESS;
 
 // *****************************************************************************
-/* ADP PLC Bands Definition
+/* ADP Bands Definition
 
    Summary:
-    Identifies the possible PLC bands.
+    Identifies the possible PLC bands, or if No PLC is used.
 
    Description:
     This enumeration identifies the list of Bands that can be used in PLC
