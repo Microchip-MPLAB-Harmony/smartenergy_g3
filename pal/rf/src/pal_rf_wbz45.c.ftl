@@ -835,7 +835,7 @@ PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
         (void) PHY_GetTrxConfig(RX_SENS, &pdtLevel);
 
         // THRS = RSSIBASE_VAL + 3 x (pdtLevel - 1)
-        if (pdtLevel > 1U)
+        if (pdtLevel > 0U)
         {
             pdtLevel = 3U * (pdtLevel - 1U);
         }
@@ -855,7 +855,7 @@ PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
         (void) PHY_GetTrxConfig(RX_SENS, &pdtLevel);
 
         // THRS = RSSIBASE_VAL + 3 x (pdtLevel - 1)
-        if (pdtLevel > 1U)
+        if (pdtLevel > 0U)
         {
             pdtLevel = 3U * (pdtLevel - 1U);
         }
