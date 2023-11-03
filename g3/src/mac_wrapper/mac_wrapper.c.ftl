@@ -3159,7 +3159,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
                 serialRspLen += 4U;
                 break;
 
-            case MAC_WRP_PIB_POS_TABLE_RF: /* 9 Byte entries. */
+            case MAC_WRP_PIB_POS_TABLE_RF: /* 11 Byte entries. */
             case MAC_WRP_PIB_MANUF_POS_TABLE_ELEMENT_RF:
                 pPosEntryRF = (void*) pibValue;
                 serialData[serialRspLen++] = (uint8_t) (pPosEntryRF->shortAddress >> 8);
@@ -3171,6 +3171,8 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
                 serialData[serialRspLen++] = (uint8_t) pPosEntryRF->reverseTxPowerOffset;
                 serialData[serialRspLen++] = (uint8_t) (pPosEntryRF->posValidTime >> 8);
                 serialData[serialRspLen++] = (uint8_t) pPosEntryRF->posValidTime;
+                serialData[serialRspLen++] = (uint8_t) (pPosEntryRF->reverseLqiValidTime >> 8);
+                serialData[serialRspLen++] = (uint8_t) pPosEntryRF->reverseLqiValidTime;
                 break;
 
 </#if>
@@ -3557,7 +3559,7 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
 
 </#if>
 <#if MAC_RF_PRESENT == true>
-        case MAC_WRP_PIB_POS_TABLE_RF: /* 9 Byte entries. */
+        case MAC_WRP_PIB_POS_TABLE_RF: /* 11 Byte entries. */
             pPosEntryRF.shortAddress = ((uint16_t) *pData++) << 8;
             pPosEntryRF.shortAddress += (uint16_t) *pData++;
             pPosEntryRF.forwardLqi  = *pData++;
@@ -3567,6 +3569,8 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
             pPosEntryRF.reverseTxPowerOffset = *pData++;
             pPosEntryRF.posValidTime = ((uint16_t) *pData++) << 8;
             pPosEntryRF.posValidTime += (uint16_t) *pData;
+            pPosEntryRF.reverseLqiValidTime = ((uint16_t) *pData++) << 8;
+            pPosEntryRF.reverseLqiValidTime += (uint16_t) *pData;
             (void) memcpy((void *) pibValue->value, (void *) &pPosEntryRF, sizeof(MAC_WRP_POS_ENTRY_RF));
             break;
 
