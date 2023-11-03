@@ -115,11 +115,12 @@ typedef struct
 typedef struct
 {
     MAC_DATA_REQUEST_PARAMS dataReqParams;
-    MAC_WRP_MEDIA_TYPE_REQUEST dataReqMediaType;
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
+    MAC_WRP_MEDIA_TYPE_REQUEST dataReqMediaType;
     uint8_t backupBuffer[HYAL_BACKUP_BUF_SIZE];
     MAC_STATUS firstConfirmStatus;
     bool waitingSecondConfirm;
+    uint8_t probingInterval;
 </#if>
 <#if MAC_SERIALIZATION_EN == true>
     bool serialDataRequest;
@@ -147,6 +148,7 @@ typedef struct
     bool waitingSecondResetConfirm;
     MAC_STATUS firstStartConfirmStatus;
     bool waitingSecondStartConfirm;
+    bool mediaProbing;
 } HYAL_DATA;
 
 </#if>
@@ -268,6 +270,7 @@ static const HYAL_DATA hyalDataDefaults = {
   false, // waitingSecondResetConfirm
   MAC_STATUS_SUCCESS, // firstStartConfirmStatus
   false, // waitingSecondStartConfirm
+  false, // mediaProbing
 };
 
 static HYAL_DATA hyalData;
@@ -399,6 +402,111 @@ static bool lMAC_WRP_IsAttributeInPLCRange(MAC_WRP_PIB_ATTRIBUTE attribute)
         /* Manufacturer RF MAC IB */
         return false;
     }
+}
+
+static bool lMAC_WRP_CheckRFMediaProbing(uint8_t probingInterval, MAC_ADDRESS dstAddress)
+{
+    MAC_WRP_POS_ENTRY_RF posEntry;
+    MAC_PIB_VALUE pibValue;
+    MAC_WRP_STATUS status;
+    uint8_t posTableEntryTtl;
+    uint8_t lqiValidTime;
+
+    /* Probing interval has to be greater than 0 */
+    if (probingInterval == 0)
+    {
+        return false;
+    }
+
+    /* Destination addressing has to be Short Addressing */
+    if (dstAddress.addressMode != MAC_ADDRESS_MODE_SHORT)
+    {
+        return false;
+    }
+
+    /* Look for entry in RF POS Table */
+    status = (MAC_WRP_STATUS) MAC_RF_GetRequestSync(MAC_PIB_MANUF_POS_TABLE_ELEMENT_RF,
+        dstAddress.shortAddress, &pibValue);
+
+    if (status == MAC_WRP_STATUS_SUCCESS)
+    {
+        (void) memcpy((void *) &posEntry, pibValue.value, sizeof(MAC_WRP_POS_ENTRY_RF));
+        status = (MAC_WRP_STATUS) MAC_COMMON_GetRequestSync(MAC_COMMON_PIB_POS_TABLE_ENTRY_TTL,
+            0, &pibValue);
+
+        if (status == MAC_WRP_STATUS_SUCCESS)
+        {
+            posTableEntryTtl = pibValue.value[0];
+            lqiValidTime = (posEntry.reverseLqiValidTime + 59) / 60;
+            if ((posTableEntryTtl > lqiValidTime) && ((posTableEntryTtl - lqiValidTime) >= probingInterval))
+            {
+                /* Conditions met to perform the media probing */
+                return true;
+            }
+        }
+    }
+
+    /* If this point is reached, no probing is done */
+    return false;
+}
+
+static bool lMAC_WRP_CheckPLCMediaProbing(uint8_t probingInterval, MAC_ADDRESS dstAddress)
+{
+    MAC_WRP_POS_ENTRY posEntry;
+    MAC_WRP_NEIGHBOUR_ENTRY nbEntry;
+    MAC_PIB_VALUE pibValue;
+    MAC_WRP_STATUS status;
+    uint8_t tmrTtl;
+    uint8_t tmrValidTime;
+
+    /* Probing interval has to be greater than 0 */
+    if (probingInterval == 0)
+    {
+        return false;
+    }
+
+    /* Destination addressing has to be Short Addressing */
+    if (dstAddress.addressMode != MAC_ADDRESS_MODE_SHORT)
+    {
+        return false;
+    }
+
+    /* Look for entry in POS Table */
+    status = (MAC_WRP_STATUS) MAC_PLC_GetRequestSync(MAC_PIB_MANUF_POS_TABLE_ELEMENT,
+        dstAddress.shortAddress, &pibValue);
+
+    if (status == MAC_WRP_STATUS_SUCCESS)
+    {
+        (void) memcpy((void *) &posEntry, pibValue.value, sizeof(MAC_WRP_POS_ENTRY));
+
+        /* Look for entry in Neighbour Table to fill TMR Valid time */
+        tmrValidTime = 0;
+        status = (MAC_WRP_STATUS) MAC_PLC_GetRequestSync(MAC_PIB_MANUF_NEIGHBOUR_TABLE_ELEMENT,
+            dstAddress.shortAddress, &pibValue);
+
+        if (status == MAC_WRP_STATUS_SUCCESS)
+        {
+            (void) memcpy((void *) &nbEntry, pibValue.value, sizeof(MAC_WRP_NEIGHBOUR_ENTRY));
+            tmrValidTime = (nbEntry.tmrValidTime + 59) / 60;
+        }
+
+        status = (MAC_WRP_STATUS) MAC_PLC_GetRequestSync(MAC_PIB_TMR_TTL, 0, &pibValue);
+        if (status == MAC_WRP_STATUS_SUCCESS)
+        {
+            tmrTtl = pibValue.value[0];
+            if ((tmrTtl > tmrValidTime) && ((tmrTtl - tmrValidTime) >= probingInterval))
+            {
+                /* Conditions met to perform the media probing */
+                /* Reset TMR TTL for entry before probing, so TMR is exchanged */
+                /* (pibValue is not used, same variable as prevoius can be used) */
+                (void) MAC_PLC_SetRequestSync(MAC_PIB_MANUF_RESET_TMR_TTL, dstAddress.shortAddress, &pibValue);
+                return true;
+            }
+        }
+    }
+
+    /* If this point is reached, no probing is done */
+    return false;
 }
 
 </#if>
@@ -1085,10 +1193,24 @@ static void lMAC_WRP_CallbackMacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams
         case MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF:
             if (dcParams->status == MAC_STATUS_SUCCESS)
             {
-                /* Fill Media Type */
-                dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
-                /* Send confirm to upper layer */
-                sendConfirm = true;
+                /* Check Media Probing */
+                if (lMAC_WRP_CheckRFMediaProbing(matchingDataReq->probingInterval, matchingDataReq->dataReqParams.destAddress))
+                {
+                    /* Perform Media probing */
+                    hyalData.mediaProbing = true;
+                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "RF Media Probing\r\n");
+                    /* Set Msdu pointer to backup buffer, as current pointer is no longer valid */
+                    matchingDataReq->dataReqParams.msdu = matchingDataReq->backupBuffer;
+                    MAC_RF_DataRequest(&matchingDataReq->dataReqParams);
+                }
+                else
+                {
+                    hyalData.mediaProbing = false;
+                    /* Fill Media Type */
+                    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
+                    /* Send confirm to upper layer */
+                    sendConfirm = true;
+                }
             }
             else
             {
@@ -1125,8 +1247,26 @@ static void lMAC_WRP_CallbackMacPlcDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams
             }
             break;
         case MAC_WRP_MEDIA_TYPE_REQ_RF_BACKUP_PLC:
-            /* PLC was used as backup medium. Send confirm to upper layer */
-            dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC_AS_BACKUP;
+            if (hyalData.mediaProbing)
+            {
+                /* PLC was probed after RF success. Send confirm to upper layer. */
+                hyalData.mediaProbing = false;
+                dataConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
+                if (dcParams->status == MAC_STATUS_SUCCESS)
+                {
+                    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
+                }
+                else
+                {
+                    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF_AS_BACKUP;
+                }
+            }
+            else
+            {
+                /* PLC was used as backup medium. Send confirm to upper layer. */
+                dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC_AS_BACKUP;
+            }
+
             sendConfirm = true;
             break;
         case MAC_WRP_MEDIA_TYPE_REQ_BOTH:
@@ -1571,17 +1711,48 @@ static void lMAC_WRP_CallbackMacRfDataConfirm(MAC_DATA_CONFIRM_PARAMS *dcParams)
     switch (matchingDataReq->dataReqMediaType)
     {
         case MAC_WRP_MEDIA_TYPE_REQ_PLC_BACKUP_RF:
-            /* RF was used as backup medium. Send confirm to upper layer */
-            dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF_AS_BACKUP;
+            if (hyalData.mediaProbing)
+            {
+                /* RF was probed after PLC success. Send confirm to upper layer. */
+                hyalData.mediaProbing = false;
+                dataConfirmParams.status = MAC_WRP_STATUS_SUCCESS;
+                if (dcParams->status == MAC_STATUS_SUCCESS)
+                {
+                    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC;
+                }
+                else
+                {
+                    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_PLC_AS_BACKUP;
+                }
+            }
+            else
+            {
+                /* RF was used as backup medium. Send confirm to upper layer */
+                dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF_AS_BACKUP;
+            }
+
             sendConfirm = true;
             break;
         case MAC_WRP_MEDIA_TYPE_REQ_RF_BACKUP_PLC:
             if (dcParams->status == MAC_STATUS_SUCCESS)
             {
-                /* Fill Media Type */
-                dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
-                /* Send confirm to upper layer */
-                sendConfirm = true;
+                /* Check Media Probing */
+                if (lMAC_WRP_CheckPLCMediaProbing(matchingDataReq->probingInterval, matchingDataReq->dataReqParams.destAddress))
+                {
+                    /* Perform Media probing */
+                    hyalData.mediaProbing = true;
+                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_INFO, "PLC Media Probing\r\n");
+                    /* Set Msdu pointer to backup buffer, as current pointer is no longer valid */
+                    matchingDataReq->dataReqParams.msdu = matchingDataReq->backupBuffer;
+                    MAC_PLC_DataRequest(&matchingDataReq->dataReqParams);
+                }
+                else
+                {
+                    /* Fill Media Type */
+                    dataConfirmParams.mediaType = MAC_WRP_MEDIA_TYPE_CONF_RF;
+                    /* Send confirm to upper layer */
+                    sendConfirm = true;
+                }
             }
             else
             {
@@ -2311,6 +2482,8 @@ void MAC_WRP_DataRequest(MAC_WRP_HANDLE handle, MAC_WRP_DATA_REQUEST_PARAMS *drP
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
     /* Copy MediaType */
     dataReqEntry->dataReqMediaType = drParams->mediaType;
+    /* Copy Probing Interval */
+    dataReqEntry->probingInterval = drParams->probingInterval;
     /* Copy data to backup buffer, just in case backup media has to be used, current pointer will not be valid later */
     if (drParams->msduLength <= HYAL_BACKUP_BUF_SIZE)
     {
@@ -3143,7 +3316,7 @@ uint8_t MAC_WRP_SerialStringifyGetConfirm (
         }
     }
 
-	return serialRspLen;
+    return serialRspLen;
 }
 
 MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
