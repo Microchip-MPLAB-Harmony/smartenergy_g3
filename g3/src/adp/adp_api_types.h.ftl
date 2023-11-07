@@ -100,6 +100,8 @@
 // *****************************************************************************
 // *****************************************************************************
 
+#pragma pack(push,2)
+
 // *****************************************************************************
 /* ADP Modulation Definition
 
@@ -334,6 +336,8 @@ typedef struct
     uint8_t reverseHopsCount;
 
 } ADP_PATH_DESCRIPTOR;
+
+#pragma pack(pop)
 
 /* MISRA C-2012 deviation block start */
 /* MISRA C-2012 Rule 5.2 deviated 4 times.  Deviation record ID - H3_MISRAC_2012_R_5_2_DR_1 */

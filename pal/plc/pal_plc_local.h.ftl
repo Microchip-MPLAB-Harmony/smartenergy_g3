@@ -49,9 +49,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "stack/g3/pal/plc/pal_plc.h"
-<#if G3_PAL_PLC_PHY_SNIFFER_EN == true>
-#include "service/usi/srv_usi.h"
-</#if>
 #include "service/pcoup/srv_pcoup.h"
 
 // *****************************************************************************
@@ -59,6 +56,8 @@
 // Section: Data Types
 // *****************************************************************************
 // *****************************************************************************
+
+#pragma pack(push,2)
 
 <#if G3_PAL_PLC_PHY_SNIFFER_EN == true>
 // *****************************************************************************
@@ -100,9 +99,9 @@ typedef struct
 {
     DRV_HANDLE drvG3MacRtHandle;
 
-    PAL_PLC_STATUS status;
-
     PAL_PLC_HANDLERS initHandlers;
+
+    PAL_PLC_STATUS status;
 
     MAC_RT_BAND plcBand;
 
@@ -122,21 +121,11 @@ typedef struct
 
     bool coordinator;
 
-<#if G3_PAL_PLC_PVDD_MONITOR == true> 
     bool pvddMonTxEnable;
 
-</#if>
-<#if G3_PAL_PLC_MAC_SNIFFER_EN == true>
-    uint8_t macSnifferData[MAC_RT_DATA_MAX_SIZE];
-
-</#if>
-<#if G3_PAL_PLC_PHY_SNIFFER_EN == true>
-    PAL_PLC_PHY_SNIFFER phySnifferData;
-
-    SRV_USI_HANDLE usiHandler;
-
-</#if>
 } PAL_PLC_DATA;
+
+#pragma pack(pop)
 
 #endif // #ifndef PAL_PLC_LOCAL_H
 /*******************************************************************************

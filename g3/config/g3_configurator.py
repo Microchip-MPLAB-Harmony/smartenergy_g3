@@ -30,6 +30,8 @@ def instantiateComponent(g3ConfigComponent):
     g3StackGroup.addComponent("g3_config")
 
     processor = Variables.get("__PROCESSOR")
+    deviceNode = ATDF.getNode("/avr-tools-device-file/devices/device")
+    architecture = deviceNode.getAttribute("architecture")
 
     # Set dependencies inactive by default, they will be dinamically activated depending on config
     g3ConfigComponent.setDependencyEnabled("g3_srv_queue_dependency", False)
@@ -604,8 +606,12 @@ def instantiateComponent(g3ConfigComponent):
     # MAC PLC Files
     global macPlcLibFile
     macPlcLibFile = g3ConfigComponent.createLibrarySymbol("G3_MAC_PLC_LIBRARY", None)
-    macPlcLibFile.setSourcePath("g3/libs/g3_lib_mac_plc.a")
-    macPlcLibFile.setOutputName("g3_lib_plc_mac.a")
+    if "M0PLUS" in architecture :
+        macPlcLibFile.setSourcePath("g3/libs/g3_lib_mac_plc_cm0.a")
+        macPlcLibFile.setOutputName("g3_lib_mac_plc_cm0.a")
+    else:
+        macPlcLibFile.setSourcePath("g3/libs/g3_lib_mac_plc.a")
+        macPlcLibFile.setOutputName("g3_lib_mac_plc.a")
     macPlcLibFile.setDestPath("stack/g3/mac/mac_plc")
     macPlcLibFile.setEnabled(True)
 
@@ -637,8 +643,12 @@ def instantiateComponent(g3ConfigComponent):
     # MAC RF Files
     global macRfLibFile
     macRfLibFile = g3ConfigComponent.createLibrarySymbol("G3_MAC_RF_LIBRARY", None)
-    macRfLibFile.setSourcePath("g3/libs/g3_lib_mac_rf.a")
-    macRfLibFile.setOutputName("g3_lib_rf_mac.a")
+    if "M0PLUS" in architecture :
+        macRfLibFile.setSourcePath("g3/libs/g3_lib_mac_rf_cm0.a")
+        macRfLibFile.setOutputName("g3_lib_mac_rf_cm0.a")
+    else:
+        macRfLibFile.setSourcePath("g3/libs/g3_lib_mac_rf.a")
+        macRfLibFile.setOutputName("g3_lib_mac_rf.a")
     macRfLibFile.setDestPath("stack/g3/mac/mac_rf")
     macRfLibFile.setEnabled(True)
 
@@ -670,8 +680,12 @@ def instantiateComponent(g3ConfigComponent):
     #### ADP Library Files ######################################################
     global adpLibFile
     adpLibFile = g3ConfigComponent.createLibrarySymbol("G3_ADP_LIBRARY", None)
-    adpLibFile.setSourcePath("g3/libs/g3_lib_adp.a")
-    adpLibFile.setOutputName("g3_lib_adp.a")
+    if "M0PLUS" in architecture :
+        adpLibFile.setSourcePath("g3/libs/g3_lib_adp_cm0.a")
+        adpLibFile.setOutputName("g3_lib_adp_cm0.a")
+    else:
+        adpLibFile.setSourcePath("g3/libs/g3_lib_adp.a")
+        adpLibFile.setOutputName("g3_lib_adp.a")
     adpLibFile.setDestPath("stack/g3/adaptation")
 
     #### ADP header Files ######################################################
@@ -704,8 +718,12 @@ def instantiateComponent(g3ConfigComponent):
     #### LOADNG Library Files ######################################################
     global LOADngLibFile
     LOADngLibFile = g3ConfigComponent.createLibrarySymbol("G3_LOADNG_LIBRARY", None)
-    LOADngLibFile.setSourcePath("g3/libs/g3_lib_loadng.a")
-    LOADngLibFile.setOutputName("g3_lib_loadng.a")
+    if "M0PLUS" in architecture :
+        LOADngLibFile.setSourcePath("g3/libs/g3_lib_loadng_cm0.a")
+        LOADngLibFile.setOutputName("g3_lib_loadng_cm0.a")
+    else:
+        LOADngLibFile.setSourcePath("g3/libs/g3_lib_loadng.a")
+        LOADngLibFile.setOutputName("g3_lib_loadng.a")
     LOADngLibFile.setDestPath("stack/g3/adaptation")
 
     #### LOADNG header Files ###################################################

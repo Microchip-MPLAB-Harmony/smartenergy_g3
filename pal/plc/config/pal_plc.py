@@ -94,12 +94,11 @@ def instantiateComponent(g3PalPlcComponent):
     g3PalPlcSrcFile.setMarkup(True)
 
     g3PalPlcHdrFile = g3PalPlcComponent.createFileSymbol("G3_PAL_PLC_HEADER", None)
-    g3PalPlcHdrFile.setSourcePath("pal/plc/pal_plc.h.ftl")
+    g3PalPlcHdrFile.setSourcePath("pal/plc/pal_plc.h")
     g3PalPlcHdrFile.setOutputName("pal_plc.h")
     g3PalPlcHdrFile.setDestPath("stack/g3/pal/plc")
     g3PalPlcHdrFile.setProjectPath("config/" + configName + "/stack/g3/pal/plc/")
     g3PalPlcHdrFile.setType("HEADER")
-    g3PalPlcHdrFile.setMarkup(True)
 
     g3PalPlcHdrLocalFile = g3PalPlcComponent.createFileSymbol("G3_PAL_PLC_HEADER_LOCAL", None)
     g3PalPlcHdrLocalFile.setSourcePath("pal/plc/pal_plc_local.h.ftl")

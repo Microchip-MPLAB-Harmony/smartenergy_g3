@@ -86,6 +86,8 @@
 // *****************************************************************************
 // *****************************************************************************
 
+#pragma pack(push,2)
+        
 // *****************************************************************************
 /* ADP Data Confirm Parameters
 
@@ -101,11 +103,11 @@
 */
 typedef struct
 {
-    /* The status code (result) of a previous ADP Data Request */
-    uint8_t status;
-
     /* The handle of the NSDU confirmed by this primitive */
     uintptr_t nsduHandle;
+
+    /* The status code (result) of a previous ADP Data Request */
+    uint8_t status;
 
 } ADP_DATA_CFM_PARAMS;
 
@@ -606,11 +608,11 @@ typedef void (*ADP_MAC_GET_CFM_CALLBACK)(ADP_MAC_GET_CFM_PARAMS* pGetCfm);
 */
 typedef struct
 {
-    /* The status code of a previous ADP LBP Request */
-    uint8_t status;
-
     /* The handle of the NSDU confirmed by this primitive */
     uintptr_t nsduHandle;
+
+    /* The status code of a previous ADP LBP Request */
+    uint8_t status;
 
 } ADP_LBP_CFM_PARAMS;
 
@@ -667,12 +669,12 @@ typedef struct
     /* The received NSDU */
     const uint8_t* pNsdu;
 
+    /* The size of the NSDU, in bytes; Up to ADP_LBP_MAX_NSDU_LENGTH bytes */
+    uint16_t nsduLength;
+
     /* Source Address of the LBP frame. Short Address for LBA or LBS frames,
      * extended for LBD. */
     ADP_ADDRESS srcAddr;
-
-    /* The size of the NSDU, in bytes; Up to ADP_LBP_MAX_NSDU_LENGTH bytes */
-    uint16_t nsduLength;
 
     /* The Security Level of the received frame */
     uint8_t securityLevel;
@@ -849,14 +851,6 @@ typedef void (*ADP_PATH_DISCOVERY_CFM_CALLBACK)(ADP_PATH_DISCOVERY_CFM_PARAMS* p
 */
 typedef struct
 {
-    /* The individual device address of the entity from which the frame causing
-     * the error originated */
-    ADP_ADDRESS srcDeviceAddress;
-
-    /* The individual device address of the device for which the frame was
-     * intended */
-    ADP_ADDRESS dstDeviceAddress;
-
     /* The 16-bit PAN identifier of the device from which the frame was received
      * or to which the frame was being sent */
     uint16_t panId;
@@ -873,6 +867,14 @@ typedef struct
 
     /* The medium (PLC/RF) from which the frame was received */
     uint8_t mediaType;
+
+    /* The individual device address of the entity from which the frame causing
+     * the error originated */
+    ADP_ADDRESS srcDeviceAddress;
+
+    /* The individual device address of the device for which the frame was
+     * intended */
+    ADP_ADDRESS dstDeviceAddress;
 
 } ADP_NETWORK_STATUS_IND_PARAMS;
 
@@ -1325,6 +1327,8 @@ typedef struct
     uint8_t         taskRateMs;
 
 } ADP_INIT;
+
+#pragma pack(pop)
 
 // *****************************************************************************
 // *****************************************************************************

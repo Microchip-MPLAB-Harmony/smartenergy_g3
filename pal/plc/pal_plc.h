@@ -347,7 +347,6 @@ typedef void (*PAL_PLC_RxParamsIndication)(MAC_RT_RX_PARAMETERS_OBJ *pParameters
 */
 typedef void (*PAL_PLC_CommStatusIndication)(uint8_t *pData);
 
-<#if G3_PAL_PLC_MAC_SNIFFER_EN == true>   
 // *****************************************************************************
 /* PLC PAL G3 MAC Sniffer Event Handler Function Pointer
 
@@ -398,7 +397,6 @@ typedef void (*PAL_PLC_CommStatusIndication)(uint8_t *pData);
 */
 typedef void (*PAL_PLC_MacSnifferIndication)(uint8_t *pData, uint16_t length);
 
-</#if>
 // *****************************************************************************
 /* PLC PAL Handlers Data
 
@@ -417,9 +415,7 @@ typedef struct
     PAL_PLC_CommStatusIndication     palPlcCommStatusIndication;
     PAL_PLC_TxConfirm                palPlcTxConfirm;
     PAL_PLC_RxParamsIndication       palPlcRxParamsIndication;
-<#if G3_PAL_PLC_MAC_SNIFFER_EN == true> 
     PAL_PLC_MacSnifferIndication     palPlcMacSnifferIndication;
-</#if> 
 } PAL_PLC_HANDLERS;
 
 // *****************************************************************************
@@ -436,11 +432,11 @@ typedef struct
 */
 typedef struct
 {
-    // G3 Phy band
-    MAC_RT_BAND                      macRtBand;
-
     // PLC PAL Handlers
     PAL_PLC_HANDLERS                 macRtHandlers;
+
+    // G3 Phy band
+    MAC_RT_BAND                      macRtBand;
 
     // Flag to indicate if MIB data should be reinitialized with the default values
     bool                             initMIB;

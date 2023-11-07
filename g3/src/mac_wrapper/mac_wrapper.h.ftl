@@ -66,6 +66,8 @@
 // *****************************************************************************
 // *****************************************************************************
 
+#pragma pack(push,2)
+
 // *****************************************************************************
 /* MAC Wrapper Data Request Parameters
 
@@ -80,26 +82,26 @@
 */
 typedef struct
 {
-    /* Source address mode 0, 16, 64 bits */
-    MAC_WRP_ADDRESS_MODE srcAddressMode;
-    /* The PAN identifier of the entity to which the MSDU is being transferred */
-    MAC_WRP_PAN_ID destPanId;
-    /* The device address of the entity to which the MSDU is being transferred */
-    MAC_WRP_ADDRESS destAddress;
-    /* The number of octets contained in the MSDU to be transmitted */
-    uint16_t msduLength;
     /* Pointer to the set of octets forming the MSDU to be transmitted */
     const uint8_t *msdu;
+    /* The PAN identifier of the entity to which the MSDU is being transferred */
+    MAC_WRP_PAN_ID destPanId;
+    /* The number of octets contained in the MSDU to be transmitted */
+    uint16_t msduLength;
+    /* Source address mode 0, 16, 64 bits */
+    MAC_WRP_ADDRESS_MODE srcAddressMode;
+    /* The device address of the entity to which the MSDU is being transferred */
+    MAC_WRP_ADDRESS destAddress;
     /* The handle associated with the MSDU to be transmitted */
     uint8_t msduHandle;
     /* Transmission options for this MSDU: 0 unacknowledged, 1 acknowledged */
     uint8_t txOptions;
-    /* The security level to be used: 0x00 unecrypted, 0x05 encrypted */
-    MAC_WRP_SECURITY_LEVEL securityLevel;
     /* The index of the encryption key to be used */
     uint8_t keyIndex;
     /* The QOS of the MSDU: 0x00 normal priority, 0x01 high priority */
     MAC_WRP_QUALITY_OF_SERVICE qualityOfService;
+    /* The security level to be used: 0x00 unecrypted, 0x05 encrypted */
+    MAC_WRP_SECURITY_LEVEL securityLevel;
     /* The Media Type to use on Request (only used if both PLC and RF MACs are present) */
     MAC_WRP_MEDIA_TYPE_REQUEST mediaType;
 } MAC_WRP_DATA_REQUEST_PARAMS;
@@ -144,44 +146,44 @@ typedef struct
 */
 typedef struct
 {
-    /* The PAN identifier of the device from which the frame was received */
-    MAC_WRP_PAN_ID srcPanId;
-    /* The address of the device which sent the frame */
-    MAC_WRP_ADDRESS srcAddress;
-    /* The PAN identifier of the entity to which the MSDU is being transferred */
-    MAC_WRP_PAN_ID destPanId;
-    /* The address of the entity to which the MSDU is being transferred */
-    MAC_WRP_ADDRESS destAddress;
-    /* The number of octets of the MSDU to be indicated to the upper layer */
-    uint16_t msduLength;
     /* Pointer to the set of octets forming the received MSDU */
     uint8_t *msdu;
+    /* Reception time, refered to MAC milliseconds counter */
+    MAC_WRP_TIMESTAMP timestamp;
+    /* The PAN identifier of the device from which the frame was received */
+    MAC_WRP_PAN_ID srcPanId;
+    /* The PAN identifier of the entity to which the MSDU is being transferred */
+    MAC_WRP_PAN_ID destPanId;
+    /* The number of octets of the MSDU to be indicated to the upper layer */
+    uint16_t msduLength;
+    /* The address of the device which sent the frame */
+    MAC_WRP_ADDRESS srcAddress;
+    /* The address of the entity to which the MSDU is being transferred */
+    MAC_WRP_ADDRESS destAddress;
     /* The LQI value measured during reception of the frame */
     uint8_t linkQuality;
     /* The Data Sequence Number of the received frame */
     uint8_t dsn;
-    /* Reception time, refered to MAC milliseconds counter */
-    MAC_WRP_TIMESTAMP timestamp;
-    /* Security level of the received frame: 0x00 unecrypted, 0x05 encrypted */
-    MAC_WRP_SECURITY_LEVEL securityLevel;
     /* The index of the key used for decryption */
     uint8_t keyIndex;
-    /* The QOS of the MSDU: 0x00 normal priority, 0x01 high priority */
-    MAC_WRP_QUALITY_OF_SERVICE qualityOfService;
     /* Modulation Type of the received frame */
     uint8_t rxModulation;
     /* Modulation scheme of the received frame */
     uint8_t rxModulationScheme;
-    /* Tone Map of the received frame */
-    MAC_WRP_TONE_MAP rxToneMap;
     /* Weakest Modulation Type in which the frame could have been received */
     uint8_t computedModulation;
     /* Weakest Modulation Scheme in which the frame could have been received */
     uint8_t computedModulationScheme;
-    /* Weakest Tone Map with which the frame could have been received */
-    MAC_WRP_TONE_MAP computedToneMap;
     /* Phase Differential compared to Node that sent the frame */
     uint8_t phaseDifferential;
+    /* Security level of the received frame: 0x00 unecrypted, 0x05 encrypted */
+    MAC_WRP_SECURITY_LEVEL securityLevel;
+    /* The QOS of the MSDU: 0x00 normal priority, 0x01 high priority */
+    MAC_WRP_QUALITY_OF_SERVICE qualityOfService;
+    /* Tone Map of the received frame */
+    MAC_WRP_TONE_MAP rxToneMap;
+    /* Weakest Tone Map with which the frame could have been received */
+    MAC_WRP_TONE_MAP computedToneMap;
     /* The Data Indication Media Type */
     MAC_WRP_MEDIA_TYPE_INDICATION mediaType;
 } MAC_WRP_DATA_INDICATION_PARAMS;
@@ -201,46 +203,46 @@ typedef struct
 */
 typedef struct
 {
-    /* Frame Type as defined in IEEE 802.15.4 standard */
-    uint8_t frameType;
-    /* The PAN identifier of the device from which the frame was received */
-    MAC_WRP_PAN_ID srcPanId;
-    /* The address of the device which sent the frame */
-    MAC_WRP_ADDRESS srcAddress;
-    /* The PAN identifier of the entity to which the MSDU is being transferred */
-    MAC_WRP_PAN_ID destPanId;
-    /* The address of the entity to which the MSDU is being transferred */
-    MAC_WRP_ADDRESS destAddress;
-    /* The number of octets of the MSDU to be indicated to the upper layer */
-    uint16_t msduLength;
     /* Pointer to the set of octets forming the received MSDU */
     uint8_t *msdu;
+    /* Reception time, refered to MAC milliseconds counter */
+    MAC_WRP_TIMESTAMP timestamp;
+    /* The PAN identifier of the device from which the frame was received */
+    MAC_WRP_PAN_ID srcPanId;
+    /* The PAN identifier of the entity to which the MSDU is being transferred */
+    MAC_WRP_PAN_ID destPanId;
+    /* The number of octets of the MSDU to be indicated to the upper layer */
+    uint16_t msduLength;
+    /* The address of the device which sent the frame */
+    MAC_WRP_ADDRESS srcAddress;
+    /* The address of the entity to which the MSDU is being transferred */
+    MAC_WRP_ADDRESS destAddress;
     /* The LQI value measured during reception of the frame */
     uint8_t linkQuality;
     /* The Data Sequence Number of the received frame */
     uint8_t dsn;
-    /* Reception time, refered to MAC milliseconds counter */
-    MAC_WRP_TIMESTAMP timestamp;
-    /* Security level of the received frame: 0x00 unecrypted, 0x05 encrypted */
-    MAC_WRP_SECURITY_LEVEL securityLevel;
     /* The index of the key used for decryption */
     uint8_t keyIndex;
-    /* The QOS of the MSDU: 0x00 normal priority, 0x01 high priority */
-    MAC_WRP_QUALITY_OF_SERVICE qualityOfService;
     /* Modulation Type of the received frame */
     uint8_t rxModulation;
     /* Modulation scheme of the received frame */
     uint8_t rxModulationScheme;
-    /* Tone Map of the received frame */
-    MAC_WRP_TONE_MAP rxToneMap;
     /* Weakest Modulation Type in which the frame could have been received */
     uint8_t computedModulation;
     /* Weakest Modulation Scheme in which the frame could have been received */
     uint8_t computedModulationScheme;
-    /* Weakest Tone Map with which the frame could have been received */
-    MAC_WRP_TONE_MAP computedToneMap;
     /* Phase Differential compared to Node that sent the frame */
     uint8_t phaseDifferential;
+    /* Frame Type as defined in IEEE 802.15.4 standard */
+    uint8_t frameType;
+    /* Security level of the received frame: 0x00 unecrypted, 0x05 encrypted */
+    MAC_WRP_SECURITY_LEVEL securityLevel;
+    /* The QOS of the MSDU: 0x00 normal priority, 0x01 high priority */
+    MAC_WRP_QUALITY_OF_SERVICE qualityOfService;
+    /* Tone Map of the received frame */
+    MAC_WRP_TONE_MAP rxToneMap;
+    /* Weakest Tone Map with which the frame could have been received */
+    MAC_WRP_TONE_MAP computedToneMap;
 } MAC_WRP_SNIFFER_INDICATION_PARAMS;
 
 // *****************************************************************************
@@ -429,6 +431,8 @@ typedef enum
     MAC_WRP_STATE_IDLE,
     MAC_WRP_STATE_ERROR,
 } MAC_WRP_STATE;
+
+#pragma pack(pop)
 
 // *****************************************************************************
 /* MAC Wrapper Data Confirm Event Handler Function Pointer
