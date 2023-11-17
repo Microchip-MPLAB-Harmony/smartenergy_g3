@@ -22,6 +22,10 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
 
+g3_stack_helpkeyword = "g3_configurations"
+g3_adp_helpkeyword = "g3_adp_layer_configurations"
+g3_mac_helpkeyword = "g3_mac_layer_configurations"
+
 def instantiateComponent(g3ConfigComponent):
     g3StackGroup = Database.findGroup("G3 STACK")
     if (g3StackGroup == None):
@@ -49,6 +53,7 @@ def instantiateComponent(g3ConfigComponent):
     g3ConfigMode.setVisible(True)
     g3ConfigMode.setDescription("Select G3 Mode")
     g3ConfigMode.setDependencies(g3ConfigSelection, ["G3_MODE"])
+    g3ConfigMode.setHelp(g3_stack_helpkeyword)
 
     # Select G3 role
     global g3ConfigRole
@@ -59,6 +64,7 @@ def instantiateComponent(g3ConfigComponent):
     g3ConfigRole.setDescription("Select G3 Role")
     g3ConfigRole.setDependencies(g3ConfigRoleChange, ["G3_ROLE"])
     g3ConfigRole.setDefaultValue("PAN Device")
+    g3ConfigRole.setHelp(g3_stack_helpkeyword)
 
     # G3 Task rate control
     g3TaskRate = g3ConfigComponent.createIntegerSymbol("G3_TASK_RATE_MS", None)
@@ -69,6 +75,7 @@ def instantiateComponent(g3ConfigComponent):
     g3TaskRate.setMin(1)
     g3TaskRate.setMax(20)
     g3TaskRate.setDependencies(showTaskRate, ["HarmonyCore.SELECT_RTOS"])
+    g3TaskRate.setHelp(g3_stack_helpkeyword)
 
     # Debug Traces Enable
     global g3DebugEnable
@@ -78,6 +85,7 @@ def instantiateComponent(g3ConfigComponent):
     g3DebugEnable.setDefaultValue(False)
     g3DebugEnable.setVisible(False)
     g3DebugEnable.setDependencies(g3DebugChange, ["G3_DEBUG_ENABLE"])
+    g3DebugEnable.setHelp(g3_stack_helpkeyword)
 
     # RTOS CONFIG
     g3StackRTOSMenu = g3ConfigComponent.createMenuSymbol("G3_RTOS_MENU", None)
@@ -85,23 +93,27 @@ def instantiateComponent(g3ConfigComponent):
     g3StackRTOSMenu.setDescription("RTOS settings")
     g3StackRTOSMenu.setVisible(getActiveRtos() != "BareMetal")
     g3StackRTOSMenu.setDependencies(showRTOSMenu, ["HarmonyCore.SELECT_RTOS"])
+    g3StackRTOSMenu.setHelp(g3_stack_helpkeyword)
 
     g3StackRTOSStackSize = g3ConfigComponent.createIntegerSymbol("G3_RTOS_STACK_SIZE", g3StackRTOSMenu)
     g3StackRTOSStackSize.setLabel("Stack Size (in bytes)")
     g3StackRTOSStackSize.setDefaultValue(3584)
     g3StackRTOSStackSize.setMin(1024)
     g3StackRTOSStackSize.setMax(16*1024)
+    g3StackRTOSStackSize.setHelp(g3_stack_helpkeyword)
 
     g3StackRTOSTaskPriority = g3ConfigComponent.createIntegerSymbol("G3_RTOS_TASK_PRIORITY", g3StackRTOSMenu)
     g3StackRTOSTaskPriority.setLabel("Task Priority")
     g3StackRTOSTaskPriority.setDefaultValue(1)
     g3StackRTOSTaskPriority.setMin(0)
+    g3StackRTOSTaskPriority.setHelp(g3_stack_helpkeyword)
 
     g3StackRTOSUseDelay = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_USE_DELAY", g3StackRTOSMenu)
     g3StackRTOSUseDelay.setLabel("Use Task Delay")
     g3StackRTOSUseDelay.setDescription("Specifies whether task delay is used or not")
     g3StackRTOSUseDelay.setDefaultValue(True)
     g3StackRTOSUseDelay.setReadOnly(True)
+    g3StackRTOSUseDelay.setHelp(g3_stack_helpkeyword)
 
     g3StackRTOSDelay = g3ConfigComponent.createIntegerSymbol("G3_RTOS_TASK_DELAY_MS", g3StackRTOSUseDelay)
     g3StackRTOSDelay.setLabel("Task Delay in ms")
@@ -109,6 +121,7 @@ def instantiateComponent(g3ConfigComponent):
     g3StackRTOSDelay.setDefaultValue(5)
     g3StackRTOSDelay.setMin(1)
     g3StackRTOSDelay.setMax(20)
+    g3StackRTOSDelay.setHelp(g3_stack_helpkeyword)
 
     g3StackRTOSMsgQSize = g3ConfigComponent.createIntegerSymbol("G3_RTOS_TASK_MSG_QTY", g3StackRTOSMenu)
     g3StackRTOSMsgQSize.setLabel("Maximum Message Queue Size")
@@ -117,6 +130,7 @@ def instantiateComponent(g3ConfigComponent):
     g3StackRTOSMsgQSize.setMin(0)
     g3StackRTOSMsgQSize.setVisible(getActiveRtos() == "MicriumOSIII")
     g3StackRTOSMsgQSize.setDependencies(commandRtosMicriumOSIIIAppTaskVisibility, ["HarmonyCore.SELECT_RTOS"])
+    g3StackRTOSMsgQSize.setHelp(g3_stack_helpkeyword)
 
     g3StackRTOSTaskTimeQuanta = g3ConfigComponent.createIntegerSymbol("G3_RTOS_TASK_TIME_QUANTA", g3StackRTOSMenu)
     g3StackRTOSTaskTimeQuanta.setLabel("Task Time Quanta")
@@ -125,6 +139,7 @@ def instantiateComponent(g3ConfigComponent):
     g3StackRTOSTaskTimeQuanta.setMin(0)
     g3StackRTOSTaskTimeQuanta.setVisible(getActiveRtos() == "MicriumOSIII")
     g3StackRTOSTaskTimeQuanta.setDependencies(commandRtosMicriumOSIIIAppTaskVisibility, ["HarmonyCore.SELECT_RTOS"])
+    g3StackRTOSTaskTimeQuanta.setHelp(g3_stack_helpkeyword)
 
     g3StackRTOSTaskSpecificOpt = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_OPT_NONE", g3StackRTOSMenu)
     g3StackRTOSTaskSpecificOpt.setLabel("Task Specific Options")
@@ -132,30 +147,35 @@ def instantiateComponent(g3ConfigComponent):
     g3StackRTOSTaskSpecificOpt.setDefaultValue(True)
     g3StackRTOSTaskSpecificOpt.setVisible(getActiveRtos() == "MicriumOSIII")
     g3StackRTOSTaskSpecificOpt.setDependencies(commandRtosMicriumOSIIIAppTaskVisibility, ["HarmonyCore.SELECT_RTOS"])
+    g3StackRTOSTaskSpecificOpt.setHelp(g3_stack_helpkeyword)
 
     g3StackRTOSTaskStkChk = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_OPT_STK_CHK", g3StackRTOSTaskSpecificOpt)
     g3StackRTOSTaskStkChk.setLabel("Stack checking is allowed for the task")
     g3StackRTOSTaskStkChk.setDescription("Specifies whether stack checking is allowed for the task")
     g3StackRTOSTaskStkChk.setDefaultValue(True)
     g3StackRTOSTaskStkChk.setDependencies(commandRtosMicriumOSIIITaskOptVisibility, ["G3_RTOS_TASK_OPT_NONE"])
+    g3StackRTOSTaskStkChk.setHelp(g3_stack_helpkeyword)
 
     g3StackRTOSTaskStkClr = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_OPT_STK_CLR", g3StackRTOSTaskSpecificOpt)
     g3StackRTOSTaskStkClr.setLabel("Stack needs to be cleared")
     g3StackRTOSTaskStkClr.setDescription("Specifies whether the stack needs to be cleared")
     g3StackRTOSTaskStkClr.setDefaultValue(True)
     g3StackRTOSTaskStkClr.setDependencies(commandRtosMicriumOSIIITaskOptVisibility, ["G3_RTOS_TASK_OPT_NONE"])
+    g3StackRTOSTaskStkClr.setHelp(g3_stack_helpkeyword)
 
     g3StackRTOSTaskSaveFp = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_OPT_SAVE_FP", g3StackRTOSTaskSpecificOpt)
     g3StackRTOSTaskSaveFp.setLabel("Floating-point registers needs to be saved")
     g3StackRTOSTaskSaveFp.setDescription("Specifies whether floating-point registers are saved. This option is only valid if the processor has floating-point hardware and the processor-specific code saves the floating-point registers")
     g3StackRTOSTaskSaveFp.setDefaultValue(False)
     g3StackRTOSTaskSaveFp.setDependencies(commandRtosMicriumOSIIITaskOptVisibility, ["G3_RTOS_TASK_OPT_NONE"])
+    g3StackRTOSTaskSaveFp.setHelp(g3_stack_helpkeyword)
 
     g3StackRTOSTaskNoTls = g3ConfigComponent.createBooleanSymbol("G3_RTOS_TASK_OPT_NO_TLS", g3StackRTOSTaskSpecificOpt)
     g3StackRTOSTaskNoTls.setLabel("TLS (Thread Local Storage) support needed for the task")
     g3StackRTOSTaskNoTls.setDescription("If the caller doesn’t want or need TLS (Thread Local Storage) support for the task being created. If you do not include this option, TLS will be supported by default. TLS support was added in V3.03.00")
     g3StackRTOSTaskNoTls.setDefaultValue(False)
     g3StackRTOSTaskNoTls.setDependencies(commandRtosMicriumOSIIITaskOptVisibility, ["G3_RTOS_TASK_OPT_NONE"])
+    g3StackRTOSTaskNoTls.setHelp(g3_stack_helpkeyword)
 
     # ADP Configuration
     global g3AdpConfig
@@ -163,12 +183,14 @@ def instantiateComponent(g3ConfigComponent):
     g3AdpConfig.setLabel("ADP Configuration")
     g3AdpConfig.setDescription("ADP Buffers and Table Sizes")
     g3AdpConfig.setVisible(False)
+    g3AdpConfig.setHelp(g3_adp_helpkeyword)
 
     global g3SixLoWPANConfig
     g3SixLoWPANConfig = g3ConfigComponent.createMenuSymbol("6LOWPAN_CONFIG", g3AdpConfig)
     g3SixLoWPANConfig.setLabel("6LOWPAN Configuration")
     g3SixLoWPANConfig.setDescription("6LOWPAN Buffers and Table Sizes")
     g3SixLoWPANConfig.setVisible(False)
+    g3SixLoWPANConfig.setHelp(g3_adp_helpkeyword)
 
     global g3CountBuffers1280
     g3CountBuffers1280 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_1280", g3SixLoWPANConfig)
@@ -177,6 +199,7 @@ def instantiateComponent(g3ConfigComponent):
     g3CountBuffers1280.setDefaultValue(1)
     g3CountBuffers1280.setMin(1)
     g3CountBuffers1280.setMax(16)
+    g3CountBuffers1280.setHelp(g3_adp_helpkeyword)
 
     global g3CountBuffers1280Comment
     g3CountBuffers1280Comment = g3ConfigComponent.createCommentSymbol("ADP_COUNT_BUFFERS_1280_COMMENT", g3CountBuffers1280)
@@ -192,6 +215,7 @@ def instantiateComponent(g3ConfigComponent):
     g3CountBuffers400.setDefaultValue(3)
     g3CountBuffers400.setMin(1)
     g3CountBuffers400.setMax(32)
+    g3CountBuffers400.setHelp(g3_adp_helpkeyword)
 
     global g3CountBuffers400Comment
     g3CountBuffers400Comment = g3ConfigComponent.createCommentSymbol("ADP_COUNT_BUFFERS_400_COMMENT", g3CountBuffers400)
@@ -207,6 +231,7 @@ def instantiateComponent(g3ConfigComponent):
     g3CountBuffers100.setDefaultValue(3)
     g3CountBuffers100.setMin(1)
     g3CountBuffers100.setMax(64)
+    g3CountBuffers100.setHelp(g3_adp_helpkeyword)
 
     global g3CountBuffers100Comment
     g3CountBuffers100Comment = g3ConfigComponent.createCommentSymbol("ADP_COUNT_BUFFERS_100_COMMENT", g3CountBuffers100)
@@ -227,6 +252,7 @@ def instantiateComponent(g3ConfigComponent):
         g3FragmentSize.setMax(100)
     else:
         g3FragmentSize.setMax(400)
+    g3FragmentSize.setHelp(g3_adp_helpkeyword)
 
     g3FragmentedTransferTableSize = g3ConfigComponent.createIntegerSymbol("ADP_FRAGMENTED_TRANSFER_TABLE_SIZE", g3SixLoWPANConfig)
     g3FragmentedTransferTableSize.setLabel("Fragmented transfer table size")
@@ -234,6 +260,7 @@ def instantiateComponent(g3ConfigComponent):
     g3FragmentedTransferTableSize.setDefaultValue(1)
     g3FragmentedTransferTableSize.setMin(1)
     g3FragmentedTransferTableSize.setMax(16)
+    g3FragmentedTransferTableSize.setHelp(g3_adp_helpkeyword)
 
     # LOADng Configuration
     global g3ConfigLOADng
@@ -243,6 +270,7 @@ def instantiateComponent(g3ConfigComponent):
     g3ConfigLOADng.setDescription("Enable LOADng Routing Protocol")
     g3ConfigLOADng.setDependencies(g3LOADngEnable, ["LOADNG_ENABLE"])
     g3ConfigLOADng.setDefaultValue(True)
+    g3ConfigLOADng.setHelp(g3_adp_helpkeyword)
 
     adpRoutingTable = g3ConfigComponent.createIntegerSymbol("ADP_ROUTING_TABLE_SIZE", g3ConfigLOADng)
     adpRoutingTable.setLabel("Routing Table size")
@@ -251,6 +279,7 @@ def instantiateComponent(g3ConfigComponent):
     adpRoutingTable.setMin(1)
     adpRoutingTable.setMax(1024)
     adpRoutingTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+    adpRoutingTable.setHelp(g3_adp_helpkeyword)
 
     adpRoutingSet = g3ConfigComponent.createIntegerSymbol("ADP_ROUTING_SET_SIZE", g3ConfigLOADng)
     adpRoutingSet.setLabel("Routing Set size")
@@ -259,6 +288,7 @@ def instantiateComponent(g3ConfigComponent):
     adpRoutingSet.setMin(1)
     adpRoutingSet.setMax(256)
     adpRoutingSet.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+    adpRoutingSet.setHelp(g3_adp_helpkeyword)
 
     adpBlacklistTable = g3ConfigComponent.createIntegerSymbol("ADP_BLACKLIST_TABLE_SIZE", g3ConfigLOADng)
     adpBlacklistTable.setLabel("Blacklist Table size")
@@ -267,6 +297,7 @@ def instantiateComponent(g3ConfigComponent):
     adpBlacklistTable.setMin(1)
     adpBlacklistTable.setMax(256)
     adpBlacklistTable.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+    adpBlacklistTable.setHelp(g3_adp_helpkeyword)
 
     adpDestinationAddressSet = g3ConfigComponent.createIntegerSymbol("ADP_DESTINATION_ADDRESS_SET_SIZE", g3ConfigLOADng)
     adpDestinationAddressSet.setLabel("Destination Address Set size")
@@ -275,6 +306,7 @@ def instantiateComponent(g3ConfigComponent):
     adpDestinationAddressSet.setMin(1)
     adpDestinationAddressSet.setMax(128)
     adpDestinationAddressSet.setDependencies(showSymbol, ["LOADNG_ENABLE"])
+    adpDestinationAddressSet.setHelp(g3_adp_helpkeyword)
 
     global g3LOADngAdvancedSettings
     g3LOADngAdvancedSettings = g3ConfigComponent.createBooleanSymbol("LOADNG_ADVANCED_SETTINGS", g3ConfigLOADng)
@@ -282,6 +314,7 @@ def instantiateComponent(g3ConfigComponent):
     g3LOADngAdvancedSettings.setDescription("Enable LOADng Advanced Configuration")
     g3LOADngAdvancedSettings.setDependencies(showSymbol, ["LOADNG_ENABLE"])
     g3LOADngAdvancedSettings.setDefaultValue(False)
+    g3LOADngAdvancedSettings.setHelp(g3_adp_helpkeyword)
 
     loadngPendingRReqTable = g3ConfigComponent.createIntegerSymbol("LOADNG_PENDING_RREQ_TABLE_SIZE", g3LOADngAdvancedSettings)
     loadngPendingRReqTable.setLabel("Pending RREQ table size")
@@ -291,6 +324,7 @@ def instantiateComponent(g3ConfigComponent):
     loadngPendingRReqTable.setMax(10)
     loadngPendingRReqTable.setVisible(False)
     loadngPendingRReqTable.setDependencies(showSymbol, ["LOADNG_ADVANCED_SETTINGS"])
+    loadngPendingRReqTable.setHelp(g3_adp_helpkeyword)
 
     loadngRRepGenerationTable = g3ConfigComponent.createIntegerSymbol("LOADNG_RREP_GENERATION_TABLE_SIZE", g3LOADngAdvancedSettings)
     loadngRRepGenerationTable.setLabel("RREP generation table size")
@@ -300,6 +334,7 @@ def instantiateComponent(g3ConfigComponent):
     loadngRRepGenerationTable.setMax(10)
     loadngRRepGenerationTable.setVisible(False)
     loadngRRepGenerationTable.setDependencies(showSymbol, ["LOADNG_ADVANCED_SETTINGS"])
+    loadngRRepGenerationTable.setHelp(g3_adp_helpkeyword)
 
     loadngRReqForwardingTable = g3ConfigComponent.createIntegerSymbol("LOADNG_RREQ_FORWARDING_TABLE_SIZE", g3LOADngAdvancedSettings)
     loadngRReqForwardingTable.setLabel("RREP forwarding table size")
@@ -309,6 +344,7 @@ def instantiateComponent(g3ConfigComponent):
     loadngRReqForwardingTable.setMax(10)
     loadngRReqForwardingTable.setVisible(False)
     loadngRReqForwardingTable.setDependencies(showSymbol, ["LOADNG_ADVANCED_SETTINGS"])
+    loadngRReqForwardingTable.setHelp(g3_adp_helpkeyword)
 
     loadngDiscoverRouteTable = g3ConfigComponent.createIntegerSymbol("LOADNG_DISCOVER_ROUTE_TABLE_SIZE", g3LOADngAdvancedSettings)
     loadngDiscoverRouteTable.setLabel("Discover route table size")
@@ -318,6 +354,7 @@ def instantiateComponent(g3ConfigComponent):
     loadngDiscoverRouteTable.setMax(10)
     loadngDiscoverRouteTable.setVisible(False)
     loadngDiscoverRouteTable.setDependencies(showSymbol, ["LOADNG_ADVANCED_SETTINGS"])
+    loadngDiscoverRouteTable.setHelp(g3_adp_helpkeyword)
 
     # Coordinator LBP Configuration
     g3LbpCoordConfig = g3ConfigComponent.createMenuSymbol("LBP_COORD_CONFIG", g3AdpConfig)
@@ -325,6 +362,7 @@ def instantiateComponent(g3ConfigComponent):
     g3LbpCoordConfig.setDescription("Configuration on Coordinator LBP module")
     g3LbpCoordConfig.setVisible(g3ConfigRole.getValue() != "PAN Device")
     g3LbpCoordConfig.setDependencies(showLbpCoordConfig, ["G3_ROLE"])
+    g3LbpCoordConfig.setHelp(g3_adp_helpkeyword)
 
     g3CoordLbpSlots = g3ConfigComponent.createIntegerSymbol("COORD_LBP_SLOTS", g3LbpCoordConfig)
     g3CoordLbpSlots.setLabel("Number of LBP Slots")
@@ -334,6 +372,7 @@ def instantiateComponent(g3ConfigComponent):
     g3CoordLbpSlots.setMin(1)
     g3CoordLbpSlots.setMax(20)
     g3CoordLbpSlots.setDependencies(showLbpCoordConfig, ["G3_ROLE"])
+    g3CoordLbpSlots.setHelp(g3_adp_helpkeyword)
 
     g3CoordLbpRetries = g3ConfigComponent.createIntegerSymbol("COORD_LBP_RETRIES", g3LbpCoordConfig)
     g3CoordLbpRetries.setLabel("Number Retries for LBP frames")
@@ -343,6 +382,7 @@ def instantiateComponent(g3ConfigComponent):
     g3CoordLbpRetries.setMin(1)
     g3CoordLbpRetries.setMax(5)
     g3CoordLbpRetries.setDependencies(showLbpCoordConfig, ["G3_ROLE"])
+    g3CoordLbpRetries.setHelp(g3_adp_helpkeyword)
 
     g3CoordInitialKeyIndex = g3ConfigComponent.createIntegerSymbol("COORD_INIT_KEY_INDEX", g3LbpCoordConfig)
     g3CoordInitialKeyIndex.setLabel("Initial Security Key Index")
@@ -352,12 +392,14 @@ def instantiateComponent(g3ConfigComponent):
     g3CoordInitialKeyIndex.setMin(0)
     g3CoordInitialKeyIndex.setMax(1)
     g3CoordInitialKeyIndex.setDependencies(showLbpCoordConfig, ["G3_ROLE"])
+    g3CoordInitialKeyIndex.setHelp(g3_adp_helpkeyword)
 
     # ADP Serialization
     g3AdpSerializationEnable = g3ConfigComponent.createBooleanSymbol("ADP_SERIALIZATION_EN", g3AdpConfig)
     g3AdpSerializationEnable.setLabel("Enable ADP and LBP Serialization")
     g3AdpSerializationEnable.setDescription("Enable/disable ADP and LBP serialization through USI")
     g3AdpSerializationEnable.setDefaultValue(False)
+    g3AdpSerializationEnable.setHelp(g3_adp_helpkeyword)
 
     g3AdpSerializationUsiInstance = g3ConfigComponent.createIntegerSymbol("ADP_SERIALIZATION_USI_INSTANCE", g3AdpSerializationEnable)
     g3AdpSerializationUsiInstance.setLabel("USI Instance")
@@ -367,6 +409,7 @@ def instantiateComponent(g3ConfigComponent):
     g3AdpSerializationUsiInstance.setMin(0)
     g3AdpSerializationUsiInstance.setVisible(False)
     g3AdpSerializationUsiInstance.setDependencies(showUsiInstance, ["ADP_SERIALIZATION_EN"])
+    g3AdpSerializationUsiInstance.setHelp(g3_adp_helpkeyword)
 
     # MAC Configuration
     global g3MacConfig
@@ -374,6 +417,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacConfig.setLabel("MAC Configuration")
     g3MacConfig.setDescription("MAC Buffers and Table Sizes")
     g3MacConfig.setVisible(False)
+    g3MacConfig.setHelp(g3_mac_helpkeyword)
 
     # MAC PLC Table Sizes
     global g3MacPLCTables
@@ -381,6 +425,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacPLCTables.setLabel("MAC PLC Table Sizes")
     g3MacPLCTables.setDescription("MAC PLC Table Sizes")
     g3MacPLCTables.setVisible(False)
+    g3MacPLCTables.setHelp(g3_mac_helpkeyword)
 
     g3MacPLCDeviceTable = g3ConfigComponent.createIntegerSymbol("MAC_PLC_DEVICE_TABLE_SIZE", g3MacPLCTables)
     g3MacPLCDeviceTable.setLabel("Device Table Size")
@@ -388,6 +433,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacPLCDeviceTable.setDefaultValue(128)
     g3MacPLCDeviceTable.setMin(16)
     g3MacPLCDeviceTable.setMax(512)
+    g3MacPLCDeviceTable.setHelp(g3_mac_helpkeyword)
 
     # MAC RF Table Sizes
     global g3MacRFTables
@@ -395,6 +441,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacRFTables.setLabel("MAC RF Table Sizes")
     g3MacRFTables.setDescription("MAC RF Table Sizes")
     g3MacRFTables.setVisible(False)
+    g3MacRFTables.setHelp(g3_mac_helpkeyword)
 
     g3MacRFDeviceTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_DEVICE_TABLE_SIZE", g3MacRFTables)
     g3MacRFDeviceTable.setLabel("Device Table Size")
@@ -402,6 +449,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacRFDeviceTable.setDefaultValue(128)
     g3MacRFDeviceTable.setMin(16)
     g3MacRFDeviceTable.setMax(512)
+    g3MacRFDeviceTable.setHelp(g3_mac_helpkeyword)
 
     g3MacRFPOSTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_POS_TABLE_SIZE", g3MacRFTables)
     g3MacRFPOSTable.setLabel("POS Table Size")
@@ -409,6 +457,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacRFPOSTable.setDefaultValue(100)
     g3MacRFPOSTable.setMin(16)
     g3MacRFPOSTable.setMax(512)
+    g3MacRFPOSTable.setHelp(g3_mac_helpkeyword)
 
     g3MacRFDSNTable = g3ConfigComponent.createIntegerSymbol("MAC_RF_DSN_TABLE_SIZE", g3MacRFTables)
     g3MacRFDSNTable.setLabel("Sequence Number Table Size")
@@ -416,6 +465,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacRFDSNTable.setDefaultValue(8)
     g3MacRFDSNTable.setMin(4)
     g3MacRFDSNTable.setMax(128)
+    g3MacRFDSNTable.setHelp(g3_mac_helpkeyword)
 
     global g3MacSerializationEnable
     g3MacSerializationEnable = g3ConfigComponent.createBooleanSymbol("MAC_SERIALIZATION_EN", g3MacConfig)
@@ -423,6 +473,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacSerializationEnable.setDescription("Enable/disable MAC serialization through USI")
     g3MacSerializationEnable.setVisible(False)
     g3MacSerializationEnable.setDefaultValue(False)
+    g3MacSerializationEnable.setHelp(g3_mac_helpkeyword)
 
     g3MacSerializationUsiInstance = g3ConfigComponent.createIntegerSymbol("MAC_SERIALIZATION_USI_INSTANCE", g3MacSerializationEnable)
     g3MacSerializationUsiInstance.setLabel("USI Instance")
@@ -432,6 +483,7 @@ def instantiateComponent(g3ConfigComponent):
     g3MacSerializationUsiInstance.setMin(0)
     g3MacSerializationUsiInstance.setVisible(False)
     g3MacSerializationUsiInstance.setDependencies(showUsiInstance, ["MAC_SERIALIZATION_EN"])
+    g3MacSerializationUsiInstance.setHelp(g3_mac_helpkeyword)
 
     # Boolean symbols to use in FTLs to generate code
     global g3DeviceRole
