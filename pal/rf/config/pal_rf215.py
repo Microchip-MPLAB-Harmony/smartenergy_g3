@@ -21,7 +21,7 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
-g3_pal_rf_helpkeyword = "mcc_g3_pal_rf_rf215_config"
+g3_pal_rf_helpkeyword = "g3_pal_rf_configurations"
 
 def showSymbol(symbol, event):
     symbol.setVisible(event["value"])
@@ -35,12 +35,12 @@ def activatesDependencies(symbol, event):
         if (event["value"] == True):
             if(Database.getComponentByID("srv_usi") == None):
                 Database.activateComponents(["srv_usi"])
-                
+
             if(Database.getComponentByID("srv_rsniffer") == None):
                 Database.activateComponents(["srv_rsniffer"])
 
 def instantiateComponent(g3PalRfComponent):
-    
+
     Log.writeInfoMessage("Loading G3 PAL RF module")
 
     ############################################################################
@@ -67,9 +67,9 @@ def instantiateComponent(g3PalRfComponent):
     g3PalRfDummySymbol.setDefaultValue(False)
     g3PalRfDummySymbol.setVisible(False)
     g3PalRfDummySymbol.setDependencies(activatesDependencies, ["G3_PAL_RF_PHY_SNIFFER_EN"])
-    
+
     #####################################################################################################################################
-    # G3 PAL RF FILES 
+    # G3 PAL RF FILES
 
     g3PalRfSrcFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_SOURCE", None)
     g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_rf215.c.ftl")
@@ -96,8 +96,8 @@ def instantiateComponent(g3PalRfComponent):
     g3PalRfHdrLocalFile.setMarkup(True)
 
     #####################################################################################################################################
-    # G3 PAL RF TEMPLATES 
-    
+    # G3 PAL RF TEMPLATES
+
     g3PalRfSystemConfigFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_CONFIGURATION", None)
     g3PalRfSystemConfigFile.setType("STRING")
     g3PalRfSystemConfigFile.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")

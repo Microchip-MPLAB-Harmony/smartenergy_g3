@@ -21,7 +21,7 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
-g3_pal_rf_helpkeyword = "mcc_g3_pal_rf_wbz451_config"
+g3_pal_rf_helpkeyword = "g3_pal_rf_configurations"
 
 def showSymbol(symbol, event):
     symbol.setVisible(event["value"])
@@ -81,10 +81,10 @@ def getActiveRtos():
         elif (activeComponents[i] == "MicriumOSIII"):
             return "MicriumOSIII"
         elif (activeComponents[i] == "MbedOS"):
-            return "MbedOS"                      
+            return "MbedOS"
 
 def instantiateComponent(g3PalRfComponent):
-    
+
     Log.writeInfoMessage("Loading G3 PAL RF module")
 
     ############################################################################
@@ -169,7 +169,7 @@ def instantiateComponent(g3PalRfComponent):
         prio = 2
     else:
         prio = Database.getSymbolValue("FreeRTOS", "FREERTOS_MAX_PRIORITIES")
-        
+
     palRFRTOSTaskPriority.setDefaultValue(prio)
 
     palRFRTOSTaskSpecificOpt = g3PalRfComponent.createBooleanSymbol("PAL_RF_RTOS_TASK_OPT_NONE", palRFRTOSMenu)
@@ -210,7 +210,7 @@ def instantiateComponent(g3PalRfComponent):
 
 
     #####################################################################################################################################
-    # G3 PAL RF FILES 
+    # G3 PAL RF FILES
 
     g3PalRfSrcFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_SOURCE", None)
     g3PalRfSrcFile.setSourcePath("pal/rf/src/pal_rf_wbz45.c.ftl")
@@ -237,8 +237,8 @@ def instantiateComponent(g3PalRfComponent):
     g3PalRfHdrLocalFile.setMarkup(True)
 
     #####################################################################################################################################
-    # G3 PAL RF TEMPLATES 
-    
+    # G3 PAL RF TEMPLATES
+
     g3PalRfSystemConfigFile = g3PalRfComponent.createFileSymbol("G3_PAL_RF_CONFIGURATION", None)
     g3PalRfSystemConfigFile.setType("STRING")
     g3PalRfSystemConfigFile.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")
@@ -263,4 +263,3 @@ def instantiateComponent(g3PalRfComponent):
     g3PalRfSystemRtosTasksFile.setSourcePath("pal/rf/templates/system/system_rtos_tasks.c.ftl")
     g3PalRfSystemRtosTasksFile.setMarkup(True)
 
-    

@@ -21,7 +21,7 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
-g3_pal_plc_helpkeyword = "mcc_g3_pal_plc_config"
+g3_pal_plc_helpkeyword = "g3_pal_plc_configurations"
 
 def showSymbol(symbol, event):
     symbol.setVisible(event["value"])
@@ -44,7 +44,7 @@ def activatesDependencies(symbol, event):
                 Database.activateComponents(["srv_usi"])
 
 def instantiateComponent(g3PalPlcComponent):
-    
+
     Log.writeInfoMessage("Loading G3 PAL PLC module")
 
     ############################################################################
@@ -83,7 +83,7 @@ def instantiateComponent(g3PalPlcComponent):
     g3PalPlcDummySymbol.setDependencies(activatesDependencies, ["G3_PAL_PLC_PVDD_MONITOR", "G3_PAL_PLC_PHY_SNIFFER_EN"])
 
     #####################################################################################################################################
-    # G3 PAL PLC FILES 
+    # G3 PAL PLC FILES
 
     g3PalPlcSrcFile = g3PalPlcComponent.createFileSymbol("G3_PAL_PLC_SOURCE", None)
     g3PalPlcSrcFile.setSourcePath("pal/plc/src/pal_plc.c.ftl")
@@ -109,8 +109,8 @@ def instantiateComponent(g3PalPlcComponent):
     g3PalPlcHdrLocalFile.setMarkup(True)
 
     #####################################################################################################################################
-    # G3 PAL PLC TEMPLATES 
-    
+    # G3 PAL PLC TEMPLATES
+
     g3PalPlcSystemConfigFile = g3PalPlcComponent.createFileSymbol("G3_PAL_PLC_CONFIGURATION", None)
     g3PalPlcSystemConfigFile.setType("STRING")
     g3PalPlcSystemConfigFile.setOutputName("core.LIST_SYSTEM_CONFIG_H_DRIVER_CONFIGURATION")
