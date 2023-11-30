@@ -3569,7 +3569,7 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
             pPosEntryRF.forwardTxPowerOffset = *pData++;
             pPosEntryRF.reverseTxPowerOffset = *pData++;
             pPosEntryRF.posValidTime = ((uint16_t) *pData++) << 8;
-            pPosEntryRF.posValidTime += (uint16_t) *pData;
+            pPosEntryRF.posValidTime += (uint16_t) *pData++;
             pPosEntryRF.reverseLqiValidTime = ((uint16_t) *pData++) << 8;
             pPosEntryRF.reverseLqiValidTime += (uint16_t) *pData;
             (void) memcpy((void *) pibValue->value, (void *) &pPosEntryRF, sizeof(MAC_WRP_POS_ENTRY_RF));
