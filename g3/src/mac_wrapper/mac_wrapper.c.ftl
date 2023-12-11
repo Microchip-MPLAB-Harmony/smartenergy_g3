@@ -682,13 +682,13 @@ static void lMAC_WRP_StringifyDataIndication(MAC_WRP_DATA_INDICATION_PARAMS* diP
     (void) memcpy(&serialRspBuffer[serialRspLen], diParams->computedToneMap.toneMap, 3);
     serialRspLen += 3U;
 
+    serialRspBuffer[serialRspLen++] = (uint8_t)diParams->mediaType;
+
     serialRspBuffer[serialRspLen++] = (uint8_t) (diParams->msduLength >> 8);
     serialRspBuffer[serialRspLen++] = (uint8_t) diParams->msduLength;
 
     (void) memcpy(&serialRspBuffer[serialRspLen], diParams->msdu, diParams->msduLength);
     serialRspLen += diParams->msduLength;
-
-    serialRspBuffer[serialRspLen++] = (uint8_t)diParams->mediaType;
 
     /* Send through USI */
     SRV_USI_Send_Message(macWrpData.usiHandle, SRV_USI_PROT_ID_MAC_G3, serialRspBuffer, serialRspLen);
