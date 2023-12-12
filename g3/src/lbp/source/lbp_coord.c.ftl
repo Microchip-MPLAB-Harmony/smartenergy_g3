@@ -69,6 +69,10 @@
 #define BOOTSTRAP_MSG_MAX_RETRIES   ${COORD_LBP_RETRIES}U
 #define INITIAL_KEY_INDEX           ${COORD_INIT_KEY_INDEX}U
 
+/* Set the following define to NOT store and send back hybrid bits,
+ * i.e. mediaType and disableBackupMedium, on legacy PLC mode */
+#define IGNORE_LBP_HYBRID_BITS_ON_LEGACY_PLC_MODE
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data Types
@@ -191,7 +195,7 @@ static void lLBP_SetDeviceTypeCoord(void)
 
 static void lLBP_LogShowSlotStatus(LBP_SLOT *pSlot)
 {
-    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, 
+    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG,
             "[LBP] Updating slot with LBD_ADDR: %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X, \
             state: %hu, handler: %hu  pending_cfrms: %hu  Timeout: %u, Current_Time: %u\r\n",
             pSlot->lbdAddress.value[0], pSlot->lbdAddress.value[1],
@@ -850,6 +854,13 @@ static void lLBP_AdpLbpIndicationCoord(ADP_LBP_IND_PARAMS *pLbpIndication)
     disableBackupMedium = (pLbpIndication->pNsdu[0] & 0x04U) >> 2;
     pLbpData = (uint8_t *)&pLbpIndication->pNsdu[10];
     lbpDataLength = pLbpIndication->nsduLength - 10U;
+<#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == false>
+#ifdef IGNORE_LBP_HYBRID_BITS_ON_LEGACY_PLC_MODE
+    /* On legacy PLC mode, do not store and send back specific hybrid bits */
+    mediaType = 0U;
+    disableBackupMedium = 0U;
+#endif
+</#if>
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
     #pragma coverity compliance end_block "MISRA C-2012 Rule 11.8"
@@ -1250,7 +1261,7 @@ void LBP_ShortAddressAssign(uint8_t *pExtAddress, uint16_t assignedAddress)
 {
     LBP_SLOT *pSlot;
     ADP_ADDRESS dstAddr;
-    
+
     /* Get slot from extended address*/
     pSlot = lLBP_GetLbpSlotByAddress(pExtAddress);
 
@@ -1272,7 +1283,7 @@ void LBP_ShortAddressAssign(uint8_t *pExtAddress, uint16_t assignedAddress)
             pSlot->slotState = LBP_STATE_SENT_EAP_MSG_1;
             SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "[LBP] Slot updated to LBP_STATE_SENT_EAP_MSG_1\r\n");
         }
-        
+
         if (pSlot->lbpDataLength > 0U)
         {
             if (pSlot->lbaAddress == 0xFFFFU)
