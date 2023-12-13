@@ -850,17 +850,21 @@ static void lLBP_AdpLbpIndicationCoord(ADP_LBP_IND_PARAMS *pLbpIndication)
 </#if>
 
     msgType = pLbpIndication->pNsdu[0] >> 4;
-    mediaType = (pLbpIndication->pNsdu[0] & 0x08U) >> 3;
-    disableBackupMedium = (pLbpIndication->pNsdu[0] & 0x04U) >> 2;
-    pLbpData = (uint8_t *)&pLbpIndication->pNsdu[10];
-    lbpDataLength = pLbpIndication->nsduLength - 10U;
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == false>
 #ifdef IGNORE_LBP_HYBRID_BITS_ON_LEGACY_PLC_MODE
     /* On legacy PLC mode, do not store and send back specific hybrid bits */
     mediaType = 0U;
     disableBackupMedium = 0U;
+#else
+    mediaType = (pLbpIndication->pNsdu[0] & 0x08U) >> 3;
+    disableBackupMedium = (pLbpIndication->pNsdu[0] & 0x04U) >> 2;
 #endif
+<#else>
+    mediaType = (pLbpIndication->pNsdu[0] & 0x08U) >> 3;
+    disableBackupMedium = (pLbpIndication->pNsdu[0] & 0x04U) >> 2;
 </#if>
+    pLbpData = (uint8_t *)&pLbpIndication->pNsdu[10];
+    lbpDataLength = pLbpIndication->nsduLength - 10U;
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
     #pragma coverity compliance end_block "MISRA C-2012 Rule 11.8"
