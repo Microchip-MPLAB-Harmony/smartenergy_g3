@@ -413,7 +413,7 @@ static bool lMAC_WRP_CheckRFMediaProbing(uint8_t probingInterval, MAC_ADDRESS ds
     uint8_t lqiValidTime;
 
     /* Probing interval has to be greater than 0 */
-    if (probingInterval == 0)
+    if (probingInterval == 0U)
     {
         return false;
     }
@@ -430,14 +430,14 @@ static bool lMAC_WRP_CheckRFMediaProbing(uint8_t probingInterval, MAC_ADDRESS ds
 
     if (status == MAC_WRP_STATUS_SUCCESS)
     {
-        (void) memcpy((void *) &posEntry, pibValue.value, sizeof(MAC_WRP_POS_ENTRY_RF));
+        (void) memcpy((void *) &posEntry, (void *) pibValue.value, sizeof(MAC_WRP_POS_ENTRY_RF));
         status = (MAC_WRP_STATUS) MAC_COMMON_GetRequestSync(MAC_COMMON_PIB_POS_TABLE_ENTRY_TTL,
             0, &pibValue);
 
         if (status == MAC_WRP_STATUS_SUCCESS)
         {
             posTableEntryTtl = pibValue.value[0];
-            lqiValidTime = (posEntry.reverseLqiValidTime + 59) / 60;
+            lqiValidTime = (uint8_t)((posEntry.reverseLqiValidTime + 59U) / 60U);
             if ((posTableEntryTtl > lqiValidTime) && ((posTableEntryTtl - lqiValidTime) >= probingInterval))
             {
                 /* Conditions met to perform the media probing */
@@ -460,7 +460,7 @@ static bool lMAC_WRP_CheckPLCMediaProbing(uint8_t probingInterval, MAC_ADDRESS d
     uint8_t tmrValidTime;
 
     /* Probing interval has to be greater than 0 */
-    if (probingInterval == 0)
+    if (probingInterval == 0U)
     {
         return false;
     }
@@ -477,7 +477,7 @@ static bool lMAC_WRP_CheckPLCMediaProbing(uint8_t probingInterval, MAC_ADDRESS d
 
     if (status == MAC_WRP_STATUS_SUCCESS)
     {
-        (void) memcpy((void *) &posEntry, pibValue.value, sizeof(MAC_WRP_POS_ENTRY));
+        (void) memcpy((void *) &posEntry, (void *) pibValue.value, sizeof(MAC_WRP_POS_ENTRY));
 
         /* Look for entry in Neighbour Table to fill TMR Valid time */
         tmrValidTime = 0;
@@ -486,8 +486,8 @@ static bool lMAC_WRP_CheckPLCMediaProbing(uint8_t probingInterval, MAC_ADDRESS d
 
         if (status == MAC_WRP_STATUS_SUCCESS)
         {
-            (void) memcpy((void *) &nbEntry, pibValue.value, sizeof(MAC_WRP_NEIGHBOUR_ENTRY));
-            tmrValidTime = (nbEntry.tmrValidTime + 59) / 60;
+            (void) memcpy((void *) &nbEntry, (void *) pibValue.value, sizeof(MAC_WRP_NEIGHBOUR_ENTRY));
+            tmrValidTime = (uint8_t)((nbEntry.tmrValidTime + 59U) / 60U);
         }
 
         status = (MAC_WRP_STATUS) MAC_PLC_GetRequestSync(MAC_PIB_TMR_TTL, 0, &pibValue);
@@ -962,6 +962,8 @@ static MAC_WRP_SERIAL_STATUS lMAC_WRP_ParseDataRequest(uint8_t* pData)
     }
 
     drParams.mediaType = (MAC_WRP_MEDIA_TYPE_REQUEST) *pData++;
+    /* No probing on MAC Serial access */
+    drParams.probingInterval = 0;
 
     drParams.msduLength = ((uint16_t)*pData++) << 8;
     drParams.msduLength += (uint16_t)*pData++;
