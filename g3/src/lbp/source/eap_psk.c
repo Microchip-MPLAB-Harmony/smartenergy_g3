@@ -194,12 +194,12 @@ bool EAP_PSK_DecodeMessage1(
 }
 
 uint16_t EAP_PSK_EncodeMessage2(
-    const EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_CONTEXT *pPskContext,
     uint8_t identifier,
-    const EAP_PSK_RAND *pRandS,
-    const EAP_PSK_RAND *pRandP,
-    const EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
-    const EAP_PSK_NETWORK_ACCESS_ID_P *pIdP,
+    EAP_PSK_RAND *pRandS,
+    EAP_PSK_RAND *pRandP,
+    EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
+    EAP_PSK_NETWORK_ACCESS_ID_P *pIdP,
     uint16_t memoryBufferLength,
     uint8_t *pMemoryBuffer
     )
@@ -227,16 +227,10 @@ uint16_t EAP_PSK_EncodeMessage2(
         (void) memcpy(&seed[seedUsedSize], pRandP->value, sizeof(pRandP->value));
         seedUsedSize += (uint16_t)sizeof(pRandP->value);
 
-        ret = CIPHER_Wrapper_CmacStart(pPskContext->ak.value, sizeof(pPskContext->ak.value));
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacStart returned %d\r\n", ret);
+        ret = CIPHER_Wrapper_AesCmacDirect(seed, seedUsedSize, macP, pPskContext->ak.value);
+        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_AesCmacDirect returned %d\r\n", ret);
 
-        ret = CIPHER_Wrapper_CmacUpdate(seed, seedUsedSize);
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacUpdate returned %d\r\n", ret);
-
-        ret = CIPHER_Wrapper_CmacFinish(macP);
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacFinish returned %d\r\n", ret);
-
-        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pPskContext->ak.value, sizeof(pPskContext->ak.value), "Seed ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pPskContext->ak.value, sizeof(pPskContext->ak.value), "AK ");
         SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, seed, seedUsedSize, "Seed ");
         SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, macP, sizeof(macP), "MacP ");
 
@@ -298,14 +292,8 @@ bool EAP_PSK_DecodeMessage3(
         (void) memcpy(&seed[seedUsedSize], pPskContext->randP.value, sizeof(pPskContext->randP.value));
         seedUsedSize += (uint16_t)sizeof(pPskContext->randP.value);
 
-        ret = CIPHER_Wrapper_CmacStart(pPskContext->ak.value, sizeof(pPskContext->ak.value));
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacStart returned %d\r\n", ret);
-
-        ret = CIPHER_Wrapper_CmacUpdate(seed, seedUsedSize);
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacUpdate returned %d\r\n", ret);
-
-        ret = CIPHER_Wrapper_CmacFinish(macS);
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacFinish returned %d\r\n", ret);
+        ret = CIPHER_Wrapper_AesCmacDirect(seed, seedUsedSize, macS, pPskContext->ak.value);
+        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_AesCmacDirect returned %d\r\n", ret);
 
         if (memcmp(macS, &pMessage[sizeof(pRandS->value)], sizeof(macS)) == 0)
         {
@@ -550,8 +538,8 @@ bool EAP_PSK_DecodeMessage2(
     bool aribBand,
     uint16_t messageLength,
     uint8_t *pMessage,
-    const EAP_PSK_CONTEXT *pPskContext,
-    const EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
+    EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
     EAP_PSK_RAND *pRandS,
     EAP_PSK_RAND *pRandP
     )
@@ -622,14 +610,8 @@ bool EAP_PSK_DecodeMessage2(
         (void) memcpy(&seed[seedOffset], pRandP->value, sizeof(pRandP->value));
         seedOffset += (uint16_t)sizeof(pRandP->value);
 
-        ret = CIPHER_Wrapper_CmacStart(pPskContext->ak.value, sizeof(pPskContext->ak.value));
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacStart returned %d\r\n", ret);
-
-        ret = CIPHER_Wrapper_CmacUpdate(seed, seedSize);
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacUpdate returned %d\r\n", ret);
-
-        ret = CIPHER_Wrapper_CmacFinish(expectedMacP);
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacFinish returned %d\r\n", ret);
+        ret = CIPHER_Wrapper_AesCmacDirect(seed, seedSize, expectedMacP, pPskContext->ak.value);
+        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_AesCmacDirect returned %d\r\n", ret);
 
         SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "decodeOffset: %d, seedOffset: %d, seedSize: %d, idP.size: %d, pIdS->size: %d\n\r\n", decodeOffset, seedOffset, seedSize,
                 idP.size, pIdS->size);
@@ -650,11 +632,11 @@ bool EAP_PSK_DecodeMessage2(
  *
  **********************************************************************************************************************/
 uint16_t EAP_PSK_EncodeMessage3(
-    const EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_CONTEXT *pPskContext,
     uint8_t identifier,
-    const EAP_PSK_RAND *pRandS,
-    const EAP_PSK_RAND *pRandP,
-    const EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
+    EAP_PSK_RAND *pRandS,
+    EAP_PSK_RAND *pRandP,
+    EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
     uint32_t nonce,
     uint8_t PChannelResult,
     uint16_t PChannelDataLength,
@@ -679,14 +661,8 @@ uint16_t EAP_PSK_EncodeMessage3(
         (void) memcpy(seed, pIdS->value, pIdS->size);
         (void) memcpy(&seed[pIdS->size], pRandP->value, sizeof(pRandP->value));
 
-        ret = CIPHER_Wrapper_CmacStart(pPskContext->ak.value, sizeof(pPskContext->ak.value));
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacStart returned %d\r\n", ret);
-
-        ret = CIPHER_Wrapper_CmacUpdate(seed, seedSize);
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacUpdate returned %d\r\n", ret);
-
-        ret = CIPHER_Wrapper_CmacFinish(macS);
-        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_CmacFinish returned %d\r\n", ret);
+        ret = CIPHER_Wrapper_AesCmacDirect(seed, seedSize, macS, pPskContext->ak.value);
+        SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_AesCmacDirect returned %d\r\n", ret);
 
         (void)(ret);
 

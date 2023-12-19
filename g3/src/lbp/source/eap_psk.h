@@ -418,12 +418,12 @@ bool EAP_PSK_DecodeMessage1(
 // *****************************************************************************
 /* Function:
     uint16_t EAP_PSK_EncodeMessage2(
-        const EAP_PSK_CONTEXT *pPskContext,
+        EAP_PSK_CONTEXT *pPskContext,
         uint8_t identifier,
-        const EAP_PSK_RAND *pRandS,
-        const EAP_PSK_RAND *pRandP,
-        const EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
-        const EAP_PSK_NETWORK_ACCESS_ID_P *pIdP,
+        EAP_PSK_RAND *pRandS,
+        EAP_PSK_RAND *pRandP,
+        EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
+        EAP_PSK_NETWORK_ACCESS_ID_P *pIdP,
         uint16_t memoryBufferLength,
         uint8_t *pMemoryBuffer
         )
@@ -489,12 +489,12 @@ bool EAP_PSK_DecodeMessage1(
     None.
 */
 uint16_t EAP_PSK_EncodeMessage2(
-    const EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_CONTEXT *pPskContext,
     uint8_t identifier,
-    const EAP_PSK_RAND *pRandS,
-    const EAP_PSK_RAND *pRandP,
-    const EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
-    const EAP_PSK_NETWORK_ACCESS_ID_P *pIdP,
+    EAP_PSK_RAND *pRandS,
+    EAP_PSK_RAND *pRandP,
+    EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
+    EAP_PSK_NETWORK_ACCESS_ID_P *pIdP,
     uint16_t memoryBufferLength,
     uint8_t *pMemoryBuffer
     );
@@ -504,7 +504,7 @@ uint16_t EAP_PSK_EncodeMessage2(
     bool EAP_PSK_DecodeMessage3(
         uint16_t messageLength,
         uint8_t *pMessage,
-        const EAP_PSK_CONTEXT *pPskContext,
+        EAP_PSK_CONTEXT *pPskContext,
         uint16_t headerLength,
         uint8_t *pHeader,
         EAP_PSK_RAND *pRandS,
@@ -575,7 +575,7 @@ uint16_t EAP_PSK_EncodeMessage2(
 bool EAP_PSK_DecodeMessage3(
     uint16_t messageLength,
     uint8_t *pMessage,
-    const EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_CONTEXT *pPskContext,
     uint16_t headerLength,
     uint8_t *pHeader,
     EAP_PSK_RAND *pRandS,
@@ -736,8 +736,8 @@ uint16_t EAP_PSK_EncodeMessage1(
         bool aribBand,
         uint16_t messageLength,
         uint8_t *pMessage,
-        const EAP_PSK_CONTEXT *pPskContext,
-        const EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
+        EAP_PSK_CONTEXT *pPskContext,
+        EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
         EAP_PSK_RAND *pRandS,
         EAP_PSK_RAND *pRandP
         )
@@ -803,8 +803,8 @@ bool EAP_PSK_DecodeMessage2(
     bool aribBand,
     uint16_t messageLength,
     uint8_t *pMessage,
-    const EAP_PSK_CONTEXT *pPskContext,
-    const EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
+    EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
     EAP_PSK_RAND *pRandS,
     EAP_PSK_RAND *pRandP
     );
@@ -812,11 +812,11 @@ bool EAP_PSK_DecodeMessage2(
 // *****************************************************************************
 /* Function:
     uint16_t EAP_PSK_EncodeMessage3(
-        const EAP_PSK_CONTEXT *pPskContext,
+        EAP_PSK_CONTEXT *pPskContext,
         uint8_t identifier,
-        const EAP_PSK_RAND *pRandS,
-        const EAP_PSK_RAND *pRandP,
-        const EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
+        EAP_PSK_RAND *pRandS,
+        EAP_PSK_RAND *pRandP,
+        EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
         uint32_t nonce,
         uint8_t PChannelResult,
         uint16_t PChannelDataLength,
@@ -930,11 +930,11 @@ bool EAP_PSK_DecodeMessage2(
     None.
 */
 uint16_t EAP_PSK_EncodeMessage3(
-    const EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_CONTEXT *pPskContext,
     uint8_t identifier,
-    const EAP_PSK_RAND *pRandS,
-    const EAP_PSK_RAND *pRandP,
-    const EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
+    EAP_PSK_RAND *pRandS,
+    EAP_PSK_RAND *pRandP,
+    EAP_PSK_NETWORK_ACCESS_ID_S *pIdS,
     uint32_t nonce,
     uint8_t PChannelResult,
     uint16_t PChannelDataLength,
