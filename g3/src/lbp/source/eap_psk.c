@@ -75,20 +75,15 @@ Microchip or any third party.
 // *****************************************************************************
 // *****************************************************************************
 
-void EAP_PSK_Initialize(
-    const EAP_PSK_KEY *pKey,
-    EAP_PSK_CONTEXT *pPskContext
-    )
+void EAP_PSK_Initialize(EAP_PSK_KEY *pKey, EAP_PSK_CONTEXT *pPskContext)
 {
     uint8_t block[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     uint8_t res[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
     (void) memset(pPskContext, 0, sizeof(EAP_PSK_CONTEXT));
 
-    /* Initialize the AES */
-    AES_Wrapper_ContextInit();
-    /* Trigger the AES */
-    AES_Wrapper_SetEncryptKey(pKey->value, 16);
+    /* Set key and trigger the AES ECB */
+    AES_Wrapper_SetEncryptEcbKey(pKey->value);
     AES_Wrapper_EncryptEcb(block, res);
 
     /* Xor with c1 = "1" */
@@ -103,23 +98,18 @@ void EAP_PSK_Initialize(
 
     /* Generate KDK */
     AES_Wrapper_EncryptEcb(res, pPskContext->kdk.value);
-
-    /* Free the AES */
-    AES_Wrapper_ContextFree();
 }
 
 void EAP_PSK_InitializeTEKMSK(
-    const EAP_PSK_RAND *pRandP,
+    EAP_PSK_RAND *pRandP,
     EAP_PSK_CONTEXT *pPskContext
     )
 {
     uint8_t res[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     uint8_t idx;
 
-    /* Initialize the AES */
-    AES_Wrapper_ContextInit();
-    /* Trigger the AES */
-    AES_Wrapper_SetEncryptKey(pPskContext->kdk.value, 16);
+    /* Set key and trigger the AES ECB */
+    AES_Wrapper_SetEncryptEcbKey(pPskContext->kdk.value);
     AES_Wrapper_EncryptEcb(pRandP->value, res);
 
     /* Xor with c1 = "1" */
@@ -141,9 +131,6 @@ void EAP_PSK_InitializeTEKMSK(
         /* Undo xor to generate next block*/
         res[15] ^= (idx + 2U);
     }
-
-    /* Free the AES */
-    AES_Wrapper_ContextFree();
 }
 
 bool EAP_PSK_DecodeMessage(

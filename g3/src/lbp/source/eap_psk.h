@@ -216,10 +216,7 @@ typedef struct
 
 // *****************************************************************************
 /* Function:
-    void EAP_PSK_Initialize(
-        const EAP_PSK_KEY *pKey,
-        EAP_PSK_CONTEXT *pPskContext
-        )
+    void EAP_PSK_Initialize(EAP_PSK_KEY *pKey, EAP_PSK_CONTEXT *pPskContext)
 
   Summary:
     Initializes EAP-PSK module.
@@ -249,15 +246,12 @@ typedef struct
   Remarks:
     None.
 */
-void EAP_PSK_Initialize(
-    const EAP_PSK_KEY *pKey,
-    EAP_PSK_CONTEXT *pPskContext
-    );
+void EAP_PSK_Initialize(EAP_PSK_KEY *pKey, EAP_PSK_CONTEXT *pPskContext);
 
 // *****************************************************************************
 /* Function:
     void EAP_PSK_InitializeTEKMSK(
-        const EAP_PSK_RAND *pRandP,
+        EAP_PSK_RAND *pRandP,
         EAP_PSK_CONTEXT *pPskContext
         )
 
@@ -292,7 +286,7 @@ void EAP_PSK_Initialize(
     None.
 */
 void EAP_PSK_InitializeTEKMSK(
-    const EAP_PSK_RAND *pRandP,
+    EAP_PSK_RAND *pRandP,
     EAP_PSK_CONTEXT *pPskContext
     );
 
