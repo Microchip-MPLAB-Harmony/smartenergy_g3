@@ -588,9 +588,9 @@ bool EAP_PSK_DecodeMessage3(
 // *****************************************************************************
 /* Function:
     uint16_t EAP_PSK_EncodeMessage4(
-        const EAP_PSK_CONTEXT *pPskContext,
+        EAP_PSK_CONTEXT *pPskContext,
         uint8_t identifier,
-        const EAP_PSK_RAND *pRandS,
+        EAP_PSK_RAND *pRandS,
         uint32_t nonce,
         uint8_t PChannelResult,
         uint16_t PChannelDataLength,
@@ -665,9 +665,9 @@ bool EAP_PSK_DecodeMessage3(
     None.
 */
 uint16_t EAP_PSK_EncodeMessage4(
-    const EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_CONTEXT *pPskContext,
     uint8_t identifier,
-    const EAP_PSK_RAND *pRandS,
+    EAP_PSK_RAND *pRandS,
     uint32_t nonce,
     uint8_t PChannelResult,
     uint16_t PChannelDataLength,
@@ -948,7 +948,7 @@ uint16_t EAP_PSK_EncodeMessage3(
     bool EAP_PSK_DecodeMessage4(
         uint16_t messageLength,
         uint8_t *pMessage,
-        const EAP_PSK_CONTEXT *pPskContext,
+        EAP_PSK_CONTEXT *pPskContext,
         uint16_t headerLength,
         uint8_t *pHeader,
         EAP_PSK_RAND *pRandS,
@@ -1020,7 +1020,7 @@ uint16_t EAP_PSK_EncodeMessage3(
 bool EAP_PSK_DecodeMessage4(
     uint16_t messageLength,
     uint8_t *pMessage,
-    const EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_CONTEXT *pPskContext,
     uint16_t headerLength,
     uint8_t *pHeader,
     EAP_PSK_RAND *pRandS,

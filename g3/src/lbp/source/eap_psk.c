@@ -229,6 +229,7 @@ uint16_t EAP_PSK_EncodeMessage2(
 
         ret = CIPHER_Wrapper_AesCmacDirect(seed, seedUsedSize, macP, pPskContext->ak.value);
         SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_AesCmacDirect returned %d\r\n", ret);
+        (void)(ret);
 
         SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pPskContext->ak.value, sizeof(pPskContext->ak.value), "AK ");
         SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, seed, seedUsedSize, "Seed ");
@@ -254,8 +255,6 @@ uint16_t EAP_PSK_EncodeMessage2(
         /* Update the EAP header length field */
         pMemoryBuffer[2] = (uint8_t)(encodeSize >> 8);
         pMemoryBuffer[3] = (uint8_t)encodeSize;
-
-        (void)(ret);
     }
 
     return encodeSize;
@@ -264,7 +263,7 @@ uint16_t EAP_PSK_EncodeMessage2(
 bool EAP_PSK_DecodeMessage3(
     uint16_t messageLength,
     uint8_t *pMessage,
-    const EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_CONTEXT *pPskContext,
     uint16_t headerLength,
     uint8_t *pHeader,
     EAP_PSK_RAND *pRandS,
@@ -294,83 +293,76 @@ bool EAP_PSK_DecodeMessage3(
 
         ret = CIPHER_Wrapper_AesCmacDirect(seed, seedUsedSize, macS, pPskContext->ak.value);
         SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_AesCmacDirect returned %d\r\n", ret);
+        (void)(ret);
 
         if (memcmp(macS, &pMessage[sizeof(pRandS->value)], sizeof(macS)) == 0)
         {
+            uint8_t auxNonce[16];
+            uint8_t *pAuxNonce = &pMessage[32];
+            uint8_t *pTag = &pMessage[36];
+            uint8_t *pProtectedData = &pMessage[52];
+            uint16_t protectedDataLength = messageLength - 52U;
+
+            /* Prepare 16 bytes nonce */
+            /* Nonce is big endian */
+            (void)memset(auxNonce, 0, sizeof(auxNonce));
+            auxNonce[12] = pAuxNonce[0];
+            auxNonce[13] = pAuxNonce[1];
+            auxNonce[14] = pAuxNonce[2];
+            auxNonce[15] = pAuxNonce[3];
+
+            /* The protected data is the 22 bytes header of the EAP message. */
+            /* The G3 specifies a slightly modified EAP header but in the same time */
+            /* the specification requires to compute the authentication tag over the */
+            /* on the original EAP header */
+            /* So we change the header to make it "EAP compliant", we compute the */
+            /* auth tag and then we change back the header */
+
+            /* Right shift Code field with 2 bits as indicated in the EAP specification */
+            pHeader[0] >>= 2;
+
+            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pPskContext->tek.value, sizeof(pPskContext->tek.value), "TEK: ");
+            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, auxNonce, 16U, "Nonce/IV: ");
+            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pHeader, headerLength, "Header: ");
+            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-encr: ");
+            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pTag, 16U, "Tag: ");
+
             /* Decrypt P-CHANNEL */
             /* P-CHANNEL uses the TEK key */
-            if (CIPHER_WRAPPER_RETURN_GOOD ==
-                    CIPHER_Wrapper_EaxInitKey(pPskContext->tek.value, sizeof(pPskContext->tek.value)))
+            /* CIPHER_WRAPPER_RETURN_GOOD is returned if the input tag matches that for the decrypted message */
+            if (CIPHER_WRAPPER_RETURN_GOOD == CIPHER_Wrapper_AesEaxDecrypt(
+                                                  pProtectedData,          /* the message buffer        */
+                                                  protectedDataLength,     /* and its length in bytes   */
+                                                  auxNonce,                /* the initialization vector */
+                                                  16U,                     /* and its length in bytes   */
+                                                  pHeader,                 /* the header buffer         */
+                                                  headerLength,            /* and its length in bytes   */
+                                                  pTag,                    /* the buffer for the tag    */
+                                                  16U,                     /* and its length in bytes   */
+                                                  pPskContext->tek.value)) /* the key                   */
             {
-                uint8_t auxNonce[16];
-                uint8_t *pAuxNonce = &pMessage[32];
-                uint8_t *pTag = &pMessage[36];
-                uint8_t *pProtectedData = &pMessage[52];
-                uint16_t protectedDataLength = messageLength - 52U;
+                /* Retrieve protected parameters */
+                *pPChannelResult = ((pProtectedData[0] & EAP_P_CHANNEL_RESULT_MASK) >> 6);
 
-                /* Prepare 16 bytes nonce */
-                /* Nonce is big endian */
-                (void) memset(auxNonce, 0, sizeof(auxNonce));
-                auxNonce[12] = pAuxNonce[0];
-                auxNonce[13] = pAuxNonce[1];
-                auxNonce[14] = pAuxNonce[2];
-                auxNonce[15] = pAuxNonce[3];
+                *pPChannelDataLength = protectedDataLength - 1U;
+                *pPChannelData = &pProtectedData[1];
 
-                /* The protected data is the 22 bytes header of the EAP message. */
-                /* The G3 specifies a slightly modified EAP header but in the same time */
-                /* the specification requires to compute the authentication tag over the */
-                /* on the original EAP header */
-                /* So we change the header to make it "EAP compliant", we compute the */
-                /* auth tag and then we change back the header */
+                ((uint8_t *)pNonce)[0] = pAuxNonce[3];
+                ((uint8_t *)pNonce)[1] = pAuxNonce[2];
+                ((uint8_t *)pNonce)[2] = pAuxNonce[1];
+                ((uint8_t *)pNonce)[3] = pAuxNonce[0];
 
-                /* Right shift Code field with 2 bits as indicated in the EAP specification */
-                pHeader[0] >>= 2;
-
-                SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pPskContext->tek.value, sizeof(pPskContext->tek.value), "TEK: ");
-                SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, auxNonce, 16U, "Nonce/IV: ");
-                SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pHeader, headerLength, "Header: ");
-                SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-encr: ");
-                SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pTag, 16U, "Tag: ");
-
-                /* CIPHER_WRAPPER_RETURN_GOOD is returned if the input tag matches that for the decrypted message */
-                if (CIPHER_WRAPPER_RETURN_GOOD ==
-                        CIPHER_Wrapper_EaxDecrypt(auxNonce, /* the initialization vector */
-                            16U, /* and its length in bytes */
-                            pHeader, /* the header buffer */
-                            headerLength, /* and its length in bytes */
-                            pProtectedData, /* the message buffer */
-                            protectedDataLength, /* and its length in bytes */
-                            pTag, /* the buffer for the tag */
-                            16U) /* and its length in bytes */
-                            )
-                {
-                    /* Retrieve protected parameters */
-                    *pPChannelResult = ((pProtectedData[0] & EAP_P_CHANNEL_RESULT_MASK) >> 6);
-
-                    *pPChannelDataLength = protectedDataLength - 1U;
-                    *pPChannelData = &pProtectedData[1];
-
-                    ((uint8_t *)pNonce)[0] = pAuxNonce[3];
-                    ((uint8_t *)pNonce)[1] = pAuxNonce[2];
-                    ((uint8_t *)pNonce)[2] = pAuxNonce[1];
-                    ((uint8_t *)pNonce)[3] = pAuxNonce[0];
-
-                    retVal = true;
-                }
-                else
-                {
-                    SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "Decode FAILED\r\n");
-                }
-
-                SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-plain: ");
-
-                /* Fix EAP header: left shift Code field with 2 bits as indicated in the G3 specification */
-                pHeader[0] <<= 2;
-
-                (void) CIPHER_Wrapper_EaxEnd();
+                retVal = true;
+            }
+            else
+            {
+                SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "Decode FAILED\r\n");
             }
 
-            (void)(ret);
+            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-plain: ");
+
+            /* Fix EAP header: left shift Code field with 2 bits as indicated in the G3 specification */
+            pHeader[0] <<= 2;
         }
         else
         {
@@ -383,9 +375,9 @@ bool EAP_PSK_DecodeMessage3(
 }
 
 uint16_t EAP_PSK_EncodeMessage4(
-    const EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_CONTEXT *pPskContext,
     uint8_t identifier,
-    const EAP_PSK_RAND *pRandS,
+    EAP_PSK_RAND *pRandS,
     uint32_t nonce,
     uint8_t PChannelResult,
     uint16_t PChannelDataLength,
@@ -445,56 +437,46 @@ uint16_t EAP_PSK_EncodeMessage4(
 
         encodeSize += protectedDataLength;
 
+        /* Update the EAP header length field */
+        pMemoryBuffer[2] = (uint8_t)(encodeSize >> 8);
+        pMemoryBuffer[3] = (uint8_t)encodeSize;
+
+        /* The protected data is the 22 bytes header of the EAP message. */
+        /* The G3 specifies a slightly modified EAP header but in the same time */
+        /* the specification requires to compute the authentication tag over the */
+        /* the original EAP header */
+        /* So we change the header to make it "EAP compliant", we compute the */
+        /* auth tag and then we change back the header */
+
+        /* Right shift Code field with 2 bits as indicated in the EAP specification */
+        pMemoryBuffer[0] >>= 2;
+
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pPskContext->tek.value, sizeof(pPskContext->tek.value), "TEK: ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, auxNonce, 16U, "Nonce/IV: ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pMemoryBuffer, 22U, "Header: ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-plain: ");
+
         /* Protect data in P-Channel (just the last byte) */
         /* P-CHANNEL uses the TEK key */
-        if (CIPHER_WRAPPER_RETURN_GOOD ==
-                CIPHER_Wrapper_EaxInitKey(pPskContext->tek.value, sizeof(pPskContext->tek.value)))
-        {
-            /* Update the EAP header length field */
-            pMemoryBuffer[2] = (uint8_t)(encodeSize >> 8);
-            pMemoryBuffer[3] = (uint8_t)encodeSize;
-
-            /* The protected data is the 22 bytes header of the EAP message. */
-            /* The G3 specifies a slightly modified EAP header but in the same time */
-            /* the specification requires to compute the authentication tag over the */
-            /* the original EAP header */
-            /* So we change the header to make it "EAP compliant", we compute the */
-            /* auth tag and then we change back the header */
-
-            /* Right shift Code field with 2 bits as indicated in the EAP specification */
-            pMemoryBuffer[0] >>= 2;
-
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pPskContext->tek.value, sizeof(pPskContext->tek.value), "TEK: ");
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, auxNonce, 16U, "Nonce/IV: ");
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pMemoryBuffer, 22U, "Header: ");
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-plain: ");
-
-            if (CIPHER_WRAPPER_RETURN_GOOD != CIPHER_Wrapper_EaxEncrypt(
-                    auxNonce, /* the initialization vector    */
-                    16U, /* and its length in bytes      */
-                    pMemoryBuffer, /* the header buffer            */
-                    22U, /* and its length in bytes      */
-                    pProtectedData, /* the message buffer           */
-                    protectedDataLength, /* and its length in bytes      */
-                    pTag, /* the buffer for the tag       */
-                    16U) /* and its length in bytes      */
-                    )
-            {
-                encodeSize = 0;
-            }
-
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-encr: ");
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pTag, 16U, "Tag: ");
-
-            /* Fix EAP header: left shift Code field with 2 bits as indicated in the G3 specification */
-            pMemoryBuffer[0] <<= 2;
-
-            (void) CIPHER_Wrapper_EaxEnd();
-        }
-        else
+        if (CIPHER_WRAPPER_RETURN_GOOD != CIPHER_Wrapper_AesEaxEncrypt(
+                                              pProtectedData,          /* the message buffer        */
+                                              protectedDataLength,     /* and its length in bytes   */
+                                              auxNonce,                /* the initialization vector */
+                                              16U,                     /* and its length in bytes   */
+                                              pMemoryBuffer,           /* the header buffer         */
+                                              22U,                     /* and its length in bytes   */
+                                              pTag,                    /* the buffer for the tag    */
+                                              16U,                     /* and its length in bytes   */
+                                              pPskContext->tek.value)) /* the key                   */
         {
             encodeSize = 0U;
         }
+
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-encr: ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pTag, 16U, "Tag: ");
+
+        /* Fix EAP header: left shift Code field with 2 bits as indicated in the G3 specification */
+        pMemoryBuffer[0] <<= 2;
     }
 
     return encodeSize;
@@ -663,7 +645,6 @@ uint16_t EAP_PSK_EncodeMessage3(
 
         ret = CIPHER_Wrapper_AesCmacDirect(seed, seedSize, macS, pPskContext->ak.value);
         SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "CIPHER_Wrapper_AesCmacDirect returned %d\r\n", ret);
-
         (void)(ret);
 
         /* Encode the EAP header; length field will be set at the end of the block */
@@ -711,56 +692,46 @@ uint16_t EAP_PSK_EncodeMessage3(
 
         encodeSize += protectedDataLength;
 
+        /* Npdate the EAP header length field */
+        pMemoryBuffer[2] = (uint8_t)(encodeSize >> 8);
+        pMemoryBuffer[3] = (uint8_t)encodeSize;
+
+        /* The protected data is the 22 bytes header of the EAP message. */
+        /* The G3 specifies a slightly modified EAP header but in the same time */
+        /* the specification requires to compute the authentication tag over the */
+        /* on the original EAP header */
+        /* So we change the header to make it "EAP compliant", we compute the */
+        /* auth tag and then we change back the header */
+
+        /* right shift Code field with 2 bits as indicated in the EAP specification */
+        pMemoryBuffer[0] >>= 2;
+
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pPskContext->tek.value, sizeof(pPskContext->tek.value), "TEK: ");
+
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, auxNonce, 16U, "Nonce/IV: ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pMemoryBuffer, 22U, "Header: ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-plain: ");
+
         /* Encrypt P-Channel using TEK key */
-        if (CIPHER_WRAPPER_RETURN_GOOD ==
-                CIPHER_Wrapper_EaxInitKey(pPskContext->tek.value, sizeof(pPskContext->tek.value)))
-        {
-            /* Npdate the EAP header length field */
-            pMemoryBuffer[2] = (uint8_t)(encodeSize >> 8);
-            pMemoryBuffer[3] = (uint8_t)encodeSize;
-
-            /* The protected data is the 22 bytes header of the EAP message. */
-            /* The G3 specifies a slightly modified EAP header but in the same time */
-            /* the specification requires to compute the authentication tag over the */
-            /* on the original EAP header */
-            /* So we change the header to make it "EAP compliant", we compute the */
-            /* auth tag and then we change back the header */
-
-            /* right shift Code field with 2 bits as indicated in the EAP specification */
-            pMemoryBuffer[0] >>= 2;
-
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pPskContext->tek.value, sizeof(pPskContext->tek.value), "TEK: ");
-
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, auxNonce, 16U, "Nonce/IV: ");
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pMemoryBuffer, 22U, "Header: ");
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-plain: ");
-
-            if (CIPHER_WRAPPER_RETURN_GOOD != CIPHER_Wrapper_EaxEncrypt(
-                    auxNonce, /* the initialization vector    */
-                    16U, /* and its length in bytes      */
-                    pMemoryBuffer, /* the header buffer            */
-                    22U, /* and its length in bytes      */
-                    pProtectedData, /* the message buffer           */
-                    protectedDataLength, /* and its length in bytes      */
-                    pTag, /* the buffer for the tag       */
-                    16U) /* and its length in bytes      */
-                    )
-            {
-                encodeSize = 0;
-            }
-
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-encr: ");
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pTag, 16U, "Tag: ");
-
-            /* Fix EAP header: left shift Code field with 2 bits as indicated in the G3 specification */
-            pMemoryBuffer[0] <<= 2;
-
-            (void) CIPHER_Wrapper_EaxEnd();
-        }
-        else
+        if (CIPHER_WRAPPER_RETURN_GOOD != CIPHER_Wrapper_AesEaxEncrypt(
+                                              pProtectedData,          /* the message buffer        */
+                                              protectedDataLength,     /* and its length in bytes   */
+                                              auxNonce,                /* the initialization vector */
+                                              16U,                     /* and its length in bytes   */
+                                              pMemoryBuffer,           /* the header buffer         */
+                                              22U,                     /* and its length in bytes   */
+                                              pTag,                    /* the buffer for the tag    */
+                                              16U,                     /* and its length in bytes   */
+                                              pPskContext->tek.value)) /* the key                   */
         {
             encodeSize = 0U;
         }
+
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-encr: ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pTag, 16U, "Tag: ");
+
+        /* Fix EAP header: left shift Code field with 2 bits as indicated in the G3 specification */
+        pMemoryBuffer[0] <<= 2;
     }
 
     return encodeSize;
@@ -769,7 +740,7 @@ uint16_t EAP_PSK_EncodeMessage3(
 bool EAP_PSK_DecodeMessage4(
     uint16_t messageLength,
     uint8_t *pMessage,
-    const EAP_PSK_CONTEXT *pPskContext,
+    EAP_PSK_CONTEXT *pPskContext,
     uint16_t headerLength,
     uint8_t *pHeader,
     EAP_PSK_RAND *pRandS,
@@ -789,72 +760,67 @@ bool EAP_PSK_DecodeMessage4(
     if (messageLength >= 41U)
     {
         (void) memcpy(pRandS->value, pMessage, sizeof(pRandS->value));
+
+        /* Prepare 16 bytes nonce */
+        /* Nonce is big endian */
+        (void)memset(auxNonce, 0, sizeof(auxNonce));
+        auxNonce[12] = pAuxNonce[0];
+        auxNonce[13] = pAuxNonce[1];
+        auxNonce[14] = pAuxNonce[2];
+        auxNonce[15] = pAuxNonce[3];
+
+        /* The protected data is the 22 bytes header of the EAP message. */
+        /* The G3 specifies a slightly modified EAP header but in the same time */
+        /* the specification requires to compute the authentication tag over the */
+        /* on the original EAP header */
+        /* So we change the header to make it "EAP compliant", we compute the */
+        /* auth tag and then we change back the header */
+
+        /* right shift Code field with 2 bits as indicated in the EAP specification */
+        pHeader[0] >>= 2;
+
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pPskContext->tek.value, sizeof(pPskContext->tek.value), "TEK: ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, auxNonce, 16U, "Nonce/IV: ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pHeader, headerLength, "Header: ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-encr: ");
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pTag, 16U, "Tag: ");
+
         /* Decrypt P-CHANNEL */
         /* P-CHANNEL uses the TEK key */
-        if (CIPHER_WRAPPER_RETURN_GOOD ==
-                CIPHER_Wrapper_EaxInitKey(pPskContext->tek.value, sizeof(pPskContext->tek.value)))
+        /* CIPHER_WRAPPER_RETURN_GOOD is returned if the input tag matches that for the decrypted message */
+        if (CIPHER_WRAPPER_RETURN_GOOD == CIPHER_Wrapper_AesEaxDecrypt(
+                                              pProtectedData,          /* the message buffer        */
+                                              protectedDataLength,     /* and its length in bytes   */
+                                              auxNonce,                /* the initialization vector */
+                                              16U,                     /* and its length in bytes   */
+                                              pHeader,                 /* the header buffer         */
+                                              headerLength,            /* and its length in bytes   */
+                                              pTag,                    /* the buffer for the tag    */
+                                              16U,                     /* and its length in bytes   */
+                                              pPskContext->tek.value)) /* the key                   */
         {
-            /* Prepare 16 bytes nonce */
-            /* Nonce is big endian */
-            (void) memset(auxNonce, 0, sizeof(auxNonce));
-            auxNonce[12] = pAuxNonce[0];
-            auxNonce[13] = pAuxNonce[1];
-            auxNonce[14] = pAuxNonce[2];
-            auxNonce[15] = pAuxNonce[3];
+            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "Decode SUCCESS\r\n");
+            /* Retrieve protected parameters */
+            *pPChannelResult = ((pProtectedData[0] & EAP_P_CHANNEL_RESULT_MASK) >> 6);
+            *pPChannelData = &pProtectedData[1];
+            *pPChannelDataLength = protectedDataLength - 1U;
 
-            /* The protected data is the 22 bytes header of the EAP message. */
-            /* The G3 specifies a slightly modified EAP header but in the same time */
-            /* the specification requires to compute the authentication tag over the */
-            /* on the original EAP header */
-            /* So we change the header to make it "EAP compliant", we compute the */
-            /* auth tag and then we change back the header */
+            ((uint8_t *)pNonce)[0] = pAuxNonce[3];
+            ((uint8_t *)pNonce)[1] = pAuxNonce[2];
+            ((uint8_t *)pNonce)[2] = pAuxNonce[1];
+            ((uint8_t *)pNonce)[3] = pAuxNonce[0];
 
-            /* right shift Code field with 2 bits as indicated in the EAP specification */
-            pHeader[0] >>= 2;
-
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pPskContext->tek.value, sizeof(pPskContext->tek.value), "TEK: ");
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, auxNonce, 16U, "Nonce/IV: ");
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pHeader, headerLength, "Header: ");
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-encr: ");
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pTag, 16U, "Tag: ");
-
-            /* CIPHER_WRAPPER_RETURN_GOOD is returned if the input tag matches that for the decrypted message */
-            if (CIPHER_WRAPPER_RETURN_GOOD == CIPHER_Wrapper_EaxDecrypt(
-                    auxNonce, /* the initialization vector */
-                    16U, /* and its length in bytes */
-                    pHeader, /* the header buffer */
-                    headerLength, /* and its length in bytes */
-                    pProtectedData, /* the message buffer */
-                    protectedDataLength, /* and its length in bytes */
-                    pTag, /* the buffer for the tag */
-                    16U) /* and its length in bytes */
-                    )
-            {
-                SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "Decode SUCCESS\r\n");
-                /* Retrieve protected parameters */
-                *pPChannelResult = ((pProtectedData[0] & EAP_P_CHANNEL_RESULT_MASK) >> 6);
-                *pPChannelData = &pProtectedData[1];
-                *pPChannelDataLength = protectedDataLength - 1U;
-
-                ((uint8_t *)pNonce)[0] = pAuxNonce[3];
-                ((uint8_t *)pNonce)[1] = pAuxNonce[2];
-                ((uint8_t *)pNonce)[2] = pAuxNonce[1];
-                ((uint8_t *)pNonce)[3] = pAuxNonce[0];
-
-                retVal = true;
-            }
-            else
-            {
-                SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "Decode FAILED\r\n");
-            }
-
-            SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-plain: ");
-
-            /* Fix EAP header: left shift Code field with 2 bits as indicated in the G3 specification */
-            pHeader[0] <<= 2;
-
-            (void) CIPHER_Wrapper_EaxEnd();
+            retVal = true;
         }
+        else
+        {
+            SRV_LOG_REPORT_Message(SRV_LOG_REPORT_DEBUG, "Decode FAILED\r\n");
+        }
+
+        SRV_LOG_REPORT_Buffer(SRV_LOG_REPORT_DEBUG, pProtectedData, protectedDataLength, "Data-plain: ");
+
+        /* Fix EAP header: left shift Code field with 2 bits as indicated in the G3 specification */
+        pHeader[0] <<= 2;
     }
 
     return retVal;
