@@ -4,9 +4,18 @@ package:
   version: "v1.0.0"
   type: "api"
   status: "production"
-  required: true
+  required: false
 
   dependencies:
     - name: "smartenergy"
       type: "package"
-      version: "v1.0.0"
+      version: "v1.2.0"
+    - name: "core"
+      type: "package"
+      version: "v3.13.2"
+    - name: "crypto"
+      type: "package"
+      version: "v3.8.0"
+    - name: "wolfssl"
+      type: "package"
+      version: "v5.4.0"
