@@ -71,10 +71,13 @@ def instantiateComponent(g3PalPlcComponent):
     g3PalPlcMacSnifferEnable.setDefaultValue(False)
     g3PalPlcMacSnifferEnable.setHelp(g3_pal_plc_helpkeyword)
 
+    global g3PalPlcPVDDMonitor
     g3PalPlcPVDDMonitor = g3PalPlcComponent.createBooleanSymbol("G3_PAL_PLC_PVDD_MONITOR", None)
     g3PalPlcPVDDMonitor.setLabel("PVDD Monitor")
     g3PalPlcPVDDMonitor.setDefaultValue(False)
     g3PalPlcPVDDMonitor.setHelp(g3_pal_plc_helpkeyword)
+    if Database.getSymbolValue("drvG3MacRt", "DRV_PLC_MODE") == "PL360":
+        g3PalPlcPVDDMonitor.setReadOnly(True)
 
     g3PalPlcDummySymbol = g3PalPlcComponent.createBooleanSymbol("G3_PAL_PLC_DUMMY", None)
     g3PalPlcDummySymbol.setLabel("Dummy")
@@ -122,3 +125,21 @@ def instantiateComponent(g3PalPlcComponent):
     g3PalPlcSystemDefFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_H_INCLUDES")
     g3PalPlcSystemDefFile.setSourcePath("pal/plc/templates/system/definitions.h.ftl")
     g3PalPlcSystemDefFile.setMarkup(True)
+
+# Handle messages from other components
+def handleMessage(messageID, args):
+    global g3PalPlcPVDDMonitor
+    retDict = {}
+
+    if messageID == "PLC_DEVICE":
+        retDict = {"Return": "Success"}
+        plcDevice = args["Device"]
+        if plcDevice == "PL360":
+            g3PalPlcPVDDMonitor.setReadOnly(True)
+            g3PalPlcPVDDMonitor.setValue(False)
+        else:
+            g3PalPlcPVDDMonitor.setReadOnly(False)
+    else:
+        retDict = {"Return": "UnImplemented Command"}
+
+    return retDict
