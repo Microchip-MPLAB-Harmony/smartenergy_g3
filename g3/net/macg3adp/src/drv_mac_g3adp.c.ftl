@@ -67,7 +67,7 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     .TCPIP_MAC_Initialize                   = DRV_G3ADP_MAC_Initialize,
 #if (TCPIP_STACK_MAC_DOWN_OPERATION != 0)
     .TCPIP_MAC_Deinitialize                 = DRV_G3ADP_MAC_Deinitialize,
-    .TCPIP_MAC_Reinitialize                 = DRV_G3ADP_MAC_Reinitialize, 
+    .TCPIP_MAC_Reinitialize                 = NULL, 
 #else
     .TCPIP_MAC_Deinitialize                 = NULL,
     .TCPIP_MAC_Reinitialize                 = NULL,
@@ -464,11 +464,6 @@ void DRV_G3ADP_MAC_Deinitialize(SYS_MODULE_OBJ object)
             pMacDrv->g3AdpMacData.macFlags.val = 0U;
         }
     }
-}
-
-void DRV_G3ADP_MAC_Reinitialize(SYS_MODULE_OBJ object, const SYS_MODULE_INIT * const init)
-{
-    // not supported
 }
 #endif  // (TCPIP_STACK_MAC_DOWN_OPERATION != 0)
 
