@@ -14,28 +14,28 @@
 *******************************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*******************************************************************************
-* Copyright (C) 2024 Microchip Technology Inc. and its subsidiaries.
-*
-* Subject to your compliance with these terms, you may use Microchip software
-* and any derivatives exclusively with Microchip products. It is your
-* responsibility to comply with third party license terms applicable to your
-* use of third party software (including open source software) that may
-* accompany Microchip software.
-*
-* THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
-* EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
-* WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
-* PARTICULAR PURPOSE.
-*
-* IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
-* INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
-* WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
-* BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
-* FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
-* ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
-* THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*******************************************************************************/
+/*
+Copyright (C) 2024, Microchip Technology Inc., and its subsidiaries. All rights reserved.
+
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
+
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 //DOM-IGNORE-END
 
 // *****************************************************************************
@@ -55,7 +55,7 @@
 #include "driver/rf215/drv_rf215_definitions.h"
 #include "pal_rf.h"
 #include "pal_rf_local.h"
-<#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
+<#if G3_PAL_RF_PHY_SNIFFER_EN == true>
 #include "service/usi/srv_usi.h"
 #include "service/rsniffer/srv_rsniffer.h"
 </#if>
@@ -78,31 +78,31 @@ static void lPAL_RF_RxIndCallback(DRV_RF215_RX_INDICATION_OBJ* indObj, uintptr_t
     uint8_t *pData;
     uint16_t len;
     PAL_RF_RX_PARAMETERS rxParameters;
-<#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
+<#if G3_PAL_RF_PHY_SNIFFER_EN == true>
     uint8_t* pRfSnifferData;
     size_t rfSnifferDataSize;
     uint16_t rfPayloadSymbols = 0;
 </#if>
-    
+
     pData = indObj->psdu;
     len = indObj->psduLen;
     rxParameters.timeIniCount = indObj->timeIniCount;
     rxParameters.timeEndCount = indObj->timeIniCount + indObj->ppduDurationCount;
     rxParameters.rssi = indObj->rssiDBm;
     rxParameters.fcsOk = indObj->fcsOk;
-        
+
     if (palRfData.rfPhyHandlers.palRfDataIndication != NULL)
     {
         palRfData.rfPhyHandlers.palRfDataIndication(pData, len, &rxParameters);
     }
 
-<#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
+<#if G3_PAL_RF_PHY_SNIFFER_EN == true>
     // Get payload symbols in the received message
     (void) DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_RX_PAY_SYMBOLS,
             &rfPayloadSymbols);
 
     // Serialize received RF message
-    pRfSnifferData = SRV_RSNIFFER_SerialRxMessage(indObj, &palRfData.rfPhyConfig, 
+    pRfSnifferData = SRV_RSNIFFER_SerialRxMessage(indObj, &palRfData.rfPhyConfig,
             rfPayloadSymbols, &rfSnifferDataSize);
 
     // Send through USI
@@ -117,16 +117,16 @@ static void lPAL_RF_TxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CO
     PAL_RF_PHY_STATUS status = PAL_RF_PHY_ERROR;
     uint64_t timeIniCount;
     uint64_t timeEndCount;
-<#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
+<#if G3_PAL_RF_PHY_SNIFFER_EN == true>
     uint8_t* pRfSnifferData;
     size_t rfSnifferDataSize;
     uint16_t rfPayloadSymbols = 0;
 </#if>
-    
+
     /* Get Frame times */
     timeIniCount = cfmObj->timeIniCount;
     timeEndCount = timeIniCount + cfmObj->ppduDurationCount;
-    
+
     switch(cfmObj->txResult)
     {
         case RF215_TX_SUCCESS:
@@ -163,15 +163,15 @@ static void lPAL_RF_TxCfmCallback (DRV_RF215_TX_HANDLE txHandle, DRV_RF215_TX_CO
         case RF215_TX_ABORTED:
         default:
             status = PAL_RF_PHY_ERROR;
-            break;      
+            break;
     }
-    
+
     if (palRfData.rfPhyHandlers.palRfTxConfirm != NULL)
     {
         palRfData.rfPhyHandlers.palRfTxConfirm(status, timeIniCount, timeEndCount);
     }
 
-<#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
+<#if G3_PAL_RF_PHY_SNIFFER_EN == true>
     // Get payload symbols in the transmitted message
     (void) DRV_RF215_GetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_TX_PAY_SYMBOLS,
             &rfPayloadSymbols);
@@ -198,7 +198,7 @@ static void lPAL_RF_InitCallback(uintptr_t context, SYS_STATUS status)
     }
 
     palRfData.drvRfPhyHandle = DRV_RF215_Open(DRV_RF215_INDEX_0, RF215_TRX_ID_RF09);
-    
+
     if (palRfData.drvRfPhyHandle == DRV_HANDLE_INVALID)
     {
         palRfData.status = PAL_RF_STATUS_ERROR;
@@ -233,11 +233,11 @@ static void lPAL_RF_InitCallback(uintptr_t context, SYS_STATUS status)
             case OFDM_BW_OPT_4:
                 palRfData.rfPhyModSchemeOfdm = OFDM_MCS_2;
                 break;
-            
+
             case OFDM_BW_OPT_3:
                 palRfData.rfPhyModSchemeOfdm = OFDM_MCS_1;
                 break;
-            
+
             case OFDM_BW_OPT_2:
             case OFDM_BW_OPT_1:
             default:
@@ -255,11 +255,11 @@ static void lPAL_RF_InitCallback(uintptr_t context, SYS_STATUS status)
         case OFDM_BW_OPT_4:
             palRfData.rfPhyModScheme = OFDM_MCS_2;
             break;
-        
+
         case OFDM_BW_OPT_3:
             palRfData.rfPhyModScheme = OFDM_MCS_1;
             break;
-        
+
         case OFDM_BW_OPT_2:
         case OFDM_BW_OPT_1:
         default:
@@ -277,7 +277,7 @@ static void lPAL_RF_InitCallback(uintptr_t context, SYS_STATUS status)
 // *****************************************************************************
 // *****************************************************************************
 
-SYS_MODULE_OBJ PAL_RF_Initialize(const SYS_MODULE_INDEX index, 
+SYS_MODULE_OBJ PAL_RF_Initialize(const SYS_MODULE_INDEX index,
         const SYS_MODULE_INIT * const init)
 {
     /* MISRA C-2012 deviation block start */
@@ -322,13 +322,13 @@ SYS_MODULE_OBJ PAL_RF_Initialize(const SYS_MODULE_INDEX index,
 }
 
 PAL_RF_HANDLE PAL_RF_HandleGet(const SYS_MODULE_INDEX index)
-{    
+{
     /* Check Single instance */
     if (index != PAL_RF_PHY_INDEX)
     {
         return PAL_RF_HANDLE_INVALID;
     }
-    
+
     /* Check previously initialized */
     if (palRfData.status == PAL_RF_STATUS_UNINITIALIZED)
     {
@@ -344,53 +344,53 @@ PAL_RF_STATUS PAL_RF_Status(SYS_MODULE_OBJ object)
     {
         return PAL_RF_STATUS_INVALID_OBJECT;
     }
-    
+
     return palRfData.status;
 }
- 
+
 void PAL_RF_Deinitialize(SYS_MODULE_OBJ object)
 {
     if (object != (SYS_MODULE_OBJ)PAL_RF_PHY_INDEX)
     {
         return;
     }
-    
+
     /* Check status */
     if (palRfData.status == PAL_RF_STATUS_UNINITIALIZED)
     {
         return;
     }
-    
+
     palRfData.status = PAL_RF_STATUS_UNINITIALIZED;
-    
+
     DRV_RF215_Close((DRV_HANDLE)palRfData.drvRfPhyHandle);
-    palRfData.drvRfPhyHandle = DRV_HANDLE_INVALID;    
+    palRfData.drvRfPhyHandle = DRV_HANDLE_INVALID;
 }
- 
-PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData, 
+
+PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
         uint16_t length, PAL_RF_TX_PARAMETERS *txParameters)
 {
     DRV_RF215_TX_REQUEST_OBJ txReqObj;
     DRV_RF215_TX_RESULT txResult;
     DRV_RF215_TX_HANDLE rfPhyTxReqHandle;
-            
+
     if (handle != (PAL_RF_HANDLE)&palRfData)
     {
         if (palRfData.rfPhyHandlers.palRfTxConfirm != NULL)
         {
-            palRfData.rfPhyHandlers.palRfTxConfirm(PAL_RF_PHY_TRX_OFF, txParameters->timeCount, 
+            palRfData.rfPhyHandlers.palRfTxConfirm(PAL_RF_PHY_TRX_OFF, txParameters->timeCount,
                     txParameters->timeCount);
         }
         return PAL_RF_TX_HANDLE_INVALID;
     }
-    
+
     txReqObj.psdu = pData;
     txReqObj.psduLen = length;
     txReqObj.timeMode = TX_TIME_ABSOLUTE;
     txReqObj.timeCount = txParameters->timeCount;
     txReqObj.txPwrAtt = txParameters->txPowerAttenuation;
     txReqObj.modScheme = palRfData.rfPhyModScheme;
-    
+
     if (txParameters->csmaEnable)
     {
         /* CSMA used: Energy above threshold and carrier sense CCA Mode */
@@ -404,10 +404,10 @@ PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
         txReqObj.ccaMode = PHY_CCA_OFF;
         txReqObj.cancelByRx = false;
     }
-    
+
     rfPhyTxReqHandle = DRV_RF215_TxRequest(palRfData.drvRfPhyHandle, &txReqObj, &txResult);
 
-<#if G3_PAL_RF_PHY_SNIFFER_EN == true>  
+<#if G3_PAL_RF_PHY_SNIFFER_EN == true>
     // Prepare transmission request in sniffer service
     SRV_RSNIFFER_SetTxMessage(&txReqObj, rfPhyTxReqHandle);
 
@@ -415,13 +415,13 @@ PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
     if (rfPhyTxReqHandle == DRV_RF215_TX_HANDLE_INVALID)
     {
         DRV_RF215_TX_CONFIRM_OBJ cfmObj;
-        
+
         cfmObj.txResult = txResult;
         cfmObj.timeIniCount = SYS_TIME_Counter64Get();
         cfmObj.ppduDurationCount = 0;
         lPAL_RF_TxCfmCallback(DRV_RF215_TX_HANDLE_INVALID, &cfmObj, 0);
     }
-    
+
     return (PAL_RF_TX_HANDLE)rfPhyTxReqHandle;
 }
 
@@ -431,23 +431,23 @@ void PAL_RF_TxCancel(PAL_RF_HANDLE handle, PAL_RF_TX_HANDLE txHandle)
     {
         return;
     }
-    
+
     DRV_RF215_TxCancel(palRfData.drvRfPhyHandle, (DRV_RF215_TX_HANDLE)txHandle);
 }
- 
+
 void PAL_RF_Reset(PAL_RF_HANDLE handle)
 {
     uint8_t resetValue = 1;
-    
+
     if (handle != (PAL_RF_HANDLE)&palRfData)
     {
         return;
     }
-    
+
     (void) DRV_RF215_SetPib(palRfData.drvRfPhyHandle, RF215_PIB_DEVICE_RESET, &resetValue);
     (void) DRV_RF215_SetPib(palRfData.drvRfPhyHandle, RF215_PIB_PHY_STATS_RESET, &resetValue);
 }
- 
+
 PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibObj)
 {
     PAL_RF_PIB_RESULT pibResult = PAL_RF_PIB_SUCCESS;
@@ -456,7 +456,7 @@ PAL_RF_PIB_RESULT PAL_RF_GetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
     {
         return PAL_RF_PIB_INVALID_HANDLE;
     }
-    
+
     if (palRfData.status != PAL_RF_STATUS_READY)
     {
         /* Ignore request */
@@ -504,7 +504,7 @@ PAL_RF_PIB_RESULT PAL_RF_SetRfPhyPib(PAL_RF_HANDLE handle, PAL_RF_PIB_OBJ *pibOb
     {
         return PAL_RF_PIB_INVALID_HANDLE;
     }
-    
+
     if (palRfData.status != PAL_RF_STATUS_READY)
     {
         /* Ignore request */

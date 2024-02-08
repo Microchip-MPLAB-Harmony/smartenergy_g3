@@ -1,7 +1,7 @@
 /***********************************************************************
   Company:
     Microchip Technology Inc.
-    
+
   File Name:
     drv_mac_g3adp.h
 
@@ -10,37 +10,35 @@
 
   Description:
     G3 ADP MAC Device Driver Interface.
-    
+
     The G3 ADP MAC device driver provides a simple interface to manage
     the G3 ADP stack. This file defines the interface definitions
     and prototypes for the G3 ADP MAC driver.
   ***********************************************************************/
 
 //DOM-IGNORE-BEGIN
-/*****************************************************************************
- Copyright (C) 2024 Microchip Technology Inc. and its subsidiaries.
+/*
+Copyright (C) 2024, Microchip Technology Inc., and its subsidiaries. All rights reserved.
 
-Microchip Technology Inc. and its subsidiaries.
+The software and documentation is provided by microchip and its contributors
+"as is" and any express, implied or statutory warranties, including, but not
+limited to, the implied warranties of merchantability, fitness for a particular
+purpose and non-infringement of third party intellectual property rights are
+disclaimed to the fullest extent permitted by law. In no event shall microchip
+or its contributors be liable for any direct, indirect, incidental, special,
+exemplary, or consequential damages (including, but not limited to, procurement
+of substitute goods or services; loss of use, data, or profits; or business
+interruption) however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise) arising in any way
+out of the use of the software and documentation, even if advised of the
+possibility of such damage.
 
-Subject to your compliance with these terms, you may use Microchip software 
-and any derivatives exclusively with Microchip products. It is your 
-responsibility to comply with third party license terms applicable to your 
-use of third party software (including open source software) that may 
-accompany Microchip software.
-
-THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
-WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR 
-PURPOSE.
-
-IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
-BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE 
-FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN 
-ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, 
-THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
-*****************************************************************************/
+Except as expressly permitted hereunder and subject to the applicable license terms
+for any third-party software incorporated in the software and any applicable open
+source software license terms, no license or other rights, whether express or
+implied, are granted under any patent or other intellectual property rights of
+Microchip or any third party.
+*/
 
 //DOM-IGNORE-END
 
@@ -114,7 +112,7 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 
   Parameters:
     - index     - Index of the G3 ADP MAC driver to be initialized
-    - init      - Pointer to TCPIP_MAC_INIT initialization data containing: moduleInit, macControl,moduleData. 
+    - init      - Pointer to TCPIP_MAC_INIT initialization data containing: moduleInit, macControl,moduleData.
                   moduleInit and moduleData are not used in this implementation.
 
   Returns:
@@ -411,14 +409,14 @@ bool DRV_G3ADP_MAC_PowerMode( DRV_HANDLE hMac, TCPIP_MAC_POWER_MODE pwrMode );
 
   Description:
     This function has not been implemented.
-    
+
   Precondition:
     DRV_G3ADP_MAC_Initialize() should have been called.
     DRV_G3ADP_MAC_Open() should have been called to obtain a valid handle.
 
   Parameters:
-    - hMac        - Handle identifying the MAC driver client  
-    - DestMACAddr - destination MAC address (6 bytes) to allow 
+    - hMac        - Handle identifying the MAC driver client
+    - DestMACAddr - destination MAC address (6 bytes) to allow
                     through the Hash Table Filter.
                     If DestMACAddr is set to 00-00-00-00-00-00,
                     then the hash table will be cleared of all entries
@@ -466,18 +464,18 @@ TCPIP_MAC_RES DRV_G3ADP_MAC_RxFilterHashTableEntrySet(DRV_HANDLE hMac, const TCP
     {
         res = DRV_G3ADP_MAC_PacketTx(pNetIf->hIfMac, ptrPacket);
     }
-    
+
     </code>
 
   Remarks:
     - The G3 ADP MAC driver supports internal queuing.
       A packet is rejected only if it's not properly formatted.
       Otherwise it will be scheduled for transmission and queued internally if needed.
-    
+
     - Once the packet is scheduled for transmission the G3 ADP MAC driver will set
       the TCPIP_MAC_PKT_FLAG_QUEUED flag so that the stack is aware that this
       packet is under processing and cannot be modified.
-    
+
     - Once the packet is transmitted, the TCPIP_MAC_PKT_FLAG_QUEUED will be
       cleared, the proper packet acknowledgment result (ackRes) will be
       set and the packet acknowledgment function (ackFunc) will be called.
@@ -494,7 +492,7 @@ TCPIP_MAC_RES DRV_G3ADP_MAC_PacketTx(DRV_HANDLE hMac, TCPIP_MAC_PACKET * ptrPack
 
   Description:
     This function will return a packet if such a pending packet exists.
-    
+
     Additional information about the packet is available by providing the pRes and
     pPktStat fields.
 
@@ -557,11 +555,11 @@ TCPIP_MAC_PACKET* DRV_G3ADP_MAC_PacketRx (DRV_HANDLE hMac, TCPIP_MAC_RES* pRes, 
   Description:
     This is a function that allows for internal processing by the MAC
     driver. It is meant for processing that cannot be done from within ISR.
-        
+
     Normally this function will be called in response to an TX and/or RX
     event signaled by the driver. This is specified by the MAC driver at
     initialization time using TCPIP_MAC_MODULE_CTRL.
-    
+
   Precondition:
     DRV_G3ADP_MAC_Initialize() should have been called.
     DRV_G3ADP_MAC_Open() should have been called to obtain a valid handle.
@@ -606,11 +604,11 @@ TCPIP_MAC_RES DRV_G3ADP_MAC_Process(DRV_HANDLE hMac);
   Parameters:
     - hMac          - Handle identifying the MAC driver client
 
-    - pRxStatistics - pointer to a TCPIP_MAC_RX_STATISTICS that will receive the current 
+    - pRxStatistics - pointer to a TCPIP_MAC_RX_STATISTICS that will receive the current
                       RX statistics counters
                       Can be NULL if not needed
 
-    - pTxStatistics - pointer to a TCPIP_MAC_TX_STATISTICS that will receive the current 
+    - pTxStatistics - pointer to a TCPIP_MAC_TX_STATISTICS that will receive the current
                       TX statistics counters
                       Can be NULL if not needed
 
@@ -631,7 +629,7 @@ TCPIP_MAC_RES DRV_G3ADP_MAC_Process(DRV_HANDLE hMac);
 
 */
 TCPIP_MAC_RES DRV_G3ADP_MAC_StatisticsGet(DRV_HANDLE hMac, TCPIP_MAC_RX_STATISTICS* pRxStatistics, TCPIP_MAC_TX_STATISTICS* pTxStatistics);
-    
+
 // *****************************************************************************
 /* MAC Parameter Get function
     TCPIP_MAC_RES DRV_G3ADP_MAC_ParametersGet(DRV_HANDLE hMac, TCPIP_MAC_PARAMETERS* pMacParams);
@@ -700,7 +698,7 @@ TCPIP_MAC_RES DRV_G3ADP_MAC_ParametersGet(DRV_HANDLE hMac, TCPIP_MAC_PARAMETERS*
   Parameters:
     - hMac          - Handle identifying the MAC driver client
 
-    - pRegEntries   - pointer to an array of TCPIP_MAC_STATISTICS_REG_ENTRY that will receive the current 
+    - pRegEntries   - pointer to an array of TCPIP_MAC_STATISTICS_REG_ENTRY that will receive the current
                       hardware statistics registers
                       Can be NULL if not needed
 
@@ -708,7 +706,7 @@ TCPIP_MAC_RES DRV_G3ADP_MAC_ParametersGet(DRV_HANDLE hMac, TCPIP_MAC_PARAMETERS*
 
     - pHwEntries    - address to store the number of hardware supported registers by the associated MAC
                       Can be NULL if not needed
-                
+
   Returns:
     - TCPIP_MAC_RES_OK if all processing went on OK.
     - TCPIP_MAC_RES_OP_ERR error code if function not supported by the driver.
@@ -893,7 +891,7 @@ bool DRV_G3ADP_MAC_EventAcknowledge(DRV_HANDLE hMac, TCPIP_MAC_EVENT tcpAckEv);
     </code>
 
   Remarks:
-    - This is the preferred method to get the current pending G3 ADP MAC events. 
+    - This is the preferred method to get the current pending G3 ADP MAC events.
       The stack maintains a proper image of the events from their occurrence to
       their acknowledgment.
 
