@@ -11,12 +11,11 @@ MPLAB® Harmony 3 is an extension of the MPLAB® ecosystem for creating embedded
 - [Microchip MPLAB® Harmony](https://www.microchip.com/mplab/mplab-harmony)
 - [Microchip MPLAB® Harmony Pages](https://microchip-mplab-harmony.github.io/)
 
-This repository contains the MPLAB® Harmony 3 Smart Energy G3 API and libraries. 
+This repository contains the MPLAB® Harmony 3 Smart Energy G3 API and libraries.
 
 - [Release Notes](./release_notes.md)
-- [MPLAB® Harmony License](mplab_harmony_license.md)
-- [MPLAB® Harmony 3 G3 Wiki](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/wiki)
-- [MPLAB® Harmony 3 G3 API Help](https://microchip-mplab-harmony.github.io/smartenergy_g3)
+- [MPLAB® Harmony License](Microchip_SLA001.md)
+- [MPLAB® Harmony 3 G3 API Help](https://microchip-mplab-harmony.github.io/smartenergy_g3/)
 
 # Contents Summary
 
@@ -25,12 +24,11 @@ This repository contains the MPLAB® Harmony 3 Smart Energy G3 API and libraries
 | config     | G3 module configuration file                              |
 | docs       | G3 library help documentation                             |
 | g3         | API and files for G3 library                              |
-| service    | Services for G3                                           |
-
+| pal        | Physical Abstraction layers from G3 to PLC and RF modules |
 
 ____
 
-[![License](https://img.shields.io/badge/license-Harmony%20license-orange.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/blob/master/mplab_harmony_license.md)
+[![License](https://img.shields.io/badge/license-Harmony%20license-orange.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/blob/master/Microchip_SLA001.md)
 [![Latest release](https://img.shields.io/github/release/Microchip-MPLAB-Harmony/smartenergy_g3.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/releases/latest)
 [![Latest release date](https://img.shields.io/github/release-date/Microchip-MPLAB-Harmony/smartenergy_g3.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/releases/latest)
 [![Commit activity](https://img.shields.io/github/commit-activity/y/Microchip-MPLAB-Harmony/smartenergy_g3.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/graphs/commit-activity)
@@ -45,5 +43,4 @@ ____
 
 [![](https://img.shields.io/github/stars/Microchip-MPLAB-Harmony/smartenergy_g3.svg?style=social)]()
 [![](https://img.shields.io/github/watchers/Microchip-MPLAB-Harmony/smartenergy_g3.svg?style=social)]()
-
 
