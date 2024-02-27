@@ -3,7 +3,7 @@
     <Dependencies>
         <Dependency name="smartenergy" version="v1.2.0"/>
         <Dependency name="core" version="v3.13.2"/>
-        <Dependency name="crypto" version="v3.8.0"/>
+        <Dependency name="crypto" version="dev"/>
         <Dependency name="wolfssl" version="v5.4.0"/>
         <Dependency name="net" version="v3.11.0"/>
     </Dependencies>
