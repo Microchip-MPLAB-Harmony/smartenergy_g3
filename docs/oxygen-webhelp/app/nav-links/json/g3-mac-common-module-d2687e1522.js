@@ -1,0 +1,1 @@
+define({"topics":[{"title":"<ph>1.3.3.1<\/ph>\nG3 MAC Common Module Interface","href":"GUID-AFF632E7-62E4-4402-A660-EE791387C366.html","attributes":{"data-id":"g3-mac-common-module-interface"},"menu":{"hasChildren":false},"tocID":"g3-mac-common-module-interface-d2687e1530","next":"g3-mac-common-module-interface-d2687e1530"}]});

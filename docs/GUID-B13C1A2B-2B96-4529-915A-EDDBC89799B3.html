@@ -1,0 +1,382 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us" data-whc_version="24.1">
+    <head><link rel="shortcut icon" href="oxygen-webhelp\template\resources/images/favicon.ico"/><link rel="icon" href="oxygen-webhelp\template\resources/images/favicon.ico"/><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="typedef struct { /* Pointer to the set of octets forming the received MSDU */ uint8_t *msdu; /* Reception time, refered to MAC milliseconds counter */ MAC_TIMESTAMP timestamp; /* The PAN identifier of ..."/><meta name="copyright" content="(C) Copyright 2024"/><meta name="generator" content="DITA-OT"/><title>1.3.3.1.5 MAC_DATA_INDICATION_PARAMS Struct</title><!--  Generated with Oxygen version 24.1, build number 2022062014.  --><meta name="wh-path2root" content=""/><meta name="wh-toc-id" content="&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;&lt;?workdir /D:\InfoShare\Data\Publish\Data\1fwiw2gzmyh\work\temp?&gt;&lt;?workdir-uri file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/temp/?&gt;&lt;?path2project?&gt;&lt;?path2project-uri ./?&gt;&lt;?path2rootmap-uri ./?&gt;&lt;topic xmlns:dita-ot=&#34;http://dita-ot.sourceforge.net/ns/201007/dita-ot&#34; xmlns:ditaarch=&#34;http://dita.oasis-open.org/architecture/2005/&#34; class=&#34;- topic/topic &#34; ditaarch:DITAArchVersion=&#34;2.0&#34; domains=&#34;a(props audience) a(props deliveryTarget) a(props otherprops) a(props platform) a(props product)&#34; id=&#34;mac-data-indication-params-struct&#34; specializations=&#34;@props/audience @props/deliveryTarget @props/otherprops @props/platform @props/product&#34; xtrc=&#34;topic:1;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;title class=&#34;- topic/title &#34; xtrc=&#34;title:1;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;MAC_DATA_INDICATION_PARAMS Struct&lt;/title&gt;&lt;titlealts class=&#34;- topic/titlealts &#34;/&gt;&lt;body class=&#34;- topic/body &#34; xtrc=&#34;body:1;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;/&gt;&lt;related-links class=&#34;- topic/related-links &#34;&gt;&lt;linkpool class=&#34;- topic/linkpool &#34; mapkeyref=&#34;GUID-F459904F-E8A0-4ADE-858D-BEDA7E2E4B53&#34; xtrc=&#34;topicref:87;6:19907&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-5533695B-B7B3-4E22-8CAE-B556E34F0200.ditamap&#34;&gt;&lt;link class=&#34;- topic/link &#34; format=&#34;dita&#34; href=&#34;GUID-AFF632E7-62E4-4402-A660-EE791387C366.md&#34; mapclass=&#34;- map/topicref &#34; role=&#34;parent&#34; scope=&#34;local&#34; type=&#34;topic&#34; xtrc=&#34;topicref:82;6:18774&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-5533695B-B7B3-4E22-8CAE-B556E34F0200.ditamap&#34;&gt;&lt;?ditaot usertext?&gt;&lt;linktext class=&#34;- topic/linktext &#34;&gt;&lt;?ditaot gentext?&gt;G3 MAC Common Module Interface&lt;/linktext&gt;&lt;/link&gt;&lt;/linkpool&gt;&lt;/related-links&gt;&lt;topic class=&#34;- topic/topic &#34; ditaarch:DITAArchVersion=&#34;2.0&#34; domains=&#34;a(props audience) a(props deliveryTarget) a(props otherprops) a(props platform) a(props product)&#34; id=&#34;c&#34; specializations=&#34;@props/audience @props/deliveryTarget @props/otherprops @props/platform @props/product&#34; xtrc=&#34;topic:2;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;title class=&#34;- topic/title &#34; xtrc=&#34;title:2;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;C&lt;/title&gt;&lt;body class=&#34;- topic/body &#34; xtrc=&#34;body:2;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;codeblock class=&#34;+ topic/pre pr-d/codeblock &#34; outputclass=&#34;c&#34; xml:space=&#34;preserve&#34; xtrc=&#34;codeblock:1;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;typedef struct { /* Pointer to the set of octets forming the received MSDU */ uint8_t *msdu; /* Reception time, refered to MAC milliseconds counter */ MAC_TIMESTAMP timestamp; /* The PAN identifier of the device from which the frame was received */ MAC_PAN_ID srcPanId; /* The PAN identifier of the entity to which the MSDU is being transferred */ MAC_PAN_ID destPanId; /* The number of octets of the MSDU to be indicated to the upper layer */ uint16_t msduLength; /* The address of the device which sent the frame */ MAC_ADDRESS srcAddress; /* The address of the entity to which the MSDU is being transferred */ MAC_ADDRESS destAddress; /* The LQI value measured during reception of the frame */ uint8_t linkQuality; /* The Data Sequence Number of the received frame */ uint8_t dsn; /* The index of the key used for decryption */ uint8_t keyIndex; /* Modulation Type of the received frame */ uint8_t rxModulation; /* Modulation scheme of the received frame */ uint8_t rxModulationScheme; /* Weakest Modulation Type in which the frame could have been received */ uint8_t computedModulation; /* Weakest Modulation Scheme in which the frame could have been received */ uint8_t computedModulationScheme; /* Phase Differential compared to Node that sent the frame */ uint8_t phaseDifferential; /* Security level of the received frame: 0x00 unecrypted, 0x05 encrypted */ MAC_SECURITY_LEVEL securityLevel; /* The QOS of the MSDU: 0x00 normal priority, 0x01 high priority */ MAC_QUALITY_OF_SERVICE qualityOfService; /* Tone Map of the received frame */ MAC_TONE_MAP rxToneMap; /* Weakest Tone Map with which the frame could have been received */ MAC_TONE_MAP computedToneMap; } MAC_DATA_INDICATION_PARAMS;&lt;/codeblock&gt;&lt;/body&gt;&lt;/topic&gt;&lt;topic class=&#34;- topic/topic &#34; ditaarch:DITAArchVersion=&#34;2.0&#34; domains=&#34;a(props audience) a(props deliveryTarget) a(props otherprops) a(props platform) a(props product)&#34; id=&#34;summary&#34; specializations=&#34;@props/audience @props/deliveryTarget @props/otherprops @props/platform @props/product&#34; xtrc=&#34;topic:3;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;title class=&#34;- topic/title &#34; xtrc=&#34;title:3;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;Summary&lt;/title&gt;&lt;body class=&#34;- topic/body &#34; xtrc=&#34;body:3;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:1;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;Defines the Parameters for the MAC Data Indication event handler function.&lt;/p&gt;&lt;/body&gt;&lt;/topic&gt;&lt;topic class=&#34;- topic/topic &#34; ditaarch:DITAArchVersion=&#34;2.0&#34; domains=&#34;a(props audience) a(props deliveryTarget) a(props otherprops) a(props platform) a(props product)&#34; id=&#34;description&#34; specializations=&#34;@props/audience @props/deliveryTarget @props/otherprops @props/platform @props/product&#34; xtrc=&#34;topic:4;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;title class=&#34;- topic/title &#34; xtrc=&#34;title:4;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;Description&lt;/title&gt;&lt;body class=&#34;- topic/body &#34; xtrc=&#34;body:4;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:2;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;The structure contains the fields reported by the MAC Data Indication event handler function.&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:3;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;Field description:&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrc=&#34;ul:1;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:1;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:4;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;msdu. Pointer to the set of octets forming the received MSDU.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:2;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:5;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;timestamp. Reception time, refered to MAC milliseconds counter.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:3;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:6;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;srcPanId. The PAN identifier of the device from which the frame was received.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:4;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:7;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;destPanId. The PAN identifier of the entity to which the MSDU is being transferred.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:5;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:8;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;msduLength. The number of octets of the MSDU to be indicated to the upper layer.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:6;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:9;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;srcAddress. The address of the device which sent the frame.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:7;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:10;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;destAddress. The address of the entity to which the MSDU is being transferred.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:8;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:11;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;linkQuality. The LQI value measured during reception of the frame.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:9;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:12;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;dsn. The Data Sequence Number of the received frame.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:10;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:13;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;keyIndex. The index of the key used for decryption.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:11;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:14;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;rxModulation. Modulation Type of the received frame.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:12;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:15;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;rxModulationScheme. Modulation scheme of the received frame.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:13;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:16;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;computedModulation. Weakest Modulation Type in which the frame could have been received.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:14;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:17;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;computedModulationScheme. Weakest Modulation Scheme in which the frame could have been received.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:15;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:18;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;phaseDifferential. Phase Differential compared to Node that sent the frame.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:16;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:19;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;securityLevel. Security level of the received frame: 0x00 unecrypted, 0x05 encrypted.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:17;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:20;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;qualityOfService. The QOS of the MSDU: 0x00 normal priority, 0x01 high priority.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:18;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:21;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;rxToneMap. Tone Map of the received frame.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrc=&#34;li:19;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:22;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;computedToneMap. Weakest Tone Map with which the frame could have been received.&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/topic&gt;&lt;topic class=&#34;- topic/topic &#34; ditaarch:DITAArchVersion=&#34;2.0&#34; domains=&#34;a(props audience) a(props deliveryTarget) a(props otherprops) a(props platform) a(props product)&#34; id=&#34;remarks&#34; specializations=&#34;@props/audience @props/deliveryTarget @props/otherprops @props/platform @props/product&#34; xtrc=&#34;topic:5;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;title class=&#34;- topic/title &#34; xtrc=&#34;title:5;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;Remarks&lt;/title&gt;&lt;body class=&#34;- topic/body &#34; xtrc=&#34;body:5;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrc=&#34;p:23;184:15&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/1fwiw2gzmyh/work/1/en-US/GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md&#34;&gt;None.&lt;/p&gt;&lt;/body&gt;&lt;/topic&gt;&lt;/topic&gt;"/><meta name="wh-source-relpath" content="GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.md"/><meta name="wh-out-relpath" content="GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.html"/>
+    <!-- Latest compiled and minified Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="./oxygen-webhelp/lib/bootstrap/css/bootstrap.min.css"/>
+    
+    <link rel="stylesheet" href="./oxygen-webhelp/lib/jquery-ui/jquery-ui.min.css"/>
+    
+    <!-- Template default styles  -->
+    <link rel="stylesheet" type="text/css" href="./oxygen-webhelp/app/topic-page.css?buildId=2022062014"/>
+    
+    
+    <script src="./oxygen-webhelp/lib/jquery/jquery-3.5.1.min.js"></script>
+    
+    <script data-main="./oxygen-webhelp/app/topic-page.js" src="./oxygen-webhelp/lib/requirejs/require.js"></script>
+<link rel="stylesheet" type="text/css" href="oxygen-webhelp/template/microchip.css?buildId=2022062014"/><link rel="stylesheet" type="text/css" href="oxygen-webhelp/template/notes.css?buildId=2022062014"/>
+<script src="mchp-context-help.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async="" type="text/javascript"></script>
+    <script src="https://assets.adobedtm.com/6a72a357eb48/a636c708c7fe/launch-0b0023397020.min.js"></script><!-- Adobe Analytics -->
+</head>
+
+    <body id="mac-data-indication-params-struct" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            Jump to main content
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="index.html" class=" wh_logo d-none d-sm-block "><img src="oxygen-webhelp\template\resources/images/microchip.png" alt="MPLAB Harmony Smart Energy G3 Stack "/></a>
+                    <div class=" wh_publication_title "><a href="index.html">MPLAB Harmony Smart Energy G3 Stack </a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="search.html"><div class="d-flex justify-contents-around"><div class="flex-grow-1"></div><div class="position-relative flex-grow-1"><input type="search" placeholder="Search " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="Search query" required="required"/><button type="submit" class="wh_search_button" aria-label="Search"><span class="search_input_text">Search</span></button></div><div class="align-self-center flex-grow-1 ml-2"></div></div></form>
+            
+            <div class="mchp-color-stripe-grid-container">
+  <div class="mchp-main-bar mchp-orange-bar"></div>
+  <div class="mchp-main-bar mchp-blue-bar"></div>
+  <div class="mchp-main-bar mchp-green-bar"></div>
+</div>
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="index.html"><span>Home</span></a></span></li><li><div class="topicref" data-id="mplab-harmony-smart-energy-g3-stack"><div class="title"><a href="GUID-8D7FF9CF-C7F4-4C84-9650-F7C196FA7CCE.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1</ph>
+MPLAB® Harmony Smart Energy G3 Stack</a></div></div></li><li><div class="topicref" data-id="g3-mac-layer"><div class="title"><a href="GUID-3CD2B9A8-5FE2-444E-8C9C-4B44B1793511.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3</ph>
+G3 MAC Layer</a></div></div></li><li><div class="topicref" data-id="g3-mac-common-module"><div class="title"><a href="GUID-C00E71E6-496B-4ACE-98CA-BCD06356C4B5.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3</ph>
+G3 MAC Common Module</a></div></div></li><li><div class="topicref" data-id="g3-mac-common-module-interface"><div class="title"><a href="GUID-AFF632E7-62E4-4402-A660-EE791387C366.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1</ph>
+G3 MAC Common Module Interface</a></div></div></li><li class="active"><div class="topicref" data-id="mac-data-indication-params-struct"><div class="title"><a href="GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.5</ph>
+MAC_DATA_INDICATION_PARAMS Struct</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="Toggle search highlights" title="Toggle search highlights"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="Collapse sections" title="Collapse sections"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="Print this page" aria-label="Print this page"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem" aria-expanded="true"><div data-tocid="mplab-harmony-smart-energy-g3-stack-d2687e11" class="topicref" data-id="mplab-harmony-smart-energy-g3-stack" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mplab-harmony-smart-energy-g3-stack-d2687e11-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-8D7FF9CF-C7F4-4C84-9650-F7C196FA7CCE.html" id="mplab-harmony-smart-energy-g3-stack-d2687e11-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1</ph>
+MPLAB® Harmony Smart Energy G3 Stack</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="configuring-the-g3-stack-d2687e19" class="topicref" data-id="configuring-the-g3-stack" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-9F252FF0-1A85-4731-A3CB-F90DB068F6AD.html" id="configuring-the-g3-stack-d2687e19-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.1</ph>
+Configuring The G3 Stack</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="g3-adaptation-layer-d2687e27" class="topicref" data-id="g3-adaptation-layer" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action g3-adaptation-layer-d2687e27-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-0BC0892E-8FC3-4B43-8243-1C16A6766E31.html" id="g3-adaptation-layer-d2687e27-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.2</ph>
+G3 Adaptation Layer</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="g3-mac-layer-d2687e876" class="topicref" data-id="g3-mac-layer" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action g3-mac-layer-d2687e876-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-3CD2B9A8-5FE2-444E-8C9C-4B44B1793511.html" id="g3-mac-layer-d2687e876-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3</ph>
+G3 MAC Layer</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="configuring-the-g3-mac-layer-d2687e884" class="topicref" data-id="configuring-the-g3-mac-layer" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-944A8723-E7E1-4616-B8B5-803E493EC106.html" id="configuring-the-g3-mac-layer-d2687e884-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.1</ph>
+Configuring The G3 MAC Layer</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="g3-mac-wrapper-module-d2687e892" class="topicref" data-id="g3-mac-wrapper-module" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action g3-mac-wrapper-module-d2687e892-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-8E538DB4-AC18-45BC-8284-8A2E0B1C6E4A.html" id="g3-mac-wrapper-module-d2687e892-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.2</ph>
+G3 MAC Wrapper Module</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="g3-mac-common-module-d2687e1522" class="topicref" data-id="g3-mac-common-module" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action g3-mac-common-module-d2687e1522-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-C00E71E6-496B-4ACE-98CA-BCD06356C4B5.html" id="g3-mac-common-module-d2687e1522-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3</ph>
+G3 MAC Common Module</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="true"><div data-tocid="g3-mac-common-module-interface-d2687e1530" class="topicref" data-id="g3-mac-common-module-interface" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action g3-mac-common-module-interface-d2687e1530-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-AFF632E7-62E4-4402-A660-EE791387C366.html" id="g3-mac-common-module-interface-d2687e1530-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1</ph>
+G3 MAC Common Module Interface</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="mac-common-init-function-d2687e1538" class="topicref" data-id="mac-common-init-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-7FB15AD1-A98A-4DD7-996C-456A3E9A785E.html" id="mac-common-init-function-d2687e1538-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.1</ph>
+MAC_COMMON_Init Function</a></div></div></li><li role="treeitem"><div data-tocid="mac-dataconfirm-typedef-d2687e1546" class="topicref" data-id="mac-dataconfirm-typedef" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-B058F68A-17BC-467B-9E45-08B009D24383.html" id="mac-dataconfirm-typedef-d2687e1546-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.2</ph>
+MAC_DataConfirm Typedef</a></div></div></li><li role="treeitem"><div data-tocid="mac-data-confirm-params-struct-d2687e1554" class="topicref" data-id="mac-data-confirm-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-727B36C5-458D-4058-8FF7-124B0CC50C1B.html" id="mac-data-confirm-params-struct-d2687e1554-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.3</ph>
+MAC_DATA_CONFIRM_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-dataindication-typedef-d2687e1562" class="topicref" data-id="mac-dataindication-typedef" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-08155BB2-C09F-4335-BC7C-70FB64284BF7.html" id="mac-dataindication-typedef-d2687e1562-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.4</ph>
+MAC_DataIndication Typedef</a></div></div></li><li role="treeitem" class="active"><div data-tocid="mac-data-indication-params-struct-d2687e1570" class="topicref" data-id="mac-data-indication-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3.html" id="mac-data-indication-params-struct-d2687e1570-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.5</ph>
+MAC_DATA_INDICATION_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-common-getrequestsync-function-d2687e1578" class="topicref" data-id="mac-common-getrequestsync-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-6DABC23B-72E6-457B-B013-1A13173429C4.html" id="mac-common-getrequestsync-function-d2687e1578-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.6</ph>
+MAC_COMMON_GetRequestSync Function</a></div></div></li><li role="treeitem"><div data-tocid="mac-common-setrequestsync-function-d2687e1586" class="topicref" data-id="mac-common-setrequestsync-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-FA3597AE-8519-426D-9BF1-9C33D9A3BA5B.html" id="mac-common-setrequestsync-function-d2687e1586-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.7</ph>
+MAC_COMMON_SetRequestSync Function</a></div></div></li><li role="treeitem"><div data-tocid="mac-common-pib-attribute-enum-d2687e1594" class="topicref" data-id="mac-common-pib-attribute-enum" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-DE7BA702-E7CA-47A8-9046-787C5D8C92CA.html" id="mac-common-pib-attribute-enum-d2687e1594-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.8</ph>
+MAC_COMMON_PIB_ATTRIBUTE Enum</a></div></div></li><li role="treeitem"><div data-tocid="mac-pib-value-struct-d2687e1602" class="topicref" data-id="mac-pib-value-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-52C41DAE-AA7E-4A21-A4F2-44252F7D4708.html" id="mac-pib-value-struct-d2687e1602-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.9</ph>
+MAC_PIB_VALUE Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-common-reset-function-d2687e1610" class="topicref" data-id="mac-common-reset-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-EB0474FA-9528-43A5-9FE3-4936D7ADFC41.html" id="mac-common-reset-function-d2687e1610-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.10</ph>
+MAC_COMMON_Reset Function</a></div></div></li><li role="treeitem"><div data-tocid="mac-resetconfirm-typedef-d2687e1619" class="topicref" data-id="mac-resetconfirm-typedef" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-54A447D0-F2ED-427F-8C28-7AF46B80C359.html" id="mac-resetconfirm-typedef-d2687e1619-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.11</ph>
+MAC_ResetConfirm Typedef</a></div></div></li><li role="treeitem"><div data-tocid="mac-reset-confirm-params-struct-d2687e1627" class="topicref" data-id="mac-reset-confirm-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-94A3E6F5-033B-42F8-A67E-7CFF400E8D9F.html" id="mac-reset-confirm-params-struct-d2687e1627-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.12</ph>
+MAC_RESET_CONFIRM_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-scanconfirm-typedef-d2687e1635" class="topicref" data-id="mac-scanconfirm-typedef" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-A5562638-1C37-441F-8698-C9DEC468ECE1.html" id="mac-scanconfirm-typedef-d2687e1635-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.13</ph>
+MAC_ScanConfirm Typedef</a></div></div></li><li role="treeitem"><div data-tocid="mac-scan-confirm-params-struct-d2687e1643" class="topicref" data-id="mac-scan-confirm-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-F83AE123-24FD-43B9-A707-81527B707DC3.html" id="mac-scan-confirm-params-struct-d2687e1643-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.14</ph>
+MAC_SCAN_CONFIRM_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-startconfirm-typedef-d2687e1651" class="topicref" data-id="mac-startconfirm-typedef" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-73649970-DA08-4D86-9388-A2AD03D31FAA.html" id="mac-startconfirm-typedef-d2687e1651-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.15</ph>
+MAC_StartConfirm Typedef</a></div></div></li><li role="treeitem"><div data-tocid="mac-start-confirm-params-struct-d2687e1659" class="topicref" data-id="mac-start-confirm-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-DADCBAF6-6ED6-4A62-A1F6-A9BD18E36ABA.html" id="mac-start-confirm-params-struct-d2687e1659-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.16</ph>
+MAC_START_CONFIRM_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-beaconnotifyindication-typedef-d2687e1667" class="topicref" data-id="mac-beaconnotifyindication-typedef" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-60E553F8-5937-46E8-A754-C68FCFE0F422.html" id="mac-beaconnotifyindication-typedef-d2687e1667-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.17</ph>
+MAC_BeaconNotifyIndication Typedef</a></div></div></li><li role="treeitem"><div data-tocid="mac-beacon-notify-indication-params-struct-d2687e1675" class="topicref" data-id="mac-beacon-notify-indication-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-443274E1-B9BA-43FA-BAE7-3AA034BC2536.html" id="mac-beacon-notify-indication-params-struct-d2687e1675-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.18</ph>
+MAC_BEACON_NOTIFY_INDICATION_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-commstatusindication-typedef-d2687e1683" class="topicref" data-id="mac-commstatusindication-typedef" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-6BBD5200-7482-416B-89FB-15EC56A5C997.html" id="mac-commstatusindication-typedef-d2687e1683-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.19</ph>
+MAC_CommStatusIndication Typedef</a></div></div></li><li role="treeitem"><div data-tocid="mac-comm-status-indication-params-struct-d2687e1691" class="topicref" data-id="mac-comm-status-indication-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-4478EA6D-A3D3-46E8-B188-3AD023C101E7.html" id="mac-comm-status-indication-params-struct-d2687e1691-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.20</ph>
+MAC_COMM_STATUS_INDICATION_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-snifferindication-typedef-d2687e1699" class="topicref" data-id="mac-snifferindication-typedef" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-67ACCFEF-5A07-4A75-8296-23F5D9CA7C6E.html" id="mac-snifferindication-typedef-d2687e1699-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.21</ph>
+MAC_SnifferIndication Typedef</a></div></div></li><li role="treeitem"><div data-tocid="mac-sniffer-indication-params-struct-d2687e1708" class="topicref" data-id="mac-sniffer-indication-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-41A3BC98-8125-4DC8-ADBC-77F6C94648DF.html" id="mac-sniffer-indication-params-struct-d2687e1708-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.22</ph>
+MAC_SNIFFER_INDICATION_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-common-getmscounter-function-d2687e1716" class="topicref" data-id="mac-common-getmscounter-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-369C7AC6-5DC0-4415-AB03-BB915D630898.html" id="mac-common-getmscounter-function-d2687e1716-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.23</ph>
+MAC_COMMON_GetMsCounter Function</a></div></div></li><li role="treeitem"><div data-tocid="mac-common-timeispast-function-d2687e1724" class="topicref" data-id="mac-common-timeispast-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-9FE98F27-BDDE-447C-8208-5077CE0E3EDF.html" id="mac-common-timeispast-function-d2687e1724-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.24</ph>
+MAC_COMMON_TimeIsPast Function</a></div></div></li><li role="treeitem"><div data-tocid="mac-common-getsecondscounter-function-d2687e1732" class="topicref" data-id="mac-common-getsecondscounter-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-19D97AAF-A96A-4720-B8A8-B11BB511B457.html" id="mac-common-getsecondscounter-function-d2687e1732-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.25</ph>
+MAC_COMMON_GetSecondsCounter Function</a></div></div></li><li role="treeitem"><div data-tocid="mac-common-timeispastseconds-function-d2687e1740" class="topicref" data-id="mac-common-timeispastseconds-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-F379AC94-3B75-42D3-920B-2161AF8920A1.html" id="mac-common-timeispastseconds-function-d2687e1740-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.26</ph>
+MAC_COMMON_TimeIsPastSeconds Function</a></div></div></li><li role="treeitem"><div data-tocid="mac-status-enum-d2687e1748" class="topicref" data-id="mac-status-enum" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-A9C903E0-6916-4597-8936-388EBE7B84C6.html" id="mac-status-enum-d2687e1748-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.27</ph>
+MAC_STATUS Enum</a></div></div></li><li role="treeitem"><div data-tocid="mac-data-request-params-struct-d2687e1756" class="topicref" data-id="mac-data-request-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-D5B23FB2-F9F3-47E0-A996-EEE3FE58F784.html" id="mac-data-request-params-struct-d2687e1756-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.28</ph>
+MAC_DATA_REQUEST_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-reset-request-params-struct-d2687e1764" class="topicref" data-id="mac-reset-request-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-C466E473-DE52-47C6-8326-265EA4F74E10.html" id="mac-reset-request-params-struct-d2687e1764-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.29</ph>
+MAC_RESET_REQUEST_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-scan-request-params-struct-d2687e1772" class="topicref" data-id="mac-scan-request-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-5D83382B-671B-4208-8189-0EBCDA47B7FE.html" id="mac-scan-request-params-struct-d2687e1772-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.30</ph>
+MAC_SCAN_REQUEST_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-start-request-params-struct-d2687e1780" class="topicref" data-id="mac-start-request-params-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-E6B40CB8-B379-468A-B179-519AB23D4B16.html" id="mac-start-request-params-struct-d2687e1780-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.31</ph>
+MAC_START_REQUEST_PARAMS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-address-mode-enum-d2687e1788" class="topicref" data-id="mac-address-mode-enum" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-EA3B0790-B51B-47CD-8DA7-9EE06C9B1E79.html" id="mac-address-mode-enum-d2687e1788-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.32</ph>
+MAC_ADDRESS_MODE Enum</a></div></div></li><li role="treeitem"><div data-tocid="mac-short-address-typedef-d2687e1797" class="topicref" data-id="mac-short-address-typedef" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-F0395DC9-97E6-41F0-A717-4E5B190B0332.html" id="mac-short-address-typedef-d2687e1797-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.33</ph>
+MAC_SHORT_ADDRESS Typedef</a></div></div></li><li role="treeitem"><div data-tocid="mac-extended-address-struct-d2687e1805" class="topicref" data-id="mac-extended-address-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-3EB41264-EE02-4589-9F51-9C5B9422B32C.html" id="mac-extended-address-struct-d2687e1805-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.34</ph>
+MAC_EXTENDED_ADDRESS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-address-struct-d2687e1813" class="topicref" data-id="mac-address-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-C3969CB1-3668-4CA4-B62F-1A95FAC42585.html" id="mac-address-struct-d2687e1813-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.35</ph>
+MAC_ADDRESS Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-pan-id-typedef-d2687e1821" class="topicref" data-id="mac-pan-id-typedef" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-4E6CFD8F-23CA-423E-9ABA-E8FBC490814B.html" id="mac-pan-id-typedef-d2687e1821-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.36</ph>
+MAC_PAN_ID Typedef</a></div></div></li><li role="treeitem"><div data-tocid="mac-security-level-enum-d2687e1829" class="topicref" data-id="mac-security-level-enum" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-2BDEA87C-F3C2-4349-A718-509D9552758A.html" id="mac-security-level-enum-d2687e1829-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.37</ph>
+MAC_SECURITY_LEVEL Enum</a></div></div></li><li role="treeitem"><div data-tocid="mac-security-key-struct-d2687e1837" class="topicref" data-id="mac-security-key-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-C27CDF06-707E-4129-8730-DB1AF205465E.html" id="mac-security-key-struct-d2687e1837-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.38</ph>
+MAC_SECURITY_KEY Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-auxiliary-security-header-struct-d2687e1845" class="topicref" data-id="mac-auxiliary-security-header-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-CD4D71D1-0AFF-48EB-A611-CA9F31A8FAAB.html" id="mac-auxiliary-security-header-struct-d2687e1845-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.39</ph>
+MAC_AUXILIARY_SECURITY_HEADER Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-common-mib-struct-d2687e1853" class="topicref" data-id="mac-common-mib-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-54C52BC2-58EA-41B6-8ED2-14D1E0D35469.html" id="mac-common-mib-struct-d2687e1853-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.40</ph>
+MAC_COMMON_MIB Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-device-table-entry-struct-d2687e1861" class="topicref" data-id="mac-device-table-entry-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-FF4E7A76-62D1-479E-B87C-3B164DD3C5ED.html" id="mac-device-table-entry-struct-d2687e1861-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.41</ph>
+MAC_DEVICE_TABLE_ENTRY Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-pan-descriptor-struct-d2687e1869" class="topicref" data-id="mac-pan-descriptor-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-66099712-6066-48A2-A90C-005E9B709533.html" id="mac-pan-descriptor-struct-d2687e1869-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.42</ph>
+MAC_PAN_DESCRIPTOR Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-quality-of-service-enum-d2687e1877" class="topicref" data-id="mac-quality-of-service-enum" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-A5694005-52AE-4478-80F6-B65682C993AC.html" id="mac-quality-of-service-enum-d2687e1877-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.43</ph>
+MAC_QUALITY_OF_SERVICE Enum</a></div></div></li><li role="treeitem"><div data-tocid="mac-timestamp-typedef-d2687e1886" class="topicref" data-id="mac-timestamp-typedef" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-2CEAA069-03E3-4EBF-99A9-62AFD64703EC.html" id="mac-timestamp-typedef-d2687e1886-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.44</ph>
+MAC_TIMESTAMP Typedef</a></div></div></li><li role="treeitem"><div data-tocid="mac-tone-map-struct-d2687e1894" class="topicref" data-id="mac-tone-map-struct" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-28F650AE-3279-4FB8-AF6E-83B7FC55C9FD.html" id="mac-tone-map-struct-d2687e1894-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.45</ph>
+MAC_TONE_MAP Struct</a></div></div></li><li role="treeitem"><div data-tocid="mac-tx-options-enum-d2687e1902" class="topicref" data-id="mac-tx-options-enum" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-1477A724-AD39-4749-ABF4-6AB3EB014F02.html" id="mac-tx-options-enum-d2687e1902-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1.46</ph>
+MAC_TX_OPTIONS Enum</a></div></div></li></ul></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="g3-mac-plc-module-d2687e1910" class="topicref" data-id="g3-mac-plc-module" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action g3-mac-plc-module-d2687e1910-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-BFF1042D-25D0-4BE5-9473-0E2467A00B56.html" id="g3-mac-plc-module-d2687e1910-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.4</ph>
+G3 MAC PLC Module</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="g3-mac-rf-module-d2687e2112" class="topicref" data-id="g3-mac-rf-module" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action g3-mac-rf-module-d2687e2112-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-FA8AE9BB-E07D-4587-B951-D3AF01D16D6C.html" id="g3-mac-rf-module-d2687e2112-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.5</ph>
+G3 MAC RF Module</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="g3-plc-pal-module-d2687e2322" class="topicref" data-id="g3-plc-pal-module" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action g3-plc-pal-module-d2687e2322-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-E9ACB7E5-5632-4FD1-89C5-8D0832C624BC.html" id="g3-plc-pal-module-d2687e2322-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4</ph>
+G3 PLC PAL Module</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="g3-rf-pal-module-d2687e2523" class="topicref" data-id="g3-rf-pal-module" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action g3-rf-pal-module-d2687e2523-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-07E98617-C9A0-45DB-A4FC-9A4251FCD754.html" id="g3-rf-pal-module-d2687e2523-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.5</ph>
+G3 RF PAL Module</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="g3-adp-mac-driver-module-d2687e2781" class="topicref" data-id="g3-adp-mac-driver-module" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action g3-adp-mac-driver-module-d2687e2781-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-29AB9B5D-DC8B-4CEC-910B-3D313AFA91F6.html" id="g3-adp-mac-driver-module-d2687e2781-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.6</ph>
+G3 ADP MAC Driver Module</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="getting-started-with-mplab-harmony-g3-stack-d2687e2966" class="topicref" data-id="getting-started-with-mplab-harmony-g3-stack" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action getting-started-with-mplab-harmony-g3-stack-d2687e2966-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-CDCB92D5-6846-41EB-BB39-40A46235EB7D.html" id="getting-started-with-mplab-harmony-g3-stack-d2687e2966-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">2</ph>
+Getting Started with MPLAB® Harmony G3 Stack</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="GUID-0FB3F908-88EE-45CE-94F5-E97AF9049C9B-d2687e3079" class="topicref backmatter backmatter_parent" data-id="GUID-0FB3F908-88EE-45CE-94F5-E97AF9049C9B" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action GUID-0FB3F908-88EE-45CE-94F5-E97AF9049C9B-d2687e3079-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-0FB3F908-88EE-45CE-94F5-E97AF9049C9B.html" id="GUID-0FB3F908-88EE-45CE-94F5-E97AF9049C9B-d2687e3079-link">Microchip Information</a></div></div></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-7 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        <button id="wh_close_topic_toc_button" class="close-toc-button d-none" aria-label="Toggle topic table of content" aria-controls="wh_topic_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article role="article" aria-labelledby="ariaid-title1"><h1 class="- topic/title title topictitle1" id="ariaid-title1" style="">1.3.3.1.5 MAC_DATA_INDICATION_PARAMS Struct</h1><div class="- topic/body body"></div><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title2" id="c"><h2 class="- topic/title title topictitle2" id="ariaid-title2" style=""> C</h2><div class="- topic/body body"><pre class="+ topic/pre pr-d/codeblock pre codeblock c"><strong class="hl-keyword">typedef</strong> <strong class="hl-keyword">struct</strong>
+{
+    <em class="hl-comment">/* Pointer to the set of octets forming the received MSDU */</em>
+    uint8_t *msdu;
+    <em class="hl-comment">/* Reception time, refered to MAC milliseconds counter */</em>
+    MAC_TIMESTAMP timestamp;
+    <em class="hl-comment">/* The PAN identifier of the device from which the frame was received */</em>
+    MAC_PAN_ID srcPanId;
+    <em class="hl-comment">/* The PAN identifier of the entity to which the MSDU is being transferred */</em>
+    MAC_PAN_ID destPanId;
+    <em class="hl-comment">/* The number of octets of the MSDU to be indicated to the upper layer */</em>
+    uint16_t msduLength;
+    <em class="hl-comment">/* The address of the device which sent the frame */</em>
+    MAC_ADDRESS srcAddress;
+    <em class="hl-comment">/* The address of the entity to which the MSDU is being transferred */</em>
+    MAC_ADDRESS destAddress;
+    <em class="hl-comment">/* The LQI value measured during reception of the frame */</em>
+    uint8_t linkQuality;
+    <em class="hl-comment">/* The Data Sequence Number of the received frame */</em>
+    uint8_t dsn;
+    <em class="hl-comment">/* The index of the key used for decryption */</em>
+    uint8_t keyIndex;
+    <em class="hl-comment">/* Modulation Type of the received frame */</em>
+    uint8_t rxModulation;
+    <em class="hl-comment">/* Modulation scheme of the received frame */</em>
+    uint8_t rxModulationScheme;
+    <em class="hl-comment">/* Weakest Modulation Type in which the frame could have been received */</em>
+    uint8_t computedModulation;
+    <em class="hl-comment">/* Weakest Modulation Scheme in which the frame could have been received */</em>
+    uint8_t computedModulationScheme;
+    <em class="hl-comment">/* Phase Differential compared to Node that sent the frame */</em>
+    uint8_t phaseDifferential;
+    <em class="hl-comment">/* Security level of the received frame: 0x00 unecrypted, 0x05 encrypted */</em>
+    MAC_SECURITY_LEVEL securityLevel;
+    <em class="hl-comment">/* The QOS of the MSDU: 0x00 normal priority, 0x01 high priority */</em>
+    MAC_QUALITY_OF_SERVICE qualityOfService;
+    <em class="hl-comment">/* Tone Map of the received frame */</em>
+    MAC_TONE_MAP rxToneMap;
+    <em class="hl-comment">/* Weakest Tone Map with which the frame could have been received */</em>
+    MAC_TONE_MAP computedToneMap;
+} MAC_DATA_INDICATION_PARAMS;</pre></div></article><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title3" id="summary"><h2 class="- topic/title title topictitle2" id="ariaid-title3" style=""> Summary</h2><div class="- topic/body body"><p class="- topic/p p">Defines the Parameters for the MAC Data Indication event handler function.</p></div></article><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title4" id="description"><h2 class="- topic/title title topictitle2" id="ariaid-title4" style=""> Description</h2><div class="- topic/body body"><p class="- topic/p p">The structure contains the fields reported by the MAC Data Indication event handler function.</p><p class="- topic/p p">Field description:</p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">msdu. Pointer to the set of octets forming the received MSDU.</p></li><li class="- topic/li li"><p class="- topic/p p">timestamp. Reception time, refered to MAC milliseconds counter.</p></li><li class="- topic/li li"><p class="- topic/p p">srcPanId. The PAN identifier of the device from which the frame was received.</p></li><li class="- topic/li li"><p class="- topic/p p">destPanId. The PAN identifier of the entity to which the MSDU is being transferred.</p></li><li class="- topic/li li"><p class="- topic/p p">msduLength. The number of octets of the MSDU to be indicated to the upper layer.</p></li><li class="- topic/li li"><p class="- topic/p p">srcAddress. The address of the device which sent the frame.</p></li><li class="- topic/li li"><p class="- topic/p p">destAddress. The address of the entity to which the MSDU is being transferred.</p></li><li class="- topic/li li"><p class="- topic/p p">linkQuality. The LQI value measured during reception of the frame.</p></li><li class="- topic/li li"><p class="- topic/p p">dsn. The Data Sequence Number of the received frame.</p></li><li class="- topic/li li"><p class="- topic/p p">keyIndex. The index of the key used for decryption.</p></li><li class="- topic/li li"><p class="- topic/p p">rxModulation. Modulation Type of the received frame.</p></li><li class="- topic/li li"><p class="- topic/p p">rxModulationScheme. Modulation scheme of the received frame.</p></li><li class="- topic/li li"><p class="- topic/p p">computedModulation. Weakest Modulation Type in which the frame could have been received.</p></li><li class="- topic/li li"><p class="- topic/p p">computedModulationScheme. Weakest Modulation Scheme in which the frame could have been received.</p></li><li class="- topic/li li"><p class="- topic/p p">phaseDifferential. Phase Differential compared to Node that sent the frame.</p></li><li class="- topic/li li"><p class="- topic/p p">securityLevel. Security level of the received frame: 0x00 unecrypted, 0x05 encrypted.</p></li><li class="- topic/li li"><p class="- topic/p p">qualityOfService. The QOS of the MSDU: 0x00 normal priority, 0x01 high priority.</p></li><li class="- topic/li li"><p class="- topic/p p">rxToneMap. Tone Map of the received frame.</p></li><li class="- topic/li li"><p class="- topic/p p">computedToneMap. Weakest Tone Map with which the frame could have been received.</p></li></ul></div></article><article class="- topic/topic topic nested1" aria-labelledby="ariaid-title5" id="remarks"><h2 class="- topic/title title topictitle2" id="ariaid-title5" style=""> Remarks</h2><div class="- topic/body body"><p class="- topic/p p">None.</p></div></article></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                        <nav role="navigation" id="wh_topic_toc" aria-label="On this page" class="col-lg-2 d-none d-lg-block navbar d-print-none"> 
+                            <div id="wh_topic_toc_content">
+		                        
+	                            <div class=" wh_topic_toc "><div class="wh_topic_label">On this page</div><ul><li class="topic-item"><a href="#c" data-tocid="c"> C</a></li><li class="topic-item"><a href="#summary" data-tocid="summary"> Summary</a></li><li class="topic-item"><a href="#description" data-tocid="description"> Description</a></li><li class="topic-item"><a href="#remarks" data-tocid="remarks"> Remarks</a></li></ul></div>
+	                        	
+                        	</div>
+                        </nav>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <div class="mchp_disclaimer"><p class="mchp_disclaimer_text">The online versions of the documents are provided as a courtesy. Verify all content and data in the device’s PDF documentation found on the device product page.</p></div><footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <div class="footer">
+  <div class="mchp-wh-footer">
+    <div class="mchp-footer">
+      <div class="mchp-footer-tier1">
+        <div class="spacer"></div>
+        <div class="mchp-footer-container">
+          <div class="mchp-footer-links mchp-social-media-links">
+            <div class="mchp-component-items">
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.facebook.com/pages/Microchip-Technology-Inc/20320981741" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Facebook" src="oxygen-webhelp/template/resources/images/201016-corp-facebook.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.linkedin.com/company/microchip-technology" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip LinkedIn" src="oxygen-webhelp/template/resources/images/201016-corp-linkedin.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://twitter.com/MicrochipTech" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Twitter" src="oxygen-webhelp/template/resources/images/201016-corp-twitter.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.youtube.com/user/MicrochipTechnology" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip YouTube" src="oxygen-webhelp/template/resources/images/201016-corp-youtube.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.instagram.com/microchiptechnologyinc/" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Instagram" src="oxygen-webhelp/template/resources/images/201016-corp-instagram.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.weibo.com/microchiptech" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Weibo" src="oxygen-webhelp/template/resources/images/201016-corp-weibo.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.microchip.com/en-us/about/blog" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Blog" src="oxygen-webhelp/template/resources/images/201016-corp-blog.png"/>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="mchp-footer-links">
+            <div class="mchp-component-items">
+              <div class="mchp-component-item">
+                <div class="link">
+                  <a href="https://www.microchip.com/about-us/contact-us" class="mchp-link__link">Contact</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information" class="mchp-link__link">Legal</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information/privacy-policy" class="mchp-link__link">Privacy Policy</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information/microchip-cookie-statement" class="mchp-link__link">Cookies</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item">
+                <div class="link">
+                  <a href="https://careers.microchip.com/" class="mchp-link__link">Careers</a>
+                  <span class="mchp-link__separator"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mchp-footer-newsletter">
+            <div class="cmp-text">
+              <p>Stay on the leading edge with our blog</p>
+            </div>
+            <div class="mchp-button-wrapper">
+              <a role="button" href="https://www.microchip.com/en-us/about/blog" class="mchp-button mchp-button-regular solid">
+                <span class="mchp-button__span">MicroSolutions</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="graphic">
+          <img src="oxygen-webhelp/template/resources/images/footer-graphic.png"/>
+        </div>
+      </div>
+      <div class="mchp-footer-tier2">
+        <p class="mchp-copyright">© Copyright 1998-2022 Microchip Technology Inc. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async="true" src="https://www.googletagmanager.com/gtag/js?id=UA-2724382-19"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];  
+    function gtag(){dataLayer.push(arguments);}  
+    gtag('js', new Date());   
+    gtag('config', 'UA-2724382-19');
+  </script>
+  
+  <script type="text/javascript">_satellite.pageBottom();</script><!-- Adobe Analytics -->
+  
+</div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+        
+       
+        </body>
+</html>

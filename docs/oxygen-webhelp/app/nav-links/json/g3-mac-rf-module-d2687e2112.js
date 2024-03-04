@@ -1,0 +1,1 @@
+define({"topics":[{"title":"<ph>1.3.5.1<\/ph>\nG3 MAC RF Module Interface","href":"GUID-5DE064FA-E67E-4013-82BA-D7E8650EA5B9.html","attributes":{"data-id":"g3-mac-rf-module-interface"},"menu":{"hasChildren":false},"tocID":"g3-mac-rf-module-interface-d2687e2120","next":"g3-mac-rf-module-interface-d2687e2120"}]});

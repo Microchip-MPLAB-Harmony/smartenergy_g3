@@ -1,0 +1,3749 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<keywords publicationid="GUID-EE59A777-9AB0-4BC2-AEE5-BEEC67DAE054"
+          language="en-US"
+          version="1"
+          documenttitle="MPLAB Harmony Smart Energy G3 Stack"
+          pubtype="- Please select a publication type"
+          pubsubtype=""
+          pubuserguidesubtype=""
+          pubproducthierarchy=""
+          devices=""
+          revisiondate="08/09/2022 00:00:00"
+          revisionletter="A"
+          isbn=""
+          pubid=""
+          reachid=""
+          description=""
+          lastmodified="04/03/2024 12:55:59"
+          covertitle="MPLAB Harmony Smart Energy G3 Stack"
+          frontcover="">
+   <keyworditem topicid="GUID-9F252FF0-1A85-4731-A3CB-F90DB068F6AD"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>Configuring The G3 Stack</register>
+      <title>Configuring The G3 Stack</title>
+      <bitfield/>
+      <keyword>g3_configurations</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A7D71EF2-E6F4-4A4C-9053-9DD2EE0F06C2"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>Configuring The G3 ADP Layer</register>
+      <title>Configuring The G3 ADP Layer</title>
+      <bitfield/>
+      <keyword>g3_adp_layer_configurations</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F6FCD5F2-5C69-4593-841A-DE9B9573A2DB"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_Initialize Function</register>
+      <title>ADP_Initialize Function</title>
+      <bitfield/>
+      <keyword>ADP_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-FD594728-1C67-444A-AFD5-95ACC81A5CF6"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_INIT Struct</register>
+      <title>ADP_INIT Struct</title>
+      <bitfield/>
+      <keyword>ADP_INIT</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E85AFCD9-7233-419C-9EE0-5D134293713A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_Tasks Function</register>
+      <title>ADP_Tasks Function</title>
+      <bitfield/>
+      <keyword>ADP_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-632F6C49-5835-4A8F-B429-70CB7D4C6515"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_Open Function</register>
+      <title>ADP_Open Function</title>
+      <bitfield/>
+      <keyword>ADP_Open</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-63A2F427-A980-4228-ABBD-2BEB87C699BB"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_Status Function</register>
+      <title>ADP_Status Function</title>
+      <bitfield/>
+      <keyword>ADP_Status</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-50F95DF2-5CFC-44D5-95B0-B6C4665FA09C"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_STATUS Enum</register>
+      <title>ADP_STATUS Enum</title>
+      <bitfield/>
+      <keyword>ADP_STATUS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D9449E2C-20B6-4622-8E58-4A9FFCC14CC4"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_SetLBPStatusConnection Function</register>
+      <title>ADP_SetLBPStatusConnection Function</title>
+      <bitfield/>
+      <keyword>ADP_SetLBPStatusConnection</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-4CBC2225-02E9-4BBB-BA10-34C789E2A798"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_GetAvailableMacLayers Function</register>
+      <title>ADP_GetAvailableMacLayers Function</title>
+      <bitfield/>
+      <keyword>ADP_GetAvailableMacLayers</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-052F1323-B0F3-4EEA-A387-C2DCCB882812"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_AVAILABLE_MAC_LAYERS Enum</register>
+      <title>ADP_AVAILABLE_MAC_LAYERS Enum</title>
+      <bitfield/>
+      <keyword>ADP_AVAILABLE_MAC_LAYERS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-25B01C3E-97CA-4B3B-BFE4-A94D22593542"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_SetDataNotifications Function</register>
+      <title>ADP_SetDataNotifications Function</title>
+      <bitfield/>
+      <keyword>ADP_SetDataNotifications</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C5E0F7B0-7355-4FB4-9140-A307352FCBE9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_DATA_NOTIFICATIONS Struct</register>
+      <title>ADP_DATA_NOTIFICATIONS Struct</title>
+      <bitfield/>
+      <keyword>ADP_DATA_NOTIFICATIONS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3CBD96A3-FC51-4025-96EA-EEC9F8D3273A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_SetManagementNotifications Function</register>
+      <title>ADP_SetManagementNotifications Function</title>
+      <bitfield/>
+      <keyword>ADP_SetManagementNotifications</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C106FA04-D9C6-43AD-B885-391C5EAED17E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_MANAGEMENT_NOTIFICATIONS Struct</register>
+      <title>ADP_MANAGEMENT_NOTIFICATIONS Struct</title>
+      <bitfield/>
+      <keyword>ADP_MANAGEMENT_NOTIFICATIONS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-FBA55F90-409F-457E-9728-0F48AFD1184F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_SetNotificationsToLbp Function</register>
+      <title>ADP_SetNotificationsToLbp Function</title>
+      <bitfield/>
+      <keyword>ADP_SetNotificationsToLbp</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-00D84923-1FEB-4AF6-A863-4D5ED4FE1DA8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_NOTIFICATIONS_TO_LBP Struct</register>
+      <title>ADP_NOTIFICATIONS_TO_LBP Struct</title>
+      <bitfield/>
+      <keyword>ADP_NOTIFICATIONS_TO_LBP</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E7455A9B-754C-424A-BEB0-37500BAAB27F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_DataRequest Function</register>
+      <title>ADP_DataRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_DataRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-6968B422-1EE3-45D3-88EF-AACC71340A7C"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_NoIPDataRequest Function</register>
+      <title>ADP_NoIPDataRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_NoIPDataRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F660EA3F-38BF-4C41-87E4-75EDE84BD887"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_DATA_CFM_CALLBACK Typedef</register>
+      <title>ADP_DATA_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_DATA_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-AA62B3BB-FED2-484C-9BDC-091DAC273A92"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_DATA_CFM_PARAMS Struct</register>
+      <title>ADP_DATA_CFM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>ADP_DATA_CFM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-71FA3724-5AC4-4D34-A9F0-ADB817F7FEE6"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_DATA_IND_CALLBACK Typedef</register>
+      <title>ADP_DATA_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_DATA_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3E77332C-665E-426E-81E0-3D9A50BF25A4"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_DATA_IND_PARAMS Struct</register>
+      <title>ADP_DATA_IND_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>ADP_DATA_IND_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-9935B748-46DB-4595-B939-3A6E2C49B9B8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_DiscoveryRequest Function</register>
+      <title>ADP_DiscoveryRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_DiscoveryRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2963D8A1-C5CC-4638-8D22-70DA0D0A1F9F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_DISCOVERY_CFM_CALLBACK Typedef</register>
+      <title>ADP_DISCOVERY_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_DISCOVERY_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3917AFF1-6CA2-4354-8ABA-086BB55EBB38"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_DISCOVERY_IND_CALLBACK Typedef</register>
+      <title>ADP_DISCOVERY_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_DISCOVERY_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-182FF3CB-3F13-462E-B5EF-ED71412146CB"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_PAN_DESCRIPTOR Struct</register>
+      <title>ADP_PAN_DESCRIPTOR Struct</title>
+      <bitfield/>
+      <keyword>ADP_PAN_DESCRIPTOR</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B4E60F2A-9C63-4353-83CE-9F75399C5598"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_NetworkStartRequest Function</register>
+      <title>ADP_NetworkStartRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_NetworkStartRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F3213E92-AACD-4EB1-9136-B00D23CACD05"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_NETWORK_START_CFM_CALLBACK Typedef</register>
+      <title>ADP_NETWORK_START_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_NETWORK_START_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-81EF97A9-791A-4EB5-AF9F-6A182BE28981"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_ResetRequest Function</register>
+      <title>ADP_ResetRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_ResetRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-FB2D99E1-43F0-4AEC-B8CD-6DD634313F44"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_RESET_CFM_CALLBACK Typedef</register>
+      <title>ADP_RESET_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_RESET_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B8321F29-4166-48A5-B0D0-EC910744D01C"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_GetRequest Function</register>
+      <title>ADP_GetRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_GetRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C2E31207-1551-4326-9FCC-31AE6553D165"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_GetRequestSync Function</register>
+      <title>ADP_GetRequestSync Function</title>
+      <bitfield/>
+      <keyword>ADP_GetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B99FF97B-DF7A-48B1-BC43-CD0B87B86E5C"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_GET_CFM_CALLBACK Typedef</register>
+      <title>ADP_GET_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_GET_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A79A4876-8351-4EB0-B21F-0E1699CA24EC"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_GET_CFM_PARAMS Struct</register>
+      <title>ADP_GET_CFM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>ADP_GET_CFM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B1782777-5717-46FD-B44B-D267EABBB27E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_MacGetRequest Function</register>
+      <title>ADP_MacGetRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_MacGetRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E5934A69-A7DF-44C5-8F08-8C4C7B41F6E2"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_MacGetRequestSync Function</register>
+      <title>ADP_MacGetRequestSync Function</title>
+      <bitfield/>
+      <keyword>ADP_MacGetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F8EBC831-9D5E-4F72-9241-1AEB718CDB7C"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_MAC_GET_CFM_CALLBACK Typedef</register>
+      <title>ADP_MAC_GET_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_MAC_GET_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E14505CD-417D-4A70-A9F3-139F7A7B3575"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_MAC_GET_CFM_PARAMS Struct</register>
+      <title>ADP_MAC_GET_CFM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>ADP_MAC_GET_CFM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-1632313F-FCE1-4A68-89EC-A4E10B2F0156"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_SetRequest Function</register>
+      <title>ADP_SetRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_SetRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A9F746A1-4300-4CE5-A0BA-B8BDAD03966F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_SetRequest Function</register>
+      <title>ADP_SetRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_SetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3B9FF102-B7C5-43CE-97A9-D656AE1D1479"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_SET_CFM_CALLBACK Typedef</register>
+      <title>ADP_SET_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_SET_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-CA6CF7E4-27B1-47CC-9D05-4B7B317D524B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_SET_CFM_PARAMS Struct</register>
+      <title>ADP_SET_CFM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>ADP_SET_CFM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-7E1312BC-7144-4E46-8F32-F08FD29D2C0E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_MacSetRequest Function</register>
+      <title>ADP_MacSetRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_MacSetRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B4337F6F-B47F-4A7C-A2C3-EA189484FD4B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_SetRequest Function</register>
+      <title>ADP_SetRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_MacSetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-53632A84-955D-4C65-A00F-E3752DB629A3"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_MAC_SET_CFM_CALLBACK Typedef</register>
+      <title>ADP_MAC_SET_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_MAC_SET_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-634EB543-3294-42D6-8E46-E691DBD67276"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_PIB_ATTRIBUTE Enum</register>
+      <title>ADP_PIB_ATTRIBUTE Enum</title>
+      <bitfield/>
+      <keyword>ADP_PIB_ATTRIBUTE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-DD72280A-55FD-455D-A509-04D74BC9A32D"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_LbpRequest Function</register>
+      <title>ADP_LbpRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_LbpRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-776BB7C3-CFDF-4ECB-88BA-7A9A8F35FFB2"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_LBP_CFM_CALLBACK Typedef</register>
+      <title>ADP_LBP_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_LBP_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-8D999558-03E4-4744-B0E9-3507829F06FF"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_LBP_CFM_PARAMS Struct</register>
+      <title>ADP_LBP_CFM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>ADP_LBP_CFM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-ED2EF99F-F824-47DA-9AD9-87EE3758DD5D"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_LBP_IND_CALLBACK Typedef</register>
+      <title>ADP_LBP_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_LBP_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B982F61F-1E63-423B-89F6-38140AC3E7B8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_LBP_IND_PARAMS Struct</register>
+      <title>ADP_LBP_IND_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>ADP_LBP_IND_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-8F0AD4DE-534A-4060-ADAB-479E418A15E0"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_RouteDiscoveryRequest Function</register>
+      <title>ADP_RouteDiscoveryRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_RouteDiscoveryRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C92ADDF1-ED20-4D94-9E3E-1A81C7EBE034"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_ROUTE_DISCOVERY_CFM_CALLBACK Typedef</register>
+      <title>ADP_ROUTE_DISCOVERY_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_ROUTE_DISCOVERY_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A830C149-8580-480A-BF21-1A7855F8A631"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_PathDiscoveryRequest Function</register>
+      <title>ADP_PathDiscoveryRequest Function</title>
+      <bitfield/>
+      <keyword>ADP_PathDiscoveryRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-AA7C9A74-4A2A-4331-9210-B4D69E9C9A7F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_PATH_DISCOVERY_CFM_CALLBACK Typedef</register>
+      <title>ADP_PATH_DISCOVERY_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_PATH_DISCOVERY_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-633B8458-0502-44D4-A9D3-F51F6A4DEFE7"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_PATH_DISCOVERY_CFM_PARAMS Struct</register>
+      <title>ADP_PATH_DISCOVERY_CFM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>ADP_PATH_DISCOVERY_CFM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-11265138-05EC-4FB8-A848-EF177C7E14CD"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_NETWORK_STATUS_IND_CALLBACK Typedef</register>
+      <title>ADP_NETWORK_STATUS_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_NETWORK_STATUS_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-54A49EAD-A7FB-47A4-B1BA-BA7173E389B8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_NETWORK_STATUS_IND_PARAMS Struct</register>
+      <title>ADP_NETWORK_STATUS_IND_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>ADP_NETWORK_STATUS_IND_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-9DFB90D2-3F73-4031-8166-407F23BFDF79"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_BUFFER_IND_CALLBACK Typedef</register>
+      <title>ADP_BUFFER_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_BUFFER_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-20ACDB22-F859-4EEF-8D72-9DE944662D5B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_BUFFER_IND_PARAMS Union</register>
+      <title>ADP_BUFFER_IND_PARAMS Union</title>
+      <bitfield/>
+      <keyword>ADP_BUFFER_IND_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A3C53D1E-155E-46DB-88DA-F2EB561E2A4A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_PREQ_IND_CALLBACK Typedef</register>
+      <title>ADP_PREQ_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_PREQ_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-19857A24-CEF8-41AE-99BA-904EB590BBF8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_NON_VOLATILE_DATA_IND_CALLBACK Typedef</register>
+      <title>ADP_NON_VOLATILE_DATA_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_NON_VOLATILE_DATA_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-ECB56835-8385-4BF9-B326-86930C8A8DE2"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_NON_VOLATILE_DATA_IND_PARAMS Struct</register>
+      <title>ADP_NON_VOLATILE_DATA_IND_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>ADP_NON_VOLATILE_DATA_IND_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-99ADD020-BCE3-42C3-8D93-E686AE5847D6"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_ROUTE_NOT_FOUND_IND_CALLBACK Typedef</register>
+      <title>ADP_ROUTE_NOT_FOUND_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>ADP_ROUTE_NOT_FOUND_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-19B8C2B9-E559-4E62-A614-9729CCD154CA"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_ROUTE_NOT_FOUND_IND_PARAMS Struct</register>
+      <title>ADP_ROUTE_NOT_FOUND_IND_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>ADP_ROUTE_NOT_FOUND_IND_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-023A7817-EE04-43C8-B1A7-0C0FFC860C2D"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_MODULATION_PLC Enum</register>
+      <title>ADP_MODULATION_PLC Enum</title>
+      <bitfield/>
+      <keyword>ADP_MODULATION_PLC</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2D5757BB-539E-45C9-90A9-173F0BF12F29"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_EXTENDED_ADDRESS Struct</register>
+      <title>ADP_EXTENDED_ADDRESS Struct</title>
+      <bitfield/>
+      <keyword>ADP_EXTENDED_ADDRESS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-9E78AFFE-4153-4828-80A2-5B4FFA2BFB66"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_ADDRESS Struct</register>
+      <title>ADP_ADDRESS Struct</title>
+      <bitfield/>
+      <keyword>ADP_ADDRESS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-7CD22A9A-3F18-485E-A06F-35027122EC15"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_BAND Enum</register>
+      <title>ADP_BAND Enum</title>
+      <bitfield/>
+      <keyword>ADP_BAND</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D33A4106-A094-4541-8A7E-1A5A711CABC5"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_HOP_DESCRIPTOR Struct</register>
+      <title>ADP_HOP_DESCRIPTOR Struct</title>
+      <bitfield/>
+      <keyword>ADP_HOP_DESCRIPTOR</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-4E213740-B099-4CC0-B62A-0A5F872EE491"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_PATH_DESCRIPTOR Struct</register>
+      <title>ADP_PATH_DESCRIPTOR Struct</title>
+      <bitfield/>
+      <keyword>ADP_PATH_DESCRIPTOR</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-FD982FE5-AF83-4E3A-98BB-E8984D3E4B5F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>ADP_PLC_BAND Enum</register>
+      <title>ADP_PLC_BAND Enum</title>
+      <bitfield/>
+      <keyword>ADP_RESULT</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-ED680F48-FB74-4B27-B6E0-BFA184E9BBFD"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_InitDev Function</register>
+      <title>LBP_InitDev Function</title>
+      <bitfield/>
+      <keyword>LBP_InitDev</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-7940246A-FADD-40F8-894F-D337C1D342D4"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_ADP_NETWORK_JOIN_CFM_CALLBACK Typedef</register>
+      <title>LBP_ADP_NETWORK_JOIN_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>LBP_ADP_NETWORK_JOIN_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-1CE6C7B1-8820-499A-A1BB-8C538F7FD589"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_ADP_NETWORK_JOIN_CFM_PARAMS Struct</register>
+      <title>LBP_ADP_NETWORK_JOIN_CFM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>LBP_ADP_NETWORK_JOIN_CFM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-1990FAF1-B457-416B-82A6-C97A488352FE"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_ADP_NETWORK_LEAVE_CFM_CALLBACK Typedef</register>
+      <title>LBP_ADP_NETWORK_LEAVE_CFM_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>LBP_ADP_NETWORK_LEAVE_CFM_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B2B127A4-AA65-4A0D-8EB9-D00F8BB26D56"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_ADP_NETWORK_LEAVE_IND_CALLBACK Typedef</register>
+      <title>LBP_ADP_NETWORK_LEAVE_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>LBP_ADP_NETWORK_LEAVE_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-ACA96FFD-1DC4-4DC9-9ABC-E7F28CF3FF60"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_NOTIFICATIONS_DEV Struct</register>
+      <title>LBP_NOTIFICATIONS_DEV Struct</title>
+      <bitfield/>
+      <keyword>LBP_NOTIFICATIONS_DEV</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-742F1EE1-E0F8-498C-B350-A67636DBF985"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_SetNotificationsDev Function</register>
+      <title>LBP_SetNotificationsDev Function</title>
+      <bitfield/>
+      <keyword>LBP_SetNotificationsDev</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-622A6F3A-2C5A-4F13-82F1-A460DDB68067"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_TasksDev Function</register>
+      <title>LBP_TasksDev Function</title>
+      <bitfield/>
+      <keyword>LBP_TasksDev</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-4C0A36B2-9A04-4107-B2E2-8C5032060BD1"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_SetParamDev Function</register>
+      <title>LBP_SetParamDev Function</title>
+      <bitfield/>
+      <keyword>LBP_SetParamDev</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-56E979A6-9549-4F52-9AD7-00F7FF3E230E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_SET_PARAM_CONFIRM Struct</register>
+      <title>LBP_SET_PARAM_CONFIRM Struct</title>
+      <bitfield/>
+      <keyword>LBP_SET_PARAM_CONFIRM</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-7CE40091-9D17-42C1-BE69-DE401A72C154"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_ATTRIBUTE Enum</register>
+      <title>LBP_ATTRIBUTE Enum</title>
+      <bitfield/>
+      <keyword>LBP_ATTRIBUTE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B838ABDE-03E1-4D13-9F42-2D117736575A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_STATUS Enum</register>
+      <title>LBP_STATUS Enum</title>
+      <bitfield/>
+      <keyword>LBP_STATUS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-43F5C595-F344-4F07-BC3C-E3CF2803AB19"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_ForceRegister Function</register>
+      <title>LBP_ForceRegister Function</title>
+      <bitfield/>
+      <keyword>LBP_ForceRegister</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-20DA2A3D-E27C-4A17-A9E2-549F4E0A6E97"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_AdpNetworkJoinRequest Function</register>
+      <title>LBP_AdpNetworkJoinRequest Function</title>
+      <bitfield/>
+      <keyword>LBP_AdpNetworkJoinRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-230883BA-FE76-48B1-996C-C0645CA06166"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_AdpNetworkLeaveRequest Function</register>
+      <title>LBP_AdpNetworkLeaveRequest Function</title>
+      <bitfield/>
+      <keyword>LBP_AdpNetworkLeaveRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F1DFAAC3-50CC-4E01-870E-FE56EAE85942"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_InitCoord Function</register>
+      <title>LBP_InitCoord Function</title>
+      <bitfield/>
+      <keyword>LBP_InitCoord</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F3DE7A60-B798-44E5-BC92-7232F31D744D"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_COORD_JOIN_REQUEST_IND_CALLBACK Typedef</register>
+      <title>LBP_COORD_JOIN_REQUEST_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>LBP_COORD_JOIN_REQUEST_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-BF4AC473-E777-4736-B5C1-F589ECFBEA74"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_COORD_JOIN_COMPLETE_IND_CALLBACK Typedef</register>
+      <title>LBP_COORD_JOIN_COMPLETE_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>LBP_COORD_JOIN_COMPLETE_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-5C3071F9-23FD-4D2D-863B-16BB5A09F4AB"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_COORD_LEAVE_IND_CALLBACK Typedef</register>
+      <title>LBP_COORD_LEAVE_IND_CALLBACK Typedef</title>
+      <bitfield/>
+      <keyword>LBP_COORD_LEAVE_IND_CALLBACK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-568E9BD0-534A-4605-B661-B95D54AA4F06"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_NOTIFICATIONS_COORD Struct</register>
+      <title>LBP_NOTIFICATIONS_COORD Struct</title>
+      <bitfield/>
+      <keyword>LBP_NOTIFICATIONS_COORD</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D045B9D8-2425-4A91-ADE0-B5AC7F7AAB63"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_UpdateLbpSlots Function</register>
+      <title>LBP_UpdateLbpSlots Function</title>
+      <bitfield/>
+      <keyword>LBP_UpdateLbpSlots</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2608CBA5-2DDA-4210-A9E8-B6F0555F80C4"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_SetNotificationsCoord Function</register>
+      <title>LBP_SetNotificationsCoord Function</title>
+      <bitfield/>
+      <keyword>LBP_SetNotificationsCoord</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B85EBF15-FBF5-4447-B66D-C962CFEA4C1B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_KickDevice Function</register>
+      <title>LBP_KickDevice Function</title>
+      <bitfield/>
+      <keyword>LBP_KickDevice</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3D797D34-F344-46AE-BE01-B1A5B71F235E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_Rekey Function</register>
+      <title>LBP_Rekey Function</title>
+      <bitfield/>
+      <keyword>LBP_Rekey</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-8D7A37FD-C1A9-4AC2-975A-9C8CF4EF057D"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_SetRekeyPhase Function</register>
+      <title>LBP_SetRekeyPhase Function</title>
+      <bitfield/>
+      <keyword>LBP_SetRekeyPhase</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-BBC53611-3461-4F98-BD5E-2CFD1633B06E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_ActivateNewKey Function</register>
+      <title>LBP_ActivateNewKey Function</title>
+      <bitfield/>
+      <keyword>LBP_ActivateNewKey</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-AEA3A34E-0C8D-4F16-B5F4-71313BDBE7E4"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_SetParamCoord Function</register>
+      <title>LBP_SetParamCoord Function</title>
+      <bitfield/>
+      <keyword>LBP_SetParamCoord</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-18C3990F-13AD-441E-9CC0-4F92435109CF"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>LBP_ShortAddressAssign Function</register>
+      <title>LBP_ShortAddressAssign Function</title>
+      <bitfield/>
+      <keyword>LBP_ShortAddressAssign</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-944A8723-E7E1-4616-B8B5-803E493EC106"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>Configuring The G3 MAC Layer</register>
+      <title>Configuring The G3 MAC Layer</title>
+      <bitfield/>
+      <keyword>g3_mac_layer_configurations</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3C65EE6A-3132-46B5-AA8D-FA1C119AFFDA"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_Initialize Function</register>
+      <title>MAC_WRP_Initialize Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-00D18DF8-F30B-4621-9C6D-312B5F1B34EF"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_Open Function</register>
+      <title>MAC_WRP_Open Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_Open</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C7947B31-C6BF-445C-BBA1-85F748E43157"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_Tasks Function</register>
+      <title>MAC_WRP_Tasks Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C9AA455A-E0EC-49D1-82ED-EF3ACD3DF61B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SetCallbacks Function</register>
+      <title>MAC_WRP_SetCallbacks Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SetCallbacks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F83C8603-D6EF-4BD9-A1DC-BC46E7CF6D44"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_Status Function</register>
+      <title>MAC_WRP_Status Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_Status</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3BDC72C1-0D8F-463B-A1D1-08C91264BB63"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_DataRequest Function</register>
+      <title>MAC_WRP_DataRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_DataRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A55E0EA8-C6B3-434F-A416-BFEBA6240B64"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_DATA_REQUEST_PARAMS Struct</register>
+      <title>MAC_WRP_DATA_REQUEST_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_DATA_REQUEST_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-908EFB43-B773-493E-BB61-6906B6EE8BB6"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_DataConfirm Typedef</register>
+      <title>MAC_WRP_DataConfirm Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_DataConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-82BF3ED7-B7BD-4605-88CF-EBD8BF88D979"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_DATA_CONFIRM_PARAMS Struct</register>
+      <title>MAC_WRP_DATA_CONFIRM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_DATA_CONFIRM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-02625864-D9DD-4E15-98CD-0D7BD32E505E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_DataIndication Typedef</register>
+      <title>MAC_WRP_DataIndication Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_DataIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-719CC1F7-E283-4218-A885-B3E7FB8196A6"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_DATA_INDICATION_PARAMS Struct</register>
+      <title>MAC_WRP_DATA_INDICATION_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_DATA_INDICATION_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-50769E80-5229-4586-A4C1-2A85BECA110B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_GetRequestSync Function</register>
+      <title>MAC_WRP_GetRequestSync Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_GetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E80DA351-D400-4603-95AF-CA201F683E3D"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SetRequestSync Function</register>
+      <title>MAC_WRP_SetRequestSync Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2717BEC2-5C5D-45B2-8464-ECCF887FB18F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_ResetRequest Function</register>
+      <title>MAC_WRP_ResetRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_ResetRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-62A36087-7F42-4646-A95B-3B78D9658C43"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_RESET_REQUEST_PARAMS Struct</register>
+      <title>MAC_WRP_RESET_REQUEST_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_RESET_REQUEST_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-29E72640-652F-4BDB-89F8-87FCF285B361"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_ResetConfirm Typedef</register>
+      <title>MAC_WRP_ResetConfirm Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_ResetConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D6C760B0-9331-4139-A8D7-063DBCD12468"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_RESET_CONFIRM_PARAMS Struct</register>
+      <title>MAC_WRP_RESET_CONFIRM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_RESET_CONFIRM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F52AB2FC-F4B0-456A-8E64-8A857A716CA2"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_ScanRequest Function</register>
+      <title>MAC_WRP_ScanRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_ScanRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B37A374E-7452-4A98-ABAC-EBE51DB01E5F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SCAN_REQUEST_PARAMS Struct</register>
+      <title>MAC_WRP_SCAN_REQUEST_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SCAN_REQUEST_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A7522105-2B17-4B94-B32C-46BBC056D53C"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_ScanConfirm Typedef</register>
+      <title>MAC_WRP_ScanConfirm Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_ScanConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E4C99163-E0F5-452C-A6F6-9A4C2F85287A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SCAN_CONFIRM_PARAMS Struct</register>
+      <title>MAC_WRP_SCAN_CONFIRM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SCAN_CONFIRM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-EC1F6A4C-B78F-4025-969D-6895D45E4669"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_StartRequest Function</register>
+      <title>MAC_WRP_StartRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_StartRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A4F99B92-8DBC-4C61-B41D-FB5DA8AD9415"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_START_REQUEST_PARAMS Struct</register>
+      <title>MAC_WRP_START_REQUEST_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_START_REQUEST_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2FD654B1-3F6B-4211-9C1E-8370044BD3D5"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_StartConfirm Typedef</register>
+      <title>MAC_WRP_StartConfirm Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_StartConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C15ACA85-08E1-4766-8655-AAAA63AFFB9B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_START_CONFIRM_PARAMS Struct</register>
+      <title>MAC_WRP_START_CONFIRM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_START_CONFIRM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-1D2776A5-47FB-4A32-A56B-DBA872E241FE"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_BeaconNotifyIndication Typedef</register>
+      <title>MAC_WRP_BeaconNotifyIndication Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_BeaconNotifyIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-9740A2CC-6870-40A5-B7BB-56174C7DF0FC"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS Struct</register>
+      <title>MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_BEACON_NOTIFY_INDICATION_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B4D21995-EE4A-4669-83C3-A70B47664676"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_CommStatusIndication Typedef</register>
+      <title>MAC_WRP_CommStatusIndication Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_CommStatusIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F60BE533-68E3-4C12-AF3C-78EC4B83BF24"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_COMM_STATUS_INDICATION_PARAMS Struct</register>
+      <title>MAC_WRP_COMM_STATUS_INDICATION_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_COMM_STATUS_INDICATION_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-9ED71526-3E10-4174-9626-B31AE214E660"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SnifferIndication Typedef</register>
+      <title>MAC_WRP_SnifferIndication Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SnifferIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D910ACFC-B229-4651-85E5-555AE51B4D65"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SNIFFER_INDICATION_PARAMS Struct</register>
+      <title>MAC_WRP_SNIFFER_INDICATION_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SNIFFER_INDICATION_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C2B499FB-F071-4D59-A304-26DC901DB332"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_AVAILABLE_MAC_LAYERS Enum</register>
+      <title>MAC_WRP_AVAILABLE_MAC_LAYERS Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_AVAILABLE_MAC_LAYERS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-122081CB-83E3-4796-A947-F6A59E3DE50C"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_GetAvailableMacLayers Function</register>
+      <title>MAC_WRP_GetAvailableMacLayers Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_GetAvailableMacLayers</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-21EA8C0D-DE54-4DD5-A42D-6ECD32D0174A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_HANDLE Typedef</register>
+      <title>MAC_WRP_HANDLE Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_HANDLE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-00E71D13-7322-4F7C-9889-1752BAE647CC"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_DATA Struct</register>
+      <title>MAC_WRP_DATA Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_DATA</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-4A60631F-7F0C-4C46-91D7-38CF0E5E893C"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_STATE Enum</register>
+      <title>MAC_WRP_STATE Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_STATE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E7F13CDC-92D2-4B5D-B4D3-0C6F7C13D2F7"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_STATUS Enum</register>
+      <title>MAC_WRP_STATUS Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_STATUS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3577D138-9FD6-4CE9-81FB-EC5073BFFC87"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_HANDLERS Struct</register>
+      <title>MAC_WRP_HANDLERS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_HANDLERS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-203D9ED8-9EA1-4F9D-BEC5-82825F6A5B71"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_MEDIA_TYPE_REQUEST Enum</register>
+      <title>MAC_WRP_MEDIA_TYPE_REQUEST Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_MEDIA_TYPE_REQUEST</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-86CF7814-678D-4879-96A5-2D936FB322E8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_MEDIA_TYPE_CONFIRM Enum</register>
+      <title>MAC_WRP_MEDIA_TYPE_CONFIRM Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_MEDIA_TYPE_CONFIRM</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F78CCA7B-EF42-4139-AE2F-8DCE0D65226A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_MEDIA_TYPE_INDICATION Enum</register>
+      <title>MAC_WRP_MEDIA_TYPE_INDICATION Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_MEDIA_TYPE_INDICATION</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-5C1A1473-D1D9-4509-B836-A175E10EB87F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_ADDRESS_MODE Enum</register>
+      <title>MAC_WRP_ADDRESS_MODE Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_ADDRESS_MODE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-6F72FBBA-D42F-49CB-A876-80834D69B85B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SHORT_ADDRESS Typedef</register>
+      <title>MAC_WRP_SHORT_ADDRESS Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SHORT_ADDRESS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-518B0758-8978-412B-B689-FFC52C972B8E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_EXTENDED_ADDRESS Struct</register>
+      <title>MAC_WRP_EXTENDED_ADDRESS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_EXTENDED_ADDRESS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-7014D621-ACA0-4091-8AE7-DFA284A8AAD0"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_ADDRESS Struct</register>
+      <title>MAC_WRP_ADDRESS Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_ADDRESS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2FFFCDF6-A107-4D35-BF6D-C826A3FA191B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_PAN_ID Typedef</register>
+      <title>MAC_WRP_PAN_ID Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_PAN_ID</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-8812567D-6AEF-43C0-AA06-0CD14B15A834"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_PAN_DESCRIPTOR Struct</register>
+      <title>MAC_WRP_PAN_DESCRIPTOR Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_PAN_DESCRIPTOR</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-93F0FF42-800E-41F5-A64B-402A5FBF0311"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_TIMESTAMP Typedef</register>
+      <title>MAC_WRP_TIMESTAMP Typedef</title>
+      <bitfield/>
+      <keyword>MAC_WRP_TIMESTAMP</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D9629655-A7AA-45C3-84F7-34D08821C406"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_PIB_ATTRIBUTE Enum</register>
+      <title>MAC_WRP_PIB_ATTRIBUTE Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_PIB_ATTRIBUTE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-DC0FF189-0734-4EBB-AF52-C7E07F5226AE"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_PIB_VALUE Struct</register>
+      <title>MAC_WRP_PIB_VALUE Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_PIB_VALUE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-59C1F38F-9A54-42FA-8FAE-5CB0809BA380"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_PHY_PARAM Enum</register>
+      <title>MAC_WRP_PHY_PARAM Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_PHY_PARAM</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C3427C01-AA4C-4595-A24B-4EB0E51438B9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_PHY_PARAM_RF Enum</register>
+      <title>MAC_WRP_PHY_PARAM_RF Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_PHY_PARAM_RF</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-9BF25173-C973-41FE-AB11-A3B9A2B4A5FD"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_NEIGHBOUR_ENTRY Struct</register>
+      <title>MAC_WRP_NEIGHBOUR_ENTRY Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_NEIGHBOUR_ENTRY</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-9E047EF2-A59E-4C46-82AB-CEC082F272FF"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_POS_ENTRY Struct</register>
+      <title>MAC_WRP_POS_ENTRY Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_POS_ENTRY</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F2C0ED5B-1A16-4EDC-97A4-184E4187499D"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_POS_ENTRY_RF Struct</register>
+      <title>MAC_WRP_POS_ENTRY_RF Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_POS_ENTRY_RF</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-5DD45EFD-BA1D-48A9-BD66-612C31D8F70B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SECURITY_KEY Struct</register>
+      <title>MAC_WRP_SECURITY_KEY Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SECURITY_KEY</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-7A9953C7-812F-4DCD-9BCF-CDF50292A5EC"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SECURITY_LEVEL Enum</register>
+      <title>MAC_WRP_SECURITY_LEVEL Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SECURITY_LEVEL</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B8A2C034-0D11-4DA2-8755-7D668E5A4F2B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_TX_OPTIONS Enum</register>
+      <title>MAC_WRP_TX_OPTIONS Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_TX_OPTIONS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-74038696-6721-4D28-B2D7-7592F307BD66"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_QUALITY_OF_SERVICE Enum</register>
+      <title>MAC_WRP_QUALITY_OF_SERVICE Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_QUALITY_OF_SERVICE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-BBDC2F3C-7337-4025-993F-27B05617BB7A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_BAND Enum</register>
+      <title>MAC_WRP_BAND Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_BAND</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-DAEDF7C8-09E0-47BA-8049-ED75673B616E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_MODULATION_TYPE Enum</register>
+      <title>MAC_WRP_MODULATION_TYPE Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_MODULATION_TYPE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-581A73DB-4C0B-439E-A793-D34CE66D794A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_MODULATION_SCHEME Enum</register>
+      <title>MAC_WRP_MODULATION_SCHEME Enum</title>
+      <bitfield/>
+      <keyword>MAC_WRP_MODULATION_SCHEME</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-1CAD4AC4-0C3D-469F-817E-C0E330AC11C8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_TONE_MAP Struct</register>
+      <title>MAC_WRP_TONE_MAP Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_TONE_MAP</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A2C26221-9411-458D-9B5A-AC355DA5578E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_TONE_MAP_RESPONSE_DATA Struct</register>
+      <title>MAC_WRP_TONE_MAP_RESPONSE_DATA Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_TONE_MAP_RESPONSE_DATA</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E68F5317-498B-4C77-9CDD-02A91A4638E4"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_TONE_MASK Struct</register>
+      <title>MAC_WRP_TONE_MASK Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_TONE_MASK</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-97BA14A3-0910-43D5-B130-BC28366E3DF3"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_TX_COEF Struct</register>
+      <title>MAC_WRP_TX_COEF Struct</title>
+      <bitfield/>
+      <keyword>MAC_WRP_TX_COEF</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A0175662-F5DD-489F-BA84-41418E98E238"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_GetMsCounter Function</register>
+      <title>MAC_WRP_GetMsCounter Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_GetMsCounter</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-6FF0314A-2ABB-49F5-B80D-9FCE8B5A4CB8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_TimeIsPast Function</register>
+      <title>MAC_WRP_TimeIsPast Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_TimeIsPast</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-4C00769D-E7D7-4990-A352-CD085EBEF20E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_GetSecondsCounter Function</register>
+      <title>MAC_WRP_GetSecondsCounter Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_GetSecondsCounter</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-243E76CB-2AEC-4573-8F41-8FF413608218"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_TimeIsPastSeconds Function</register>
+      <title>MAC_WRP_TimeIsPastSeconds Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_TimeIsPastSeconds</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-076997D0-3AD7-4922-80AB-845B27A702CA"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SerialParseGetRequest Function</register>
+      <title>MAC_WRP_SerialParseGetRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SerialParseGetRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-814E5D74-56DA-4771-B8F6-DF9FDA9D1E62"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SerialStringifyGetConfirm Function</register>
+      <title>MAC_WRP_SerialStringifyGetConfirm Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SerialStringifyGetConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-13D91FAD-0BC6-46A8-81C3-4AEB967C66E4"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SerialParseSetRequest Function</register>
+      <title>MAC_WRP_SerialParseSetRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SerialParseSetRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A5DE798D-B04C-4094-B421-74A3BA34E39C"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_WRP_SerialStringifySetConfirm Function</register>
+      <title>MAC_WRP_SerialStringifySetConfirm Function</title>
+      <bitfield/>
+      <keyword>MAC_WRP_SerialStringifySetConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-7FB15AD1-A98A-4DD7-996C-456A3E9A785E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_COMMON_Init Function</register>
+      <title>MAC_COMMON_Init Function</title>
+      <bitfield/>
+      <keyword>MAC_COMMON_Init</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B058F68A-17BC-467B-9E45-08B009D24383"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_DataConfirm Typedef</register>
+      <title>MAC_DataConfirm Typedef</title>
+      <bitfield/>
+      <keyword>MAC_DataConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-727B36C5-458D-4058-8FF7-124B0CC50C1B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_DATA_CONFIRM_PARAMS Struct</register>
+      <title>MAC_DATA_CONFIRM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_DATA_CONFIRM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-08155BB2-C09F-4335-BC7C-70FB64284BF7"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_DataIndication Typedef</register>
+      <title>MAC_DataIndication Typedef</title>
+      <bitfield/>
+      <keyword>MAC_DataIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B13C1A2B-2B96-4529-915A-EDDBC89799B3"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_DATA_INDICATION_PARAMS Struct</register>
+      <title>MAC_DATA_INDICATION_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_DATA_INDICATION_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-6DABC23B-72E6-457B-B013-1A13173429C4"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_COMMON_GetRequestSync Function</register>
+      <title>MAC_COMMON_GetRequestSync Function</title>
+      <bitfield/>
+      <keyword>MAC_COMMON_GetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-FA3597AE-8519-426D-9BF1-9C33D9A3BA5B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_COMMON_SetRequestSync Function</register>
+      <title>MAC_COMMON_SetRequestSync Function</title>
+      <bitfield/>
+      <keyword>MAC_COMMON_SetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-DE7BA702-E7CA-47A8-9046-787C5D8C92CA"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_COMMON_PIB_ATTRIBUTE Enum</register>
+      <title>MAC_COMMON_PIB_ATTRIBUTE Enum</title>
+      <bitfield/>
+      <keyword>MAC_COMMON_PIB_ATTRIBUTE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-52C41DAE-AA7E-4A21-A4F2-44252F7D4708"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PIB_VALUE Struct</register>
+      <title>MAC_PIB_VALUE Struct</title>
+      <bitfield/>
+      <keyword>MAC_PIB_VALUE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-EB0474FA-9528-43A5-9FE3-4936D7ADFC41"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_COMMON_Reset Function</register>
+      <title>MAC_COMMON_Reset Function</title>
+      <bitfield/>
+      <keyword>MAC_COMMON_Reset</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-54A447D0-F2ED-427F-8C28-7AF46B80C359"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_ResetConfirm Typedef</register>
+      <title>MAC_ResetConfirm Typedef</title>
+      <bitfield/>
+      <keyword>MAC_ResetConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-94A3E6F5-033B-42F8-A67E-7CFF400E8D9F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RESET_CONFIRM_PARAMS Struct</register>
+      <title>MAC_RESET_CONFIRM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_RESET_CONFIRM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A5562638-1C37-441F-8698-C9DEC468ECE1"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_ScanConfirm Typedef</register>
+      <title>MAC_ScanConfirm Typedef</title>
+      <bitfield/>
+      <keyword>MAC_ScanConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F83AE123-24FD-43B9-A707-81527B707DC3"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_SCAN_CONFIRM_PARAMS Struct</register>
+      <title>MAC_SCAN_CONFIRM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_SCAN_CONFIRM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-73649970-DA08-4D86-9388-A2AD03D31FAA"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_StartConfirm Typedef</register>
+      <title>MAC_StartConfirm Typedef</title>
+      <bitfield/>
+      <keyword>MAC_StartConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-DADCBAF6-6ED6-4A62-A1F6-A9BD18E36ABA"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_START_CONFIRM_PARAMS Struct</register>
+      <title>MAC_START_CONFIRM_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_START_CONFIRM_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-60E553F8-5937-46E8-A754-C68FCFE0F422"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_BeaconNotifyIndication Typedef</register>
+      <title>MAC_BeaconNotifyIndication Typedef</title>
+      <bitfield/>
+      <keyword>MAC_BeaconNotifyIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-443274E1-B9BA-43FA-BAE7-3AA034BC2536"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_BEACON_NOTIFY_INDICATION_PARAMS Struct</register>
+      <title>MAC_BEACON_NOTIFY_INDICATION_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_BEACON_NOTIFY_INDICATION_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-6BBD5200-7482-416B-89FB-15EC56A5C997"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_CommStatusIndication Typedef</register>
+      <title>MAC_CommStatusIndication Typedef</title>
+      <bitfield/>
+      <keyword>MAC_CommStatusIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-4478EA6D-A3D3-46E8-B188-3AD023C101E7"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_COMM_STATUS_INDICATION_PARAMS Struct</register>
+      <title>MAC_COMM_STATUS_INDICATION_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_COMM_STATUS_INDICATION_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-67ACCFEF-5A07-4A75-8296-23F5D9CA7C6E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_SnifferIndication Typedef</register>
+      <title>MAC_SnifferIndication Typedef</title>
+      <bitfield/>
+      <keyword>MAC_SnifferIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-41A3BC98-8125-4DC8-ADBC-77F6C94648DF"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_SNIFFER_INDICATION_PARAMS Struct</register>
+      <title>MAC_SNIFFER_INDICATION_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_SNIFFER_INDICATION_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-369C7AC6-5DC0-4415-AB03-BB915D630898"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_COMMON_GetMsCounter Function</register>
+      <title>MAC_COMMON_GetMsCounter Function</title>
+      <bitfield/>
+      <keyword>MAC_COMMON_GetMsCounter</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-9FE98F27-BDDE-447C-8208-5077CE0E3EDF"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_COMMON_TimeIsPast Function</register>
+      <title>MAC_COMMON_TimeIsPast Function</title>
+      <bitfield/>
+      <keyword>MAC_COMMON_TimeIsPast</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-19D97AAF-A96A-4720-B8A8-B11BB511B457"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_COMMON_GetSecondsCounter Function</register>
+      <title>MAC_COMMON_GetSecondsCounter Function</title>
+      <bitfield/>
+      <keyword>MAC_COMMON_GetSecondsCounter</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F379AC94-3B75-42D3-920B-2161AF8920A1"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_COMMON_TimeIsPastSeconds Function</register>
+      <title>MAC_COMMON_TimeIsPastSeconds Function</title>
+      <bitfield/>
+      <keyword>MAC_COMMON_TimeIsPastSeconds</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A9C903E0-6916-4597-8936-388EBE7B84C6"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_STATUS Enum</register>
+      <title>MAC_STATUS Enum</title>
+      <bitfield/>
+      <keyword>MAC_STATUS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D5B23FB2-F9F3-47E0-A996-EEE3FE58F784"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_DATA_REQUEST_PARAMS Struct</register>
+      <title>MAC_DATA_REQUEST_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_DATA_REQUEST_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C466E473-DE52-47C6-8326-265EA4F74E10"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RESET_REQUEST_PARAMS Struct</register>
+      <title>MAC_RESET_REQUEST_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_RESET_REQUEST_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-5D83382B-671B-4208-8189-0EBCDA47B7FE"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_SCAN_REQUEST_PARAMS Struct</register>
+      <title>MAC_SCAN_REQUEST_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_SCAN_REQUEST_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E6B40CB8-B379-468A-B179-519AB23D4B16"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_START_REQUEST_PARAMS Struct</register>
+      <title>MAC_START_REQUEST_PARAMS Struct</title>
+      <bitfield/>
+      <keyword>MAC_START_REQUEST_PARAMS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-EA3B0790-B51B-47CD-8DA7-9EE06C9B1E79"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_ADDRESS_MODE Enum</register>
+      <title>MAC_ADDRESS_MODE Enum</title>
+      <bitfield/>
+      <keyword>MAC_ADDRESS_MODE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F0395DC9-97E6-41F0-A717-4E5B190B0332"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_SHORT_ADDRESS Typedef</register>
+      <title>MAC_SHORT_ADDRESS Typedef</title>
+      <bitfield/>
+      <keyword>MAC_SHORT_ADDRESS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3EB41264-EE02-4589-9F51-9C5B9422B32C"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_EXTENDED_ADDRESS Struct</register>
+      <title>MAC_EXTENDED_ADDRESS Struct</title>
+      <bitfield/>
+      <keyword>MAC_EXTENDED_ADDRESS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C3969CB1-3668-4CA4-B62F-1A95FAC42585"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_ADDRESS Struct</register>
+      <title>MAC_ADDRESS Struct</title>
+      <bitfield/>
+      <keyword>MAC_ADDRESS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-4E6CFD8F-23CA-423E-9ABA-E8FBC490814B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PAN_ID Typedef</register>
+      <title>MAC_PAN_ID Typedef</title>
+      <bitfield/>
+      <keyword>MAC_PAN_ID</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2BDEA87C-F3C2-4349-A718-509D9552758A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_SECURITY_LEVEL Enum</register>
+      <title>MAC_SECURITY_LEVEL Enum</title>
+      <bitfield/>
+      <keyword>MAC_SECURITY_LEVEL</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C27CDF06-707E-4129-8730-DB1AF205465E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_SECURITY_KEY Struct</register>
+      <title>MAC_SECURITY_KEY Struct</title>
+      <bitfield/>
+      <keyword>MAC_SECURITY_KEY</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-CD4D71D1-0AFF-48EB-A611-CA9F31A8FAAB"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_AUXILIARY_SECURITY_HEADER Struct</register>
+      <title>MAC_AUXILIARY_SECURITY_HEADER Struct</title>
+      <bitfield/>
+      <keyword>MAC_AUXILIARY_SECURITY_HEADER</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-54C52BC2-58EA-41B6-8ED2-14D1E0D35469"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_COMMON_MIB Struct</register>
+      <title>MAC_COMMON_MIB Struct</title>
+      <bitfield/>
+      <keyword>MAC_COMMON_MIB</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-FF4E7A76-62D1-479E-B87C-3B164DD3C5ED"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_DEVICE_TABLE_ENTRY Struct</register>
+      <title>MAC_DEVICE_TABLE_ENTRY Struct</title>
+      <bitfield/>
+      <keyword>MAC_DEVICE_TABLE_ENTRY</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-66099712-6066-48A2-A90C-005E9B709533"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PAN_DESCRIPTOR Struct</register>
+      <title>MAC_PAN_DESCRIPTOR Struct</title>
+      <bitfield/>
+      <keyword>MAC_PAN_DESCRIPTOR</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A5694005-52AE-4478-80F6-B65682C993AC"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_QUALITY_OF_SERVICE Enum</register>
+      <title>MAC_QUALITY_OF_SERVICE Enum</title>
+      <bitfield/>
+      <keyword>MAC_QUALITY_OF_SERVICE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2CEAA069-03E3-4EBF-99A9-62AFD64703EC"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_TIMESTAMP Typedef</register>
+      <title>MAC_TIMESTAMP Typedef</title>
+      <bitfield/>
+      <keyword>MAC_TIMESTAMP</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-28F650AE-3279-4FB8-AF6E-83B7FC55C9FD"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_TONE_MAP Struct</register>
+      <title>MAC_TONE_MAP Struct</title>
+      <bitfield/>
+      <keyword>MAC_TONE_MAP</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-1477A724-AD39-4749-ABF4-6AB3EB014F02"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_TX_OPTIONS Enum</register>
+      <title>MAC_TX_OPTIONS Enum</title>
+      <bitfield/>
+      <keyword>MAC_TX_OPTIONS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2740E41C-7D15-4D08-8E8F-BADAE9302A57"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_Init Function</register>
+      <title>MAC_PLC_Init Function</title>
+      <bitfield/>
+      <keyword>MAC_PLC_Init</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F6F8E1DE-4AD0-4EA1-A6BB-CE1C6A2F9C6B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_INIT Struct</register>
+      <title>MAC_PLC_INIT Struct</title>
+      <bitfield/>
+      <keyword>MAC_PLC_INIT</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A204B08E-9675-45CB-ABD2-13685850EF96"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_Tasks Function</register>
+      <title>MAC_PLC_Tasks Function</title>
+      <bitfield/>
+      <keyword>MAC_PLC_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-4C104CED-ED9E-4D35-AB05-01071D1B8BF9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_Status Function</register>
+      <title>MAC_PLC_Status Function</title>
+      <bitfield/>
+      <keyword>MAC_PLC_Status</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B54597B2-D377-4216-BDDA-CDB6D3A16A02"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_DataRequest Function</register>
+      <title>MAC_PLC_DataRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_PLC_DataRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F4E35E52-3C26-4199-8204-9D7D430C4487"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_GetRequestSync Function</register>
+      <title>MAC_PLC_GetRequestSync Function</title>
+      <bitfield/>
+      <keyword>MAC_PLC_GetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3AF69AF6-3F8A-4F1E-A878-A2E9D2AC1F3B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_SetRequestSync Function</register>
+      <title>MAC_PLC_SetRequestSync Function</title>
+      <bitfield/>
+      <keyword>MAC_PLC_SetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A1013C08-6CAE-41F9-BBEB-E34256546B30"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_MIB_SetAttributeSync Function</register>
+      <title>MAC_PLC_MIB_SetAttributeSync Function</title>
+      <bitfield/>
+      <keyword>MAC_PLC_SetAttributeSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-30ED9818-CEC3-4ACB-BC7D-40E6C778C8C9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_PIB_ATTRIBUTE Enum</register>
+      <title>MAC_PLC_PIB_ATTRIBUTE Enum</title>
+      <bitfield/>
+      <keyword>MAC_PLC_PIB_ATTRIBUTE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-DFB682CB-CA4D-4763-AC8D-A2F7D3A75496"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_MIB Struct</register>
+      <title>MAC_PLC_MIB Struct</title>
+      <bitfield/>
+      <keyword>MAC_PLC_MIB</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3B018E34-75A6-4E6D-85D4-DC2065F37293"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_ResetRequest Function</register>
+      <title>MAC_PLC_ResetRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_PLC_ResetRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-ABB4F0A6-CE35-40BD-988E-0425DA9EED20"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_ScanRequest Function</register>
+      <title>MAC_PLC_ScanRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_PLC_ScanRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-FFAA1C41-06E1-42C7-894C-32DCF8CDCC47"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_StartRequest Function</register>
+      <title>MAC_PLC_StartRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_PLC_StartRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-5EE4B61A-34BD-4FDE-B32C-78EA4AAD3A5E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_HANDLERS Struct</register>
+      <title>MAC_PLC_HANDLERS Struct</title>
+      <bitfield/>
+      <keyword>MAC_PLC_HANDLERS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-56785849-5028-41B5-9BB4-BA4937227C0A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_TABLES Struct</register>
+      <title>MAC_PLC_TABLES Struct</title>
+      <bitfield/>
+      <keyword>MAC_PLC_TABLES</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B20F9CA7-9FA5-47B3-99AF-1A32636B09D8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_STATE Enum</register>
+      <title>MAC_PLC_STATE Enum</title>
+      <bitfield/>
+      <keyword>MAC_PLC_STATE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-42457FD8-32B2-4202-8005-96B6299B5789"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_DATA Struct</register>
+      <title>MAC_PLC_DATA Struct</title>
+      <bitfield/>
+      <keyword>MAC_PLC_DATA</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F1585FA1-E8A7-4989-8293-2C700E2E1D55"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_FRAME_CONTROL Struct</register>
+      <title>MAC_PLC_FRAME_CONTROL Struct</title>
+      <bitfield/>
+      <keyword>MAC_PLC_FRAME_CONTROL</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-EAA01401-3049-4DB7-9942-DDFA75D93C19"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_HEADER Struct</register>
+      <title>MAC_PLC_HEADER Struct</title>
+      <bitfield/>
+      <keyword>MAC_PLC_HEADER</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D603D5A5-6B2B-4D22-B713-6ACC76CED26F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_FRAME Struct</register>
+      <title>MAC_PLC_FRAME Struct</title>
+      <bitfield/>
+      <keyword>MAC_PLC_FRAME</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2314447C-75A8-4F76-AC6E-00D87D4DCD8E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_BAND Enum</register>
+      <title>MAC_PLC_BAND Enum</title>
+      <bitfield/>
+      <keyword>MAC_PLC_BAND</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-99BD1745-3A51-4F93-8B52-6CF1BDFE6FB0"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_MODULATION_SCHEME Enum</register>
+      <title>MAC_PLC_MODULATION_SCHEME Enum</title>
+      <bitfield/>
+      <keyword>MAC_PLC_MODULATION_SCHEME</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-CC9B4DBE-6E45-4CFF-8809-A0A51A2422A2"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_PLC_MODULATION_TYPE Enum</register>
+      <title>MAC_PLC_MODULATION_TYPE Enum</title>
+      <bitfield/>
+      <keyword>MAC_PLC_MODULATION_TYPE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-5BDD2930-D1F3-4432-BF10-884AFDD4F607"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_Init Function</register>
+      <title>MAC_RF_Init Function</title>
+      <bitfield/>
+      <keyword>MAC_RF_Init</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D0D3BFE3-CDCE-4BFA-B4C2-2CA7F9ABD524"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_INIT Struct</register>
+      <title>MAC_RF_INIT Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_INIT</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-8098FC47-BABE-4B51-A573-608D954FB92E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_Tasks Function</register>
+      <title>MAC_RF_Tasks Function</title>
+      <bitfield/>
+      <keyword>MAC_RF_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-AC2CC45A-6C30-41A0-AA58-F1CF0F50A3E5"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_Status Function</register>
+      <title>MAC_RF_Status Function</title>
+      <bitfield/>
+      <keyword>MAC_RF_Status</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-27A9FFA1-8987-4AC9-AC8E-629CF9F3467D"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_DataRequest Function</register>
+      <title>MAC_RF_DataRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_RF_DataRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-09E97D19-BF40-4184-9EC8-D026DBD846E8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_GetRequestSync Function</register>
+      <title>MAC_RF_GetRequestSync Function</title>
+      <bitfield/>
+      <keyword>MAC_RF_GetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-21D728E0-F728-4A2B-85C9-F20B180BCDCF"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_SetRequestSync Function</register>
+      <title>MAC_RF_SetRequestSync Function</title>
+      <bitfield/>
+      <keyword>MAC_RF_SetRequestSync</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-CFFF07F9-77AB-4B6E-8F80-1D29F69889DB"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_PIB_ATTRIBUTE Enum</register>
+      <title>MAC_RF_PIB_ATTRIBUTE Enum</title>
+      <bitfield/>
+      <keyword>MAC_RF_PIB_ATTRIBUTE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-88334860-0D81-4C50-9ABB-DBEFF9E1D72F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_MIB Struct</register>
+      <title>MAC_RF_MIB Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_MIB</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-0A8DBCF0-FD9F-4D6E-9111-D89CC9C4DE8D"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_ResetRequest Function</register>
+      <title>MAC_RF_ResetRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_RF_ResetRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-9D8531AE-13D3-4EB7-8F46-72C3449AB603"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_ScanRequest Function</register>
+      <title>MAC_RF_ScanRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_RF_ScanRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B0C6EC31-3A57-437C-9E5B-1EE3DF27061D"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_StartRequest Function</register>
+      <title>MAC_RF_StartRequest Function</title>
+      <bitfield/>
+      <keyword>MAC_RF_StartRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E0E7873F-7BEA-4E27-9BC0-8BD7ADF9EBBF"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_HANDLERS Struct</register>
+      <title>MAC_RF_HANDLERS Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_HANDLERS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-05D0383B-4E7E-4D73-AE4C-8133595D6E50"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_TABLES Struct</register>
+      <title>MAC_RF_TABLES Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_TABLES</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-9A6028E4-870C-4977-8D93-CB583E777585"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_STATE Enum</register>
+      <title>MAC_RF_STATE Enum</title>
+      <bitfield/>
+      <keyword>MAC_RF_STATE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B7E9FF3B-178A-4EE7-A344-6218F56A8803"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_DATA Struct</register>
+      <title>MAC_RF_DATA Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_DATA</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A831CEA3-884B-4007-B433-FF9EDFBAAA1C"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_FRAME_CONTROL Struct</register>
+      <title>MAC_RF_FRAME_CONTROL Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_FRAME_CONTROL</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-065B3DAE-F945-4416-B107-E42F2BCC0DE3"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_HEADER Struct</register>
+      <title>MAC_RF_HEADER Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_HEADER</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-8B217C1E-8676-4A85-BFC6-380520CCEABC"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_HEADER_IE Struct</register>
+      <title>MAC_RF_HEADER_IE Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_HEADER_IE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-0BB6907C-6DFF-43CD-85DE-DB999FB5DF96"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_LI_IE Struct</register>
+      <title>MAC_RF_LI_IE Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_LI_IE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3271A360-D403-4EB3-B226-5A654BF1650B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_RLQ_IE Struct</register>
+      <title>MAC_RF_RLQ_IE Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_RLQ_IE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D3991758-FC0E-47EA-AA5E-E7549249D595"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_FRAME Struct</register>
+      <title>MAC_RF_FRAME Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_FRAME</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C11FE3C1-DE91-4EB0-B099-0A750F9EE35F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_POS_TABLE_ENTRY Struct</register>
+      <title>MAC_RF_POS_TABLE_ENTRY Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_POS_TABLE_ENTRY</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-82D5E924-97C6-429B-B969-449167D5A99B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>MAC_RF_DSN_TABLE_ENTRY Struct</register>
+      <title>MAC_RF_DSN_TABLE_ENTRY Struct</title>
+      <bitfield/>
+      <keyword>MAC_RF_DSN_TABLE_ENTRY</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-0A870E50-509F-4670-9EF9-E2435E44845B"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>Configuring the G3 PLC PAL</register>
+      <title>Configuring the G3 PLC PAL</title>
+      <bitfield/>
+      <keyword>g3_pal_plc_configurations</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2F668664-D697-4E68-A6C7-2F5D27A4E2F0"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_Initialize Function</register>
+      <title>PAL_PLC_Initialize Function</title>
+      <bitfield/>
+      <keyword>PAL_PLC_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-241228E5-0AD2-4AEC-A131-5541399E5605"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_Status Function</register>
+      <title>PAL_PLC_Status Function</title>
+      <bitfield/>
+      <keyword>PAL_PLC_Status</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-88BF6153-9EA6-4FCA-9440-7383FB31A19E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_HandleGet Function</register>
+      <title>PAL_PLC_HandleGet Function</title>
+      <bitfield/>
+      <keyword>PAL_PLC_HandleGet</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-0856EB9B-3051-4859-AD8A-512FBABCCBE1"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_Deinitialize Function</register>
+      <title>PAL_PLC_Deinitialize Function</title>
+      <bitfield/>
+      <keyword>PAL_PLC_Deinitialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-72CA4420-C4EF-45BF-90B5-D11CDCD632D8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_TxRequest Function</register>
+      <title>PAL_PLC_TxRequest Function</title>
+      <bitfield/>
+      <keyword>PAL_PLC_TxRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-169A4B0B-F1C7-4178-8F86-C86FF93682A4"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_Reset Function</register>
+      <title>PAL_PLC_Reset Function</title>
+      <bitfield/>
+      <keyword>PAL_PLC_Reset</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-1A0368D1-E5D6-4D65-8802-F27A130473B6"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_GetPhyTime Function</register>
+      <title>PAL_PLC_GetPhyTime Function</title>
+      <bitfield/>
+      <keyword>PAL_PLC_GetPhyTime</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-14F7A456-A358-47C0-AAB8-AA2D3F7FBE69"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_GetMacRtPib Function</register>
+      <title>PAL_PLC_GetMacRtPib Function</title>
+      <bitfield/>
+      <keyword>PAL_PLC_GetMacRtPib</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-5C9691CF-6D74-4EBA-BF0A-603CF9162EBF"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_SetMacRtPib Function</register>
+      <title>PAL_PLC_SetMacRtPib Function</title>
+      <bitfield/>
+      <keyword>PAL_PLC_SetMacRtPib</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3CCA662D-807A-48EC-A077-B0BA61A90040"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_SetCoordinator Function</register>
+      <title>PAL_PLC_SetCoordinator Function</title>
+      <bitfield/>
+      <keyword>PAL_PLC_SetCoordinator</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-7422297E-9811-4B67-A620-7FA5656AF7DF"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_PIB_RESULT Enum</register>
+      <title>PAL_PLC_PIB_RESULT Enum</title>
+      <bitfield/>
+      <keyword>PAL_PLC_PIB_RESULT</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-76E22A1D-2C7B-45EF-83D5-7BA96C7384B8"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_HANDLE Typedef</register>
+      <title>PAL_PLC_HANDLE Typedef</title>
+      <bitfield/>
+      <keyword>PAL_PLC_HANDLE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-CD8EF876-9DCB-45A0-B7DD-C8CCDCB87C2F"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_HANDLE_INVALID Macro</register>
+      <title>PAL_PLC_HANDLE_INVALID Macro</title>
+      <bitfield/>
+      <keyword>PAL_PLC_HANDLE_INVALID</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-78C5364D-848D-4D81-8631-36729E8C4052"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_STATUS Enum</register>
+      <title>PAL_PLC_STATUS Enum</title>
+      <bitfield/>
+      <keyword>PAL_PLC_STATUS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-0C2E0E37-DD49-464E-95EE-4F820C0A69D9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_DataIndication Typedef</register>
+      <title>PAL_PLC_DataIndication Typedef</title>
+      <bitfield/>
+      <keyword>PAL_PLC_DataIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E8D30B53-E421-4CB0-B768-8D481F63F730"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_TxConfirm Typedef</register>
+      <title>PAL_PLC_TxConfirm Typedef</title>
+      <bitfield/>
+      <keyword>PAL_PLC_TxConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-846E96AC-A34A-4507-853D-8E73D51C6E2E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_RxParamsIndication Typedef</register>
+      <title>PAL_PLC_RxParamsIndication Typedef</title>
+      <bitfield/>
+      <keyword>PAL_PLC_RxParamsIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3E782E12-078C-4F39-8239-3318010C58DD"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_CommStatusIndication Typedef</register>
+      <title>PAL_PLC_CommStatusIndication Typedef</title>
+      <bitfield/>
+      <keyword>PAL_PLC_CommStatusIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3C40E0FF-9716-4D36-8122-BFF9470A7DCC"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_MacSnifferIndication Typedef</register>
+      <title>PAL_PLC_MacSnifferIndication Typedef</title>
+      <bitfield/>
+      <keyword>PAL_PLC_MacSnifferIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-ECFA7DD7-974D-4A3A-8BD4-7801D3B9A7E2"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_HANDLERS Struct</register>
+      <title>PAL_PLC_HANDLERS Struct</title>
+      <bitfield/>
+      <keyword>PAL_PLC_HANDLERS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-39CD2D44-8E3D-447F-BF49-5ECFA4CB2BD4"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_PLC_INIT Struct</register>
+      <title>PAL_PLC_INIT Struct</title>
+      <bitfield/>
+      <keyword>PAL_PLC_INIT</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-C94BA76A-A113-4FCC-A030-D9E0F60BC4C2"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>Configuring the G3 RF PAL</register>
+      <title>Configuring the G3 RF PAL</title>
+      <bitfield/>
+      <keyword>g3_pal_rf_configurations</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-CBF29E04-8D6A-4AAE-8D45-F49E8388AF36"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_Initialize Function</register>
+      <title>PAL_RF_Initialize Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-8D209244-1AAC-46C8-8990-F78336356F07"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_Status Function</register>
+      <title>PAL_RF_Status Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Status</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-217E9D78-5F80-4DCA-A838-92B6FFEE9682"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_HandleGet Function</register>
+      <title>PAL_RF_HandleGet Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_HandleGet</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-8B977BDC-ED9C-4C59-94E8-7A79CEDA053D"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_Deinitialize Function</register>
+      <title>PAL_RF_Deinitialize Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Deinitialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-AC2CC030-B619-46FF-906B-AC5578BF26C2"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_Tasks Function</register>
+      <title>PAL_RF_Tasks Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-98274FD4-5A25-4F36-BE12-EAAA5A2A2240"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_TxRequest Function</register>
+      <title>PAL_RF_TxRequest Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_TxRequest</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-15835BE6-02AF-4483-87C0-FE02E83B3906"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_TxCancel Function</register>
+      <title>PAL_RF_TxCancel Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_TxCancel</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E0BDAF66-5D70-481B-912F-CB10A1CEAE94"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_Reset Function</register>
+      <title>PAL_RF_Reset Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Reset</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3CA6C934-5D44-4FC8-B309-F20F3DF2D841"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_GetRfPhyPib Function</register>
+      <title>PAL_RF_GetRfPhyPib Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_GetRfPhyPib</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-9A88ADD0-D093-41BA-9F8A-1567C0BF6CB0"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_SetRfPhyPib Function</register>
+      <title>PAL_RF_SetRfPhyPib Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_SetRfPhyPib</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-BE0454CF-93F4-4728-94A3-241F2C38E353"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_GetRfPhyPibLength Function</register>
+      <title>PAL_RF_GetRfPhyPibLength Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_GetRfPhyPibLength</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-AB8A832C-64A0-44B7-A0DE-646E4447B2B3"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_PIB_ATTRIBUTE Enum</register>
+      <title>PAL_RF_PIB_ATTRIBUTE Enum</title>
+      <bitfield/>
+      <keyword>PAL_RF_PIB_ATTRIBUTE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-6F454270-77FA-41B1-9706-6FBE8ACC85B0"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_PIB_RESULT Enum</register>
+      <title>PAL_RF_PIB_RESULT Enum</title>
+      <bitfield/>
+      <keyword>PAL_RF_PIB_RESULT</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-BB7703C7-0559-408E-A574-60EB8173EEE0"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_HANDLE Typedef</register>
+      <title>PAL_RF_HANDLE Typedef</title>
+      <bitfield/>
+      <keyword>PAL_RF_HANDLE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-593BB898-E48C-4647-AE4B-0DD043FEB36A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_HANDLE_INVALID Macro</register>
+      <title>PAL_RF_HANDLE_INVALID Macro</title>
+      <bitfield/>
+      <keyword>PAL_RF_HANDLE_INVALID</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-EDDBB796-E0F9-4F71-85FC-94CC12FDCE4E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_TX_HANDLE Typedef</register>
+      <title>PAL_RF_TX_HANDLE Typedef</title>
+      <bitfield/>
+      <keyword>PAL_RF_TX_HANDLE</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-589B75A2-A362-435B-B80C-B38066E6647E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_TX_HANDLE_INVALID Macro</register>
+      <title>PAL_RF_TX_HANDLE_INVALID Macro</title>
+      <bitfield/>
+      <keyword>PAL_RF_TX_HANDLE_INVALID</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3FBD1A24-E05D-4AF0-B56E-D6238993B379"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_STATUS Enum</register>
+      <title>PAL_RF_STATUS Enum</title>
+      <bitfield/>
+      <keyword>PAL_RF_STATUS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-89D639B7-04E4-45C9-BB68-1504AF4337FA"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_PHY_STATUS Enum</register>
+      <title>PAL_RF_PHY_STATUS Enum</title>
+      <bitfield/>
+      <keyword>PAL_RF_PHY_STATUS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-F5490F2C-DE01-4F4A-B96A-AF24FC53912E"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_FSK_FEC Enum</register>
+      <title>PAL_RF_FSK_FEC Enum</title>
+      <bitfield/>
+      <keyword>PAL_RF_FSK_FEC</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-1A81F267-0946-4574-9516-F38B721F79B7"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_OFDM_MCS Enum</register>
+      <title>PAL_RF_OFDM_MCS Enum</title>
+      <bitfield/>
+      <keyword>PAL_RF_OFDM_MCS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-EBDE19AF-54F3-45E4-B8DE-9148AF0C4972"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_TX_PARAMETERS Struct</register>
+      <title>PAL_RF_TX_PARAMETERS Struct</title>
+      <bitfield/>
+      <keyword>PAL_RF_TX_PARAMETERS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A7F419CF-6545-49C0-9437-3925119A75A5"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_RX_PARAMETERS Struct</register>
+      <title>PAL_RF_RX_PARAMETERS Struct</title>
+      <bitfield/>
+      <keyword>PAL_RF_RX_PARAMETERS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-DB6DEA81-2A3D-4D24-811D-EDE534D11474"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_PIB_OBJ Struct</register>
+      <title>PAL_RF_PIB_OBJ Struct</title>
+      <bitfield/>
+      <keyword>PAL_RF_PIB_OBJ</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-44D18D61-0B90-4B73-B98F-733A653CBD28"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_DataIndication Typedef</register>
+      <title>PAL_RF_DataIndication Typedef</title>
+      <bitfield/>
+      <keyword>PAL_RF_DataIndication</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-2F95446D-E66F-4746-9A7A-D33177A5831A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_TxConfirm Typedef</register>
+      <title>PAL_RF_TxConfirm Typedef</title>
+      <bitfield/>
+      <keyword>PAL_RF_TxConfirm</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-4A575BD9-B932-4917-A91A-0DBCBC42E733"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_HANDLERS Struct</register>
+      <title>PAL_RF_HANDLERS Struct</title>
+      <bitfield/>
+      <keyword>PAL_RF_HANDLERS</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D299BD4C-BC76-4AF8-A982-D48E76683D76"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>PAL_RF_INIT Struct</register>
+      <title>PAL_RF_INIT Struct</title>
+      <bitfield/>
+      <keyword>PAL_RF_INIT</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-7FEAE330-638D-4A1A-865D-7C300485580A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_Initialize Function</register>
+      <title>DRV_G3ADP_MAC_Initialize Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-0802795E-B204-4DDF-8FE2-0B2CF00C044A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_Deinitialize Function</register>
+      <title>DRV_G3ADP_MAC_Deinitialize Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-D1A2EE18-9B3B-4873-A9CD-3BA68740E168"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_Status Function</register>
+      <title>DRV_G3ADP_MAC_Status Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-B467EE6B-5B23-4DF1-A8C8-94426AC4E5B0"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_Tasks Function</register>
+      <title>DRV_G3ADP_MAC_Tasks Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A8B1F14A-FD6D-4D78-89DF-E350024F43FC"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_Open Function</register>
+      <title>DRV_G3ADP_MAC_Open Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-8C886784-B0B6-4F95-BED4-485EF194FF40"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_Close Function</register>
+      <title>DRV_G3ADP_MAC_Close Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-CC7BE32A-1E1E-4572-83B4-B38B4FB44213"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_LinkCheck Function</register>
+      <title>DRV_G3ADP_MAC_LinkCheck Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-4C1561DE-D97A-4006-8875-7784B8B61832"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_RxFilterHashTableEntrySet Function</register>
+      <title>DRV_G3ADP_MAC_RxFilterHashTableEntrySet Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-CAA034A0-BFA8-40FE-884F-3F674B93E102"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_PowerMode Function</register>
+      <title>DRV_G3ADP_MAC_PowerMode Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-0A516040-17DC-4FED-8586-52420D75F66A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_PacketTx Function</register>
+      <title>DRV_G3ADP_MAC_PacketTx Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-6F2F6C75-0489-420A-A143-A997D29E00DD"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_PacketRx Function</register>
+      <title>DRV_G3ADP_MAC_PacketRx Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-4D71C846-289A-4CF9-BE34-8EB8A62598DF"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_Process Function</register>
+      <title>DRV_G3ADP_MAC_Process Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-77428132-D641-4D9A-BEE1-D0D518792533"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_StatisticsGet Function</register>
+      <title>DRV_G3ADP_MAC_StatisticsGet Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-7E52ABD9-9952-4229-A131-607759CB4166"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_ParametersGet Function</register>
+      <title>DRV_G3ADP_MAC_ParametersGet Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-98FF15AD-ABDB-4FE1-BF17-E11305B274F6"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_RegisterStatisticsGet Function</register>
+      <title>DRV_G3ADP_MAC_RegisterStatisticsGet Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-71770666-1687-4902-98A9-BCB6700F4E48"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_ConfigGet Function</register>
+      <title>DRV_G3ADP_MAC_ConfigGet Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-83FD6613-0CB1-48B4-8852-A3FC1ED9CF83"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_EventMaskSet Function</register>
+      <title>DRV_G3ADP_MAC_EventMaskSet Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-3B4F3A4D-1703-428B-BEC5-542F0518578A"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_EventAcknowledge Function</register>
+      <title>DRV_G3ADP_MAC_EventAcknowledge Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-BD377D67-B7D8-435A-B15A-3D5B3D36C850"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>DRV_G3ADP_MAC_EventPendingGet Function</register>
+      <title>DRV_G3ADP_MAC_EventPendingGet Function</title>
+      <bitfield/>
+      <keyword>PAL_RF_Initialize</keyword>
+   </keyworditem>
+</keywords>
