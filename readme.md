@@ -15,7 +15,7 @@ This repository contains the MPLAB® Harmony 3 Smart Energy G3 API and libraries
 
 - [Release Notes](./release_notes.md)
 - [MPLAB® Harmony License](Microchip_SLA001.md)
-- [MPLAB® Harmony 3 G3 API Help](https://microchip-mplab-harmony.github.io/smartenergy_g3/)
+- [MPLAB® Harmony 3 G3 API Help](https://onlinedocs.microchip.com/g/GUID-EE59A777-9AB0-4BC2-AEE5-BEEC67DAE054-en-US-1/index.html?output=oxygen)
 
 # Contents Summary
 
