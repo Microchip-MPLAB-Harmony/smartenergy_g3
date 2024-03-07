@@ -26,6 +26,13 @@ Provided Modules are:
 
 - None
 
+### Development Tools
+
+- [MPLAB® X IDE v6.20](https://www.microchip.com/mplab/mplab-x-ide)
+- [MPLAB® XC32 C/C++ Compiler v4.35](https://www.microchip.com/mplab/compilers)
+- MPLAB® X IDE plug-ins:
+  - MPLAB® Code Configurator 5.5.0 or higher
+
 ### Notes
 
 - This is the first Release of the G3 Stack for Microchip MPLAB® Harmony 3 platform.
