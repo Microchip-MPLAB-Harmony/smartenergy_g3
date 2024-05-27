@@ -439,7 +439,7 @@ static void lPAL_PLC_InitCallback(bool initResult)
 <#if G3_PAL_PLC_PHY_SNIFFER_EN == true>
         /* Enable PLC PHY Sniffer */
         DRV_G3_MACRT_PhySnifferCallbackRegister(palPlcData.drvG3MacRtHandle,
-                lPAL_PLC_PhySnifferCb, (uint8_t *)&palPlcPhySnifferData;
+                lPAL_PLC_PhySnifferCb, (uint8_t *)&palPlcPhySnifferData);
         DRV_G3_MACRT_EnablePhySniffer(palPlcData.drvG3MacRtHandle);
 
         /* Open USI */
