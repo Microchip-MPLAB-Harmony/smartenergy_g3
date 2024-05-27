@@ -409,7 +409,7 @@ PAL_RF_TX_HANDLE PAL_RF_TxRequest(PAL_RF_HANDLE handle, uint8_t *pData,
 
 <#if G3_PAL_RF_PHY_SNIFFER_EN == true>
     // Prepare transmission request in sniffer service
-    SRV_RSNIFFER_SetTxMessage(&txReqObj, rfPhyTxReqHandle);
+    SRV_RSNIFFER_SetTxMessage(&txReqObj, &palRfData.rfPhyConfig, rfPhyTxReqHandle);
 
 </#if>
     if (rfPhyTxReqHandle == DRV_RF215_TX_HANDLE_INVALID)
