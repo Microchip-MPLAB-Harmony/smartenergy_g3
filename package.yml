@@ -1,7 +1,7 @@
 package:
   format-version: "1.0.0"
   name: "smartenergy_g3"
-  version: "v1.0.0"
+  version: "v1.0.1"
   type: "api"
   status: "production"
   required: false
@@ -9,13 +9,13 @@ package:
   dependencies:
     - name: "smartenergy"
       type: "package"
-      version: "v1.2.0"
+      version: "v1.2.1"
     - name: "core"
       type: "package"
-      version: "v3.13.2"
+      version: "v3.13.5"
     - name: "crypto"
       type: "package"
       version: "v4.0.0-E1"
     - name: "net"
       type: "package"
-      version: "v3.11.0"
+      version: "v3.12.0"
