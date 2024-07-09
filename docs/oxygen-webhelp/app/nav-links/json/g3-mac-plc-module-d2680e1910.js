@@ -1,0 +1,1 @@
+define({"topics":[{"title":"<ph>1.3.4.1<\/ph>\nG3 MAC PLC Module Interface","href":"GUID-42F6A670-FFE6-4142-8DAD-E903C825162C.html","attributes":{"data-id":"g3-mac-plc-module-interface"},"menu":{"hasChildren":false},"tocID":"g3-mac-plc-module-interface-d2680e1918","next":"g3-mac-plc-module-interface-d2680e1918"}]});
