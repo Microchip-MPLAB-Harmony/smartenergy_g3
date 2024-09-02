@@ -3,6 +3,32 @@
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Harmony 3 Smart Energy G3 v1.0.1
+
+### New Features
+
+- None.
+
+### Bug fixes
+
+- Added missing parameter on Embedded RF Sniffer function.
+- Added missing parenthesis on Embedded PLC Sniffer function.
+
+### Known Issues
+
+- None.
+
+### Development Tools
+
+- [MPLAB® X IDE v6.20](https://www.microchip.com/mplab/mplab-x-ide)
+- [MPLAB® XC32 C/C++ Compiler v4.40](https://www.microchip.com/mplab/compilers)
+- MPLAB® X IDE plug-ins:
+  - MPLAB® Code Configurator 5.5.1 or higher
+
+### Notes
+
+- None.
+
 ## Harmony 3 Smart Energy G3 v1.0.0
 
 ### New Features
