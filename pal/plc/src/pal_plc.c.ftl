@@ -64,6 +64,9 @@ Microchip or any third party.
 // Section: File Scope Variables
 // *****************************************************************************
 // *****************************************************************************
+<#assign PLC_MODE = drvG3MacRt.DRV_PLC_MODE>
+<#assign COUP_SETTINGS_460 = drvG3MacRt.DRV_PLC_COUP_G3_SETTING_PL460>
+<#assign COUP_SETTINGS_360 = drvG3MacRt.DRV_PLC_COUP_G3_SETTING_PL360>
 /* G3 MAC RT Driver Initialization Data (initialization.c) */
 extern DRV_G3_MACRT_INIT drvG3MacRtInitData;
 
@@ -76,6 +79,10 @@ static uint8_t palPlcMacSnifferData[MAC_RT_DATA_MAX_SIZE];
 <#if G3_PAL_PLC_PHY_SNIFFER_EN == true>
 static PAL_PLC_PHY_SNIFFER palPlcPhySnifferData;
 static SRV_USI_HANDLE palPlcUsiHandler;
+
+</#if>
+<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A")) || ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+static const uint8_t palPlcImpDetectMsg[8] = {0x03, 0x08, 0x53, 0xFF, 0xFF, 0xFF, 0xFF, 0x07};
 
 </#if>
 // *****************************************************************************
@@ -300,11 +307,38 @@ static void lPAL_PLC_UpdateMibBackupInfo(MAC_RT_PIB pib, uint8_t *pValue)
 
 static void lPAL_PLC_SetInitialConfiguration ( void )
 {
+    MAC_RT_BAND plcBand;
+
+<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A"))>
+    if (palPlcData.impDetectInProgress == true)
+    {
+        /* Set FCC band to detect impedance */
+        plcBand = G3_FCC;
+    }
+    else
+    {
+        plcBand = palPlcData.plcBand;
+    }
+<#elseif ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+    /* Set impedance detection in progress */
+    if (palPlcData.impDetectInProgress == true)
+    {
+        /* Set CENELEC-A band to detect impedance */
+        plcBand = G3_CEN_A;
+    }
+    else
+    {
+        plcBand = palPlcData.plcBand;
+    }
+<#else>
+    plcBand = palPlcData.plcBand;
+</#if>
+
     /* Set PLC Band */
-    DRV_G3_MACRT_SetBand(palPlcData.drvG3MacRtHandle, palPlcData.plcBand);
+    DRV_G3_MACRT_SetBand(palPlcData.drvG3MacRtHandle, plcBand);
 
     /* Apply PLC coupling configuration */
-    (void) SRV_PCOUP_Set_Config(palPlcData.drvG3MacRtHandle, palPlcData.plcBand);
+    (void) SRV_PCOUP_Set_Config(palPlcData.drvG3MacRtHandle, plcBand);
 <#if G3_PAL_PLC_MAC_SNIFFER_EN == true>
 
     /* Enable MAC Sniffer */
@@ -316,6 +350,23 @@ static void lPAL_PLC_SetInitialConfiguration ( void )
 </#if>
 }
 
+<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A")) || ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+static void lPAL_PLC_ImpDetectTransmit(void)
+{
+    MAC_RT_PIB_OBJ pibObj;
+
+    /* Set High Priority MacRT IB according to parameter */
+    pibObj.pib = MAC_RT_PIB_TX_HIGH_PRIORITY;
+    pibObj.index = 0;
+    pibObj.length = sizeof(uint8_t);
+    pibObj.pData[0] = 1;
+    (void) DRV_G3_MACRT_PIBSet(palPlcData.drvG3MacRtHandle, &pibObj);
+
+    /* Send Beacon Request */
+    DRV_G3_MACRT_TxRequest(palPlcData.drvG3MacRtHandle, (uint8_t *)palPlcImpDetectMsg, sizeof(palPlcImpDetectMsg));
+}
+
+</#if>
 // *****************************************************************************
 // *****************************************************************************
 // Section: Local Callbacks
@@ -366,6 +417,27 @@ static void lPAL_PLC_ExceptionCb( DRV_G3_MACRT_EXCEPTION exceptionObj )
 static void lPAL_PLC_DataCfmCb( MAC_RT_TX_CFM_OBJ *cfmObj )
 {
     palPlcData.waitingTxCfm = false;
+
+<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A")) || ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+    if (palPlcData.impDetectInProgress == true)
+    {
+        /* Impedance detection in progress */
+        if (cfmObj->status == MAC_RT_STATUS_SUCCESS)
+        {
+            /* Impedance detected. Switch to desired band. */
+            palPlcData.impDetectInProgress = false;
+            lPAL_PLC_SetInitialConfiguration();
+        }
+        else
+        {
+            /* Error: Try again */
+            lPAL_PLC_ImpDetectTransmit();
+        }
+
+        return;
+    }
+
+</#if>
 
     if (palPlcData.initHandlers.palPlcTxConfirm != NULL)
     {
@@ -469,6 +541,14 @@ static void lPAL_PLC_InitCallback(bool initResult)
             cfmObj.status = MAC_RT_STATUS_CHANNEL_ACCESS_FAILURE;
             lPAL_PLC_DataCfmCb(&cfmObj);
         }
+<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A")) || ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+
+        if (palPlcData.impDetectInProgress == true)
+        {
+            /* Send message to detect impedance */
+            lPAL_PLC_ImpDetectTransmit();
+        }
+</#if>
     }
     else
     {
@@ -522,6 +602,29 @@ SYS_MODULE_OBJ PAL_PLC_Initialize(const SYS_MODULE_INDEX index,
 <#if G3_PAL_PLC_PVDD_MONITOR == true>
     /* Set PVDD Monitor tracking data */
     palPlcData.pvddMonTxEnable = true;
+
+</#if>
+<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A"))>
+    /* Set impedance detection in progress */
+    if (palPlcData.plcBand == G3_CEN_A)
+    {
+        palPlcData.impDetectInProgress = true;
+    }
+    else
+    {
+        palPlcData.impDetectInProgress = false;
+    }
+
+<#elseif ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+    /* Set impedance detection in progress */
+    if (palPlcData.plcBand == G3_FCC)
+    {
+        palPlcData.impDetectInProgress = true;
+    }
+    else
+    {
+        palPlcData.impDetectInProgress = false;
+    }
 
 </#if>
     palPlcData.waitingTxCfm = false;
