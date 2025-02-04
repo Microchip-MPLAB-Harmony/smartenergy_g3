@@ -300,8 +300,11 @@ static void lPAL_PLC_UpdateMibBackupInfo(MAC_RT_PIB pib, uint8_t *pValue)
 
 static void lPAL_PLC_SetInitialConfiguration ( void )
 {
+    /* Set PLC Band */
+    DRV_G3_MACRT_SetBand(palPlcData.drvG3MacRtHandle, palPlcData.plcBand);
+
     /* Apply PLC coupling configuration */
-    (void) SRV_PCOUP_Set_Config(palPlcData.drvG3MacRtHandle, palPlcData.plcBranch);
+    (void) SRV_PCOUP_Set_Config(palPlcData.drvG3MacRtHandle, palPlcData.plcBand);
 <#if G3_PAL_PLC_MAC_SNIFFER_EN == true>
 
     /* Enable MAC Sniffer */
@@ -493,9 +496,6 @@ SYS_MODULE_OBJ PAL_PLC_Initialize(const SYS_MODULE_INDEX index,
         const SYS_MODULE_INIT * const init)
 {
     const PAL_PLC_INIT * const palInit = (const PAL_PLC_INIT * const)init;
-    bool updateBin = false;
-    MAC_RT_BAND plcBandMain;
-    MAC_RT_BAND plcBandAux;
     DRV_G3_MACRT_STATE drvG3MacRtStatus;
 
     /* Check Single instance */
@@ -526,36 +526,15 @@ SYS_MODULE_OBJ PAL_PLC_Initialize(const SYS_MODULE_INDEX index,
 </#if>
     palPlcData.waitingTxCfm = false;
 
-    /* Manage G3 PLC Band */
-    plcBandMain = (MAC_RT_BAND)SRV_PCOUP_Get_Phy_Band(SRV_PLC_PCOUP_MAIN_BRANCH);
-    plcBandAux = (MAC_RT_BAND)SRV_PCOUP_Get_Phy_Band(SRV_PLC_PCOUP_AUXILIARY_BRANCH);
-    if (plcBandMain == palPlcData.plcBand)
+    /* Manage G3-PLC Band */
+    if (SRV_PCOUP_Get_Config(palPlcData.plcBand) == NULL)
     {
-        palPlcData.plcBranch = SRV_PLC_PCOUP_MAIN_BRANCH;
-        if (drvG3MacRtInitData.binStartAddress != (uint32_t)&g3_mac_rt_bin_start)
-        {
-            drvG3MacRtInitData.binStartAddress = (uint32_t)&g3_mac_rt_bin_start;
-            drvG3MacRtInitData.binEndAddress = (uint32_t)&g3_mac_rt_bin_end;
-            updateBin = true;
-        }
-    }
-    else if (plcBandAux == palPlcData.plcBand)
-    {
-        palPlcData.plcBranch = SRV_PLC_PCOUP_AUXILIARY_BRANCH;
-        if (drvG3MacRtInitData.binStartAddress != (uint32_t)&g3_mac_rt_bin2_start)
-        {
-            drvG3MacRtInitData.binStartAddress = (uint32_t)&g3_mac_rt_bin2_start;
-            drvG3MacRtInitData.binEndAddress = (uint32_t)&g3_mac_rt_bin2_end;
-            updateBin = true;
-        }
-    }
-    else
-    {
+        /* Band not supported by PLC Coupling */
         return SYS_MODULE_OBJ_INVALID;
     }
 
     drvG3MacRtStatus = DRV_G3_MACRT_Status(DRV_G3_MACRT_INDEX);
-    if ((drvG3MacRtStatus != DRV_G3_MACRT_STATE_INITIALIZED) || updateBin)
+    if (drvG3MacRtStatus != DRV_G3_MACRT_STATE_INITIALIZED)
     {
         /* Initialize PLC Driver Instance */
         (void) DRV_G3_MACRT_Initialize(DRV_G3_MACRT_INDEX, (SYS_MODULE_INIT *)&drvG3MacRtInitData);
