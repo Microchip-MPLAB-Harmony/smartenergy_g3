@@ -64,9 +64,6 @@ Microchip or any third party.
 // Section: File Scope Variables
 // *****************************************************************************
 // *****************************************************************************
-<#assign PLC_MODE = drvG3MacRt.DRV_PLC_MODE>
-<#assign COUP_SETTINGS_460 = drvG3MacRt.DRV_PLC_COUP_G3_SETTING_PL460>
-<#assign COUP_SETTINGS_360 = drvG3MacRt.DRV_PLC_COUP_G3_SETTING_PL360>
 /* G3 MAC RT Driver Initialization Data (initialization.c) */
 extern DRV_G3_MACRT_INIT drvG3MacRtInitData;
 
@@ -81,7 +78,7 @@ static PAL_PLC_PHY_SNIFFER palPlcPhySnifferData;
 static SRV_USI_HANDLE palPlcUsiHandler;
 
 </#if>
-<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A")) || ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+<#if drvG3MacRt.DRV_PLC_COUP_IMP_DETECT_BAND_FORCED != "None">
 static const uint8_t palPlcImpDetectMsg[8] = {0x03, 0x08, 0x53, 0xFF, 0xFF, 0xFF, 0xFF, 0x07};
 
 </#if>
@@ -309,7 +306,7 @@ static void lPAL_PLC_SetInitialConfiguration ( void )
 {
     MAC_RT_BAND plcBand;
 
-<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A"))>
+<#if drvG3MacRt.DRV_PLC_COUP_IMP_DETECT_BAND_FORCED == "FCC">
     if (palPlcData.impDetectInProgress == true)
     {
         /* Set FCC band to detect impedance */
@@ -319,7 +316,7 @@ static void lPAL_PLC_SetInitialConfiguration ( void )
     {
         plcBand = palPlcData.plcBand;
     }
-<#elseif ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+<#elseif drvG3MacRt.DRV_PLC_COUP_IMP_DETECT_BAND_FORCED == "CENELEC-A">
     /* Set impedance detection in progress */
     if (palPlcData.impDetectInProgress == true)
     {
@@ -350,7 +347,7 @@ static void lPAL_PLC_SetInitialConfiguration ( void )
 </#if>
 }
 
-<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A")) || ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+<#if drvG3MacRt.DRV_PLC_COUP_IMP_DETECT_BAND_FORCED != "None">
 static void lPAL_PLC_ImpDetectTransmit(void)
 {
     MAC_RT_PIB_OBJ pibObj;
@@ -418,7 +415,7 @@ static void lPAL_PLC_DataCfmCb( MAC_RT_TX_CFM_OBJ *cfmObj )
 {
     palPlcData.waitingTxCfm = false;
 
-<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A")) || ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+<#if drvG3MacRt.DRV_PLC_COUP_IMP_DETECT_BAND_FORCED != "None">
     if (palPlcData.impDetectInProgress == true)
     {
         /* Impedance detection in progress */
@@ -541,7 +538,7 @@ static void lPAL_PLC_InitCallback(bool initResult)
             cfmObj.status = MAC_RT_STATUS_CHANNEL_ACCESS_FAILURE;
             lPAL_PLC_DataCfmCb(&cfmObj);
         }
-<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A")) || ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+<#if drvG3MacRt.DRV_PLC_COUP_IMP_DETECT_BAND_FORCED != "None">
 
         if (palPlcData.impDetectInProgress == true)
         {
@@ -604,7 +601,7 @@ SYS_MODULE_OBJ PAL_PLC_Initialize(const SYS_MODULE_INDEX index,
     palPlcData.pvddMonTxEnable = true;
 
 </#if>
-<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A"))>
+<#if drvG3MacRt.DRV_PLC_COUP_IMP_DETECT_BAND_FORCED == "FCC">
     /* Set impedance detection in progress */
     if (palPlcData.plcBand == G3_CEN_A)
     {
@@ -615,7 +612,7 @@ SYS_MODULE_OBJ PAL_PLC_Initialize(const SYS_MODULE_INDEX index,
         palPlcData.impDetectInProgress = false;
     }
 
-<#elseif ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+<#elseif drvG3MacRt.DRV_PLC_COUP_IMP_DETECT_BAND_FORCED == "CENELEC-A">
     /* Set impedance detection in progress */
     if (palPlcData.plcBand == G3_FCC)
     {

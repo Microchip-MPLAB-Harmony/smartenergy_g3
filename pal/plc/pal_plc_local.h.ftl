@@ -121,10 +121,7 @@ typedef struct
 
     bool pvddMonTxEnable;
 
-<#assign PLC_MODE = drvG3MacRt.DRV_PLC_MODE>
-<#assign COUP_SETTINGS_460 = drvG3MacRt.DRV_PLC_COUP_G3_SETTING_PL460>
-<#assign COUP_SETTINGS_360 = drvG3MacRt.DRV_PLC_COUP_G3_SETTING_PL360>
-<#if ((PLC_MODE == "PL460") && COUP_SETTINGS_460?contains("Multiband single-branch FCC & CEN-A") && COUP_SETTINGS_460?contains("CENELEC-A")) || ((PLC_MODE == "PL360") && COUP_SETTINGS_360?contains("PLCOUP011") && COUP_SETTINGS_360?contains("FCC"))>
+<#if drvG3MacRt.DRV_PLC_COUP_IMP_DETECT_BAND_FORCED != "None">
     bool impDetectInProgress;
 
 </#if>
