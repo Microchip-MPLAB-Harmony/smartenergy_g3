@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Package name="smartenergy_g3">
-    <Dependencies>
-        <Dependency name="smartenergy" version="v1.2.1"/>
-        <Dependency name="crypto" version="v4.0.0-E1"/>
-        <Dependency name="net" version="v3.12.0"/>
-    </Dependencies>
-</Package>
