@@ -186,11 +186,9 @@ def instantiateComponent(g3ConfigComponent):
     g3AdpConfig.setHelp(g3_adp_helpkeyword)
 
     global g3SixLoWPANConfig
-    g3SixLoWPANConfig = g3ConfigComponent.createMenuSymbol("6LOWPAN_CONFIG", g3AdpConfig)
+    g3SixLoWPANConfig = g3ConfigComponent.createCommentSymbol("6LOWPAN_CONFIG", g3AdpConfig)
     g3SixLoWPANConfig.setLabel("6LOWPAN Configuration")
-    g3SixLoWPANConfig.setDescription("6LOWPAN Buffers and Table Sizes")
     g3SixLoWPANConfig.setVisible(False)
-    g3SixLoWPANConfig.setHelp(g3_adp_helpkeyword)
 
     global g3CountBuffers1280
     g3CountBuffers1280 = g3ConfigComponent.createIntegerSymbol("ADP_COUNT_BUFFERS_1280", g3SixLoWPANConfig)
@@ -357,12 +355,10 @@ def instantiateComponent(g3ConfigComponent):
     loadngDiscoverRouteTable.setHelp(g3_adp_helpkeyword)
 
     # Coordinator LBP Configuration
-    g3LbpCoordConfig = g3ConfigComponent.createMenuSymbol("LBP_COORD_CONFIG", g3AdpConfig)
+    g3LbpCoordConfig = g3ConfigComponent.createCommentSymbol("LBP_COORD_CONFIG", g3AdpConfig)
     g3LbpCoordConfig.setLabel("Coordinator LBP Configuration")
-    g3LbpCoordConfig.setDescription("Configuration on Coordinator LBP module")
     g3LbpCoordConfig.setVisible(g3ConfigRole.getValue() != "PAN Device")
     g3LbpCoordConfig.setDependencies(showLbpCoordConfig, ["G3_ROLE"])
-    g3LbpCoordConfig.setHelp(g3_adp_helpkeyword)
 
     g3CoordLbpSlots = g3ConfigComponent.createIntegerSymbol("COORD_LBP_SLOTS", g3LbpCoordConfig)
     g3CoordLbpSlots.setLabel("Number of LBP Slots")
