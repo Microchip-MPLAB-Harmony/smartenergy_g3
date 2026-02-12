@@ -173,14 +173,14 @@ static LBP_CALLBACK_TYPES sLbpCallbackType;
 /* ***************************************************************************** */
 /* ***************************************************************************** */
 
-/* MISRA C-2012 deviation block start */
-/* MISRA C-2012 Rule 8.6 deviated 8 times.  Deviation record ID - H3_MISRAC_2012_R_8_6_DR_1 */
+/* MISRA C-2023 deviation block start */
+/* MISRA C-2023 Rule 8.6 deviated 8 times.  Deviation record ID - H3_MISRAC_2023_R_8_6_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 8.6" "H3_MISRAC_2012_R_8_6_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 8.6" "H3_MISRAC_2023_R_8_6_DR_1"
 </#if>
 
 extern bool AdpMac_SetRcCoordSync(uint16_t u16RcCoord);
@@ -193,12 +193,12 @@ extern bool AdpMac_SetExtendedAddressSync(const ADP_EXTENDED_ADDRESS *pExtendedA
 extern bool AdpMac_SetPanIdSync(uint16_t panId);
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 8.6"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 8.6"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
-/* MISRA C-2012 deviation block end */
+/* MISRA C-2023 deviation block end */
 
 /* ***************************************************************************** */
 /* ***************************************************************************** */
@@ -1268,26 +1268,26 @@ static void lLBP_AdpLbpIndicationDev(ADP_LBP_IND_PARAMS *pLbpIndication)
     uint8_t *pLbpData = NULL;
     bool result;
 
-    /* MISRA C-2012 deviation block start */
-    /* MISRA C-2012 Rule 11.8 deviated once. Deviation record ID - H3_MISRAC_2012_R_11_8_DR_1 */
+    /* MISRA C-2023 deviation block start */
+    /* MISRA C-2023 Rule 11.8 deviated once. Deviation record ID - H3_MISRAC_2023_R_11_8_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
     <#if core.COMPILER_CHOICE == "XC32">
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wunknown-pragmas"
     </#if>
-    #pragma coverity compliance block deviate "MISRA C-2012 Rule 11.8" "H3_MISRAC_2012_R_11_8_DR_1"
+    #pragma coverity compliance block deviate "MISRA C-2023 Rule 11.8" "H3_MISRAC_2023_R_11_8_DR_1"
 </#if>
 
     result = LBP_DecodeMessage(pLbpIndication->nsduLength, (uint8_t *)pLbpIndication->pNsdu,
                 &msgType, &eui64Address, &lbpDataLength, &pLbpData);
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-    #pragma coverity compliance end_block "MISRA C-2012 Rule 11.8"
+    #pragma coverity compliance end_block "MISRA C-2023 Rule 11.8"
     <#if core.COMPILER_CHOICE == "XC32">
     #pragma GCC diagnostic pop
     </#if>
 </#if>
-    /* MISRA C-2012 deviation block end */
+    /* MISRA C-2023 deviation block end */
 
     if (result)
     {

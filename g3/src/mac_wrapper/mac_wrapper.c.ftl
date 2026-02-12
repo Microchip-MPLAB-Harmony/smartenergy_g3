@@ -2840,18 +2840,18 @@ uint32_t MAC_WRP_SerialParseGetRequest(uint8_t* pData, uint16_t* index)
     return attribute;
 }
 
-/* MISRA C-2012 deviation block start */
+/* MISRA C-2023 deviation block start */
 <#if MAC_PLC_PRESENT == true && MAC_RF_PRESENT == true>
-/* MISRA C-2012 Rule 16.4 deviated 6 times. Deviation record ID - H3_MISRAC_2012_R_16_4_DR_1 */
+/* MISRA C-2023 Rule 16.4 deviated 6 times. Deviation record ID - H3_MISRAC_2023_R_16_4_DR_1 */
 <#else>
-/* MISRA C-2012 Rule 16.4 deviated 4 times. Deviation record ID - H3_MISRAC_2012_R_16_4_DR_1 */
+/* MISRA C-2023 Rule 16.4 deviated 4 times. Deviation record ID - H3_MISRAC_2023_R_16_4_DR_1 */
 </#if>
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 16.4" "H3_MISRAC_2012_R_16_4_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 16.4" "H3_MISRAC_2023_R_16_4_DR_1"
 </#if>
 
 uint8_t MAC_WRP_SerialStringifyGetConfirm (
@@ -3751,12 +3751,12 @@ MAC_WRP_PIB_ATTRIBUTE MAC_WRP_SerialParseSetRequest (
 }
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 16.4"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 16.4"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
-/* MISRA C-2012 deviation block end */
+/* MISRA C-2023 deviation block end */
 
 uint8_t MAC_WRP_SerialStringifySetConfirm (
     uint8_t *serialData,

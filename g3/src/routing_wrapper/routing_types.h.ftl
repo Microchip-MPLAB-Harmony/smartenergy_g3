@@ -182,14 +182,14 @@ typedef void (*ROUTING_WRP_DISCOVER_ROUTE_CALLBACK)(uint8_t status,
 typedef void (*ROUTING_WRP_DISCOVER_PATH_CALLBACK)(uint8_t status,
     ADP_PATH_DESCRIPTOR *pPathDescriptor);
 
-/* MISRA C-2012 deviation block start */
-/* MISRA C-2012 Rule 6.1 deviated 8 times.  Deviation record ID - H3_MISRAC_2012_R_6_1_DR_1 */
+/* MISRA C-2023 deviation block start */
+/* MISRA C-2023 Rule 6.1 deviated 8 times.  Deviation record ID - H3_MISRAC_2023_R_6_1_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 6.1" "H3_MISRAC_2012_R_6_1_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 6.1" "H3_MISRAC_2023_R_6_1_DR_1"
 </#if>
 
 // *****************************************************************************
@@ -229,12 +229,12 @@ typedef struct
 } ROUTING_TABLE_ENTRY;
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 6.1"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 6.1"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
-/* MISRA C-2012 deviation block end */
+/* MISRA C-2023 deviation block end */
 
 // *****************************************************************************
 /* Routing Blacklist Table Entry Definition

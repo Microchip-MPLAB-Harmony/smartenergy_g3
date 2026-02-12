@@ -261,40 +261,40 @@ static void lPAL_PLC_UpdateMibBackupInfo(MAC_RT_PIB pib, uint8_t *pValue)
             palPlcData.mibInitData.txHighPriority = (bool)value8;
             break;
 
-        /* MISRA C-2012 deviation block start */
-        /* MISRA C-2012 Rule 11.3 deviated once. Deviation record ID - H3_MISRAC_2012_R_11_3_DR_1 */
+        /* MISRA C-2023 deviation block start */
+        /* MISRA C-2023 Rule 11.3 deviated once. Deviation record ID - H3_MISRAC_2023_R_11_3_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
     <#if core.COMPILER_CHOICE == "XC32">
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wunknown-pragmas"
     </#if>
-        #pragma coverity compliance block deviate "MISRA C-2012 Rule 11.3" "H3_MISRAC_2012_R_11_3_DR_1"
+        #pragma coverity compliance block deviate "MISRA C-2023 Rule 11.3" "H3_MISRAC_2023_R_11_3_DR_1"
 </#if>
         case MAC_RT_PIB_GET_SET_ALL_MIB:
             palPlcData.mibInitData = *(MAC_RT_MIB_INIT_OBJ *)pValue;
             break;
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-        #pragma coverity compliance end_block "MISRA C-2012 Rule 11.3"
+        #pragma coverity compliance end_block "MISRA C-2023 Rule 11.3"
     <#if core.COMPILER_CHOICE == "XC32">
         #pragma GCC diagnostic pop
     </#if>
 </#if>
 
-        /* MISRA C-2012 deviation block start */
-        /* MISRA C-2012 Rule 16.4 deviated once. Deviation record ID - H3_MISRAC_2012_R_16_4_DR_1 */
+        /* MISRA C-2023 deviation block start */
+        /* MISRA C-2023 Rule 16.4 deviated once. Deviation record ID - H3_MISRAC_2023_R_16_4_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
     <#if core.COMPILER_CHOICE == "XC32">
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wunknown-pragmas"
     </#if>
-        #pragma coverity compliance block deviate "MISRA C-2012 Rule 16.4" "H3_MISRAC_2012_R_16_4_DR_1"
+        #pragma coverity compliance block deviate "MISRA C-2023 Rule 16.4" "H3_MISRAC_2023_R_16_4_DR_1"
 </#if>
 
         default:
             break;
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-        #pragma coverity compliance end_block "MISRA C-2012 Rule 16.4"
+        #pragma coverity compliance end_block "MISRA C-2023 Rule 16.4"
     <#if core.COMPILER_CHOICE == "XC32">
         #pragma GCC diagnostic pop
     </#if>
@@ -559,14 +559,14 @@ static void lPAL_PLC_InitCallback(bool initResult)
 // *****************************************************************************
 // *****************************************************************************
 
-/* MISRA C-2012 deviation block start */
-/* MISRA C-2012 Rule 11.3 deviated twice. Deviation record ID - H3_MISRAC_2012_R_11_3_DR_1 */
+/* MISRA C-2023 deviation block start */
+/* MISRA C-2023 Rule 11.3 deviated twice. Deviation record ID - H3_MISRAC_2023_R_11_3_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 11.3" "H3_MISRAC_2012_R_11_3_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 11.3" "H3_MISRAC_2023_R_11_3_DR_1"
 </#if>
 
 SYS_MODULE_OBJ PAL_PLC_Initialize(const SYS_MODULE_INDEX index,
@@ -658,12 +658,12 @@ SYS_MODULE_OBJ PAL_PLC_Initialize(const SYS_MODULE_INDEX index,
 }
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 11.3"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 11.3"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
-/* MISRA C-2012 deviation block end */
+/* MISRA C-2023 deviation block end */
 
 PAL_PLC_HANDLE PAL_PLC_HandleGet(const SYS_MODULE_INDEX index)
 {
@@ -753,20 +753,20 @@ void PAL_PLC_Reset(PAL_PLC_HANDLE handle, bool resetMib)
 
     PAL_PLC_Deinitialize(PAL_PLC_PHY_INDEX);
 
-    /* MISRA C-2012 deviation block start */
-    /* MISRA C-2012 Rule 11.3 deviated twice. Deviation record ID - H3_MISRAC_2012_R_11_3_DR_1 */
+    /* MISRA C-2023 deviation block start */
+    /* MISRA C-2023 Rule 11.3 deviated twice. Deviation record ID - H3_MISRAC_2023_R_11_3_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
     <#if core.COMPILER_CHOICE == "XC32">
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wunknown-pragmas"
     </#if>
-    #pragma coverity compliance block deviate "MISRA C-2012 Rule 11.3" "H3_MISRAC_2012_R_11_3_DR_1"
+    #pragma coverity compliance block deviate "MISRA C-2023 Rule 11.3" "H3_MISRAC_2023_R_11_3_DR_1"
 </#if>
 
     (void) PAL_PLC_Initialize(PAL_PLC_PHY_INDEX, (SYS_MODULE_INIT *)&palInit);
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-    #pragma coverity compliance end_block "MISRA C-2012 Rule 11.3"
+    #pragma coverity compliance end_block "MISRA C-2023 Rule 11.3"
     <#if core.COMPILER_CHOICE == "XC32">
     #pragma GCC diagnostic pop
     </#if>

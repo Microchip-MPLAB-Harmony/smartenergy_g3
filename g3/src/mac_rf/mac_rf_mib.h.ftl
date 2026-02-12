@@ -79,14 +79,14 @@ Microchip or any third party.
 #define MAC_PIB_DUTY_CYCLE_LIMIT_RF_MIN_VALUE                1
 #define MAC_PIB_DUTY_CYCLE_THRESHOLD_RF_MIN_VALUE            1
 
-/* MISRA C-2012 deviation block start */
-/* MISRA C-2012 Rule 5.4 deviated once.  Deviation record ID - H3_MISRAC_2012_R_5_4_DR_1 */
+/* MISRA C-2023 deviation block start */
+/* MISRA C-2023 Rule 5.4 deviated once.  Deviation record ID - H3_MISRAC_2023_R_5_4_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 5.4" "H3_MISRAC_2012_R_5_4_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 5.4" "H3_MISRAC_2023_R_5_4_DR_1"
 </#if>
 
 #define MAC_PIB_MANUF_ACK_TX_DELAY_RF_MIN_VALUE              1000 // us
@@ -96,12 +96,12 @@ Microchip or any third party.
 #define MAC_PIB_MANUF_DATA_CONFIRM_WAIT_TIME_RF_MIN_VALUE    85000 // us
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 5.4"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 5.4"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
-/* MISRA C-2012 deviation block end */
+/* MISRA C-2023 deviation block end */
 
 // *****************************************************************************
 // *****************************************************************************
@@ -259,16 +259,16 @@ typedef struct
     uint8_t trickleMinLQIRF;
 } MAC_RF_MIB;
 
-/* MISRA C-2012 deviation block start */
-/* MISRA C-2012 Rule 5.2 deviated 17 times.  Deviation record ID - H3_MISRAC_2012_R_5_2_DR_1 */
-/* MISRA C-2012 Rule 5.5 deviated 4 times.  Deviation record ID - H3_MISRAC_2012_R_5_5_DR_1 */
+/* MISRA C-2023 deviation block start */
+/* MISRA C-2023 Rule 5.2 deviated 17 times.  Deviation record ID - H3_MISRAC_2023_R_5_2_DR_1 */
+/* MISRA C-2023 Rule 5.5 deviated 4 times.  Deviation record ID - H3_MISRAC_2023_R_5_5_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 5.2" "H3_MISRAC_2012_R_5_2_DR_1"
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 5.5" "H3_MISRAC_2012_R_5_5_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 5.2" "H3_MISRAC_2023_R_5_2_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 5.5" "H3_MISRAC_2023_R_5_5_DR_1"
 </#if>
 
 // *****************************************************************************
@@ -397,13 +397,13 @@ typedef enum
 } MAC_RF_PIB_ATTRIBUTE;
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 5.2"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 5.5"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 5.2"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 5.5"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
-/* MISRA C-2012 deviation block end */
+/* MISRA C-2023 deviation block end */
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
