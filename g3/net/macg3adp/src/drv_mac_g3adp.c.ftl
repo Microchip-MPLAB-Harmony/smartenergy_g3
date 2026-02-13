@@ -69,7 +69,7 @@ Microchip or any third party.
 #else
     .MAC_Deinitialize                       = NULL,
     .MAC_Reinitialize                       = NULL,
-#endif  // (TCPIP_STACK_DOWN_OPERATION != 0)
+#endif  // (TCPIP_STACK_MAC_DOWN_OPERATION != 0)
     .MAC_Status                             = DRV_G3ADP_MAC_Status,
     .MAC_Tasks                              = DRV_G3ADP_MAC_Tasks,
     .MAC_Open                               = DRV_G3ADP_MAC_Open,

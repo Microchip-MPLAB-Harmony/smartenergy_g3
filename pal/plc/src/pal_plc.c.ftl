@@ -335,7 +335,7 @@ static void lPAL_PLC_SetInitialConfiguration ( void )
     DRV_G3_MACRT_SetBand(palPlcData.drvG3MacRtHandle, plcBand);
 
     /* Apply PLC coupling configuration */
-    (void) SRV_PCOUP_Set_Config(palPlcData.drvG3MacRtHandle, plcBand);
+    (void) SRV_PCOUP_Set_Config(palPlcData.drvG3MacRtHandle, (uint8_t)plcBand);
 <#if G3_PAL_PLC_MAC_SNIFFER_EN == true>
 
     /* Enable MAC Sniffer */
@@ -627,7 +627,7 @@ SYS_MODULE_OBJ PAL_PLC_Initialize(const SYS_MODULE_INDEX index,
     palPlcData.waitingTxCfm = false;
 
     /* Manage G3-PLC Band */
-    if (SRV_PCOUP_Get_Config(palPlcData.plcBand) == NULL)
+    if (SRV_PCOUP_Get_Config((uint8_t)palPlcData.plcBand) == NULL)
     {
         /* Band not supported by PLC Coupling */
         return SYS_MODULE_OBJ_INVALID;
