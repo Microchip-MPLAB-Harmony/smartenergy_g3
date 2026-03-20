@@ -3,6 +3,34 @@
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Harmony 3 Smart Energy G3 v1.1.0
+
+### New Features
+
+- **New Features and Enhancements**
+  - Implemented impedance detection for CENELEC-A with Multiband Single Branch.
+  - Adapted PLC PAL to changes in G3 MAC-RT driver regarding multiband binary and PLC Coupling service.
+  - Updated MACG3ADP net Driver to comply with latest version of net repository.
+
+### Bug fixes
+
+- Protected access to MacRT on PAL_PLC_SetCoordinator in case it is not ready.
+
+### Known Issues
+
+- None.
+
+### Development Tools
+
+- [MPLAB® X IDE v6.25](https://www.microchip.com/mplab/mplab-x-ide)
+- [MPLAB® XC32 C/C++ Compiler v5.00](https://www.microchip.com/mplab/compilers)
+- MPLAB® X IDE plug-ins:
+  - MPLAB® Code Configurator 5.6.3 or higher
+
+### Notes
+
+- None.
+
 ## Harmony 3 Smart Energy G3 v1.0.1
 
 ### New Features

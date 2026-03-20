@@ -12,30 +12,38 @@ MPLAB® Harmony 3 is an extension of the MPLAB® ecosystem for creating embedded
 - [Microchip MPLAB® Harmony Pages](https://microchip-mplab-harmony.github.io/)
 
 This repository contains the MPLAB® Harmony 3 Smart Energy G3 API and libraries.
+Refer to the following links for release notes, training materials, and interface reference information.
 
 - [Release Notes](./release_notes.md)
-- [MPLAB® Harmony License](Microchip_SLA001.md)
-- [MPLAB® Harmony 3 G3 API Help](https://onlinedocs.microchip.com/g/GUID-EE59A777-9AB0-4BC2-AEE5-BEEC67DAE054-en-US-1/index.html?output=oxygen)
+- [License](License.md)
+
+# Documentation
+
+Click [here](https://onlinedocs.microchip.com/v2/keyword-lookup?keyword=MH3_smartenergy_g3&redirect=true) to view the online documentation of MPLAB® Harmony 3 Smart Energy library repository.
+
+To view the documentation offline, follow these steps:
+ - Download the publication as a zip file from [here](https://onlinedocs.microchip.com/download/GUID-EE59A777-9AB0-4BC2-AEE5-BEEC67DAE054?type=webhelp).
+ - Extract the zip file into a folder.
+ - Navigate to the folder and open **index.html** in a web browser of your choice.
 
 # Contents Summary
 
 | Folder     | Description                                               |
 | ---        | ---                                                       |
 | config     | G3 module configuration file                              |
-| docs       | G3 library help documentation                             |
 | g3         | API and files for G3 library                              |
 | pal        | Physical Abstraction layers from G3 to PLC and RF modules |
 
 ____
 
-[![License](https://img.shields.io/badge/license-Harmony%20license-orange.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/blob/master/Microchip_SLA001.md)
-[![Latest release](https://img.shields.io/github/release/Microchip-MPLAB-Harmony/smartenergy_g3.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/releases/latest)
-[![Latest release date](https://img.shields.io/github/release-date/Microchip-MPLAB-Harmony/smartenergy_g3.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/releases/latest)
+[![License](https://img.shields.io/badge/license-Harmony%20license-orange.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/blob/master/License.md)
 [![Commit activity](https://img.shields.io/github/commit-activity/y/Microchip-MPLAB-Harmony/smartenergy_g3.svg)](https://github.com/Microchip-MPLAB-Harmony/smartenergy_g3/graphs/commit-activity)
 [![Contributors](https://img.shields.io/github/contributors-anon/Microchip-MPLAB-Harmony/smartenergy_g3.svg)]()
 
 ____
 
+[![Developer Help](https://img.shields.io/badge/Youtube-Developer%20Help-red.svg)](https://www.youtube.com/MicrochipDeveloperHelp)
+[![Developer Help](https://img.shields.io/badge/XWiki-Developer%20Help-torquiose.svg)](https://developerhelp.microchip.com/xwiki/bin/view/software-tools/harmony/)
 [![Follow us on Youtube](https://img.shields.io/badge/Youtube-Follow%20us%20on%20Youtube-red.svg)](https://www.youtube.com/user/MicrochipTechnology)
 [![Follow us on LinkedIn](https://img.shields.io/badge/LinkedIn-Follow%20us%20on%20LinkedIn-blue.svg)](https://www.linkedin.com/company/microchip-technology)
 [![Follow us on Facebook](https://img.shields.io/badge/Facebook-Follow%20us%20on%20Facebook-blue.svg)](https://www.facebook.com/microchiptechnology/)
